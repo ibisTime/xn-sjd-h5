@@ -1,7 +1,7 @@
 <template>
   <div class="head-wrapper" @click.stop>
     <div class="inner" :class="innerCls">
-      <!-- <i v-if="showBack" class="icon-back" @click="back"></i> -->
+      <i v-if="showBack" class="icon-back" @click="back"></i>
       <h2>{{title}}</h2>
       <div v-if="actText" @click="handleAction" class="action">{{actText}}</div>
     </div>
@@ -52,12 +52,10 @@
     left: 0;
     width: 100%;
     height: 0.88rem;
-    background-color: #fff;
+    background-color: $primary-color;
+    color: $color-background;
 
     .inner {
-      &.border-bottom-1px {
-        @include border-bottom-1px(#dedede);
-      }
 
       .icon-back {
         position: absolute;

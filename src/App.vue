@@ -8,7 +8,7 @@
         <loading title=""></loading>
       </div>
     </div>
-    <wx-bind-mobile ref="bindMobile"></wx-bind-mobile>
+    <!--<wx-bind-mobile ref="bindMobile"></wx-bind-mobile>-->
     <toast :text="text" ref="toast"></toast>
   </div>
 </template>
@@ -17,19 +17,16 @@
   import Loading from 'base/loading/loading';
   import Toast from 'base/toast/toast';
   import {isLogin, setUser, getWxMobAndCapt} from 'common/js/util';
-  import {getLocation} from 'common/js/location';
   import {getAppId} from 'api/general';
   import {wxLogin, saveLoginLog} from 'api/user';
   import {mapMutations, mapGetters} from 'vuex';
   import {SET_LOCATION, SET_IS_LOCA_ERR, SET_LOG_FLAG} from 'store/mutation-types';
-  import WxBindMobile from 'components/wx-bind-mobile/wx-bind-mobile';
-  import {messageMixin} from 'common/js/message-mixin';
+  // import WxBindMobile from 'components/wx-bind-mobile/wx-bind-mobile';
 
   export default {
-    mixins: [messageMixin],
     data() {
       return {
-        loadingFlag: true,
+        loadingFlag: false,
         text: ''
       };
     },
@@ -40,19 +37,14 @@
       ])
     },
     created() {
-      this.getLocation();
       if (!isLogin()) {
         if (/code=([^&]+)&state=/.exec(location.href)) {
           let code = RegExp.$1;
           let userReferee = '';
-          let activityCode = '';
           if (/(?:\?|&)userReferee=([^&$]+)/.test(location.hash)) {
             userReferee = RegExp.$1;
           }
-          if (/(?:\?|&)activityCode=([^&$]+)/.test(location.hash)) {
-            activityCode = RegExp.$1;
-          }
-          this.wxLogin(code, userReferee, activityCode);
+          this.wxLogin(code, userReferee);
         } else {
           this.getAppId();
         }
@@ -77,23 +69,11 @@
         } else {
           this.loadingFlag = false;
         }
-        this.tencentLogin();
         saveLoginLog().catch(() => {});
       }
     },
     methods: {
-      getLocation() {
-        if (!this.location) {
-          getLocation().then((result) => {
-            this.setLocation(result);
-          }).catch(() => {
-            this.setLocaErr(true);
-            this.text = '定位失败';
-            this.$refs.toast.show();
-          });
-        }
-      },
-      wxLogin(code, userReferee, activityCode) {
+      wxLogin(code, userReferee) {
         let mobAndCapt = getWxMobAndCapt();
         let mobile;
         let smsCaptcha;
@@ -101,7 +81,7 @@
           mobile = mobAndCapt.mobile;
           smsCaptcha = mobAndCapt.captcha;
         }
-        wxLogin(code, userReferee, activityCode, mobile, smsCaptcha).then((data) => {
+        wxLogin(code, userReferee, mobile, smsCaptcha).then((data) => {
           if (data.isNeedMobile === '1') {
             this.text = '微信登录需要先绑定手机号';
             this.$refs.toast.show();
@@ -135,13 +115,14 @@
     },
     components: {
       Loading,
-      Toast,
-      WxBindMobile
+      Toast
+      // WxBindMobile
     }
   };
 </script>
 
 <style lang="scss" scoped>
+  @import "~common/scss/variable.scss";
   .loading-container {
     position: absolute;
     top: 0;

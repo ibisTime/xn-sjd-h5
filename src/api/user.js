@@ -1,6 +1,5 @@
 import fetch from 'common/js/fetch';
-import {getUserId} from 'common/js/util';
-import {setCookie} from 'common/js/cookie';
+import {getUserId, setUser} from 'common/js/util';
 
 /**
  * 微信登录
@@ -29,17 +28,12 @@ export function wxLogin(code, userReferee, activityCode, mobile, smsCaptcha) {
 }
 
 /**
- * 获取腾讯云IM签名、账号
+ * 微信登录
+ * @param {string} code
+ * @param {string} userReferee
  */
-export function getTencentParamsAPi() {
-  return fetch(805953, {
-    userId: getUserId()
-  }).then((data) => {
-    setCookie('__sig__', data.sig);
-    setCookie('__accountType__', data.accountType);
-    setCookie('__txAppCode__', data.txAppCode);
-    return Promise.resolve(data);
-  });
+export function login(code, userReferee) {
+  setUser({});
 }
 
 /**

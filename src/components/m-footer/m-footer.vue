@@ -6,15 +6,11 @@
     </router-link>
     <router-link tag="div" class="foot-item item-1" to="/category">
       <i></i>
-      <p>分类</p>
+      <p>林空间</p>
     </router-link>
-    <div class="foot-item item-2" @click="goPublish">
-      <div class="pub-item"><i></i></div>
-      <div class="title">发布</div>
-    </div>
     <router-link tag="div" class="foot-item item-3" to="/message">
       <i></i>
-      <p>消息</p>
+      <p>商城</p>
       <div class="badge-wrapper"><badge v-show="count" :text="count"></badge></div>
     </router-link>
     <router-link tag="div" class="foot-item item-4" to="/user">
