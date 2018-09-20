@@ -49,10 +49,10 @@
   import {SET_USER_STATE, ADD_USER_FOLLOW_NUM, DEL_USER_FOLLOW_NUM} from 'store/mutation-types';
   import Scroll from 'base/scroll/scroll';
   import {getPageMineGoods, getPublishGoodsCount} from 'api/biz';
-  import {getUser, getUserById, isFollowUser, followUser, unFollowUser} from 'api/user';
+  import {getUser, getUserById, isFollowUser, followUser, unFollowUser} from 'api/me';
   import {setTitle, getUserId, formatImg} from 'common/js/util';
   import {commonMixin} from 'common/js/mixin';
-  import User from 'common/bean/user';
+  import User from 'common/bean/me';
 
   export default {
     mixins: [commonMixin],
@@ -329,7 +329,7 @@
             }
             .btn-left {
               margin-right: 0.2rem;
-            }            
+            }
           }
         }
       }

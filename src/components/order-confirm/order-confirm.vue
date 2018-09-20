@@ -62,7 +62,7 @@
   import Scroll from 'base/scroll/scroll';
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
-  import {getAddressList} from 'api/user';
+  import {getAddressList} from 'api/me';
   import {getGoodsDetail, applyOrder} from 'api/biz';
   import {formatImg, formatAmount, isUnDefined} from 'common/js/util';
 

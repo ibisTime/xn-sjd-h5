@@ -207,7 +207,7 @@
         this.$refs.review.show();
       },
       shouldGetData() {
-        if (this.$route.path === '/user/sell-order') {
+        if (this.$route.path === '/me/sell-order') {
           setTitle('我卖出的');
           return this.first;
         }

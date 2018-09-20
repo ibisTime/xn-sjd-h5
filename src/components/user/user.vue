@@ -58,7 +58,7 @@
     </div>
     <div class="set-btns">
       <button @click="logout">退出登录</button>
-    </div>    
+    </div>
     <full-loading v-show="loadingFlag"></full-loading>
     <m-footer @goPublish="goPublish"></m-footer>
     <router-view></router-view>
@@ -68,7 +68,7 @@
   import MFooter from 'components/m-footer/m-footer';
   import Badge from 'base/badge/badge';
   import {SET_USER_STATE, SET_CNY_ACCOUNT, SET_JF_ACCOUNT} from 'store/mutation-types';
-  import {getUser} from 'api/user';
+  import {getUser} from 'api/me';
   import {getAccount} from 'api/account';
   import {setTitle, formatAmount, clearUser} from 'common/js/util';
   import {commonMixin} from 'common/js/mixin';
@@ -136,17 +136,17 @@
         }
       },
       shouldGetData() {
-        if (this.$route.path === '/user') {
+        if (this.$route.path === '/me') {
           setTitle('我的');
           return this.first;
         }
         return false;
       },
       goCenter() {
-        this.$router.push('/user/' + this.user.userId);
+        this.$router.push('/me/' + this.user.userId);
       },
       goPublish() {
-        this.$router.push('/user/publish');
+        this.$router.push('/me/publish');
       },
       count(col) {
         if (this.orderCountList) {

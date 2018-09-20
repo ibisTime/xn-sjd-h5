@@ -285,7 +285,7 @@
         return status === '3';
       },
       shouldGetData() {
-        if (this.$route.path === '/user/order') {
+        if (this.$route.path === '/me/order') {
           setTitle('订单列表');
           return this.first;
         }

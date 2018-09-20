@@ -71,7 +71,7 @@
     },
     methods: {
       shouldGetData() {
-        if (this.$route.path === '/user/pub-mine') {
+        if (this.$route.path === '/me/pub-mine') {
           setTitle('我发布的');
           return this.first;
         }
@@ -130,7 +130,7 @@
         this.currentItem = item;
         this.currentOperator = EDIT;
         this.setPublishGoods(item);
-        this.$router.push('/user/pub-mine/publish?code=' + item.code);
+        this.$router.push('/me/pub-mine/publish?code=' + item.code);
       },
       handleEdit(item) {
         if (!this.first) {
@@ -230,7 +230,7 @@
         return this.currentIndex === index ? 'active' : '';
       },
       goPublish() {
-        this.$router.push('/user/pub-mine/publish');
+        this.$router.push('/me/pub-mine/publish');
       },
       ...mapMutations({
         'setPublishGoods': SET_PUBLISH_GOODS

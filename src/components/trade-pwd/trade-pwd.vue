@@ -46,7 +46,7 @@
 <script>
   import {mapGetters, mapMutations} from 'vuex';
   import {SET_USER_STATE, SET_USER_TRADE_PWD_FLAG} from 'store/mutation-types';
-  import {getUser, setTradePwd} from 'api/user';
+  import {getUser, setTradePwd} from 'api/me';
   import {sendCaptcha} from 'api/general';
   import {captValid, setTitle, tradeValid, rePwdValid} from 'common/js/util';
   import FullLoading from 'base/full-loading/full-loading';

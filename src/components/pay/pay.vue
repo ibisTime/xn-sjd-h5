@@ -219,7 +219,7 @@
       handleSuc() {
         setTimeout(() => {
           if (this.$route.path === '/category/confirm/pay') {
-            this.$router.replace('/user/order/' + this.$route.query.code);
+            this.$router.replace('/me/order/' + this.$route.query.code);
           } else {
             this.$router.back();
           }

@@ -34,7 +34,7 @@
   import NoResult from 'base/no-result/no-result';
   import {setTitle} from 'common/js/util';
   import {commonMixin} from 'common/js/mixin';
-  import {getPageFollowUsers, getPageFans, getUser} from 'api/user';
+  import {getPageFollowUsers, getPageFans, getUser} from 'api/me';
 
   export default {
     mixins: [commonMixin],
@@ -71,7 +71,7 @@
     },
     methods: {
       shouldGetData() {
-        if (this.$route.path === '/user/relation') {
+        if (this.$route.path === '/me/relation') {
           setTitle('关注和粉丝');
           return this.first;
         }

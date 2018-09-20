@@ -1,34 +1,34 @@
 // import * as types from './mutation-types';
-// import User from 'common/bean/user';
+// import User from 'common/bean/me';
 
 const mutations = {
-  // [types.SET_USER_STATE](state, user) {
-  //   state.user = new User(user);
+  // [types.SET_USER_STATE](state, me) {
+  //   state.me = new User(me);
   // },
   // [types.SET_USER_MOBILE](state, mobile) {
-  //   let user = state.user || new User();
-  //   user.mobile = mobile;
-  //   state.user = user;
+  //   let me = state.me || new User();
+  //   me.mobile = mobile;
+  //   state.me = me;
   // },
   // [types.SET_USER_NICKNAME](state, nickname) {
-  //   let user = state.user || new User();
-  //   user.nickname = nickname;
-  //   state.user = user;
+  //   let me = state.me || new User();
+  //   me.nickname = nickname;
+  //   state.me = me;
   // },
   // [types.SET_USER_GENDER](state, gender) {
-  //   let user = state.user || new User();
-  //   user.gender = gender;
-  //   state.user = user;
+  //   let me = state.me || new User();
+  //   me.gender = gender;
+  //   state.me = me;
   // },
   // [types.SET_USER_TRADE_PWD_FLAG](state, tradepwdFlag) {
-  //   let user = state.user || new User();
-  //   user.tradepwdFlag = tradepwdFlag;
-  //   state.user = user;
+  //   let me = state.me || new User();
+  //   me.tradepwdFlag = tradepwdFlag;
+  //   state.me = me;
   // },
   // [types.SET_USER_AVATAR](state, avatar) {
-  //   let user = state.user || new User();
-  //   user.setAvatar(avatar);
-  //   state.user = user;
+  //   let me = state.me || new User();
+  //   me.setAvatar(avatar);
+  //   state.me = me;
   // },
   // [types.SET_CNY_ACCOUNT](state, account) {
   //   state.cnyAccount = account;

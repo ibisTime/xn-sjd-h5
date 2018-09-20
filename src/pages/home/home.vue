@@ -1,6 +1,6 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="首页"></m-header>
+    <m-header class="cate-header" title="首页" :showBack="showBack"></m-header>
     <div class="content">
       <div class="slider-wrapper">
         <!--<slider v-if="!banners.length" :loop="loop">-->
@@ -43,10 +43,6 @@ import MFooter from 'components/m-footer/m-footer';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-// import { setCookie, getCookie, clearAllCookie } from "common/js/cookie.js";
-// import { isLogin, getUserId, formatAmount } from "common/js/util";
-// import { getUser1, getUserById } from "api/user";
-// import { getBill, getLevel, checkRed } from "api/baohuo";
 export default {
   // name: "home",
   data() {
@@ -56,7 +52,8 @@ export default {
       toastText: '',
       currentList: [],
       hasMore: false,
-      text: ''
+      text: '',
+      showBack: false
     };
   },
   methods: {

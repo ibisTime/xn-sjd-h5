@@ -93,7 +93,7 @@
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
   import ClipImg from 'base/clip-img/clip-img';
-  import {getUser, changeAvatar} from 'api/user';
+  import {getUser, changeAvatar} from 'api/me';
   import {getAppId, getQiniuToken} from 'api/general';
   import {setTitle, clearUser, formatImg, getImgData, formatDate} from 'common/js/util';
   import {commonMixin} from 'common/js/mixin';

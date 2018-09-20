@@ -23,7 +23,7 @@
   import SignMask from 'components/sign-mask/sign-mask';
   import FullLoading from 'base/full-loading/full-loading';
   import {getUserSystemConfig} from 'api/general';
-  import {sign, signNum, signQuery} from 'api/user';
+  import {sign, signNum, signQuery} from 'api/me';
   import {getAccount, getSignIntegral} from 'api/account';
   import {formatAmount, formatDate} from 'common/js/util';
 

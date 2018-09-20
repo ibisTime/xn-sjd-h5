@@ -8,21 +8,21 @@
       <i></i>
       <p>林空间</p>
     </router-link>
-    <router-link tag="div" class="foot-item item-3" to="/message">
+    <router-link tag="div" class="foot-item item-2" to="/message">
       <i></i>
       <p>商城</p>
-      <div class="badge-wrapper"><badge v-show="count" :text="count"></badge></div>
+      <!--<div class="badge-wrapper"><badge v-show="count" :text="count"></badge></div>-->
     </router-link>
-    <router-link tag="div" class="foot-item item-4" to="/user">
+    <router-link tag="div" class="foot-item item-3" to="/me">
       <i></i>
       <p>我的</p>
     </router-link>
   </div>
 </template>
 <script>
-  import {mapGetters} from 'vuex';
-  import Badge from 'base/badge/badge';
-  import {getUserId} from 'common/js/util';
+  // import {mapGetters} from 'vuex';
+  // import Badge from 'base/badge/badge';
+  // import {getUserId} from 'common/js/util';
 
   export default {
     props: {
@@ -32,17 +32,17 @@
       }
     },
     computed: {
-      count() {
-        let userId = getUserId();
-        if (this.chatData[userId]) {
-          let unRead = this.chatData[userId].unRead;
-          return unRead === 0 ? '' : unRead + '';
-        }
-        return '';
-      },
-      ...mapGetters([
-        'chatData'
-      ])
+      // count() {
+      //   let userId = getUserId();
+      //   if (this.chatData[userId]) {
+      //     let unRead = this.chatData[userId].unRead;
+      //     return unRead === 0 ? '' : unRead + '';
+      //   }
+      //   return '';
+      // },
+      // ...mapGetters([
+      //   'chatData'
+      // ])
     },
     methods: {
       goPublish() {
@@ -50,7 +50,7 @@
       }
     },
     components: {
-      Badge
+      // Badge
     }
   };
 </script>
@@ -80,8 +80,8 @@
 
       >i {
         display: inline-block;
-        width: 0.38rem;
-        height: 0.38rem;
+        width: 0.42rem;
+        height: 0.42rem;
         background-repeat: no-repeat;
         background-size: contain;
         background-position: center;
@@ -119,29 +119,6 @@
         }
       }
 
-      &.item-2 {
-        flex-direction: row;
-        justify-content: center;
-
-        i {
-          @include bg-image('publish');
-        }
-
-        &.router-link-active {
-          i {
-            @include bg-image('publish');
-          }
-        }
-
-        .title {
-          font-size: $font-size-small-s;
-          position: absolute;
-          bottom: 0.11rem;
-          left: 50%;
-          transform: translate(-50%, 0);
-        }
-      }
-
       p {
         font-size: $font-size-small-s;
         padding-top: 0.12rem;
@@ -168,36 +145,36 @@
 
       &.item-1 {
         i {
-          @include bg-image('cate');
+          @include bg-image('space');
         }
 
         &.router-link-active {
           i {
-            @include bg-image('cate-act');
+            @include bg-image('space-act');
+          }
+        }
+      }
+
+      &.item-2 {
+        i {
+          @include bg-image('shop');
+        }
+
+        &.router-link-active {
+          i {
+            @include bg-image('shop-act');
           }
         }
       }
 
       &.item-3 {
         i {
-          @include bg-image('message');
+          @include bg-image('me');
         }
 
         &.router-link-active {
           i {
-            @include bg-image('message-act');
-          }
-        }
-      }
-
-      &.item-4 {
-        i {
-          @include bg-image('mine');
-        }
-
-        &.router-link-active {
-          i {
-            @include bg-image('mine-act');
+            @include bg-image('me-act');
           }
         }
       }

@@ -109,7 +109,7 @@
     },
     methods: {
       shouldGetData() {
-        if (this.$route.path === '/user/account/withdraw') {
+        if (this.$route.path === '/me/account/withdraw') {
           setTitle('提现');
           return !this.cnyAccount || !this.bankcardList || !this.bankcardList.length || !this.rate;
         }
@@ -177,7 +177,7 @@
         return formatAmount(_amount);
       },
       goAddBankCard() {
-        this.$router.push('/user/account/withdraw/add');
+        this.$router.push('/me/account/withdraw/add');
       },
       _withdraw() {
         if (this.valid()) {

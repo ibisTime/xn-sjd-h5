@@ -70,8 +70,8 @@
   import Qiniu from 'base/qiniu/qiniu';
   import {addMsg} from 'common/js/message';
   import {getUserId, isUnDefined, formatChatDate, formatImg, setTitle} from 'common/js/util';
-  import User from 'common/bean/user';
-  import {getUser, getUserById} from 'api/user';
+  import User from 'common/bean/me';
+  import {getUser, getUserById} from 'api/me';
   import {getQiniuToken} from 'api/general';
   import {initShowImage} from 'common/js/weixin';
 

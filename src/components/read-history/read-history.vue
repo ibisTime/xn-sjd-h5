@@ -36,7 +36,7 @@
     },
     methods: {
       shouldGetData() {
-        if (this.$route.path === '/user/history') {
+        if (this.$route.path === '/me/history') {
           setTitle('我的足迹');
           return this.first;
         }

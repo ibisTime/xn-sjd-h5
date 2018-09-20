@@ -28,7 +28,7 @@
 <script>
   import {mapGetters, mapMutations} from 'vuex';
   import {SET_USER_STATE, SET_CNY_ACCOUNT} from 'store/mutation-types';
-  import {getUser} from 'api/user';
+  import {getUser} from 'api/me';
   import {getAccount, recharge} from 'api/account';
   import {amountValid, setTitle} from 'common/js/util';
   import {initPay} from 'common/js/weixin';

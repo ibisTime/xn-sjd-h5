@@ -1,20 +1,20 @@
 <template>
   <div class="recommend-wrapper">
     <div class="scroll-wrapper">
-      <scroll ref="scroll" :pullUpLoad="pullUpLoad" > 
-        <div class="h-content">     
+      <scroll ref="scroll" :pullUpLoad="pullUpLoad" >
+        <div class="h-content">
         <div class="history" @click="goHistory">推荐历史</div>
         <div class="empty"></div>
         <div class="main-content">
           <button @click="showTJ">点击邀请好友</button>
           <div v-show="content">
               <div class="title">活动规则</div>
-              <div class="info"  ref="content">{{content}}</div>               
+              <div class="info"  ref="content">{{content}}</div>
             </div>
         </div>
         </div>
-      </scroll>    
-    </div>      
+      </scroll>
+    </div>
     <go-home></go-home>
     <share-mask ref="mask"></share-mask>
     <router-view></router-view>
@@ -30,7 +30,7 @@
   import {setTitle, getShareImg} from 'common/js/util';
   import {getPageInviteActivity} from 'api/biz';
   import {SET_USER_STATE} from 'store/mutation-types';
-  import {getUser} from 'api/user';
+  import {getUser} from 'api/me';
 
   export default {
     data() {
@@ -143,7 +143,7 @@
       font-size: $font-size-medium-xx;
       color: #fff;
     }
-    
+
     .empty {
       height: 5.4rem;
     }
@@ -204,11 +204,11 @@
 
       .h-content{
         width: 100%;
-        height: 100%; 
+        height: 100%;
         background-size: 100%;
-        background-repeat: no-repeat;  
+        background-repeat: no-repeat;
         @include bg-image('bg');
-      }  
-    } 
+      }
+    }
   }
 </style>

@@ -1,4 +1,4 @@
-// export const user = state => state.user;
+// export const me = state => state.me;
 //
 // export const cnyAccount = state => state.cnyAccount;
 //

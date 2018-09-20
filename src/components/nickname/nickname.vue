@@ -22,7 +22,7 @@
 <script>
   import {mapGetters, mapMutations} from 'vuex';
   import {SET_USER_STATE, SET_USER_NICKNAME} from 'store/mutation-types';
-  import {changeNickname, getUser} from 'api/user';
+  import {changeNickname, getUser} from 'api/me';
   import {nicknameValid, setTitle} from 'common/js/util';
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
