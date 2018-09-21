@@ -13,6 +13,53 @@
           <i class="sign-icon"></i>
         </router-link>
       </div>
+      <div class="notice">
+        <img src="./notice@2x.png" alt="">
+        <div class="border"></div>
+        <div class="title">古树名木认养，10月8日启动！</div>
+        <div class="more">更多</div>
+      </div>
+      <div class="icons">
+        <div class="icon-item">
+          <img src="./old-tree@2x.png" alt="">
+          <p>古树认养</p>
+        </div>
+        <div class="icon-item">
+          <img src="./water-source-forest@2x.png" alt="">
+          <p>水源林</p>
+        </div>
+        <div class="icon-item">
+          <img src="./emotion-forest@2x.png" alt="">
+          <p>情感林</p>
+        </div>
+        <div class="icon-item">
+          <img src="./booking@2x.png" alt="">
+          <p>果树预售</p>
+        </div>
+      </div>
+      <div class="emotion-article">
+        <div class="text">
+          <p class="Chinese">优选推文，情感频道</p>
+          <p class="English">Preferred tweets, emotional channels</p>
+        </div>
+        <img src="./emotion@2x.png" alt="" class="emotion">
+        <img src="./more@2x.png" alt="" class="more">
+      </div>
+      <div class="bulletin">
+        <img src="./bulletin@2x.png" alt="">
+        <div class="border"></div>
+        <div class="title">恭喜Bluce，成功参加See的传承认养</div>
+        <div class="more">更多</div>
+      </div>
+      <div class="hot">
+        <div class="title">
+          <span class="fl hot-title">热门推荐</span>
+          <span class="fr more">更多</span>
+        </div>
+        <div v-for="item in proList">
+          
+        </div>
+      </div>
       <!--<div class="cates-wrapper">-->
       <!--<router-link tag="div" to="/category/list?act=1" class="cate-item">-->
       <!--<i class="cate-icon activity-icon"></i>-->
@@ -124,10 +171,6 @@ export default {
   .fr {
     float: right;
   }
-  .blank {
-    width: 100%;
-    height: 0.2rem;
-  }
   .banner-default {
     width: 100%;
     height: 3rem;
@@ -135,6 +178,128 @@ export default {
   .content {
     margin-top: 0.88rem;
     botton: 0.98rem;
+    .slider-wrapper {
+      padding-bottom: 0.2rem;
+      background: $color-highlight-background;
+    }
+    .notice {
+      display: flex;
+      align-items: center;
+      font-size: 0.24rem;
+      padding: 0.24rem 0.3rem;
+      background: $color-highlight-background;
+      img {
+        width: 0.6rem;
+        height: 0.25rem;
+        margin-right: 0.11rem;
+      }
+      .border {
+        display: inline;
+        width: 0;
+        height: 0.15rem;
+        border-right: 1px solid #ccc;
+        margin-right: 0.11rem;
+      }
+      .title {
+        line-height: 0.33rem;
+        flex: 1;
+      }
+      .more {
+        line-height: 0.33rem;
+        color: #999;
+      }
+    }
+    .icons {
+      width: 100%;
+      height: 2.25rem;
+      padding-top: 0.26rem;
+      background: #fff;
+      display: flex;
+      margin-bottom: 0.2rem;
+      .icon-item {
+        display: inline;
+        flex: 1;
+        text-align: center;
+        img {
+          width: 1rem;
+        }
+        p {
+          color: #666;
+          font-size: 0.24rem;
+        }
+      }
+    }
+    .emotion-article {
+      height: 1.94rem;
+      padding: 0 0.3rem;
+      display: flex;
+      align-items: center;
+      background: $color-highlight-background;
+      justify-content: space-between;
+      margin-bottom: 0.2rem;
+      .text {
+        .Chinese {
+          font-size: $font-size-medium-xx;
+          margin-bottom: 0.11rem;
+        }
+        .English {
+          color: #666;
+          font-size: $font-size-small-s;
+          line-height: $font-size-medium-x;
+        }
+      }
+      .emotion{
+        height: 100%;
+        margin-right: 0.3rem;
+      }
+      .more{
+        width: 0.3rem;
+        /*position: absolute;*/
+        /*right: 0.3rem;*/
+        /*line-height: 1.94rem;*/
+        /*margin-top: 0.5rem;*/
+      }
+    }
+    .bulletin {
+      display: flex;
+      align-items: center;
+      font-size: 0.24rem;
+      padding: 0.24rem 0.3rem;
+      background: #fdf4f3;
+      img {
+        width: 0.6rem;
+        height: 0.25rem;
+        margin-right: 0.11rem;
+      }
+      .border {
+        display: inline;
+        width: 0;
+        height: 0.15rem;
+        border-right: 1px solid #ccc;
+        margin-right: 0.11rem;
+      }
+      .title {
+        line-height: 0.33rem;
+        flex: 1;
+      }
+      .more {
+        line-height: 0.33rem;
+        color: #999;
+      }
+    }
+    .hot {
+      padding: 0.4rem 0.3rem;
+      background: $color-highlight-background;
+      .hot-title {
+        font-size: $font-size-medium-xx;
+        line-height: $font-size-large-x;
+      }
+      .more {
+        line-height: 0.33rem;
+        color: #999;
+        font-size: $font-size-small;
+      }
+    }
   }
 }
 </style>

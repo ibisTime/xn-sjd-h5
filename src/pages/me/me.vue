@@ -60,7 +60,7 @@
           <span>邀请有礼</span>
           <img src="./more@2x.png" alt="" class="fr more">
         </div>
-        <div class="item">
+        <div class="item" @click="go('/settings')">
           <img src="./setting@2x.png" alt="">
           <span>设置</span>
           <img src="./more@2x.png" alt="" class="fr more">

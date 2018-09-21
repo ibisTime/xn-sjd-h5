@@ -29,6 +29,18 @@ const Invitation = () => import('@/pages/invitation/invitation');
 const UserInfo = () => import('@/pages/userInfo/userInfo');
 // 我的碳泡泡
 const CarbonBubble = () => import('@/pages/carbonBubble/carbonBubble');
+// 设置
+const Settings = () => import('@/pages/settings/settings');
+// 修改手机号
+const ChangeMobile = () => import('@/pages/change-mobile/change-mobile');
+// 银行卡列表页
+const Bankcard = () => import('@/pages/bankcard/bankcard');
+// 地址编辑页
+const BankcardAddEdit = () => import('@/pages/bankcard-addedit/bankcard-addedit');
+// 地址列表页
+const Address = () => import('@/pages/address-list/address-list');
+// 地址编辑页
+const AddressAddEdit = () => import('@/pages/address-addedit/address-addedit');
 export default new Router({
   routes: [
     {
@@ -66,6 +78,30 @@ export default new Router({
     {
       path: '/carbon-bubble',
       component: CarbonBubble
+    },
+    {
+      path: '/settings',
+      component: Settings
+    },
+    {
+      path: '/change-mobile',
+      component: ChangeMobile
+    },
+    {
+      path: '/bankcard',
+      component: Bankcard
+    },
+    {
+      path: '/bankcard-addedit',
+      component: BankcardAddEdit
+    },
+    {
+      path: '/address',
+      component: Address
+    },
+    {
+      path: '/address-addedit',
+      component: AddressAddEdit
     },
     {
       path: '/money',
