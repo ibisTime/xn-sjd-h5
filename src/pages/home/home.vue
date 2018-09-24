@@ -1,7 +1,8 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="首页" :showBack="showBack"></m-header>
+    <m-header class="cate-header" title="首页" :showBack="showBack" actText="签到" @action="action"></m-header>
     <div class="content">
+      <Scroll :pullUpLoad="pullUpLoad">
       <div class="slider-wrapper">
         <!--<slider v-if="!banners.length" :loop="loop">-->
         <!--<div class="home-slider" v-for="item in banners" :key="item.code">-->
@@ -20,7 +21,7 @@
         <div class="more">更多</div>
       </div>
       <div class="icons">
-        <div class="icon-item">
+        <div class="icon-item" @click="goTreeList">
           <img src="./old-tree@2x.png" alt="">
           <p>古树认养</p>
         </div>
@@ -56,40 +57,70 @@
           <span class="fl hot-title">热门推荐</span>
           <span class="fr more">更多</span>
         </div>
-        <div v-for="item in proList">
-          
+        <div class="proList">
+          <div class="item">
+            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <div class="hot-pro-text">
+              <p class="hot-pro-title">捐赠认养古树</p>
+              <p class="hot-pro-introduction">2018-09-11</p>
+              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
+            </div>
+          </div>
+          <div class="item">
+            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <div class="hot-pro-text">
+              <p class="hot-pro-title">捐赠认养古树</p>
+              <p class="hot-pro-introduction">2018-09-11</p>
+              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
+            </div>
+          </div>
+          <div class="item">
+            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <div class="hot-pro-text">
+              <p class="hot-pro-title">捐赠认养古树</p>
+              <p class="hot-pro-introduction">2018-09-11</p>
+              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
+            </div>
+          </div>
+          <div class="item">
+            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <div class="hot-pro-text">
+              <p class="hot-pro-title">捐赠认养古树</p>
+              <p class="hot-pro-introduction">2018-09-11</p>
+              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
+            </div>
+          </div>
+          <div class="item">
+            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <div class="hot-pro-text">
+              <p class="hot-pro-title">捐赠认养古树</p>
+              <p class="hot-pro-introduction">2018-09-11</p>
+              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
+            </div>
+          </div>
         </div>
       </div>
-      <!--<div class="cates-wrapper">-->
-      <!--<router-link tag="div" to="/category/list?act=1" class="cate-item">-->
-      <!--<i class="cate-icon activity-icon"></i>-->
-      <!--<p>优惠活动</p>-->
-      <!--</router-link>-->
-      <!--<router-link tag="div" to="/home/charge" class="cate-item">-->
-      <!--<i class="cate-icon recharge-icon"></i>-->
-      <!--<p>充值</p>-->
-      <!--</router-link>-->
-      <!--<router-link to="/home/recommend" class="cate-item" tag="div">-->
-      <!--<i class="cate-icon invitation-icon"></i>-->
-      <!--<p>邀请好友</p>-->
-      <!--</router-link>-->
+      <!--<div class="mall-content">-->
+        <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
       <!--</div>-->
-      <div class="mall-content">
-        <no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
-      </div>
+      </Scroll>
     </div>
     <toast ref="toast" :text="text"></toast>
     <m-footer></m-footer>
+    <check-in :title="title" v-show="showCheckIn" @close="close"></check-in>
     <router-view></router-view>
   </div>
 </template>
 <script>
 import Toast from 'base/toast/toast';
+import Scroll from 'base/scroll/scroll';
 import FullLoading from 'base/full-loading/full-loading';
 import MFooter from 'components/m-footer/m-footer';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
+import CheckIn from 'base/check-in/check-in';
+import { formatAmount } from 'common/js/util';
 export default {
   // name: "home",
   data() {
@@ -100,29 +131,30 @@ export default {
       currentList: [],
       hasMore: false,
       text: '',
-      showBack: false
+      showBack: false,
+      proList: [{
+
+      }],
+      showCheckIn: false,
+      pullUpLoad: false
     };
   },
   methods: {
-    // formatAmount(amount) {
-    //   return formatAmount(amount);
-    // },
-    // goYuncan() {
-    //   this.$router.push('/yuncangzhanghu');
-    // },
-    // tuichu() {
-    //   clearAllCookie();
-    //   this.$router.push("/home");
-    // },
-    // dlClick(to) {
-    //   if (to === '/Invitation') {
-    //     location.href = location.origin + '/#/Invitation?userReferee=' + getUserId();
-    //   } else {
-    //     this.$router.push(to);
-    //   }
-    // }
+    formatAmount(amount) {
+      return formatAmount(amount);
+    },
+    action() {
+      this.showCheckIn = true;
+    },
+    close() {
+      this.showCheckIn = false;
+    },
+    goTreeList() {
+      this.$router.push('/treeList');
+    }
   },
   mounted() {
+    this.pullUpLoad = null;
     // let userId;
     // if (this.$route.query.userId) {
     //   userId = this.$route.query.userId;
@@ -157,7 +189,9 @@ export default {
     MFooter,
     Slider,
     NoResult,
-    MHeader
+    MHeader,
+    CheckIn,
+    Scroll
   }
 };
 </script>
@@ -165,6 +199,11 @@ export default {
 @import "../../common/scss/mixin.scss";
 @import "../../common/scss/variable.scss";
 .home-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0.98rem;
+  width: 100%;
   .fl {
     float: left;
   }
@@ -176,8 +215,13 @@ export default {
     height: 3rem;
   }
   .content {
-    margin-top: 0.88rem;
-    botton: 0.98rem;
+    /*margin: 0.88rem 0;*/
+    position: absolute;
+    top: 0.88rem;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: auto;
     .slider-wrapper {
       padding-bottom: 0.2rem;
       background: $color-highlight-background;
@@ -290,6 +334,9 @@ export default {
     .hot {
       padding: 0.4rem 0.3rem;
       background: $color-highlight-background;
+      .title {
+        height: 0.45rem;
+      }
       .hot-title {
         font-size: $font-size-medium-xx;
         line-height: $font-size-large-x;
@@ -298,6 +345,49 @@ export default {
         line-height: 0.33rem;
         color: #999;
         font-size: $font-size-small;
+      }
+      .proList {
+        background: $color-highlight-background;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        font-size: 0;
+        .item {
+          width: 3.3rem;
+          height: 3.98rem;
+          margin-top: 0.24rem;
+          border: 1px solid #e6e6e6;
+          border-radius: 0.04rem;
+          display: inline-block;
+          .hot-pro-img {
+            height: 2.3rem;
+            width: 100%;
+          }
+          .hot-pro-text {
+            padding: 0 0.2rem;
+            p {
+              font-size: 0;
+            }
+            .hot-pro-title {
+              font-size: $font-size-medium-x;
+              line-height: 0.42rem;
+              margin-bottom: 0.1rem;
+            }
+            .hot-pro-introduction {
+              color: $color-text-l;
+              font-size: $font-size-small;
+              line-height: $font-size-medium-xx;
+              margin-bottom: 0.1rem;
+              /*font-family: 'PingFangSC-Medium';*/
+            }
+            .hot-pro-price {
+              color: $primary-color;
+              font-size: $font-size-small;
+              line-height: 0.29rem;
+              font-weight: bold;
+            }
+          }
+        }
       }
     }
   }

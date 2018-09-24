@@ -41,6 +41,8 @@ const BankcardAddEdit = () => import('@/pages/bankcard-addedit/bankcard-addedit'
 const Address = () => import('@/pages/address-list/address-list');
 // 地址编辑页
 const AddressAddEdit = () => import('@/pages/address-addedit/address-addedit');
+// 古树认养
+const TreeList = () => import('@/pages/treeList/treeList');
 export default new Router({
   routes: [
     {
@@ -102,6 +104,10 @@ export default new Router({
     {
       path: '/address-addedit',
       component: AddressAddEdit
+    },
+    {
+      path: '/treeList',
+      component: TreeList
     },
     {
       path: '/money',

@@ -190,7 +190,7 @@
   .scroll-content {
     position: relative;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
   }
 
   .pullup-wrapper {
