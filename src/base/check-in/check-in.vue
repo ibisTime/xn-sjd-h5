@@ -5,7 +5,7 @@
       <img src="./check-in-success@2x.png" alt="">
       <p class="success">签到成功</p>
       <p class="info">获得<span>10</span>积分，已连续签到<span>2</span>天</p>
-      <botton @click="close">知道了</botton>
+      <button @click="close">知道了</button>
     </div>
   </div>
 </template>
@@ -68,7 +68,7 @@
         color: $primary-color;
       }
     }
-    botton {
+    button {
       width: 5.7rem;
       height: 0.9rem;
       background: $primary-color;

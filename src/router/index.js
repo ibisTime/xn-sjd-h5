@@ -41,8 +41,20 @@ const BankcardAddEdit = () => import('@/pages/bankcard-addedit/bankcard-addedit'
 const Address = () => import('@/pages/address-list/address-list');
 // 地址编辑页
 const AddressAddEdit = () => import('@/pages/address-addedit/address-addedit');
-// 古树认养
+// 古树认养(列表页）
 const TreeList = () => import('@/pages/treeList/treeList');
+// 古树详情
+const TreeDetail = () => import('@/pages/treeDetail/treeDetail');
+// 支付页
+const Pay = () => import('@/pages/pay/pay');
+// 已认养名单
+const AdoptList = () => import('@/pages/adopt-list/adopt-list');
+// 林空间
+const ForestSpace = () => import('@/pages/forest-space/forest-space');
+// 好友排行榜
+const Charts = () => import('@/pages/charts/charts');
+// 礼物
+const Gift = () => import('@/pages/gift/gift');
 export default new Router({
   routes: [
     {
@@ -108,6 +120,30 @@ export default new Router({
     {
       path: '/treeList',
       component: TreeList
+    },
+    {
+      path: '/treeDetail',
+      component: TreeDetail
+    },
+    {
+      path: '/pay',
+      component: Pay
+    },
+    {
+      path: '/adopt-list',
+      component: AdoptList
+    },
+    {
+      path: '/forest-space',
+      component: ForestSpace
+    },
+    {
+      path: '/charts',
+      component: Charts
+    },
+    {
+      path: '/gift',
+      component: Gift
     },
     {
       path: '/money',

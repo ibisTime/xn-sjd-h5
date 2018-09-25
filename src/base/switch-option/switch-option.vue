@@ -59,8 +59,8 @@
       flex: 0 0 auto;
       display: inline-block;
       position: relative;
-      height: 0.62rem;
-      width: 1.02rem;
+      height: 0.5rem;
+      width: 0.78rem;
       background-color: #fff;
       border-radius: 1000px;
       border: 2px solid rgba(0, 0, 0, .1);
@@ -74,8 +74,8 @@
       .switch-circle {
         position: absolute;
         display: inline-block;
-        height: 0.54rem;
-        width: 0.54rem;
+        height: 0.4rem;
+        width: 0.4rem;
         background: #fff;
         border-radius: 50%;
         border: 1px solid rgba(0, 0, 0, .1);
@@ -85,7 +85,7 @@
         transition: all 0.2s;
 
         &.active {
-          left: 0.42rem;
+          left: 0.32rem;
           transition: all 0.2s ease 0.1s;
         }
       }

@@ -25,7 +25,7 @@
       <div class="hot">
         <Scroll :pullUpLoad="pullUpLoad">
         <div class="proList">
-          <div class="item">
+          <div class="item" @click="goTreeDetail">
             <img src="./emotion@2x.png" alt="" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
@@ -117,8 +117,8 @@ export default {
     close() {
       this.showCheckIn = false;
     },
-    goTreeList() {
-      this.$router.push('/treeList');
+    goTreeDetail() {
+      this.$router.push('/treeDetail');
     }
   },
   mounted() {
