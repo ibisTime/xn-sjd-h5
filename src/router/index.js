@@ -55,6 +55,16 @@ const ForestSpace = () => import('@/pages/forest-space/forest-space');
 const Charts = () => import('@/pages/charts/charts');
 // 礼物
 const Gift = () => import('@/pages/gift/gift');
+// 认领礼物
+const ClaimGift = () => import('@/pages/claim-gift/claim-gift');
+// 认领礼物-地址
+const GiftAddress = () => import('@/pages/gift-address/gift-address');
+// 我的主页
+const HomePage = () => import('@/pages/homepage/homepage');
+// 我的树
+const MyTree = () => import('@/pages/my-tree/my-tree');
+// 攻略
+const Strategy = () => import('@/pages/strategy/strategy');
 export default new Router({
   routes: [
     {
@@ -144,6 +154,26 @@ export default new Router({
     {
       path: '/gift',
       component: Gift
+    },
+    {
+      path: '/claim-gift',
+      component: ClaimGift
+    },
+    {
+      path: '/gift-address',
+      component: GiftAddress
+    },
+    {
+      path: '/homepage',
+      component: HomePage
+    },
+    {
+      path: '/my-tree',
+      component: MyTree
+    },
+    {
+      path: '/strategy',
+      component: Strategy
     },
     {
       path: '/money',

@@ -3,7 +3,7 @@
     <m-header class="cate-header" title="我的林空间" :showBack="showBack" actText="分享" @action="action"></m-header>
     <div class="content">
       <div class="me" @click="change">
-        <img src="./avatar@2x.png" alt="">
+        <img src="./head.png" alt="">
       </div>
       <img src="./charts@2x.png" alt="" class="charts" @click="go('/charts')">
       <div @click="go('/homepage?type=1')" class="block t1"></div>
@@ -15,7 +15,7 @@
       <div class="mask" @click="change"></div>
       <div class="me-content" v-show="flag">
         <div class="me-info">
-          <img src="./avatar@2x.png" alt="">
+          <img src="./head.png" alt="">
           <div class="text">
             <p><span>KOALA</span><span class="lv">LV 1</span></p>
           </div>
@@ -244,6 +244,7 @@ export default {
           width: 1.3rem;
           height: 1.3rem;
           margin-bottom: 0.34rem;
+          border-radius: 50%;
         }
         .text {
           vertical-align: middle;

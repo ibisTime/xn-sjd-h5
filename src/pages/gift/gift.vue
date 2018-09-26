@@ -3,91 +3,83 @@
     <m-header class="cate-header" title="礼物"></m-header>
     <div class="adopt-list">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
+        <div class="item" @click="go('/claim-gift')">
+          <img src="./tree.png" alt="">
           <div class="info">
-            <p class="name">你是我的教科书</p>
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
             <p class="date">2018.09.14</p>
           </div>
-          <span class="price fr">¥2000.00</span>
         </div>
         <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
+          <img src="./tree.png" alt="">
           <div class="info">
-            <p class="name">你是我的教科书</p>
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
             <p class="date">2018.09.14</p>
           </div>
-          <span class="price fr">¥2000.00</span>
         </div>
         <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
+          <img src="./tree.png" alt="">
           <div class="info">
-            <p class="name">你是我的教科书</p>
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
             <p class="date">2018.09.14</p>
           </div>
-          <span class="price fr">¥2000.00</span>
         </div>
         <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
+          <img src="./tree.png" alt="">
           <div class="info">
-            <p class="name">你是我的教科书</p>
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
             <p class="date">2018.09.14</p>
           </div>
-          <span class="price fr">¥2000.00</span>
-        </div><div class="item" @click="go('/carbon-bubble')">
-        <img src="./avatar@2x.png" alt="">
-        <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">2018.09.14</p>
-        </div>
-        <span class="price fr">¥2000.00</span>
-      </div><div class="item" @click="go('/carbon-bubble')">
-        <img src="./avatar@2x.png" alt="">
-        <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">2018.09.14</p>
-        </div>
-        <span class="price fr">¥2000.00</span>
-      </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
-          </div>
-          <span class="price fr">¥2000.00</span>
         </div>
         <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
+          <img src="./tree.png" alt="">
           <div class="info">
-            <p class="name">你是我的教科书</p>
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
             <p class="date">2018.09.14</p>
           </div>
-          <span class="price fr">¥2000.00</span>
         </div>
         <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
+          <img src="./tree.png" alt="">
           <div class="info">
-            <p class="name">你是我的教科书</p>
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
             <p class="date">2018.09.14</p>
           </div>
-          <span class="price fr">¥2000.00</span>
         </div>
         <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
+          <img src="./tree.png" alt="">
           <div class="info">
-            <p class="name">你是我的教科书</p>
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
             <p class="date">2018.09.14</p>
           </div>
-          <span class="price fr">¥2000.00</span>
-        </div><div class="item" @click="go('/carbon-bubble')">
-        <img src="./avatar@2x.png" alt="">
-        <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">2018.09.14</p>
         </div>
-        <span class="price fr">¥2000.00</span>
-      </div>
+        <div class="item" @click="go('/carbon-bubble')">
+          <img src="./tree.png" alt="">
+          <div class="info">
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
+            <p class="date">2018.09.14</p>
+          </div>
+        </div>
+        <div class="item" @click="go('/carbon-bubble')">
+          <img src="./tree.png" alt="">
+          <div class="info">
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
+            <p class="date">2018.09.14</p>
+          </div>
+        </div>
+        <div class="item" @click="go('/carbon-bubble')">
+          <img src="./tree.png" alt="">
+          <div class="info">
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
+            <p class="date">2018.09.14</p>
+          </div>
+        </div>
+        <div class="item" @click="go('/carbon-bubble')">
+          <img src="./tree.png" alt="">
+          <div class="info">
+            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
+            <p class="date">2018.09.14</p>
+          </div>
+        </div>
       </Scroll>
     </div>
   </div>
@@ -155,7 +147,7 @@
       right: 0.3rem;
       .item {
         width: 100%;
-        height: 1.6rem;
+        /*height: 2.3rem;*/
         font-size: $font-size-medium-x;
         line-height: 1.1rem;
         border-bottom: 1px solid #eee;
@@ -163,25 +155,33 @@
         display: flex;
         align-items: center;
         img {
-          height: 1rem;
+          width: 2rem;
+          height: 1.7rem;
           margin-right: 0.2rem;
+          border-radius: 0.08rem;
         }
         .info {
           display: inline-block;
           font-size: 0;
           flex: 1;
-          .name {
+          .top {
             font-size: 0.3rem;
             line-height: 0.42rem;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            .name {
+              flex: 1;
+            }
+            .status {
+              font-size: $font-size-small;
+            }
           }
           .date {
             font-size: 0.24rem;
             line-height: 0.33rem;
+            color: #999;
           }
-        }
-        .price {
-
         }
       }
     }
