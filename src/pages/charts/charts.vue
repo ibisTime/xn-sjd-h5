@@ -17,7 +17,7 @@
     <div class="gray"></div>
     <div class="adopt-list">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>

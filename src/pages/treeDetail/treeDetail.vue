@@ -15,7 +15,7 @@
         </router-link>
       </div>
       <div class="info">
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item">
           <span>古树学名</span><span>樟子松</span>
         </div>
         <div class="item">

@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="余额" :showBack="showBack"></m-header>
+      <m-header class="cate-header" title="我的" :showBack="showBack"></m-header>
       <div class="content">
         <div class="in-content">
           <div class="card">

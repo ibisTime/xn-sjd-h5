@@ -65,6 +65,12 @@ const HomePage = () => import('@/pages/homepage/homepage');
 const MyTree = () => import('@/pages/my-tree/my-tree');
 // 攻略
 const Strategy = () => import('@/pages/strategy/strategy');
+// 养护
+const MaintainRecords = () => import('@/pages/maintain-records/maintain-records');
+// 养护详情
+const MaintainDetail = () => import('@/pages/maintain-detail/maintain-detail');
+// 赠送
+const Surprise = () => import('@/pages/surprise/surprise');
 export default new Router({
   routes: [
     {
@@ -174,6 +180,18 @@ export default new Router({
     {
       path: '/strategy',
       component: Strategy
+    },
+    {
+      path: '/maintain-records',
+      component: MaintainRecords
+    },
+    {
+      path: '/maintain-detail',
+      component: MaintainDetail
+    },
+    {
+      path: '/surprise',
+      component: Surprise
     },
     {
       path: '/money',

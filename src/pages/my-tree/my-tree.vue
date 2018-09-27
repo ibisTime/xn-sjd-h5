@@ -1,21 +1,41 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="我的树"></m-header>
+    <m-header class="cate-header" :title="headTitle"></m-header>
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="tree-panel">
-        <img src="./certification@2x.png" class="certification">
-        <div class="me" @click="change">
+        <div class="cover" v-show="cover"></div>
+        <div class="juanzeng" v-show="juanzengShow">
+          <span>+10g</span>
+          <img src="./heart@2x.png">
+        </div>
+        <div class="tree-panel-danmu" v-show="danmuShow">
+          <img src="./head.png" class="head">
+          <div class="info">
+            <span class="name">hhh</span>
+            <span class="context">{{emojiText}}</span>
+          </div>
+          <img :src="emoji" class="emoji">
+        </div>
+        <div class="certification" @click="certification" v-show="!other">
+          <img src="./certification@2x.png" class="certification">
+          <span>x5</span>
+        </div>
+        <div class="me" @click="go('/gift')">
           <img src="./head.png" alt="">
           <span>礼物</span>
         </div>
         <div class="icons">
           <img src="./map@2x.png">
-          <img src="./prop@2x.png">
-          <img src="./strategy@2x.png" @click="go('/strategy')">
-          <img src="./give@2x.png">
+          <img src="./prop@2x.png" @click="props" v-show="!other">
+          <img src="./strategy@2x.png" @click="go('/strategy')" v-show="!other">
+          <img src="./give@2x.png" @click="go('/surprise')" v-show="!other">
         </div>
-        <img src="./romantic-story@2x.png" class="romantic-story">
+        <div class="icons-other" v-show="other">
+          <img src="./danmu@2x.png" @click="danmu" >
+          <img src="./juanzeng@2x.png" @click="juanzeng">
+        </div>
+        <img src="./romantic-story@2x.png" class="romantic-story" v-show="!other">
       </div>
       <div class="tab">
         <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">最新动态</span>
@@ -23,7 +43,7 @@
         <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
       </div>
       <div class="tab-panel">
-        <div class="dynamic">
+        <div class="dynamic" v-show="tab === 0">
           <div class="heads">
             <div class="head-item">
               <img src="./head.png" alt="">
@@ -66,62 +86,114 @@
           </div>
           <div class="more">查看更多</div>
         </div>
+        <div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1"></div>
+        <div class="tree-detail" v-show="tab === 2">
+          <div class="item">
+            <span>古树昵称</span><span>樟子松鼠</span>
+          </div>
+          <div class="item">
+            <span>古树学名</span><span>樟子松</span>
+          </div>
+          <div class="item">
+            <span>古树编码</span><span>28020065389</span>
+          </div>
+          <div class="item">
+            <span>古树品种</span><span>常绿乔木</span>
+          </div>
+          <div class="item">
+            <span>养护单位</span><span>28020065389</span>
+          </div>
+          <div class="item">
+            <span>养护人</span><span>庭园观赏及绿化树种</span>
+          </div>
+          <div class="item">
+            <span>当前认养人</span><span>三级</span>
+          </div>
+          <div class="item" @click="go('/invitation')">
+            <span>历史认养人</span>
+            <img src="./more@2x.png" alt="" class="fr more">
+          </div>
+          <div class="item" @click="go('/maintain-records')">
+            <span>养护记录</span>
+            <img src="./more@2x.png" alt="" class="fr more">
+          </div>
+        </div>
       </div>
       </Scroll>
     </div>
-    <!--<div class="footer">-->
-      <!--<button @click="showPopUp">集体下单</button>-->
-      <!--<button @click="showPopUp">捐赠下单</button>-->
-    <!--</div>-->
-    <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
-    <!--<div :class="['buypart',flag ? 'show' : '']">-->
-      <!--<div class="title">-->
-        <!--<div class="title-pic">-->
-          <!--<img src="./emotion@2x.png" alt="">-->
-        <!--</div>-->
-        <!--<div class="title-right">-->
-          <!--<p>樟子松</p>-->
-          <!--<i @click="genghuan">X</i>-->
-          <!--<p class="position"><img src="./position@2x.png" alt="">四川</p>-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--<div class="packaging">-->
-        <!--<p class="packaging-title">认养年限(年)</p>-->
-        <!--<div class="select">-->
-          <!--<div class="select-item">-->
-            <!--<span>一年：2018-01-01至2018-12-31</span>-->
-            <!--<img src="./choosed@2x.png" v-show="wechat">-->
-            <!--<img src="./unchoosed@2x.png" v-show="!wechat">-->
-          <!--</div>-->
-          <!--<div class="select-item">-->
-            <!--<span>一年：2018-01-01至2018-12-31</span>-->
-            <!--<img src="./choosed@2x.png" v-show="wechat">-->
-            <!--<img src="./unchoosed@2x.png" v-show="!wechat">-->
-          <!--</div>-->
-          <!--<div class="select-item">-->
-            <!--<span>一年：2018-01-01至2018-12-31</span>-->
-            <!--<img src="./choosed@2x.png" v-show="wechat">-->
-            <!--<img src="./unchoosed@2x.png" v-show="!wechat">-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--<div class="number">-->
-        <!--<span>认养份数</span>-->
-        <!--<div class="right">-->
-          <!--<img class="diamonds right-item" @click="add" src="./add@2x.png">-->
-          <!--<input class="num right-item" v-model="number">-->
-          <!--<img class="diamonds right-item" @click="sub" src="./sub@2x.png">-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--<div class="other">-->
-        <!--<span>下单识别码</span>-->
-        <!--<input type="text" v-model="idCode">-->
-      <!--</div>-->
-      <!--<div class="buypart-bottom">-->
-        <!--<div class="confirm" @click="confirm()">确定(总额：¥2999)</div>-->
-      <!--</div>-->
-    <!--</div>-->
+    <div :class="['mask',flag ? 'show' : '']" @click="change"></div>
+    <div :class="['props',flag && propFlag ? 'show' : '']">
+      <div class="title">
+        <span @click="changeProps(0)" :class="propIdx === 0 ? 'active' : ''">保护罩</span>
+        <span @click="changeProps(1)" :class="propIdx === 1 ? 'active' : ''">一键收取</span>
+        <img src="./close@2x.png" @click="close('propFlag')">
+      </div>
+      <div class="content" v-show="propIdx === 0">
+        <div class="content-prop">
+          <div class="prop-item">
+            <div class="prop-item-title">保护罩</div>
+            <div class="prop-item-condition">每天限量50万</div>
+            <div class="prop-item-img">
+              <img src="./cover-small@2x.png">
+              <span>2天</span>
+            </div>
+            <div class="prop-item-score enable" @click="convert">200积分</div>
+          </div>
+          <div class="prop-item">
+            <div class="prop-item-title">钻石保护罩</div>
+            <div class="prop-item-condition">钻石会员尊享</div>
+            <div class="prop-item-img">
+              <img src="./cover-small@2x.png">
+              <span>3天</span>
+            </div>
+            <div class="prop-item-score">200积分</div>
+          </div>
+        </div>
+        <div class="score">
+          <span>我的积分：3455 </span><img src="./more@2x.png">
+        </div>
+      </div>
+    </div>
+    <div :class="['danmu',flag && danmuFlag ? 'show' : '']">
+      <div class="title">
+        <img src="./close@2x.png" @click="close('propFlag')">
+      </div>
+      <div class="content">
+        <div class="prop-item" @click="showDanmu(1)">
+          <span>感谢帮我收能量</span>
+          <img src="./1@2x.png" alt="">
+        </div>
+        <div class="prop-item" @click="showDanmu(7)">
+          <span>给你点个赞</span>
+          <img src="./7@2x.png" alt="">
+        </div>
+        <div class="prop-item" @click="showDanmu(2)">
+          <span>我控制不住我自己啊~</span>
+          <img src="./2@2x.png" alt="">
+        </div>
+        <div class="prop-item" @click="showDanmu(3)">
+          <span>勤快的宝宝有能量~</span>
+          <img src="./3@2x.png" alt="">
+        </div>
+        <div class="prop-item" @click="showDanmu(4)">
+          <span>我对你已绝望</span>
+          <img src="./4@2x.png" alt="">
+        </div>
+        <div class="prop-item" @click="showDanmu(5)">
+          <span>你行行好，别把我的能量全收走，可以吗~</span>
+          <img src="./5@2x.png" alt="">
+        </div>
+        <div class="prop-item" @click="showDanmu(6)">
+          <span>你怎么每天这么勤快呢</span>
+          <img src="./6@2x.png" alt="">
+        </div>
+      </div>
+    </div>
     <toast ref="toast" :text="text"></toast>
+    <convert v-show="convertFlag" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
+    <convert-success v-show="convertSuccessFlag" @close="close('convertSuccessFlag')" @convertSuccess="convertSuccess"></convert-success>
+    <certification v-show="certificationFlag" @close="close('certificationFlag')" @convertSuccess="convertSuccess"></certification>
+    <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess"></juanzeng>
     <router-view></router-view>
   </div>
 </template>
@@ -131,6 +203,10 @@ import Scroll from 'base/scroll/scroll';
 import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
+import Convert from 'base/convert/convert';
+import ConvertSuccess from 'base/convert-success/convert-success';
+import Certification from 'base/certification/certification';
+import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
 import { formatAmount } from 'common/js/util';
 export default {
@@ -139,14 +215,27 @@ export default {
       title: '正在加载...',
       loading: true,
       toastText: '',
-      currentList: [],
       hasMore: false,
       text: '',
-      showBack: false,
       pullUpLoad: false,
       flag: false,
-      tab: 0
-
+      propFlag: false,
+      danmuFlag: false,
+      convertFlag: false,
+      convertSuccessFlag: false,
+      certificationFlag: false,
+      juanzengFlag: false,
+      juanzengShow: false,
+      danmuShow: false,
+      cover: false,
+      tab: 0,
+      propIdx: 0,
+      headTitle: '我的树',
+      adopterIntroduction: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>',
+      emojiArr: [{
+        src: require('./1@2x.png'),
+        text: '感谢帮我收能量'
+      }]
     };
   },
   methods: {
@@ -159,16 +248,80 @@ export default {
     showPopUp() {
       this.flag = true;
     },
-    genghuan() {
+    change() {
       this.flag = !this.flag;
     },
     changeTab(index) {
       this.tab = index;
-      console.log(this.tab);
+    },
+    changeProps(index) {
+      this.propIdx = index;
+    },
+    props() {
+      this.flag = true;
+      this.propFlag = true;
+    },
+    danmu() {
+      this.flag = true;
+      this.danmuFlag = true;
+    },
+    convert() {
+      this.convertFlag = true;
+    },
+    close(closeWho) {
+      this.flag = false;
+      if(closeWho === 'propFlag') {
+        this.propFlag = false;
+      }
+      if(closeWho === 'convertFlag') {
+        this.convertFlag = false;
+      }
+      if(closeWho === 'convertSuccessFlag') {
+        this.convertSuccessFlag = false;
+      }
+      if(closeWho === 'certificationFlag') {
+        this.certificationFlag = false;
+      }
+      if(closeWho === 'juanzengFlag') {
+        this.juanzengFlag = false;
+      }
+      if(closeWho === 'danmuFlag') {
+        this.danmuFlag = false;
+      }
+    },
+    convertSuccess() {
+      this.close('convertFlag');
+      this.convertSuccessFlag = true;
+    },
+    juanzengSuccess() {
+      this.close('juanzengFlag');
+      this.juanzengShow = true;
+      setTimeout(() => {
+        this.juanzengShow = false;
+      }, 1000);
+    },
+    certification() {
+      this.certificationFlag = true;
+    },
+    juanzeng() {
+      this.juanzengFlag = true;
+    },
+    showDanmu(index) {
+      this.close('danmuFlag');
+      this.emoji = this.emojiArr[0].src;
+      this.emojiText = this.emojiArr[0].text;
+      this.danmuShow = true;
+      setTimeout(() => {
+        this.danmuShow = false;
+      }, 1000);
     }
   },
   mounted() {
     this.pullUpLoad = null;
+    this.other = this.$route.query.other || 0;  // 是否别人的树
+    if(this.other) {
+      this.headTitle = 'TA的树';
+    }
   },
   components: {
     FullLoading,
@@ -176,7 +329,11 @@ export default {
     Slider,
     NoResult,
     MHeader,
-    Scroll
+    Scroll,
+    Convert,
+    ConvertSuccess,
+    Certification,
+    Juanzeng
   }
 };
 </script>
@@ -195,10 +352,6 @@ export default {
   .fr {
     float: right;
   }
-  .banner-default {
-    width: 100%;
-    height: 4rem;
-  }
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
@@ -213,9 +366,78 @@ export default {
       background-size: 100% 100%;
       padding: 0.58rem 0.3rem 0.25rem;
       position: relative;
+      .cover {
+        width: 6.93rem;
+        height: 6.93rem;
+        background: url("./cover-big@2x.png") no-repeat;
+        background-size: 100% 100%;
+        position: absolute;
+      }
+      .juanzeng {
+        position: absolute;
+        bottom: 2.16rem;
+        right: 0.66rem;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        span {
+          font-size: $font-size-small;
+          line-height: 0.33rem;
+          color: #F04F30;
+          margin-bottom: 0.26rem;
+        }
+        img {
+          width: 0.9rem;
+          height: 0.8rem;
+        }
+      }
+      .tree-panel-danmu {
+        border: 1px solid $color-border;
+        border-radius: 0.55rem;
+        align-items: center;
+        font-size: 0;
+        position: absolute;
+        bottom: 1.16rem;
+        right: 0.66rem;
+        background: $color-highlight-background;
+        display: flex;
+        .info {
+          display: flex;
+          flex-direction: column;
+          .name {
+            color: #999;
+            font-size: $font-size-small;
+            margin-bottom: 0.08rem;
+          }
+          .context {
+            font-size: $font-size-medium;
+            display: inline-block;
+            vertical-align: text-bottom;
+          }
+        }
+        .head {
+          width: 0.6rem;
+          height: 0.6rem;
+          border: 1px solid $primary-color;
+          border-radius: 50%;
+        }
+        .emoji {
+          width: 0.8rem;
+          height: 0.8rem;
+        }
+      }
       .certification {
         width: 0.92rem;
         height: 0.82rem;
+        position: relative;
+        span {
+          font-size: 0.16rem;
+          transform: scale(0.8);
+          color: #23AD8C;
+          position: absolute;
+          right: 0.1rem;
+          top: 0.05rem;
+        }
       }
       .me {
         width: 1.5rem;
@@ -252,6 +474,18 @@ export default {
         justify-content: space-between;
         position: absolute;
         bottom: 0.28rem;
+        img {
+          width: 0.72rem;
+          height: 0.76rem;
+        }
+      }
+      .icons-other {
+        width: 1.84rem;
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        bottom: 0.28rem;
+        right: 0.3rem;
         img {
           width: 0.72rem;
           height: 0.76rem;
@@ -318,7 +552,7 @@ export default {
           border-bottom: 1px solid $color-border;
           .dynamic-info-item {
             font-size: $font-size-medium;
-            padding: 0.3rem 0;
+            padding: 0.2rem 0;
             p {
               display: flex;
               align-items: center;
@@ -342,6 +576,27 @@ export default {
           font-size: $font-size-medium-s;
           line-height: 0.8rem;
           text-align: center;
+        }
+      }
+      .adopter-introduction {
+        /*margin: 0.88rem 0;*/
+        padding: 0.6rem 0;
+      }
+      .tree-detail {
+        background: $color-highlight-background;
+        .item {
+          width: 100%;
+          height: 1.1rem;
+          font-size: $font-size-medium-x;
+          line-height: 1.1rem;
+          border-bottom: 1px solid #eee;
+          span:first-child {
+            margin-right: 0.3rem;
+          }
+          img {
+            height: 0.21rem;
+            margin-top: 0.4rem;
+          }
         }
       }
     }
@@ -418,6 +673,146 @@ export default {
     top: 0;
     left: 0;
     display: none;
+  }
+  .props {
+    width: 100%;
+    height: 6.5rem;
+    position: fixed;
+    bottom: 0;
+    background-color: #fff;
+    display: none;
+    /*padding: 0 0.3rem;*/
+    .title {
+      color: #666;
+      font-size: $font-size-medium-x;
+      line-height: 1rem;
+      height: 1rem;
+      padding: 0 1.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid $color-border;
+      img {
+        width: 0.46rem;
+        height: 0.46rem;
+        position: absolute;
+        right: 0.3rem;
+      }
+    }
+    .content {
+      .content-prop {
+        padding: 0.4rem 0.74rem;
+        display: flex;
+        justify-content: space-between;
+        .prop-item {
+          width: 2.74rem;
+          height: 4.08rem;
+          border: 1px solid #e5e5e5;
+          border-radius: 0.15rem;
+          padding: 0.3rem;
+          text-align: center;
+          .prop-item-title {
+            font-size: $font-size-medium;
+            line-height: 0.4rem;
+            margin-bottom: 0.08rem;
+          }
+          .prop-item-condition {
+            color: #FFA40F;
+            border: 1px solid #FFA40F;
+            border-radius: 1rem;
+            font-size: $font-size-small;
+            line-height: 0.33rem;
+            margin-bottom: 0.25rem;
+          }
+          .prop-item-img {
+            position: relative;
+            margin-bottom: 0.25rem;
+            img {
+              width: 1.37rem;
+              height: 1.37rem;
+            }
+            span {
+              color: #438A0F;
+              font-size: $font-size-small;
+              line-height: 0.33rem;
+              position: absolute;
+              bottom: 0.15rem;
+              left: 0.85rem;
+            }
+          }
+          .prop-item-score {
+            height: 0.64rem;
+            background: #ccc;
+            color: $color-highlight-background;
+            font-size: $font-size-medium-x;
+            line-height: 0.64rem;
+            border-radius: 0.05rem;
+          }
+          .enable {
+            background: $primary-color;
+          }
+        }
+      }
+      .score {
+        color: #666;
+        font-size: $font-size-medium;
+        line-height: 0.4rem;
+        text-align: center;
+        img {
+          width: 0.13rem;
+          height: 0.24rem;
+        }
+      }
+    }
+    .active {
+      color: $primary-color;
+      border-bottom: 1px solid $primary-color;
+    }
+  }
+  .danmu {
+    width: 100%;
+    height: 6.5rem;
+    position: fixed;
+    bottom: 0;
+    background-color: #fff;
+    display: none;
+    .title {
+      height: 1rem;
+      display: flex;
+      align-items: center;
+      img {
+        width: 0.46rem;
+        height: 0.46rem;
+        position: absolute;
+        right: 0.3rem;
+      }
+    }
+    .content {
+      padding: 0 0.3rem;
+      .prop-item {
+        border: 1px solid $color-border;
+        border-radius: 0.55rem;
+        align-items: center;
+        display: inline-block;
+        font-size: 0;
+        span {
+          flex: 1;
+          font-size: $font-size-medium;
+          line-height: 0.8rem;
+          display: inline-block;
+          vertical-align: text-bottom;
+          margin: 0 0.1rem 0 0.3rem;
+        }
+        img {
+          width: 0.8rem;
+          height: 0.8rem;
+        }
+      }
+    }
+    .active {
+      color: $primary-color;
+      border-bottom: 1px solid $primary-color;
+    }
   }
   .show {
     display: block;

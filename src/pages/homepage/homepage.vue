@@ -1,6 +1,6 @@
 <template>
   <div class="me-wrapper">
-    <m-header class="cate-header" title="我的主页" actText="分享" @action="action"></m-header>
+    <m-header class="cate-header" :title="title" actText="分享" @action="action"></m-header>
     <div class="out-content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="bg">
@@ -38,7 +38,7 @@
       <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
         <!--<Scroll :pullUpLoad="pullUpLoad">-->
           <div class="item">
-            <div class="tree-info" @click="go('/my-tree')">
+            <div class="tree-info" @click="goMyTree">
               <p class="tree-name">银杏树</p>
               <p class="tree-about">5,000亩  25,000棵树</p>
             </div>
@@ -73,7 +73,7 @@
       <div class="dynamic">
         <div class="dynamic-title">
           <div class="border"></div>
-          <span>我的动态</span>
+          <span>{{borderTitle}}</span>
         </div>
         <div class="daily">
           <div class="daily-title">今天</div>
@@ -140,7 +140,10 @@
       return {
         type: 0,
         emotion: 1,
-        share: false
+        share: false,
+        other: 0,      // 是否别人的主页
+        title: '我的主页',
+        borderTitle: '我的动态'
       };
     },
     created() {
@@ -161,7 +164,12 @@
       // });
     },
     mounted() {
-      this.type = +this.$route.query.type || 0;
+      this.type = +this.$route.query.type || 0;  // 树的类型
+      this.other = this.$route.query.other || 0;  // 是否别人的主页
+      if(this.other) {
+        this.title = 'TA的主页';
+        this.borderTitle = 'TA的动态';
+      }
     },
     methods: {
       go(url) {
@@ -179,6 +187,13 @@
       },
       change() {
         this.share = !this.share;
+      },
+      goMyTree() {
+        if(this.other) {
+          this.go('/my-tree?other=1');
+        } else {
+          this.go('/my-tree');
+        }
       }
     },
     components: {
