@@ -102,7 +102,7 @@
   import Rating from 'components/rating/rating';
   import {getGoodsDetail, getPageComments, collection, read, cancelCollection} from 'api/biz';
   import {getUserById, getUser} from 'api/user';
-  import {formatImg, isUnDefined, getShareImg, setTitle, getUserId} from 'common/js/util';
+  import {formatImg, isUnDefined, getShareImg, getUserId} from 'common/js/util';
   import {initShare} from 'common/js/weixin';
   import {commonMixin} from 'common/js/mixin';
   import User from 'common/bean/user';
@@ -206,7 +206,6 @@
     created() {
       this.code = this.$route.params.code;
       this.pics = [];
-      setTitle('商品详情');
       Promise.all([
         this.getDetail(),
         this.getUser()

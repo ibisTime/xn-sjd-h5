@@ -54,7 +54,6 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import SwitchOption from 'base/switch-option/switch-option';
-  import {setTitle} from 'common/js/util';
 
   export default {
     data() {
@@ -67,7 +66,6 @@
       };
     },
     created() {
-      setTitle('充值');
     },
     methods: {
       getTel() {

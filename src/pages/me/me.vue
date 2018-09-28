@@ -31,39 +31,39 @@
     <div class="me-list">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="item" @click="go('/carbon-bubble')">
-          <img src="./carbon-bubble@2x.png" alt="">
+          <img src="./carbon-bubble@2x.png">
           <span>我的碳泡泡</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item">
-          <img src="./adopt@2x.png" alt="">
+          <img src="./adopt@2x.png">
           <span>我的认养</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item">
-          <img src="./order@2x.png" alt="">
+        <div class="item" @click="go('/my-order')">
+          <img src="./order@2x.png">
           <span>我的订单</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item">
-          <img src="./article@2x.png" alt="">
+        <div class="item" @click="go('/my-article')">
+          <img src="./article@2x.png">
           <span>我的文章</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item">
-          <img src="./collection@2x.png" alt="">
+        <div class="item" @click="go('/my-collect')">
+          <img src="./collection@2x.png">
           <span>我的收藏</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item" @click="go('/invitation')">
-          <img src="./invitation@2x.png" alt="">
+          <img src="./invitation@2x.png">
           <span>邀请有礼</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item" @click="go('/settings')">
-          <img src="./setting@2x.png" alt="">
+          <img src="./setting@2x.png">
           <span>设置</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <img src="./more@2x.png" class="fr more">
         </div>
       </Scroll>
     </div>

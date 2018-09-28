@@ -53,7 +53,7 @@
 </template>
 <script>
   import {addAddress, editAddress, getAddressList} from 'api/user';
-  import {mobileValid, setTitle, realNameValid, addressValid} from 'common/js/util';
+  import {mobileValid, realNameValid, addressValid} from 'common/js/util';
   import {mapGetters, mapMutations} from 'vuex';
   import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
   import CityPicker from 'base/city-picker/city-picker';
@@ -85,11 +85,9 @@
     created() {
       this.code = this.$route.params.id || '';
       if (this.code) {
-        setTitle('修改地址');
         this.headerTitle = '修改收货地址';
         // this.getAddress();
       } else {
-        setTitle('新增地址');
         // this._getAddressList();
       }
     },

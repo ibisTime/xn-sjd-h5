@@ -13,6 +13,16 @@ const Home = () => import('@/pages/home/home');
 const Protocol = () => import('@/pages/protocol/protocol');
 // 我的
 const Me = () => import('@/pages/me/me');
+// 我的文章
+const MyArticle = () => import('@/pages/my-article/my-article');
+// 发布文章
+const WriteArticle = () => import('@/pages/write-article/write-article');
+// 我的收藏
+const MyCollect = () => import('@/pages/my-collect/my-collect');
+// 我的订单
+const MyOrder = () => import('@/pages/my-order/my-order');
+// 订单详情
+const OrderDetail = () => import('@/pages/order-detail/order-detail');
 // 余额
 const Money = () => import('@/pages/money/money');
 // 充值
@@ -71,6 +81,10 @@ const MaintainRecords = () => import('@/pages/maintain-records/maintain-records'
 const MaintainDetail = () => import('@/pages/maintain-detail/maintain-detail');
 // 赠送
 const Surprise = () => import('@/pages/surprise/surprise');
+// 情感频道
+const EmotionChannel = () => import('@/pages/emotion-channel/emotion-channel');
+// 文章详情
+const ArticleDetail = () => import('@/pages/article-detail/article-detail');
 export default new Router({
   routes: [
     {
@@ -96,6 +110,26 @@ export default new Router({
     {
       path: '/me',
       component: Me
+    },
+    {
+      path: '/my-article',
+      component: MyArticle
+    },
+    {
+      path: '/write-article',
+      component: WriteArticle
+    },
+    {
+      path: '/my-collect',
+      component: MyCollect
+    },
+    {
+      path: '/my-order',
+      component: MyOrder
+    },
+    {
+      path: '/order-detail',
+      component: OrderDetail
     },
     {
       path: '/invitation',
@@ -192,6 +226,14 @@ export default new Router({
     {
       path: '/surprise',
       component: Surprise
+    },
+    {
+      path: '/emotion-channel',
+      component: EmotionChannel
+    },
+    {
+      path: '/article-detail',
+      component: ArticleDetail
     },
     {
       path: '/money',

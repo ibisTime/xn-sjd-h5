@@ -78,7 +78,7 @@ export default {
       hasMore: false,
       text: '',
       showBack: false,
-      pullUpLoad: false,
+      pullUpLoad: null,
       flag: false,
       tab: 0
 

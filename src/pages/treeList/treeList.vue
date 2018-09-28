@@ -104,7 +104,7 @@ export default {
         {value: '集体', key: '3'},
         {value: '捐赠', key: '4'}],
       showCheckIn: false,
-      pullUpLoad: false
+      pullUpLoad: null
     };
   },
   methods: {

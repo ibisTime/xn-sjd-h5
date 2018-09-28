@@ -1,6 +1,6 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="养护详情"></m-header>
+    <m-header class="cate-header" title="文章详情"></m-header>
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="title">在林空间里，我的古树第一次修剪了树干</div>

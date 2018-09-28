@@ -73,7 +73,7 @@ export default {
 
       }],
       showCheckIn: false,
-      pullUpLoad: false,
+      pullUpLoad: null,
       flag: false
     };
   },

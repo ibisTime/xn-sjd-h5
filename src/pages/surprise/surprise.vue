@@ -41,7 +41,7 @@
   import {SET_USER_MOBILE} from 'store/mutation-types';
   import {sendCaptcha} from 'api/general';
   import {changeMobile} from 'api/user';
-  import {mobileValid, captValid, setTitle} from 'common/js/util';
+  import {mobileValid, captValid} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
 
@@ -59,7 +59,6 @@
       };
     },
     created() {
-      setTitle('修改手机号');
     },
     methods: {
       sendCaptcha() {

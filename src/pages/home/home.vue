@@ -4,50 +4,50 @@
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="slider-wrapper">
-        <!--<slider v-if="!banners.length" :loop="loop">-->
-        <!--<div class="home-slider" v-for="item in banners" :key="item.code">-->
-        <!--<a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>-->
-        <!--</div>-->
-        <!--</slider>-->
-        <img src="./../../common/image/banner-default.png" alt="" class="banner-default">
+        <slider v-if="banners.length">
+          <div class="home-slider" v-for="item in banners" :key="item.code">
+          <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
+        </div>
+        </slider>
+        <!--<img src="./../../common/image/banner-default.png" class="banner-default">-->
         <router-link tag="div" to="/home/sign" class="sign-wrapper">
           <i class="sign-icon"></i>
         </router-link>
       </div>
       <div class="notice">
-        <img src="./notice@2x.png" alt="">
+        <img src="./notice@2x.png">
         <div class="border"></div>
         <div class="title">古树名木认养，10月8日启动！</div>
         <div class="more">更多</div>
       </div>
       <div class="icons">
         <div class="icon-item" @click="goTreeList">
-          <img src="./old-tree@2x.png" alt="">
+          <img src="./old-tree@2x.png">
           <p>古树认养</p>
         </div>
         <div class="icon-item">
-          <img src="./water-source-forest@2x.png" alt="">
+          <img src="./water-source-forest@2x.png">
           <p>水源林</p>
         </div>
         <div class="icon-item">
-          <img src="./emotion-forest@2x.png" alt="">
+          <img src="./emotion-forest@2x.png">
           <p>情感林</p>
         </div>
         <div class="icon-item">
-          <img src="./booking@2x.png" alt="">
+          <img src="./booking@2x.png">
           <p>果树预售</p>
         </div>
       </div>
-      <div class="emotion-article">
+      <div class="emotion-article" @click="go('/emotion-channel')">
         <div class="text">
           <p class="Chinese">优选推文，情感频道</p>
           <p class="English">Preferred tweets, emotional channels</p>
         </div>
-        <img src="./emotion@2x.png" alt="" class="emotion">
-        <img src="./more@2x.png" alt="" class="more">
+        <img src="./emotion@2x.png" class="emotion">
+        <img src="./more@2x.png" class="more">
       </div>
       <div class="bulletin">
-        <img src="./bulletin@2x.png" alt="">
+        <img src="./bulletin@2x.png">
         <div class="border"></div>
         <div class="title">恭喜Bluce，成功参加See的传承认养</div>
         <div class="more">更多</div>
@@ -59,7 +59,7 @@
         </div>
         <div class="proList">
           <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <img src="./emotion@2x.png" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
               <p class="hot-pro-introduction">2018-09-11</p>
@@ -67,7 +67,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <img src="./emotion@2x.png" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
               <p class="hot-pro-introduction">2018-09-11</p>
@@ -75,7 +75,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <img src="./emotion@2x.png" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
               <p class="hot-pro-introduction">2018-09-11</p>
@@ -83,7 +83,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <img src="./emotion@2x.png" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
               <p class="hot-pro-introduction">2018-09-11</p>
@@ -91,7 +91,7 @@
             </div>
           </div>
           <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+            <img src="./emotion@2x.png" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
               <p class="hot-pro-introduction">2018-09-11</p>
@@ -136,7 +136,16 @@ export default {
 
       }],
       showCheckIn: false,
-      pullUpLoad: false
+      pullUpLoad: false,
+      banners: [
+        {
+          pic: require('./banner1.jpeg'),
+          code: 1
+        }, {
+          pic: require('./banner2.jpeg'),
+          code: 2
+        }
+      ]
     };
   },
   methods: {
@@ -150,7 +159,16 @@ export default {
       this.showCheckIn = false;
     },
     goTreeList() {
-      this.$router.push('/treeList');
+      this.go('/treeList');
+    },
+    go(url) {
+      this.$router.push(url);
+    },
+    getImgSyl(imgs) {
+      return {
+        // backgroundImage: `url(${formatImg(imgs)})`
+        backgroundImage: `url(${imgs})`
+      };
     }
   },
   mounted() {
@@ -225,6 +243,7 @@ export default {
     .slider-wrapper {
       padding-bottom: 0.2rem;
       background: $color-highlight-background;
+      height: 3rem;
     }
     .notice {
       display: flex;

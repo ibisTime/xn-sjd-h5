@@ -81,7 +81,7 @@
             <div class="daily-content-item">
               <div class="daily-content-item-info">
                 <img src="./steal@2x.png" alt="">
-                <p class="activity"><span>珊珊</span>收取1g</p>
+                <p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>收取1g</p>
                 <p class="time">19:00</p>
               </div>
               <div class="border"></div>
@@ -89,7 +89,7 @@
             <div class="daily-content-item">
               <div class="daily-content-item-info">
                 <img src="./protect@2x.png" alt="">
-                <p class="activity"><span>珊珊</span>使用了保护罩</p>
+                <p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>
                 <p class="time">19:00</p>
               </div>
               <div class="border"></div>
@@ -99,7 +99,7 @@
                 <div class="message-border">
                   <img src="./head.png" alt="" class="head">
                   <div class="message-text">
-                    <p class="name">珊珊</p>
+                    <p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>
                     <p class="activity">来收取能量，被保护罩阻挡了</p>
                   </div>
                   <img src="./cover@2x.png" alt="" class="cover">
@@ -133,7 +133,6 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {setTitle} from 'common/js/util';
 
   export default {
     data() {
@@ -148,20 +147,6 @@
     },
     created() {
       this.pullUpLoad = null;
-      setTitle('我的');
-      // this.pullUpLoad = null;
-      // Promise.all([
-      //   getUserSystemConfig('aboutUs'),
-      //   getUserSystemConfig('telephone'),
-      //   getUserSystemConfig('serviceTime')
-      // ]).then(([aboutus, telephone, time]) => {
-      //   this.loadingFlag = false;
-      //   this.telephone = telephone.cvalue;
-      //   this.time = time.cvalue;
-      //   this.content = protocol.cvalue;
-      // }).catch(() => {
-      //   this.loadingFlag = false;
-      // });
     },
     mounted() {
       this.type = +this.$route.query.type || 0;  // 树的类型

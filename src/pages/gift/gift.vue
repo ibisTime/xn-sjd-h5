@@ -87,7 +87,6 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {setTitle} from 'common/js/util';
 
   export default {
     data() {
@@ -97,20 +96,6 @@
     },
     created() {
       this.pullUpLoad = null;
-      setTitle('我的');
-      // this.pullUpLoad = null;
-      // Promise.all([
-      //   getUserSystemConfig('aboutUs'),
-      //   getUserSystemConfig('telephone'),
-      //   getUserSystemConfig('serviceTime')
-      // ]).then(([aboutus, telephone, time]) => {
-      //   this.loadingFlag = false;
-      //   this.telephone = telephone.cvalue;
-      //   this.time = time.cvalue;
-      //   this.content = protocol.cvalue;
-      // }).catch(() => {
-      //   this.loadingFlag = false;
-      // });
     },
     methods: {
       go(url) {

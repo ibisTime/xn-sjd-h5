@@ -17,12 +17,32 @@
           </div>
           <img :src="emoji" class="emoji">
         </div>
+        <div class="carbon-bubbles">
+          <div class="bubble-item">
+            <div class="bubble">
+              <img src="./bubble-light@2x.png">
+              <span>68g</span>
+            </div>
+          </div>
+          <div class="bubble-item">
+            <div class="bubble">
+              <img src="./bubble-light@2x.png">
+              <span>68g</span>
+            </div>
+          </div>
+          <div class="bubble-item">
+            <div class="bubble">
+              <img src="./bubble-light@2x.png">
+              <span>68g</span>
+            </div>
+          </div>
+        </div>
         <div class="certification" @click="certification" v-show="!other">
           <img src="./certification@2x.png" class="certification">
           <span>x5</span>
         </div>
         <div class="me" @click="go('/gift')">
-          <img src="./head.png" alt="">
+          <img src="./head.png">
           <span>礼物</span>
         </div>
         <div class="icons">
@@ -35,38 +55,63 @@
           <img src="./danmu@2x.png" @click="danmu" >
           <img src="./juanzeng@2x.png" @click="juanzeng">
         </div>
-        <img src="./romantic-story@2x.png" class="romantic-story" v-show="!other">
+        <img src="./romantic-story@2x.png" class="romantic-story" v-show="!other" @click="go('/emotion-channel')">
       </div>
-      <div class="tab">
+      <div class="battle">
+        <div class="battle-bg">
+          <div class="battle-item">
+            <div class="battle-item-head">
+              <img src="./head.png" class="head">
+              <img src="./crown@2x.png" class="crown">
+            </div>
+            <div>
+              <p class="info">TA收取你</p>
+              <p class="number">22g</p>
+            </div>
+          </div>
+          <span class="vs">VS</span>
+          <div class="battle-item lose">
+            <div>
+              <p class="info">你收取TA</p>
+              <p class="number">12g</p>
+            </div>
+            <div class="battle-item-head">
+              <img src="./head.png"  class="head">
+              <img src="./crown@2x.png" class="crown">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab" v-show="!other">
         <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">最新动态</span>
         <span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>
         <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
       </div>
-      <div class="tab-panel">
+      <div class="tab-panel" v-show="!other">
         <div class="dynamic" v-show="tab === 0">
           <div class="heads">
             <div class="head-item">
-              <img src="./head.png" alt="">
+              <img src="./head.png">
               <span class="number">10g</span>
             </div>
             <div class="head-item">
-              <img src="./head.png" alt="">
+              <img src="./head.png">
               <span class="number">10g</span>
             </div>
             <div class="head-item">
-              <img src="./head.png" alt="">
+              <img src="./head.png">
               <span class="number">10g</span>
             </div>
             <div class="head-item">
-              <img src="./head.png" alt="">
+              <img src="./head.png">
               <span class="number">10g</span>
             </div>
             <div class="head-item">
-              <img src="./head.png" alt="">
+              <img src="./head.png">
               <span class="number">10g</span>
             </div>
             <div class="head-item">
-              <img src="./head.png" alt="">
+              <img src="./head.png">
               <span class="number">10g</span>
             </div>
           </div>
@@ -111,14 +156,56 @@
           </div>
           <div class="item" @click="go('/invitation')">
             <span>历史认养人</span>
-            <img src="./more@2x.png" alt="" class="fr more">
+            <img src="./more@2x.png" class="fr more">
           </div>
           <div class="item" @click="go('/maintain-records')">
             <span>养护记录</span>
-            <img src="./more@2x.png" alt="" class="fr more">
+            <img src="./more@2x.png" class="fr more">
           </div>
         </div>
       </div>
+      <div class="gray" v-show="other"></div>
+      <div class="dynamic-other" v-show="other">
+          <div class="dynamic-title">
+            <div class="border"></div>
+            <span>TA的动态</span>
+          </div>
+          <div class="daily">
+            <div class="daily-title">今天</div>
+            <div class="daily-content">
+              <div class="daily-content-item">
+                <div class="daily-content-item-info">
+                  <img src="./steal@2x.png" alt="">
+                  <p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>收取1g</p>
+                  <p class="time">19:00</p>
+                </div>
+                <div class="border"></div>
+              </div>
+              <div class="daily-content-item">
+                <div class="daily-content-item-info">
+                  <img src="./protect@2x.png" alt="">
+                  <p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>
+                  <p class="time">19:00</p>
+                </div>
+                <div class="border"></div>
+              </div>
+              <div class="daily-content-item">
+                <div class="daily-content-item-message">
+                  <div class="message-border">
+                    <img src="./head.png" alt="" class="head">
+                    <div class="message-text">
+                      <p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>
+                      <p class="activity">来收取能量，被保护罩阻挡了</p>
+                    </div>
+                    <img src="./cover@2x.png" alt="" class="cover">
+                  </div>
+                  <p class="time">19:00</p>
+                </div>
+                <div class="border"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </Scroll>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="change"></div>
@@ -161,31 +248,31 @@
       <div class="content">
         <div class="prop-item" @click="showDanmu(1)">
           <span>感谢帮我收能量</span>
-          <img src="./1@2x.png" alt="">
-        </div>
-        <div class="prop-item" @click="showDanmu(7)">
-          <span>给你点个赞</span>
-          <img src="./7@2x.png" alt="">
+          <img src="./1@2x.png">
         </div>
         <div class="prop-item" @click="showDanmu(2)">
-          <span>我控制不住我自己啊~</span>
-          <img src="./2@2x.png" alt="">
+          <span>给你点个赞</span>
+          <img src="./7@2x.png">
         </div>
         <div class="prop-item" @click="showDanmu(3)">
-          <span>勤快的宝宝有能量~</span>
-          <img src="./3@2x.png" alt="">
+          <span>我控制不住我自己啊~</span>
+          <img src="./2@2x.png">
         </div>
         <div class="prop-item" @click="showDanmu(4)">
-          <span>我对你已绝望</span>
-          <img src="./4@2x.png" alt="">
+          <span>勤快的宝宝有能量~</span>
+          <img src="./3@2x.png">
         </div>
         <div class="prop-item" @click="showDanmu(5)">
-          <span>你行行好，别把我的能量全收走，可以吗~</span>
-          <img src="./5@2x.png" alt="">
+          <span>我对你已绝望</span>
+          <img src="./4@2x.png">
         </div>
         <div class="prop-item" @click="showDanmu(6)">
+          <span>你行行好，别把我的能量全收走，可以吗~</span>
+          <img src="./5@2x.png">
+        </div>
+        <div class="prop-item" @click="showDanmu(7)">
           <span>你怎么每天这么勤快呢</span>
-          <img src="./6@2x.png" alt="">
+          <img src="./6@2x.png">
         </div>
       </div>
     </div>
@@ -217,7 +304,7 @@ export default {
       toastText: '',
       hasMore: false,
       text: '',
-      pullUpLoad: false,
+      pullUpLoad: null,
       flag: false,
       propFlag: false,
       danmuFlag: false,
@@ -232,9 +319,29 @@ export default {
       propIdx: 0,
       headTitle: '我的树',
       adopterIntroduction: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>',
+      emoji: '',
+      emojiText: '',
       emojiArr: [{
         src: require('./1@2x.png'),
         text: '感谢帮我收能量'
+      }, {
+        src: require('./7@2x.png'),
+        text: '给你点个赞'
+      }, {
+        src: require('./2@2x.png'),
+        text: '我控制不住我自己啊~'
+      }, {
+        src: require('./3@2x.png'),
+        text: '勤快的宝宝有能量~'
+      }, {
+        src: require('./4@2x.png'),
+        text: '我对你已绝望'
+      }, {
+        src: require('./5@2x.png'),
+        text: '你行行好，别把我的能量全收走，可以吗~'
+      }, {
+        src: require('./6@2x.png'),
+        text: '你怎么每天这么勤快呢'
       }]
     };
   },
@@ -308,8 +415,8 @@ export default {
     },
     showDanmu(index) {
       this.close('danmuFlag');
-      this.emoji = this.emojiArr[0].src;
-      this.emojiText = this.emojiArr[0].text;
+      this.emoji = this.emojiArr[index - 1].src;
+      this.emojiText = this.emojiArr[index - 1].text;
       this.danmuShow = true;
       setTimeout(() => {
         this.danmuShow = false;
@@ -426,6 +533,31 @@ export default {
           height: 0.8rem;
         }
       }
+      .carbon-bubbles {
+        position: absolute;
+        top: 2.5rem;
+        display: flex;
+        align-items: center;
+        .bubble-item {
+          margin-right: 0.2rem;
+          .bubble {
+            position: relative;
+            img {
+              width: 0.88rem;
+              height: 1rem;
+            }
+            span {
+              font-size: $font-size-medium-x;
+              line-height: 0.41rem;
+              color: $primary-color;
+              position: absolute;
+              top: 0.38rem;
+              left: 0.2rem;
+              font-family: 'AvenirNextCondensed-Bold';
+            }
+          }
+        }
+      }
       .certification {
         width: 0.92rem;
         height: 0.82rem;
@@ -497,6 +629,74 @@ export default {
         position: absolute;
         bottom: 0.28rem;
         right: 0.3rem
+      }
+    }
+    .battle {
+      height: 2.8rem;
+      background: $color-highlight-background;
+      padding: 0.3rem;
+      .battle-bg {
+        height: 100%;
+        background: url("./battle@2x.png") no-repeat;
+        background-size: 100% 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.64rem 0.4rem;
+        .battle-item {
+          display: flex;
+          .battle-item-head {
+            position: relative;
+            .head {
+              width: 0.8rem;
+              height: 0.8rem;
+              border-radius: 50%;
+              margin: 0 0.2rem;
+              border: 2px solid #f7c54b;
+              box-sizing: content-box;
+            }
+            .crown {
+              width: 0.44rem;
+              height: 0.43rem;
+              position: absolute;
+              top: -0.2rem;
+              left: 0;
+            }
+          }
+          .info {
+            font-size: $font-size-small;
+            line-height: $font-size-small;
+            margin-bottom: 0.2rem;
+            padding: 0;
+          }
+          .number {
+            font-family: 'PingFangSC-Semibold';
+            font-size: $font-size-large;
+            line-height: $font-size-large;
+          }
+        }
+        .lose {
+          color: #ccc;
+          .battle-item-head {
+            position: relative;
+            .head {
+              width: 0.8rem;
+              height: 0.8rem;
+              border-radius: 50%;
+              margin: 0 0.2rem;
+              border: none;
+              box-sizing: content-box;
+            }
+            .crown {
+              display: none;
+            }
+          }
+        }
+        .vs {
+          color: $primary-color;
+          font-size: 0.76rem;
+          /*margin: 0 0.52rem;*/
+        }
       }
     }
     .tab {
@@ -596,6 +796,98 @@ export default {
           img {
             height: 0.21rem;
             margin-top: 0.4rem;
+          }
+        }
+      }
+    }
+    .dynamic-other {
+      background: #fff;
+      padding: 0.3rem;
+      .dynamic-title {
+        font-size: 0;
+        margin-bottom: 0.54rem;
+        .border {
+          border: 2px solid $primary-color;
+          height: 0.26rem;
+          width: 0;
+          display: inline-block;
+          margin-right: 0.08rem;
+        }
+        span {
+          font-size: $font-size-large-ss;
+          line-height: 0.42rem;
+        }
+      }
+      .daily {
+        .daily-title {
+          font-size: $font-size-large-ss;
+          line-height: $font-size-large-s;
+          font-family: PingFangSC-Semibold;
+          margin-bottom: 0.32rem;
+        }
+        .daily-content {
+          .daily-content-item {
+            .daily-content-item-info {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-left: 0.2rem;
+              img {
+                width: 0.36rem;
+                margin-right: 0.24rem;
+              }
+              .activity {
+                font-size: $font-size-medium;
+                flex: 1;
+                span {
+                  font-family: PingFangSC-Semibold;
+                  margin-right: 0.2rem;
+                }
+              }
+              .time {
+                font-size: $font-size-small;
+                line-height: 0.33rem;
+                color: #999;
+              }
+            }
+            .daily-content-item-message {
+              display: flex;
+              justify-content: space-between;
+              .message-border {
+                border: 1px solid #eee;
+                border-radius: 0.5rem;
+                display: flex;
+                align-items: center;
+                .head {
+                  width: 0.64rem;
+                  height: 0.64rem;
+                  border-radius: 50%;
+                  margin-left: 0.08rem;
+                }
+                .name {
+                  color: #999;
+                  font-size: 0.22rem;
+                }
+                .activity {
+                  font-size: 0.28rem;
+                }
+                .cover {
+                  width: 0.84rem;
+                  height: 0.84rem;
+                }
+              }
+              .time {
+                font-size: $font-size-small;
+                line-height: 0.33rem;
+                color: #999;
+              }
+            }
+            .border {
+              width: 0;
+              border-right: 1px solid #eee;
+              height: 0.5rem;
+              margin-left: 0.35rem;
+            }
           }
         }
       }
