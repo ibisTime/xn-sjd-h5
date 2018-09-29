@@ -35,25 +35,30 @@
         <img src="./checkbox.png" alt="" v-show="isChecked">
         <div class="check-border" v-show="!isChecked"></div>
       </div>
-      我已阅读并接受<span @click="goOther('/protocol')">《时间岛产品服务条款》</span>
+      我已阅读并接受<span @click="go('/protocol')">《时间岛产品服务条款》</span>
     </div>
     <div class="login-btn">
       <button @click="register">注册</button>
     </div>
+    <full-loading v-show="loading" :title="loadText"></full-loading>
+    <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
-  import {login} from 'api/user';
-  import {setTitle, setUser} from 'common/js/util';
+  import {register} from 'api/user';
+  import {setTitle} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
+  import {sendCaptcha} from 'api/general';
   import FullLoading from 'base/full-loading/full-loading';
+  import Toast from 'base/toast/toast';
 
   export default {
     mixins: [directiveMixin],
     data() {
       return {
-        loadFlag: false,
+        loading: false,
         loadText: '',
+        text: '',
         mobile: '',
         pwd: '',
         rePwd: '',
@@ -67,18 +72,26 @@
       setTitle('注册');
     },
     methods: {
+      // 注册
       register() {
         this.$validator.validateAll().then((result) => {
-          console.log(result);
-          if (result) {
-            this.loadFlag = true;
-            this.loadText = '登录中...';
-            login(this.mobile, this.pwd).then((data) => {
-              setUser(data);
-              this.loadFlag = false;
-              this.$router.replace('/redirect');
+          if (result && this.pwd === this.rePwd && this.isChecked) {
+            this.loading = true;
+            this.loadText = '注册中...';
+            register({
+              mobile: this.mobile,
+              loginPwd: this.pwd,
+              smsCaptcha: this.captcha
+            }).then((data) => {
+              if(data.code) {
+                this.text = '注册成功，即将跳转到登陆页';
+                this.loading = false;
+                setTimeout(() => {
+                  this.$router.replace('/login');
+                });
+              }
             }).catch(() => {
-              this.loadFlag = false;
+              this.loading = false;
             });
           }
         });
@@ -87,13 +100,49 @@
         e.preventDefault();
         this.isChecked = !this.isChecked;
       },
-      sendCaptcha() {},
-      goOther(url) {
+      // 发送验证码
+      sendCaptcha() {
+        this.$validator.validate('mobile').then((res) => {
+          if(res) {
+            this.sending = true;
+            this.loading = true;
+            sendCaptcha({
+              bizType: '805041',
+              mobile: this.mobile
+            }).then(() => {
+              this.loading = false;
+              this._setInterval();
+            }).catch(() => {
+              this.loading = false;
+              this._clearInterval();
+            });
+          }
+        });
+      },
+      go(url) {
         this.$router.push(url);
+      },
+      _setInterval() {
+        let i = 60;
+        this.timer = setInterval(() => {
+          if (i === 0) {
+            this._clearInterval();
+          } else {
+            this.captBtnText = i-- + 's';
+          }
+        }, 1000);
+      },
+      _clearInterval() {
+        if (this.timer) {
+          clearInterval(this.timer);
+          this.sending = false;
+          this.captBtnText = '获取验证码';
+        }
       }
     },
     components: {
-      FullLoading
+      FullLoading,
+      Toast
     }
   };
 </script>
@@ -128,6 +177,9 @@
           .item-input-wrapper {
             width: 100%;
             height: 100%;
+            .error-tip {
+              color: red;
+            }
             input {
               width: 79%;
               height: 100%;

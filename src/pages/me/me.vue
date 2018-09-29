@@ -8,19 +8,19 @@
             <div class="info" @click="go('/userInfo')">
               <img src="./../../common/image/avatar@2x.png" alt="">
               <div class="text">
-                <p><span>KOALA</span><span class="lv">LV 1</span></p>
-                <p class="mobile">13958092396</p>
+                <p><span>KOALA</span><span class="lv">LV {{userDetail.level}}</span></p>
+                <p class="mobile">{{userDetail.mobile}}</p>
               </div>
               <img src="./more@2x.png" alt="" class="me-more fr">
             </div>
             <div class="account">
               <div class="money fl" @click="go('/money')">
-                <p class="number">4280</p>
+                <p class="number">{{formatAmount(cny)}}</p>
                 <p class="text">余额</p>
               </div>
               <div class="line fl"></div>
               <div class="score fl" @click="go('/score')">
-                <p class="number">2680</p>
+                <p class="number">{{jf}}</p>
                 <p class="text">积分</p>
               </div>
             </div>
@@ -66,46 +66,76 @@
           <img src="./more@2x.png" class="fr more">
         </div>
       </Scroll>
+      <full-loading v-show="loading"></full-loading>
+      <toast ref="toast" :text="text"></toast>
     </div>
     <m-footer></m-footer>
   </div>
 </template>
 <script>
-  import Scroll from 'base/scroll/scroll';
+  import Toast from 'base/toast/toast';
+  import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
-  import {setTitle} from 'common/js/util';
   import MFooter from 'components/m-footer/m-footer';
+  import { formatAmount } from 'common/js/util';
+  import {getCookie} from 'common/js/cookie';
+  import {getUserDetail} from 'api/user';
+  import { getAccount } from 'api/biz';
 
   export default {
     data() {
       return {
-        showBack: false
+        loading: false,
+        showBack: false,
+        userDetail: {},
+        text: '',
+        cny: 0,
+        jf: 0
       };
     },
     created() {
       this.pullUpLoad = null;
-      setTitle('我的');
-      // this.pullUpLoad = null;
-      // Promise.all([
-      //   getUserSystemConfig('aboutUs'),
-      //   getUserSystemConfig('telephone'),
-      //   getUserSystemConfig('serviceTime')
-      // ]).then(([aboutus, telephone, time]) => {
-      //   this.loadingFlag = false;
-      //   this.telephone = telephone.cvalue;
-      //   this.time = time.cvalue;
-      //   this.content = protocol.cvalue;
-      // }).catch(() => {
-      //   this.loadingFlag = false;
-      // });
     },
     methods: {
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
       go(url) {
         this.$router.push(url);
       }
     },
+    mounted() {
+      let userId = getCookie('userId');
+      if(userId) {
+        this.loading = true;
+        Promise.all([
+          getUserDetail({userId: userId}),
+          getAccount({
+            userId: userId
+          })
+        ]).then(([res1, res2]) => {
+          this.userDetail = res1;
+          res2.list.map((item) => {
+            if(item.currency === 'CNY') {
+              this.cny = item.amount;
+            }
+            if(item.currency === 'JF') {
+              this.jf = item.amount;
+            }
+          });
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
+      } else {
+        this.text = '您未登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
+      }
+    },
     components: {
-      Scroll,
+      Toast,
+      FullLoading,
       MFooter,
       MHeader
     }

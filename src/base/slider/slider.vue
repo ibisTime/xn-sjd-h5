@@ -44,17 +44,19 @@
       }
     },
     mounted() {
-      setTimeout(() => {
-        this._setSliderWidth();
-        if (this.showDots) {
-          this._initDots();
-        }
-        this._initSlider();
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this._setSliderWidth();
+          if (this.showDots) {
+            this._initDots();
+          }
+          this._initSlider();
 
-        if(this.autoPlay) {
-          this._play();
-        }
-      }, 20);
+          if(this.autoPlay) {
+            this._play();
+          }
+        }, 100);
+      });
 
       window.addEventListener('resize', () => {
         if (!this.slider || !this.slider.enabled) {
@@ -180,7 +182,9 @@
   @import "~common/scss/variable";
 
   .slider {
-    min-height: 1px;
+    /*min-height: 1px;*/
+    height: 100%;
+    position: relative;
 
     .slider-group {
       position: relative;

@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="礼物"></m-header>
+      <m-header class="cate-header" title="支付订单"></m-header>
       <div class="content">
         <div class="pay-type">
           <p>支付方式</p>
@@ -65,7 +65,11 @@
         isPublish: false
       };
     },
-    created() {
+    mounted() {
+      this.proCode = this.$route.query.proCode || '';
+      this.specsCode = this.$route.query.specsCode || '';
+      this.quantity = this.$route.query.quantity || '';
+      this.type = this.$route.query.type || '';
     },
     methods: {
       getTel() {

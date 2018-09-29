@@ -32,8 +32,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use('/api', function (req, res) {
-  // var url = 'http://118.178.124.16:3901/forward-service/api'
-  var url = 'http://121.43.101.148:3901/forward-service/api'
+  var url = 'http://47.99.147.67:2901/forward-service/api';
   var _body = req.body;
   var param = 'code=' + _body.code + '&json=' + encodeURIComponent(_body.json);
   axios.post(url, param).then((response) => {
@@ -47,9 +46,9 @@ app.use('/api', function (req, res) {
   }
   res.json(ret)
 }).catch((e) => {
-    // console.log(e)
+    console.log(e)
   })
-})
+});
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,

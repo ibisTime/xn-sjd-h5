@@ -4,34 +4,23 @@
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="slider-wrapper">
-        <!--<slider v-if="!banners.length" :loop="loop">-->
-        <!--<div class="home-slider" v-for="item in banners" :key="item.code">-->
-        <!--<a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>-->
-        <!--</div>-->
-        <!--</slider>-->
-        <img src="./../../common/image/banner-default.png" alt="" class="banner-default">
-        <router-link tag="div" to="/home/sign" class="sign-wrapper">
-          <i class="sign-icon"></i>
-        </router-link>
+        <img :src="formatImg(detail.bannerPic)" class="banner-default">
       </div>
       <div class="info">
         <div class="item">
-          <span>古树学名</span><span>樟子松</span>
+          <span>古树学名</span><span>{{detail.scientificName}}</span>
         </div>
         <div class="item">
-          <span>古树品种</span><span>常绿乔木</span>
+          <span>古树品种</span><span>{{detail.variety}}</span>
         </div>
         <div class="item">
-          <span>古树分类</span><span>庭园观赏及绿化树种</span>
+          <span>古树分类</span><span>{{detail.categoryName}}</span>
         </div>
         <div class="item">
-          <span>古树级别</span><span>三级</span>
+          <span>古树级别</span><span>{{detail.rank}}</span>
         </div>
         <div class="item">
-          <span>古树产地</span><span>黑龙江大兴安岭</span>
-        </div>
-        <div class="item">
-          <span>古树编码</span><span>28020065389</span>
+          <span>古树产地</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
         </div>
         <div class="item" @click="go('/invitation')">
           <span>古树定位</span>
@@ -42,52 +31,43 @@
           <img src="./more@2x.png" alt="" class="fr more">
         </div>
       </div>
-      <div class="gray"></div>
-      <div class="description">
-        <div class="description-title">
-          <div class="border"></div>
-          <span>图文详情</span>
-          <div class="description-detail" v-html="descriptionDetail"></div>
-        </div>
-      </div>
+      <!--<div class="gray"></div>-->
+      <!--<div class="description">-->
+        <!--<div class="description-title">-->
+          <!--<div class="border"></div>-->
+          <!--<span>图文详情</span>-->
+          <!--<div class="description-detail" v-html="descriptionDetail"></div>-->
+        <!--</div>-->
+      <!--</div>-->
       <!--<div class="mall-content">-->
         <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
       <!--</div>-->
       </Scroll>
     </div>
     <div class="footer">
-      <button @click="showPopUp">集体下单</button>
-      <button @click="showPopUp">捐赠下单</button>
+      <!--<button @click="showPopUp">集体下单</button>-->
+      <!--<button @click="showPopUp">捐赠下单</button>-->
+      <button @click="showPopUp">申请认养</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
       <div class="title">
         <div class="title-pic">
-          <img src="./emotion@2x.png" alt="">
+          <img :src="formatImg(detail.bannerPic)" alt="">
         </div>
         <div class="title-right">
-          <p>樟子松</p>
+          <p>{{detail.scientificName}}</p>
           <i @click="genghuan">X</i>
-          <p class="position"><img src="./position@2x.png" alt="">四川</p>
+          <p class="position"><img src="./position@2x.png">{{detail.province}}{{detail.city}}{{detail.area}}</p>
         </div>
       </div>
       <div class="packaging">
         <p class="packaging-title">认养年限(年)</p>
         <div class="select">
-          <div class="select-item">
-            <span>一年：2018-01-01至2018-12-31</span>
-            <img src="./choosed@2x.png" v-show="wechat">
-            <img src="./unchoosed@2x.png" v-show="!wechat">
-          </div>
-          <div class="select-item">
-            <span>一年：2018-01-01至2018-12-31</span>
-            <img src="./choosed@2x.png" v-show="wechat">
-            <img src="./unchoosed@2x.png" v-show="!wechat">
-          </div>
-          <div class="select-item">
-            <span>一年：2018-01-01至2018-12-31</span>
-            <img src="./choosed@2x.png" v-show="wechat">
-            <img src="./unchoosed@2x.png" v-show="!wechat">
+          <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)">
+            <span>{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>
+            <img src="./choosed@2x.png" v-show="choosedIndex === index">
+            <img src="./unchoosed@2x.png" v-show="!choosedIndex === index">
           </div>
         </div>
       </div>
@@ -99,12 +79,12 @@
           <img class="diamonds right-item" @click="sub" src="./sub@2x.png">
         </div>
       </div>
-      <div class="other">
+      <div class="other" v-show="detail.sellType === '3'">
         <span>下单识别码</span>
         <input type="text" v-model="idCode">
       </div>
       <div class="buypart-bottom">
-        <div class="confirm" @click="confirm()">确定(总额：¥2999)</div>
+        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
       </div>
     </div>
     <toast ref="toast" :text="text"></toast>
@@ -118,7 +98,9 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount } from 'common/js/util';
+import { formatAmount, formatImg, formatDate } from 'common/js/util';
+import { getCookie } from 'common/js/cookie';
+import { getProductDetail, getProductType } from 'api/biz';
 export default {
   data() {
     return {
@@ -137,12 +119,20 @@ export default {
       descriptionDetail: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>',
       flag: false,
       number: 1,
-      idCode: ''
+      idCode: '',
+      detail: {},
+      choosedIndex: 0
     };
   },
   methods: {
     formatAmount(amount) {
       return formatAmount(amount);
+    },
+    formatImg(img) {
+      return formatImg(img);
+    },
+    formatDate(date, format) {
+      return formatDate(date, format);
     },
     go(url) {
       this.$router.push(url);
@@ -163,11 +153,27 @@ export default {
       }
     },
     confirm() {
-      this.go('/protocol?sign=1');
+      let userId = getCookie('userId');
+      if(userId) {
+        let proCode = this.detail.code;
+        let specsCode = this.detail.productSpecsList[this.choosedIndex].code;
+        let quantity = this.number;
+        let type = this.detail.sellType;
+        this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
+      } else {
+        this.text = '您未登录';
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
+      }
+    },
+    chooseSpecs(index) {
+      this.choosedIndex = index;
     }
   },
   mounted() {
     this.pullUpLoad = null;
+    let code = this.$route.query.code;
     // let userId;
     // if (this.$route.query.userId) {
     //   userId = this.$route.query.userId;
@@ -175,26 +181,21 @@ export default {
     // } else {
     //   userId = getCookie("userId");
     // }
-    // Promise.all([
-    //   getUser1(userId),
-    //   checkRed(userId)
-    // ]).then(([res1, res2]) => {
-    //   this.userinfo = res1;
-    //   this.balance = res1.wareAmount;
-    //   setCookie("level", res1.level);
-    //   getLevel(res1.level).then(item => {
-    //     this.loading = false;
-    //     res1.level = item[0].name;
-    //   });
-    //   setCookie('isWare', res2.isWare);
-    //   if(this.balance < res2.redAmount) {
-    //     this.toastText = '您云仓余额低于红线，请购买';
-    //     this.$refs.toast.show();
-    //     setTimeout(() => {
-    //       this.$router.push('/threshold');
-    //     }, 2000)
-    //   }
-    // }).catch(() => { this.loading = false });
+    this.loading = true;
+    Promise.all([
+      getProductDetail({
+        code: code
+      }),
+      getProductType({
+        orderDir: 'asc',
+        orderColumn: 'order_no',
+        status: '1'
+      })
+    ]).then(([res1, res2]) => {
+      this.loading = false;
+      this.detail = res1;
+      console.log(res2);
+    }).catch(() => { this.loading = false; });
   },
   components: {
     FullLoading,
@@ -293,7 +294,8 @@ export default {
     align-items: center;
     button {
       display: inline-block;
-      width: 3.2rem;
+      /*width: 3.2rem;*/
+      width: 100%;
       height: 0.9rem;
       background: $primary-color;
       border-radius: 0.08rem;

@@ -20,14 +20,15 @@
       </div>
     </div>
     <div class="btn">
-      <button>退出登录</button>
+      <button @click="logout">退出登录</button>
     </div>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {setTitle} from 'common/js/util';
+  import {clearUser} from 'common/js/util';
+  // import {getAppId} from 'api/general';
   import MFooter from 'components/m-footer/m-footer';
 
   export default {
@@ -36,25 +37,27 @@
     },
     created() {
       this.pullUpLoad = null;
-      setTitle('我的');
-      // this.pullUpLoad = null;
-      // Promise.all([
-      //   getUserSystemConfig('aboutUs'),
-      //   getUserSystemConfig('telephone'),
-      //   getUserSystemConfig('serviceTime')
-      // ]).then(([aboutus, telephone, time]) => {
-      //   this.loadingFlag = false;
-      //   this.telephone = telephone.cvalue;
-      //   this.time = time.cvalue;
-      //   this.content = protocol.cvalue;
-      // }).catch(() => {
-      //   this.loadingFlag = false;
-      // });
     },
     methods: {
       go(url) {
         this.$router.push(url);
+      },
+      logout() {
+        clearUser();
+        this.go('/login');
+        // this._reloadPage();
       }
+      // _reloadPage() {
+      //   getAppId().then((data) => {
+      //     let appId = data.cvalue;
+      //     let redirectUri = encodeURIComponent(`${location.origin}?#/home`);
+      //     let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
+      //     let suffix = '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
+      //     setTimeout(() => {
+      //       location.replace(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
+      //     }, 100);
+      //   });
+      // }
     },
     components: {
       Scroll,

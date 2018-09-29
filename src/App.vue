@@ -18,7 +18,8 @@
   import Toast from 'base/toast/toast';
   import {isLogin, setUser, getWxMobAndCapt} from 'common/js/util';
   import {getAppId} from 'api/general';
-  import {wxLogin, saveLoginLog} from 'api/user';
+  // import {wxLogin, saveLoginLog} from 'api/user';
+  import {wxLogin} from 'api/user';
   import {mapMutations, mapGetters} from 'vuex';
   import {SET_LOCATION, SET_IS_LOCA_ERR, SET_LOG_FLAG} from 'store/mutation-types';
   // import WxBindMobile from 'components/wx-bind-mobile/wx-bind-mobile';
@@ -69,7 +70,7 @@
         } else {
           this.loadingFlag = false;
         }
-        saveLoginLog().catch(() => {});
+        // saveLoginLog().catch(() => {});
       }
     },
     methods: {

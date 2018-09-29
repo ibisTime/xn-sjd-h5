@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="完善资料"></m-header>
+      <m-header class="cate-header" title="完善资料" actText="保存" @action="action"></m-header>
       <div class="content">
         <div class="in-content">
           <div class="avatar">
@@ -81,6 +81,9 @@
           return require('./avatar@2x.png');
         }
         return formatImg(this.preview || this.user.photo);
+      },
+      action() {
+      //
       }
     },
     components: {

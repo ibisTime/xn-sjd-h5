@@ -13,7 +13,7 @@ export function getUserSystemConfig(ckey) {
   if (getUserSystemConfig[ckey]) {
     return Promise.resolve(getUserSystemConfig[ckey]);
   }
-  return fetch(805917, {
+  return fetch(630047, {
     ckey
   }).then((data) => {
     getUserSystemConfig[ckey] = data;
@@ -77,29 +77,6 @@ export function getAppId() {
 export function getQiniuToken() {
   return fetch(805951, {});
 }
-
-// 发送验证码
-export function sendCaptcha(mobile, bizType) {
-  return fetch(805950, {
-    bizType,
-    mobile,
-    kind: 'f1'
-  });
-}
-
-// 列表查寻数据字典
-export function getDictList(parentKey) {
-  if (getDictList[parentKey]) {
-    return Promise.resolve(getDictList[parentKey]);
-  }
-  return fetch(801907, {
-    parentKey
-  }).then((data) => {
-    getDictList[parentKey] = data;
-    return Promise.resolve(data);
-  });
-}
-
 // 获取banner
 export function getBannerList() {
   return fetch(805806, {
@@ -125,5 +102,40 @@ export function getPageSysNotices(start, limit) {
 export function getTradeIconRule(key) {
   return fetch(808917, {
     key
+  });
+}
+
+/****************************************************************************/
+
+// 发送验证码
+export function sendCaptcha(data) {
+  return fetch(630090, {
+    bizType: data.bizType,
+    mobile: data.mobile
+  });
+}
+
+// 系统参数
+export function getConfig(ckey) {
+  return fetch(627087, {
+    ckey: ckey
+  });
+}
+
+// 获取banner
+export function getBanner() {
+  return fetch(630506, {});
+}
+
+// 列表查寻数据字典
+export function getDictList(parentKey) {
+  if (getDictList[parentKey]) {
+    return Promise.resolve(getDictList[parentKey]);
+  }
+  return fetch(630036, {
+    parentKey
+  }).then((data) => {
+    getDictList[parentKey] = data;
+    return Promise.resolve(data);
   });
 }

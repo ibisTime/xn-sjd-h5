@@ -85,6 +85,8 @@ const Surprise = () => import('@/pages/surprise/surprise');
 const EmotionChannel = () => import('@/pages/emotion-channel/emotion-channel');
 // 文章详情
 const ArticleDetail = () => import('@/pages/article-detail/article-detail');
+// 商城
+const Mall = () => import('@/pages/mall/mall');
 export default new Router({
   routes: [
     {
@@ -234,6 +236,10 @@ export default new Router({
     {
       path: '/article-detail',
       component: ArticleDetail
+    },
+    {
+      path: '/mall',
+      component: Mall
     },
     {
       path: '/money',

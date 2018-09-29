@@ -1,5 +1,5 @@
 import fetch from 'common/js/fetch';
-import {getUserId, setUser} from 'common/js/util';
+import {getUserId} from 'common/js/util';
 
 /**
  * 微信登录
@@ -25,15 +25,6 @@ export function wxLogin(code, userReferee, activityCode, mobile, smsCaptcha) {
     params.activityCode = activityCode;
   }
   return fetch(805170, params);
-}
-
-/**
- * 微信登录
- * @param {string} code
- * @param {string} userReferee
- */
-export function login(code, userReferee) {
-  setUser({});
 }
 
 /**
@@ -321,3 +312,33 @@ export function editIntroduce (introduce) {
     userId: getUserId()
   });
 }
+
+/****************************************************************************************/
+/**
+ * 普通登录
+ * @param {string} code
+ * @param {string} userReferee
+ */
+export function login(data) {
+  return fetch(805050, {
+    loginName: data.loginName,
+    loginPwd: data.loginPwd
+  });
+}
+
+// 注册
+export function register(data) {
+  return fetch(805041, {
+    mobile: data.mobile,
+    loginPwd: data.loginPwd,
+    smsCaptcha: data.smsCaptcha
+  });
+}
+
+// 详情查用户
+export function getUserDetail(data) {
+  return fetch(805121, {
+    userId: data.userId
+  });
+}
+

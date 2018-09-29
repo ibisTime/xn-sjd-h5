@@ -29,7 +29,8 @@ export default function fetch(code, param) {
     if (res.errorCode === ERR_TIME_OUT) {
       message.show('登录超时，请重新登录');
       clearUser();
-      _reloadPage();
+      this.$router.push('/login');
+      // _reloadPage();
       return Promise.reject('timeout');
     }
     if(res.errorCode !== ERR_OK) {
@@ -44,16 +45,16 @@ export default function fetch(code, param) {
   });
 }
 
-function _reloadPage() {
-  fetch(805917, {
-    ckey: 'WX_H5_ACCESS_KEY'
-  }).then((data) => {
-    let appId = data.cvalue;
-    let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);
-    let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
-    let suffix = '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
-    setTimeout(() => {
-      location.replace(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
-    }, 100);
-  });
-}
+// function _reloadPage() {
+//   fetch(630047, {
+//     ckey: 'WX_H5_ACCESS_KEY'
+//   }).then((data) => {
+//     let appId = data.cvalue;
+//     let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);
+//     let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
+//     let suffix = '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
+//     setTimeout(() => {
+//       location.replace(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
+//     }, 100);
+//   });
+// }

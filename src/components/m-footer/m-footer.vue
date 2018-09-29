@@ -8,7 +8,7 @@
       <i></i>
       <p>林空间</p>
     </router-link>
-    <router-link tag="div" class="foot-item item-2" to="/message">
+    <router-link tag="div" class="foot-item item-2" to="/mall">
       <i></i>
       <p>商城</p>
       <!--<div class="badge-wrapper"><badge v-show="count" :text="count"></badge></div>-->

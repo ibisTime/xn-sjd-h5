@@ -4,15 +4,12 @@
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="slider-wrapper">
-        <slider v-if="banners.length">
+        <slider :loop="loop">
           <div class="home-slider" v-for="item in banners" :key="item.code">
-          <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
-        </div>
+            <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
+          </div>
         </slider>
         <!--<img src="./../../common/image/banner-default.png" class="banner-default">-->
-        <router-link tag="div" to="/home/sign" class="sign-wrapper">
-          <i class="sign-icon"></i>
-        </router-link>
       </div>
       <div class="notice">
         <img src="./notice@2x.png">
@@ -21,21 +18,9 @@
         <div class="more">更多</div>
       </div>
       <div class="icons">
-        <div class="icon-item" @click="goTreeList">
-          <img src="./old-tree@2x.png">
-          <p>古树认养</p>
-        </div>
-        <div class="icon-item">
-          <img src="./water-source-forest@2x.png">
-          <p>水源林</p>
-        </div>
-        <div class="icon-item">
-          <img src="./emotion-forest@2x.png">
-          <p>情感林</p>
-        </div>
-        <div class="icon-item">
-          <img src="./booking@2x.png">
-          <p>果树预售</p>
+        <div class="icon-item" @click="go('/treeList?typeCode=' + item.code)" v-for="item in proType">
+          <img :src="formatImg(item.pic)">
+          <p>{{item.name}}</p>
         </div>
       </div>
       <div class="emotion-article" @click="go('/emotion-channel')">
@@ -58,44 +43,12 @@
           <span class="fr more">更多</span>
         </div>
         <div class="proList">
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
+          <div class="item"  v-for="item in proList" @click="go('/treeDetail?code='+item.code)">
+            <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-introduction">2018-09-11</p>
-              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-introduction">2018-09-11</p>
-              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-introduction">2018-09-11</p>
-              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-introduction">2018-09-11</p>
-              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-introduction">2018-09-11</p>
-              <p><span class="hot-pro-introduction">四川 成都</span><span class="hot-pro-price fr">¥2480.00</span></p>
+              <p class="hot-pro-title">{{item.name}}</p>
+              <p class="hot-pro-introduction">{{formatDate(item.updateDatetime, 'yyyy-MM-dd')}}</p>
+              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price fr">¥2480.00</span></p>
             </div>
           </div>
         </div>
@@ -105,6 +58,7 @@
       <!--</div>-->
       </Scroll>
     </div>
+    <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <m-footer></m-footer>
     <check-in :title="title" v-show="showCheckIn" @close="close"></check-in>
@@ -120,7 +74,10 @@ import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import CheckIn from 'base/check-in/check-in';
-import { formatAmount } from 'common/js/util';
+import { formatAmount, formatImg, formatDate } from 'common/js/util';
+import { getCookie } from 'common/js/cookie';
+import { getBanner } from 'api/general';
+import { getProductPage, getProductType, signIn } from 'api/biz';
 export default {
   // name: "home",
   data() {
@@ -132,74 +89,77 @@ export default {
       hasMore: false,
       text: '',
       showBack: false,
-      proList: [{
-
-      }],
+      proList: [],
       showCheckIn: false,
       pullUpLoad: false,
-      banners: [
-        {
-          pic: require('./banner1.jpeg'),
-          code: 1
-        }, {
-          pic: require('./banner2.jpeg'),
-          code: 2
-        }
-      ]
+      banners: [],
+      proType: [],
+      loop: false
     };
   },
   methods: {
     formatAmount(amount) {
       return formatAmount(amount);
     },
+    formatImg(img) {
+      return formatImg(img);
+    },
+    formatDate(date, format) {
+      return formatDate(date, format);
+    },
+    // 签到
     action() {
-      this.showCheckIn = true;
+      let userId = getCookie('userId');
+      if(userId) {
+        this.loading = true;
+        signIn({
+          userId: userId
+        }).then((res) => {
+          this.showCheckIn = true;
+        }).catch(() => { this.loading = false; });
+      } else {
+        this.text = '您未登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
+      }
     },
     close() {
       this.showCheckIn = false;
-    },
-    goTreeList() {
-      this.go('/treeList');
     },
     go(url) {
       this.$router.push(url);
     },
     getImgSyl(imgs) {
       return {
-        // backgroundImage: `url(${formatImg(imgs)})`
-        backgroundImage: `url(${imgs})`
+        backgroundImage: `url(${formatImg(imgs)})`
       };
     }
   },
   mounted() {
     this.pullUpLoad = null;
-    // let userId;
-    // if (this.$route.query.userId) {
-    //   userId = this.$route.query.userId;
-    //   setCookie("userId", userId);
-    // } else {
-    //   userId = getCookie("userId");
-    // }
-    // Promise.all([
-    //   getUser1(userId),
-    //   checkRed(userId)
-    // ]).then(([res1, res2]) => {
-    //   this.userinfo = res1;
-    //   this.balance = res1.wareAmount;
-    //   setCookie("level", res1.level);
-    //   getLevel(res1.level).then(item => {
-    //     this.loading = false;
-    //     res1.level = item[0].name;
-    //   });
-    //   setCookie('isWare', res2.isWare);
-    //   if(this.balance < res2.redAmount) {
-    //     this.toastText = '您云仓余额低于红线，请购买';
-    //     this.$refs.toast.show();
-    //     setTimeout(() => {
-    //       this.$router.push('/threshold');
-    //     }, 2000)
-    //   }
-    // }).catch(() => { this.loading = false });
+    this.loading = true;
+    Promise.all([
+      getBanner(),
+      getProductPage({
+        location: '1',
+        status: '4'
+      }),
+      getProductType({
+        orderDir: 'asc',
+        orderColumn: 'order_no',
+        status: '1'
+      })
+    ]).then(([res1, res2, res3]) => {
+      this.banners = res1;
+      if(this.banners.length > 1) {
+        this.loop = true;
+      }
+      this.proList = res2.list;
+      this.proType = res3;
+      this.loading = false;
+    }).catch(() => { this.loading = false; });
   },
   components: {
     FullLoading,
@@ -244,6 +204,18 @@ export default {
       padding-bottom: 0.2rem;
       background: $color-highlight-background;
       height: 3rem;
+      width: 100%;
+      overflow: hidden;
+      .home-slider {
+        height: 100%;
+      }
+      a {
+        display: block;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100% 100%;
+      }
     }
     .notice {
       display: flex;
@@ -285,6 +257,8 @@ export default {
         text-align: center;
         img {
           width: 1rem;
+          height: 1rem;
+          border-radius: 50%;
         }
         p {
           color: #666;

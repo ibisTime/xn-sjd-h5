@@ -1,22 +1,10 @@
 <template>
   <div class="home-wrapper">
     <m-header class="cate-header" title="认养列表"></m-header>
-    <div class="header clearfix">
-      <div @click="changeIndex('')" :class="[index == '' ? 'active' : '']">
-        <i>全部</i>
-      </div>
-      <div @click="changeIndex('0')" :class="[index == '0' ? 'active' : '']">
-        <i>个人</i>
-      </div>
-      <div @click="changeIndex('1')" :class="[index == '1' ? 'active' : '']">
-        <i>定向</i>
-      </div>
-      <div @click="changeIndex('2')" :class="[index == '2' ? 'active' : '']">
-        <i class="width">集体</i>
-      </div>
-      <div @click="changeIndex('2')" :class="[index == '2' ? 'active' : '']">
-        <i class="width">捐赠</i>
-      </div>
+    <div class="header clearfix category-wrapper">
+      <category-scroll :currentIndex="currentIndex"
+                       :categorys="categorys"
+                       @select="selectCategory"></category-scroll>
     </div>
     <div class="content">
       <div class="bulletin">
@@ -25,43 +13,12 @@
       <div class="hot">
         <Scroll :pullUpLoad="pullUpLoad">
         <div class="proList">
-          <div class="item" @click="goTreeDetail">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
+          <div class="item" @click="go('/treeDetail?code='+item.code)" v-for="item in this.proList">
+            <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
+            <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" alt="" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" alt="" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" alt="" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" alt="" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" alt="" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" alt="" class="fr"></p>
+              <p class="hot-pro-title">{{item.name}}</p>
+              <p class="hot-pro-place"><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
               <p><span class="hot-pro-price">¥2480.00</span></p>
             </div>
           </div>
@@ -84,7 +41,9 @@ import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
-import { formatAmount } from 'common/js/util';
+import { formatAmount, formatDate, formatImg } from 'common/js/util';
+import { getDictList } from 'api/general';
+import { getProductPage } from 'api/biz';
 export default {
   data() {
     return {
@@ -92,24 +51,32 @@ export default {
       loading: true,
       toastText: '',
       currentList: [],
-      hasMore: false,
       text: '',
-      proList: [{
-
-      }],
-      categorys: [
-        {value: '全部', key: 'all'},
-        {value: '个人', key: '0'},
-        {value: '定向', key: '2'},
-        {value: '集体', key: '3'},
-        {value: '捐赠', key: '4'}],
+      start: 1,
+      limit: 10,
+      hasMore: true,
+      proList: [],
+      categorys: [{value: '全部', key: ''}],
+      sellTypeObj: {},
+        // {value: '个人', key: '0'},
+        // {value: '定向', key: '1'},
+        // {value: '集体', key: '2'},
+        // {value: '捐赠', key: '3'}],
       showCheckIn: false,
-      pullUpLoad: null
+      pullUpLoad: null,
+      currentIndex: +this.$route.query.index || 0,
+      index: 0
     };
   },
   methods: {
     formatAmount(amount) {
       return formatAmount(amount);
+    },
+    formatDate(date, format) {
+      return formatDate(date, format);
+    },
+    formatImg(img) {
+      return formatImg(img);
     },
     action() {
       this.showCheckIn = true;
@@ -117,39 +84,59 @@ export default {
     close() {
       this.showCheckIn = false;
     },
-    goTreeDetail() {
-      this.$router.push('/treeDetail');
+    // goTreeDetail() {
+    //   this.$router.push('/treeDetail');
+    // },
+    go(url) {
+      this.$router.push(url);
+    },
+    selectCategory(index) {
+      this.index = index;
+      this.currentIndex = index;
+      this.start = 1;
+      this.limit = 10;
+      this.proList = [];
+      this.getPageOrders();
+    },
+    getPageOrders() {
+      let sellType = this.categorys[this.index].key;
+      this.loading = true;
+      Promise.all([
+        getProductPage({
+          start: this.start,
+          limit: this.limit,
+          sellType: sellType,
+          status: '4'
+        })
+      ]).then(([res1]) => {
+        if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
+          this.hasMore = false;
+        }
+        this.loading = false;
+        res1.list.map(function () {
+          res1.applyDatetime = formatDate(res1.applyDatetime);
+        });
+        this.proList = this.proList.concat(res1.list);
+        this.start++;
+      }).catch(() => { this.loading = false; });
     }
   },
   mounted() {
     this.pullUpLoad = null;
-    // let userId;
-    // if (this.$route.query.userId) {
-    //   userId = this.$route.query.userId;
-    //   setCookie("userId", userId);
-    // } else {
-    //   userId = getCookie("userId");
-    // }
-    // Promise.all([
-    //   getUser1(userId),
-    //   checkRed(userId)
-    // ]).then(([res1, res2]) => {
-    //   this.userinfo = res1;
-    //   this.balance = res1.wareAmount;
-    //   setCookie("level", res1.level);
-    //   getLevel(res1.level).then(item => {
-    //     this.loading = false;
-    //     res1.level = item[0].name;
-    //   });
-    //   setCookie('isWare', res2.isWare);
-    //   if(this.balance < res2.redAmount) {
-    //     this.toastText = '您云仓余额低于红线，请购买';
-    //     this.$refs.toast.show();
-    //     setTimeout(() => {
-    //       this.$router.push('/threshold');
-    //     }, 2000)
-    //   }
-    // }).catch(() => { this.loading = false });
+    this.loading = true;
+    Promise.all([
+      getDictList('sell_type')
+    ]).then(([res1]) => {
+      this.loading = false;
+      res1.map((item) => {
+        this.categorys.push({
+          value: item.dvalue,
+          key: item.dkey
+        });
+        this.sellTypeObj[item.dkey] = item.dvalue;
+      });
+      this.getPageOrders();
+    }).catch(() => { this.loading = false; });
   },
   components: {
     FullLoading,
@@ -168,39 +155,9 @@ export default {
 .home-wrapper {
   position: fixed;
   width: 100%;
-  bottom: 0.98rem;
+  bottom: 0;
   top: 0;
   left: 0;
-  .header {
-    background-color: #fff;
-    position: absolute;
-    top: 0.88rem;
-    width: 100%;
-    > div {
-      float: left;
-      width: 20%;
-      height: 0.9rem;
-      position: relative;
-      text-align: center;
-      i {
-        font-size: $font-size-medium;
-        color: #333;
-        line-height: 0.9rem;
-        position: absolute;
-        left: 43%;
-        transform: translateX(-50%);
-        &.width {
-          width: 1.2rem;
-        }
-      }
-      &.active {
-        i {
-          color: $primary-color;
-          border-bottom: 0.06rem solid $primary-color;
-        }
-      }
-    }
-  }
   .fl {
     float: left;
   }
@@ -249,7 +206,7 @@ export default {
       }
     }
     .hot {
-      padding: 0 0.3rem 0.8rem;
+      padding: 0 0.3rem 0;
       background: $color-highlight-background;
       position: absolute;
       top: 2.5rem;
@@ -270,6 +227,21 @@ export default {
           border: 1px solid #e6e6e6;
           border-radius: 0.04rem;
           display: inline-block;
+          position: relative;
+          .sell-type {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #566272;
+            opacity: 0.5;
+            width: 0.8rem;
+            height: 0.4rem;
+            font-size: 0.24rem;
+            line-height: 0.4rem;
+            text-align: center;
+            color: $color-highlight-background;
+            border-radius: 0.05rem;
+          }
           .hot-pro-img {
             height: 2.3rem;
             width: 100%;
