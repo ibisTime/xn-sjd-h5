@@ -1,9 +1,9 @@
 <template>
-  <div class="home-wrapper">
+  <div class="mall-wrapper">
     <!--<m-header class="cate-header" title="首页" :showBack="showBack" actText="签到" @action="action"></m-header>-->
     <div class="content">
       <div class="slider-wrapper">
-        <slider :loop="loop" :showDots="showDots">
+        <slider :loop="loop">
           <div class="home-slider" v-for="item in banners" :key="item.code">
             <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
           </div>
@@ -23,22 +23,22 @@ export default {
   // name: "home",
   data() {
     return {
-      showDots: false,
+      // showDots: false,
       loop: true,
       banners: [
         {
           code: 'mall1',
-          pic: require('./mall1.jpeg')
+          pic: require('./mall1.png')
         },
         {
           code: 'mall2',
-          pic: require('./mall2.jpeg')},
+          pic: require('./mall2.png')},
         {
           code: 'mall3',
-          pic: require('./mall3.jpeg')},
+          pic: require('./mall3.png')},
         {
           code: 'mall4',
-          pic: require('./mall4.jpeg')}
+          pic: require('./mall4.png')}
       ]
     };
   },
@@ -74,7 +74,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../common/scss/mixin.scss";
 @import "../../common/scss/variable.scss";
-.home-wrapper {
+.mall-wrapper {
   position: fixed;
   top: 0;
   left: 0;
@@ -103,6 +103,13 @@ export default {
       height: 100%;
       width: 100%;
       overflow: hidden;
+      .slider {
+        .dots {
+          .dot {
+            background: #eee;
+          }
+        }
+      }
       .home-slider {
         height: 100%;
       }

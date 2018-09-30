@@ -1,6 +1,6 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="我的林空间" :showBack="showBack" actText="分享" @action="action"></m-header>
+    <m-header class="cate-header" title="我的林空间" :showBack="showBack"></m-header>
     <div class="content">
       <div class="me" @click="change">
         <img src="./head.png" alt="">

@@ -95,20 +95,28 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import { getGroupOrderList } from 'api/biz';
 
   export default {
     data() {
       return {
-        showBack: false
+        start: 1,
+        limit: 10
       };
-    },
-    created() {
-      this.pullUpLoad = null;
     },
     methods: {
       go(url) {
         this.$router.push(url);
       }
+    },
+    mounted() {
+      getGroupOrderList({
+        start: 1,
+        limit: 100,
+        produceCode: this.code
+      }).then((res) => {
+        this.list = res.list;
+      });
     },
     components: {
       Scroll,

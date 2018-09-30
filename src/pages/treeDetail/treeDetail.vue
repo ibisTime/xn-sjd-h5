@@ -26,7 +26,7 @@
           <span>古树定位</span>
           <img src="./more@2x.png" alt="" class="fr more">
         </div>
-        <div class="item" @click="go('/adopt-list')">
+        <div class="item" @click="go('/adopt-list?code=' + code)" v-show="detail.sellType === '3'">
           <span>已认养名单</span>
           <img src="./more@2x.png" alt="" class="fr more">
         </div>
@@ -81,13 +81,14 @@
       </div>
       <div class="other" v-show="detail.sellType === '3'">
         <span>下单识别码</span>
-        <input type="text" v-model="idCode">
+        <input type="text" v-model="identifyCode">
       </div>
       <div class="buypart-bottom">
         <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
       </div>
     </div>
     <toast ref="toast" :text="text"></toast>
+    <full-loading v-show="loading"></full-loading>
     <router-view></router-view>
   </div>
 </template>
@@ -100,7 +101,7 @@ import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import { formatAmount, formatImg, formatDate } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
-import { getProductDetail, getProductType } from 'api/biz';
+import { getProductDetail } from 'api/biz';
 export default {
   data() {
     return {
@@ -121,7 +122,9 @@ export default {
       number: 1,
       idCode: '',
       detail: {},
-      choosedIndex: 0
+      choosedIndex: 0,
+      code: '',   // 产品code
+      identifyCode: '' // 下单识别码
     };
   },
   methods: {
@@ -139,7 +142,6 @@ export default {
     },
     showPopUp() {
       this.flag = true;
-      console.log(this.flag);
     },
     genghuan() {
       this.flag = !this.flag;
@@ -158,10 +160,17 @@ export default {
         let proCode = this.detail.code;
         let specsCode = this.detail.productSpecsList[this.choosedIndex].code;
         let quantity = this.number;
-        let type = this.detail.sellType;
-        this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
+        if(this.detail.sellType !== '3') {
+          let type = this.detail.sellType;
+          this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
+        } else {
+          // 集体认养
+          let identifyCode = this.identifyCode || '';
+          this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&identifyCode=' + identifyCode);
+        }
       } else {
         this.text = '您未登录';
+        this.$refs.toast.show();
         setTimeout(() => {
           this.$router.push('/login');
         }, 1000);
@@ -173,28 +182,15 @@ export default {
   },
   mounted() {
     this.pullUpLoad = null;
-    let code = this.$route.query.code;
-    // let userId;
-    // if (this.$route.query.userId) {
-    //   userId = this.$route.query.userId;
-    //   setCookie("userId", userId);
-    // } else {
-    //   userId = getCookie("userId");
-    // }
+    this.code = this.$route.query.code;
     this.loading = true;
     Promise.all([
       getProductDetail({
-        code: code
-      }),
-      getProductType({
-        orderDir: 'asc',
-        orderColumn: 'order_no',
-        status: '1'
+        code: this.code
       })
-    ]).then(([res1, res2]) => {
+    ]).then(([res1]) => {
       this.loading = false;
       this.detail = res1;
-      console.log(res2);
     }).catch(() => { this.loading = false; });
   },
   components: {

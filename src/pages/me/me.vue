@@ -6,20 +6,20 @@
         <div class="in-content">
           <div class="card">
             <div class="info" @click="go('/userInfo')">
-              <img src="./../../common/image/avatar@2x.png" alt="">
+              <img :src="src">
               <div class="text">
-                <p><span>KOALA</span><span class="lv">LV {{userDetail.level}}</span></p>
+                <p><span>{{userDetail.nickname || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
                 <p class="mobile">{{userDetail.mobile}}</p>
               </div>
-              <img src="./more@2x.png" alt="" class="me-more fr">
+              <img src="./more@2x.png" class="me-more fr">
             </div>
             <div class="account">
-              <div class="money fl" @click="go('/money')">
+              <div class="money fl" @click="go('/money?accountNumber=' + cnyAccountNumber + '&amount=' + cny)">
                 <p class="number">{{formatAmount(cny)}}</p>
                 <p class="text">余额</p>
               </div>
               <div class="line fl"></div>
-              <div class="score fl" @click="go('/score')">
+              <div class="score fl" @click="go('/score?accountNumber=' + jfAccountNumber + '&amount=' + jf)">
                 <p class="number">{{jf}}</p>
                 <p class="text">积分</p>
               </div>
@@ -30,12 +30,12 @@
     </div>
     <div class="me-list">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/carbon-bubble?accountNumber=' + tppAccountNumber + '&amount=' + tpp)">
           <img src="./carbon-bubble@2x.png">
           <span>我的碳泡泡</span>
           <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item">
+        <div class="item" @click="go('/homepage')">
           <img src="./adopt@2x.png">
           <span>我的认养</span>
           <img src="./more@2x.png" class="fr more">
@@ -66,9 +66,9 @@
           <img src="./more@2x.png" class="fr more">
         </div>
       </Scroll>
-      <full-loading v-show="loading"></full-loading>
-      <toast ref="toast" :text="text"></toast>
     </div>
+    <full-loading v-show="loading"></full-loading>
+    <toast ref="toast" :text="text"></toast>
     <m-footer></m-footer>
   </div>
 </template>
@@ -77,7 +77,8 @@
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
   import MFooter from 'components/m-footer/m-footer';
-  import { formatAmount } from 'common/js/util';
+  import Scroll from 'base/scroll/scroll';
+  import { formatAmount, formatImg } from 'common/js/util';
   import {getCookie} from 'common/js/cookie';
   import {getUserDetail} from 'api/user';
   import { getAccount } from 'api/biz';
@@ -90,7 +91,12 @@
         userDetail: {},
         text: '',
         cny: 0,
-        jf: 0
+        cnyAccountNumber: '',
+        jf: 0,
+        jfAccountNumber: '',
+        tpp: 0,
+        tppAccountNumber: '',
+        src: ''
       };
     },
     created() {
@@ -115,12 +121,19 @@
           })
         ]).then(([res1, res2]) => {
           this.userDetail = res1;
+          this.src = formatImg(this.userDetail.photo) || require('./../../common/image/avatar@2x.png');
           res2.list.map((item) => {
             if(item.currency === 'CNY') {
               this.cny = item.amount;
+              this.cnyAccountNumber = item.accountNumber;
             }
             if(item.currency === 'JF') {
               this.jf = item.amount;
+              this.jfAccountNumber = item.accountNumber;
+            }
+            if(item.currency === 'TPP') {
+              this.tpp = item.amount;
+              this.tppAccountNumber = item.accountNumber;
             }
           });
           this.loading = false;
@@ -129,12 +142,13 @@
         this.text = '您未登录';
         this.$refs.toast.show();
         setTimeout(() => {
-          this.$router.push('/login');
+          this.$router.push('/login?me=1');
         }, 1000);
       }
     },
     components: {
       Toast,
+      Scroll,
       FullLoading,
       MFooter,
       MHeader

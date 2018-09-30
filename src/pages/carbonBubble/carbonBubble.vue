@@ -6,7 +6,7 @@
         <div class="in-content">
           <div class="card">
             <p>碳泡泡数量</p>
-            <p><span>2480</span></p>
+            <p><span>{{amount}}</span></p>
           </div>
           <div class="money-list">
             <div class="money-item">
@@ -25,35 +25,32 @@
         </div>
       </div>
     </div>
-    <router-view></router-view>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {setTitle} from 'common/js/util';
+  import {getAccountList} from 'api/account';
 
   export default {
     data() {
       return {
-        content: '',
-        telephone: '',
-        time: '',
-        loadingFlag: true,
-        protocol: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
+        amount: 0
       };
     },
-    created() {
-      setTitle('积分');
+    mounted() {
+      this.accountNumber = this.$route.query.accountNumber;
+      this.amount = +this.$route.query.amount;
+      // 请求流水
+      getAccountList({
+        accountNumber: this.accountNumber,
+        start: 1,
+        limit: 100
+      }).then((res) => {
+        // console.log(res);
+      });
     },
     methods: {
-      getTel() {
-        if (this.telephone) {
-          return `tel://${this.telephone}`;
-        } else {
-          return '';
-        }
-      },
       go(url) {
         this.$router.push(url);
       },

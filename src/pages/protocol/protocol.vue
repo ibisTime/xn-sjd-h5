@@ -13,7 +13,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
   import { getCookie } from 'common/js/cookie';
-  import { placeOrder } from 'api/biz';
+  import { placeOrder, recognizeOrder, recognizeOrderFirst } from 'api/biz';
 
   export default {
     data() {
@@ -30,21 +30,48 @@
       this.specsCode = this.$route.query.specsCode || '';
       this.quantity = this.$route.query.quantity || '';
       this.type = this.$route.query.type || '';
+      this.identifyCode = this.$route.query.identifyCode || '';
     },
     methods: {
       confirm() {
         let userId = getCookie('userId');
         this.loading = true;
-        placeOrder({
-          productCode: this.proCode,
-          specsCode: this.specsCode,
-          userId: userId,
-          quantity: this.quantity,
-          type: this.type
-        }).then((res) => {
-          this.loading = false;
-          this.go('/pay?orderCode=' + res.code);
-        }).catch(() => { this.loading = false; });
+        if(this.type) {
+          placeOrder({
+            productCode: this.proCode,
+            specsCode: this.specsCode,
+            userId: userId,
+            quantity: this.quantity,
+            type: this.type
+          }).then((res) => {
+            this.loading = false;
+            this.go('/pay?orderCode=' + res.code);
+          }).catch(() => { this.loading = false; });
+        } else {
+          // 集体下单
+          if(this.identifyCode) {
+            // 非第一人
+            recognizeOrder({
+              identifyCode: this.identifyCode,
+              userId: userId,
+              quantity: this.quantity
+            }).then((res) => {
+              this.loading = false;
+              this.go('/pay?orderCode=' + res);
+            }).catch(() => { this.loading = false; });
+          } else {
+            // 第一人
+            recognizeOrderFirst({
+              productCode: this.proCode,
+              specsCode: this.specsCode,
+              userId: userId,
+              quantity: this.quantity
+            }).then((res) => {
+              this.loading = false;
+              this.go('/pay?orderCode=' + res);
+            }).catch(() => { this.loading = false; });
+          }
+        }
       },
       go(url) {
         this.$router.push(url);

@@ -16,7 +16,8 @@
 <script type="text/ecmascript-6">
   import Loading from 'base/loading/loading';
   import Toast from 'base/toast/toast';
-  import {isLogin, setUser, getWxMobAndCapt} from 'common/js/util';
+  // import {isLogin, setUser, getWxMobAndCapt} from 'common/js/util';
+  import {setUser, getWxMobAndCapt} from 'common/js/util';
   import {getAppId} from 'api/general';
   // import {wxLogin, saveLoginLog} from 'api/user';
   import {wxLogin} from 'api/user';
@@ -38,40 +39,40 @@
       ])
     },
     created() {
-      if (!isLogin()) {
-        if (/code=([^&]+)&state=/.exec(location.href)) {
-          let code = RegExp.$1;
-          let userReferee = '';
-          if (/(?:\?|&)userReferee=([^&$]+)/.test(location.hash)) {
-            userReferee = RegExp.$1;
-          }
-          this.wxLogin(code, userReferee);
-        } else {
-          this.getAppId();
-        }
-      } else {
-        if (/\/#\//.test(location.href)) {
-          let hash = window.location.hash;
-          let path = hash;
-          if (hash === '' || hash === '#/') {
-            path = '#/home';
-          }
-          path = path.substr(1);
-          this.timer = setInterval(() => {
-            if (this.$route.fullPath !== '/') {
-              clearInterval(this.timer);
-              if (/\/user\/recommend/.test(hash)) {
-                location.replace(`${location.origin}/?#/home`);
-              } else {
-                location.replace(`${location.origin}/?#${path}`);
-              }
-            }
-          }, 20);
-        } else {
-          this.loadingFlag = false;
-        }
+      // if (!isLogin()) {
+      //   if (/code=([^&]+)&state=/.exec(location.href)) {
+      //     let code = RegExp.$1;
+      //     let userReferee = '';
+      //     if (/(?:\?|&)userReferee=([^&$]+)/.test(location.hash)) {
+      //       userReferee = RegExp.$1;
+      //     }
+      //     this.wxLogin(code, userReferee);
+      //   } else {
+      //     this.getAppId();
+      //   }
+      // } else {
+      //   if (/\/#\//.test(location.href)) {
+      //     let hash = window.location.hash;
+      //     let path = hash;
+      //     if (hash === '' || hash === '#/') {
+      //       path = '#/home';
+      //     }
+      //     path = path.substr(1);
+      //     this.timer = setInterval(() => {
+      //       if (this.$route.fullPath !== '/') {
+      //         clearInterval(this.timer);
+      //         if (/\/user\/recommend/.test(hash)) {
+      //           location.replace(`${location.origin}/?#/home`);
+      //         } else {
+      //           location.replace(`${location.origin}/?#${path}`);
+      //         }
+      //       }
+      //     }, 20);
+      //   } else {
+      //     this.loadingFlag = false;
+      //   }
         // saveLoginLog().catch(() => {});
-      }
+      // }
     },
     methods: {
       wxLogin(code, userReferee) {

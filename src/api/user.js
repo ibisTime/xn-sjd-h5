@@ -99,28 +99,6 @@ export function setTradePwd(tradePwd, smsCaptcha) {
 }
 
 /**
- * 修改昵称
- * @param {string} nickname
- */
-export function changeNickname(nickname) {
-  return fetch(805082, {
-    nickname,
-    userId: getUserId()
-  });
-}
-
-/**
- * 修改用户头像
- * @param {string} photo
- */
-export function changeAvatar(photo) {
-  return fetch(805080, {
-    photo,
-    userId: getUserId()
-  });
-}
-
-/**
  * 修改用户生日
  * @param {string} birthday
  */
@@ -338,7 +316,29 @@ export function register(data) {
 // 详情查用户
 export function getUserDetail(data) {
   return fetch(805121, {
-    userId: data.userId
+    ...data
+  });
+}
+
+// 修改头像
+export function changeAvatar(data) {
+  return fetch(805080, {
+    userId: getUserId(),
+    ...data
+  });
+}
+// 修改昵称
+export function changeNickname(data) {
+  return fetch(805082, {
+    userId: getUserId(),
+    ...data
+  });
+}
+// 完善资料
+export function completeInfo(data) {
+  return fetch(805070, {
+    userId: getUserId(),
+    ...data
   });
 }
 

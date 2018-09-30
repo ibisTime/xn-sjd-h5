@@ -106,6 +106,7 @@ export default {
           start: this.start,
           limit: this.limit,
           sellType: sellType,
+          categoryCode: this.categoryCode,
           status: '4'
         })
       ]).then(([res1]) => {
@@ -124,6 +125,7 @@ export default {
   mounted() {
     this.pullUpLoad = null;
     this.loading = true;
+    this.categoryCode = this.$route.query.typeCode || '';
     Promise.all([
       getDictList('sell_type')
     ]).then(([res1]) => {

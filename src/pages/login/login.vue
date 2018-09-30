@@ -39,7 +39,7 @@
 <script>
   import {login} from 'api/user';
   import {getConfig} from 'api/general';
-  import {setTitle, setUser} from 'common/js/util';
+  import {setUser} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
@@ -56,8 +56,8 @@
         pwd: ''
       };
     },
-    created() {
-      setTitle('登录');
+    mounted() {
+      this.me = this.$route.query.me || '';
     },
     methods: {
       login() {
@@ -82,7 +82,11 @@
         this.$router.push(url);
       },
       back() {
-        this.$router.back();
+        if(this.me) {
+          this.go('/home');
+        } else {
+          this.$router.back();
+        }
       },
       AppId() {
         // 获取用户appid
@@ -136,7 +140,6 @@
     .header {
       margin-bottom: 1.72rem;
       img  {
-        /*width: 0.24rem;*/
         height: 0.42rem;
       }
     }

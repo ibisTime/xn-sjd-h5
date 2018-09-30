@@ -73,10 +73,6 @@ export function getAppId() {
   return getUserSystemConfig('WX_H5_ACCESS_KEY');
 }
 
-// 获取七牛token
-export function getQiniuToken() {
-  return fetch(805951, {});
-}
 // 获取banner
 export function getBannerList() {
   return fetch(805806, {
@@ -117,7 +113,7 @@ export function sendCaptcha(data) {
 
 // 系统参数
 export function getConfig(ckey) {
-  return fetch(627087, {
+  return fetch(630047, {
     ckey: ckey
   });
 }
@@ -138,4 +134,8 @@ export function getDictList(parentKey) {
     getDictList[parentKey] = data;
     return Promise.resolve(data);
   });
+}
+// 获取七牛token
+export function getQiniuToken() {
+  return fetch(630091, {});
 }

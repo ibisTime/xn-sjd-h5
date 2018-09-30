@@ -101,3 +101,12 @@ export function getSignIntegral(accountNumber, bizType) {
     bizType
   });
 }
+
+/**************************************************************************************/
+
+// 分页查询我的账户流水
+export function getAccountList(data) {
+  return fetch(802322, {
+    ...data
+  });
+}

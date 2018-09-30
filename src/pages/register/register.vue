@@ -1,5 +1,6 @@
 <template>
   <div class="full-screen-wrapper content">
+    <div class="header"><img src="./back.png" @click="back"></div>
     <div class="title">注册</div>
     <div class="content">
       <div class="form-login">
@@ -46,7 +47,6 @@
 </template>
 <script>
   import {register} from 'api/user';
-  import {setTitle} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
   import {sendCaptcha} from 'api/general';
   import FullLoading from 'base/full-loading/full-loading';
@@ -67,9 +67,6 @@
         captcha: '',
         sending: false
       };
-    },
-    created() {
-      setTitle('注册');
     },
     methods: {
       // 注册
@@ -138,6 +135,9 @@
           this.sending = false;
           this.captBtnText = '获取验证码';
         }
+      },
+      back() {
+        this.$router.back();
       }
     },
     components: {
@@ -150,21 +150,28 @@
   @import "~common/scss/variable";
   .content {
     background: $color-highlight-background;
-    padding: 1.5rem 0.6rem;
+    padding: 0 0.4rem;
     .fl {
       float: left;
     }
     .fr {
       float: right;
     }
+    .header {
+      margin-bottom: 1.72rem;
+      img  {
+        height: 0.42rem;
+      }
+    }
     .title {
       font-size: $font-size-large-xx;
       margin-bottom: 0.76rem;
+      padding: 0 0.2rem;
     }
     .content {
       width: 100%;
       height: 4.7rem;
-      padding: 0;
+      padding: 0 0.2rem;
       margin-bottom: 0.3rem;
       .form-login {
         width: 100%;
@@ -204,6 +211,7 @@
       color: $color-text-l;
       font-size: $font-size-medium-s;
       margin-bottom: 1.2rem;
+      padding: 0 0.2rem;
       .ck {
         width: 0.24rem;
         height: 0.24rem;
@@ -231,6 +239,7 @@
     }
     .login-btn {
       margin-bottom: 0.4rem;
+      padding: 0 0.2rem;
       button {
         width: 100%;
         height: 0.9rem;

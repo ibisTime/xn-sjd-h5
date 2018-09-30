@@ -11,11 +11,13 @@
         </slider>
         <!--<img src="./../../common/image/banner-default.png" class="banner-default">-->
       </div>
-      <div class="notice">
-        <img src="./notice@2x.png">
-        <div class="border"></div>
-        <div class="title">古树名木认养，10月8日启动！</div>
-        <div class="more">更多</div>
+      <div class="notices">
+        <div class="notice" v-for="item in noticeList">
+          <img src="./notice@2x.png">
+          <div class="border"></div>
+          <div class="title">{{item.title}}</div>
+          <div class="more">更多</div>
+        </div>
       </div>
       <div class="icons">
         <div class="icon-item" @click="go('/treeList?typeCode=' + item.code)" v-for="item in proType">
@@ -31,10 +33,10 @@
         <img src="./emotion@2x.png" class="emotion">
         <img src="./more@2x.png" class="more">
       </div>
-      <div class="bulletin">
+      <div class="bulletin" v-for="item in bulletinList">
         <img src="./bulletin@2x.png">
         <div class="border"></div>
-        <div class="title">恭喜Bluce，成功参加See的传承认养</div>
+        <div class="title">{{item.title}}</div>
         <div class="more">更多</div>
       </div>
       <div class="hot">
@@ -62,7 +64,6 @@
     <toast ref="toast" :text="text"></toast>
     <m-footer></m-footer>
     <check-in :title="title" v-show="showCheckIn" @close="close"></check-in>
-    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -77,7 +78,7 @@ import CheckIn from 'base/check-in/check-in';
 import { formatAmount, formatImg, formatDate } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getBanner } from 'api/general';
-import { getProductPage, getProductType, signIn } from 'api/biz';
+import { getProductPage, getProductType, signIn, getMessage } from 'api/biz';
 export default {
   // name: "home",
   data() {
@@ -91,10 +92,12 @@ export default {
       showBack: false,
       proList: [],
       showCheckIn: false,
-      pullUpLoad: false,
+      pullUpLoad: null,
       banners: [],
       proType: [],
-      loop: false
+      loop: false,
+      noticeList: [],
+      bulletinList: []
     };
   },
   methods: {
@@ -150,14 +153,24 @@ export default {
         orderDir: 'asc',
         orderColumn: 'order_no',
         status: '1'
+      }),
+      getMessage({
+        status: '1',
+        type: '1'
+      }),
+      getMessage({
+        status: '1',
+        type: '2'
       })
-    ]).then(([res1, res2, res3]) => {
+    ]).then(([res1, res2, res3, res4, res5]) => {
       this.banners = res1;
       if(this.banners.length > 1) {
         this.loop = true;
       }
       this.proList = res2.list;
       this.proType = res3;
+      this.noticeList = res4.slice(0, 2);
+      this.bulletinList = res5.slice(0, 2);
       this.loading = false;
     }).catch(() => { this.loading = false; });
   },
@@ -182,6 +195,21 @@ export default {
   left: 0;
   bottom: 0.98rem;
   width: 100%;
+
+  @-webkit-keyframes anim1{
+    0% {top: 0.7rem;opacity: 1}
+    50% {top: -0.7rem;opacity: 1}
+    75% {top: -0.7rem;opacity: 0}
+    100%{top:0.7rem;opacity: 0}
+  }
+  @-webkit-keyframes anim2{
+
+    0% {top: -0.7rem;opacity: 0}
+    25% {top: 0.7rem;opacity: 0}
+    50% {top: 0.7rem;opacity: 1}
+    100%{top: -0.7rem;opacity: 1}
+  }
+
   .fl {
     float: left;
   }
@@ -217,31 +245,46 @@ export default {
         background-size: 100% 100%;
       }
     }
-    .notice {
-      display: flex;
-      align-items: center;
-      font-size: 0.24rem;
-      padding: 0.24rem 0.3rem;
-      background: $color-highlight-background;
-      img {
-        width: 0.6rem;
-        height: 0.25rem;
-        margin-right: 0.11rem;
+    .notices {
+      position: relative;
+      width: 100%;
+      height: 0.7rem;
+      overflow: hidden;
+      .notice {
+        display: flex;
+        align-items: center;
+        font-size: 0.24rem;
+        padding: 0.24rem 0.3rem;
+        background: $color-highlight-background;
+        position: absolute;
+        width: 100%;
+        img {
+          width: 0.6rem;
+          height: 0.25rem;
+          margin-right: 0.11rem;
+        }
+        .border {
+          display: inline;
+          width: 0;
+          height: 0.15rem;
+          border-right: 1px solid #ccc;
+          margin-right: 0.11rem;
+        }
+        .title {
+          line-height: 0.33rem;
+          flex: 1;
+        }
+        .more {
+          line-height: 0.33rem;
+          color: #999;
+        }
       }
-      .border {
-        display: inline;
-        width: 0;
-        height: 0.15rem;
-        border-right: 1px solid #ccc;
-        margin-right: 0.11rem;
+      .notice:nth-child(1){
+        -webkit-animation: anim1 3s linear infinite;
       }
-      .title {
-        line-height: 0.33rem;
-        flex: 1;
-      }
-      .more {
-        line-height: 0.33rem;
-        color: #999;
+
+      .notice:nth-child(2){
+        -webkit-animation: anim2 3s linear infinite;
       }
     }
     .icons {
@@ -297,33 +340,49 @@ export default {
         /*margin-top: 0.5rem;*/
       }
     }
-    .bulletin {
-      display: flex;
-      align-items: center;
-      font-size: 0.24rem;
-      padding: 0.24rem 0.3rem;
-      background: #fdf4f3;
-      img {
-        width: 0.6rem;
-        height: 0.25rem;
-        margin-right: 0.11rem;
+    .bulletins {
+      position: relative;
+      width: 100%;
+      height: 0.7rem;
+      overflow: hidden;
+      .bulletin {
+        display: flex;
+        align-items: center;
+        font-size: 0.24rem;
+        padding: 0.24rem 0.3rem;
+        background: #fdf4f3;
+        position: absolute;
+        width: 100%;
+        img {
+          width: 0.6rem;
+          height: 0.25rem;
+          margin-right: 0.11rem;
+        }
+        .border {
+          display: inline;
+          width: 0;
+          height: 0.15rem;
+          border-right: 1px solid #ccc;
+          margin-right: 0.11rem;
+        }
+        .title {
+          line-height: 0.33rem;
+          flex: 1;
+        }
+        .more {
+          line-height: 0.33rem;
+          color: #999;
+        }
       }
-      .border {
-        display: inline;
-        width: 0;
-        height: 0.15rem;
-        border-right: 1px solid #ccc;
-        margin-right: 0.11rem;
+      .bulletin:nth-child(1){
+        -webkit-animation: anim1 3s linear infinite;
       }
-      .title {
-        line-height: 0.33rem;
-        flex: 1;
-      }
-      .more {
-        line-height: 0.33rem;
-        color: #999;
+
+      .bulletin:nth-child(2){
+        -webkit-animation: anim2 3s linear infinite;
       }
     }
+
     .hot {
       padding: 0.4rem 0.3rem;
       background: $color-highlight-background;

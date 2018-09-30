@@ -25,7 +25,7 @@
             <div @click="selectPayType(3)">
               <img src="./balance@2x.png" alt="">
               <div class="text">
-                <p>余额支付（剩余¥10.00）</p>
+                <p>余额支付（剩余¥{{formatAmount(cny)}}）</p>
               </div>
               <img class="money fr" src="./choosed@2x.png" v-show="balance">
               <img class="money fr" src="./unchoosed@2x.png" v-show="!balance">
@@ -35,7 +35,7 @@
         <div class="gray"></div>
         <div class="score">
           <p>积分抵扣</p>
-          <div class="info-item">最多可抵扣3元（剩余30分）
+          <div class="info-item">最多可抵扣{{jf*rate}}元（剩余{{jf}}分）
             <div class="label">
               <switch-option class="option" :value="isPublish" @update:value="updatePublish"></switch-option>
             </div>
@@ -43,41 +43,92 @@
         </div>
       </div>
       <div class="footer">
-        <span>金额：<span>{{amount}}</span><span>元</span></span>
-        <button class="fr">支付</button>
+        <span>金额：<span>{{formatAmount(amount)}}</span><span>元</span></span>
+        <button class="fr" @click="payOrder">支付</button>
       </div>
     </div>
-    <router-view></router-view>
+    <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import SwitchOption from 'base/switch-option/switch-option';
+  import Toast from 'base/toast/toast';
+  import { getCookie } from 'common/js/cookie';
+  import { formatAmount } from 'common/js/util';
+  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail } from 'api/biz';
+  import { getConfig } from 'api/general';
 
   export default {
     data() {
       return {
-        wechat: true,
-        alipay: false,
-        balance: false,
+        text: '',
+        wechat: true,    // 微信支付
+        alipay: false,   // 支付宝支付
+        balance: false,  // 余额支付
+        isPublish: false,
+        cny: 0,
+        jf: 0,
         amount: 0,
-        isPublish: false
+        rate: 0
       };
     },
     mounted() {
-      this.proCode = this.$route.query.proCode || '';
-      this.specsCode = this.$route.query.specsCode || '';
-      this.quantity = this.$route.query.quantity || '';
-      this.type = this.$route.query.type || '';
+      this.orderCode = this.$route.query.orderCode || '';
+      let userId = getCookie('userId');
+      this.loading = true;
+      if(this.orderCode[0] === 'G') {
+        // 集体订单
+        Promise.all([
+          getOrganizeOrderDetail({
+            code: this.orderCode
+          }),
+          getAccount({
+            userId: userId
+          }),
+          getConfig('jf_cny_rate')
+        ])
+          .then(([res1, res2, res3]) => {
+            this.amount = res1.amount;
+            this.rate = res3.cvalue;
+            res2.list.map((item) => {
+              if(item.currency === 'CNY') {
+                this.cny = item.amount;
+              }
+              if(item.currency === 'JF') {
+                this.jf = item.amount;
+              }
+            });
+          });
+      } else {
+        // 非集体订单
+        Promise.all([
+          getOrderDetail({
+            code: this.orderCode
+          }),
+          getAccount({
+            userId: userId
+          }),
+          getConfig('jf_cny_rate')
+        ])
+          .then(([res1, res2, res3]) => {
+            this.amount = res1.amount;
+            this.rate = res3.cvalue;
+            res2.list.map((item) => {
+              if(item.currency === 'CNY') {
+                this.cny = item.amount;
+              }
+              if(item.currency === 'JF') {
+                this.jf = item.amount;
+              }
+            });
+          });
+      }
     },
     methods: {
-      getTel() {
-        if (this.telephone) {
-          return `tel://${this.telephone}`;
-        } else {
-          return '';
-        }
+      formatAmount(amount) {
+        return formatAmount(amount);
       },
       go(url) {
         this.$router.push(url);
@@ -99,12 +150,56 @@
       },
       updatePublish(val) {
         this.isPublish = val;
+      },
+      // 支付订单
+      payOrder() {
+        let payType = this.wechat ? '3' : this.alipay ? '2' : '1';
+        let isJfDeduct = !!this.isPublish;
+        this.loading = true;
+        if(this.orderCode[0] === 'G') {
+          // 集体订单
+          payOrganizeOrder({
+            code: this.orderCode,
+            payType: payType,
+            isJfDeduct: isJfDeduct
+          }).then((res) => {
+            this.loading = false;
+            if(res) {
+              this.text = '支付成功';
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.$router.push('/my-order');
+              }, 1000);
+            }
+          }).catch(() => {
+            this.loading = false;
+          });
+        } else {
+          // 非集体订单
+          payOrder({
+            code: this.orderCode,
+            payType: payType,
+            isJfDeduct: isJfDeduct
+          }).then((res) => {
+            this.loading = false;
+            if(res) {
+              this.text = '支付成功';
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.$router.push('/my-order');
+              }, 1000);
+            }
+          }).catch(() => {
+            this.loading = false;
+          });
+        }
       }
     },
     components: {
       Scroll,
       MHeader,
-      SwitchOption
+      SwitchOption,
+      Toast
     }
   };
 </script>

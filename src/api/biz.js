@@ -45,3 +45,67 @@ export function getAccount (data) {
     ...data
   });
 }
+
+// 详情查非集体订单
+export function getOrderDetail (data) {
+  return fetch(629046, {
+    ...data
+  });
+}
+
+// 详情查集体订单
+export function getOrganizeOrderDetail (data) {
+  return fetch(629056, {
+    ...data
+  });
+}
+
+// 支付非集体订单
+export function payOrder (data) {
+  return fetch(629042, {
+    ...data
+  });
+}
+
+// 支付集体订单
+export function payOrganizeOrder (data) {
+  return fetch(629053, {
+    ...data
+  });
+}
+
+// 分页查认养权
+export function adoptionRightPage (data) {
+  return fetch(629205, {
+    ...data
+  });
+}
+
+// 第一人下单集体认养订单
+export function recognizeOrderFirst (data) {
+  return fetch(629050, {
+    ...data
+  });
+}
+
+// 第一人下单集体认养订单
+export function recognizeOrder (data) {
+  return fetch(629051, {
+    ...data
+  });
+}
+
+// 获取消息
+export function getMessage (data) {
+  return fetch(805306, {
+    ...data
+  });
+}
+
+// 分页查集体认养订单
+export function getGroupOrderList (data) {
+  return fetch(629055, {
+    ...data
+  });
+}
+
