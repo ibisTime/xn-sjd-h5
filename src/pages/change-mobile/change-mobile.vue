@@ -11,7 +11,7 @@
         </div>
         <div class="form-item  border-bottom-1px">
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="captcha" @change="_captValid" placeholder="请输入验证码">
+            <input type="tel" class="item-input" name="captcha" v-model="captcha" v-validate="'required'" placeholder="请输入验证码">
             <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
           </div>
           <div class="item-btn">
@@ -20,14 +20,14 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <input v-focus type="tel" class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入新手机号">
-            <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+            <input type="tel" class="item-input" name="newMobile" v-model="newMobile" v-validate="'required|mobile'" placeholder="请输入新手机号">
+            <span v-show="errors.has('newMobile')" class="error-tip">{{errors.first('newMobile')}}</span>
           </div>
         </div>
         <div class="form-item  border-bottom-1px">
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="captcha" @change="_captValid" placeholder="请输入验证码">
-            <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
+            <input type="tel" class="item-input" name="newCaptcha" v-model="newCaptcha" placeholder="请输入验证码">
+            <span v-show="errors.has('newCaptcha')" class="error-tip">{{errors.first('newCaptcha')}}</span>
           </div>
           <div class="item-btn">
             <button :disabled="sending" @click="sendCaptcha" :class="[sending ? 'gray' : '']">{{captBtnText}}</button>
@@ -43,11 +43,8 @@
 </template>
 <script>
   import MHeader from 'components/m-header/m-header';
-  import {mapMutations} from 'vuex';
-  import {SET_USER_MOBILE} from 'store/mutation-types';
   import {sendCaptcha} from 'api/general';
   import {changeMobile} from 'api/user';
-  import {mobileValid, captValid, setTitle} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
 
@@ -58,25 +55,31 @@
         sending: false,
         setting: false,
         captcha: '',
-        captErr: '',
         captBtnText: '获取验证码',
         mobile: '',
-        mobErr: ''
+        newMobile: '',
+        newCaptcha: ''
       };
     },
-    created() {
-      setTitle('修改手机号');
-    },
     methods: {
+      // 发送验证码
       sendCaptcha() {
-        if (this._mobileValid()) {
-          this.sending = true;
-          sendCaptcha(this.mobile, 805061).then(() => {
-            this._setInterval();
-          }).catch(() => {
-            this._clearInterval();
-          });
-        }
+        this.$validator.validate('mobile').then((res) => {
+          if(res) {
+            this.sending = true;
+            this.loading = true;
+            sendCaptcha({
+              bizType: '805041',     // 接口号要换
+              mobile: this.mobile
+            }).then(() => {
+              this.loading = false;
+              this._setInterval();
+            }).catch(() => {
+              this.loading = false;
+              this._clearInterval();
+            });
+          }
+        });
       },
       _changeMobile() {
         if (this._valid()) {
@@ -92,21 +95,6 @@
               this.setting = false;
             });
         }
-      },
-      _valid() {
-        let r1 = this._mobileValid();
-        let r2 = this._captValid();
-        return r1 && r2;
-      },
-      _mobileValid() {
-        let result = mobileValid(this.mobile);
-        this.mobErr = result.msg;
-        return !result.err;
-      },
-      _captValid() {
-        let result = captValid(this.captcha);
-        this.captErr = result.msg;
-        return !result.err;
       },
       _setInterval() {
         let i = 60;
@@ -124,13 +112,7 @@
           this.sending = false;
           this.captBtnText = '获取验证码';
         }
-      },
-      ...mapMutations({
-        setUserMobile: SET_USER_MOBILE
-      })
-    },
-    beforeDestroy() {
-      this.timer && clearInterval(this.timer);
+      }
     },
     components: {
       Toast,

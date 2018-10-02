@@ -6,15 +6,15 @@
         <div class="form-item border-bottom-1px">
           <div class="item-label">收货人</div>
           <div class="item-input-wrapper">
-            <input type="text" class="item-input" v-model="name" @input="_nameValid" placeholder="你的姓名">
-            <span v-show="nameErr" class="error-tip">{{nameErr}}</span>
+            <input type="text" class="item-input" v-model="name" name="name" v-validate="'required'" placeholder="你的姓名">
+            <span v-show="errors.has('name')" class="error-tip">{{errors.first('name')}}</span>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-label">电话</div>
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="mobile" @change="_mobileValid" placeholder="你的联系方式">
-            <span v-show="mobErr" class="error-tip">{{mobErr}}</span>
+            <input type="tel" class="item-input" v-model="mobile" name="mobile" v-validate="'required|mobile'" placeholder="你的联系方式">
+            <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
@@ -34,8 +34,8 @@
         <div class="form-item is-textarea border-bottom-1px">
           <div class="item-label">门牌号</div>
           <div class="item-input-wrapper">
-            <textarea v-model="address" @input="_addressValid" rows="2" class="item-input" placeholder="请输入详细地址"></textarea>
-            <span v-show="addressErr" class="error-tip">{{addressErr}}</span>
+            <textarea v-model="address" v-validate="'required'" name="address" rows="2" class="item-input" placeholder="请输入详细地址"></textarea>
+            <span v-show="errors.has('address')" class="error-tip">{{errors.first('address')}}</span>
           </div>
         </div>
 
@@ -50,9 +50,6 @@
 </template>
 <script>
   import {addAddress, editAddress, getAddressList} from 'api/user';
-  import {mobileValid, setTitle, realNameValid, addressValid} from 'common/js/util';
-  import {mapGetters, mapMutations} from 'vuex';
-  import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
   import CityPicker from 'base/city-picker/city-picker';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
@@ -63,9 +60,7 @@
       return {
         setting: false,
         name: '',
-        nameErr: '',
         mobile: '',
-        mobErr: '',
         province: '',
         city: '',
         district: '',
@@ -82,19 +77,11 @@
     created() {
       this.code = this.$route.params.id || '';
       if (this.code) {
-        setTitle('修改地址');
         this.headerTitle = '修改收货地址';
         // this.getAddress();
       } else {
-        setTitle('新增地址');
         // this._getAddressList();
       }
-    },
-    computed: {
-      ...mapGetters([
-        'addressList',
-        'currentAddrCode'
-      ])
     },
     methods: {
       getAddress() {
@@ -207,45 +194,7 @@
         }).catch(() => {
           this.setting = false;
         });
-      },
-      _valid() {
-        let r1 = this._nameValid();
-        let r2 = this._mobileValid();
-        let r3 = this._provinceValid();
-        let r4 = this._addressValid();
-        return r1 && r2 && r3 && r4;
-      },
-      _nameValid() {
-        if (!this.name) {
-          this.nameErr = '不能为空';
-          return false;
-        }
-        let result = realNameValid(this.name);
-        this.nameErr = result.msg;
-        return !result.err;
-      },
-      _mobileValid() {
-        let result = mobileValid(this.mobile);
-        this.mobErr = result.msg;
-        return !result.err;
-      },
-      _provinceValid() {
-        if (!this.province) {
-          this.provErr = '不能为空';
-          return false;
-        }
-        this.provErr = '';
-        return true;
-      },
-      _addressValid() {
-        let result = addressValid(this.address);
-        this.addressErr = result.msg;
-        return !result.err;
-      },
-      ...mapMutations({
-        setAddressList: SET_ADDRESS_LIST,
-        setCurAddr: SET_CURRENT_ADDR
-      })
+      }
     },
     components: {
       CityPicker,
