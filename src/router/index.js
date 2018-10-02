@@ -52,9 +52,13 @@ const Address = () => import('@/pages/address-list/address-list');
 // 地址编辑页
 const AddressAddEdit = () => import('@/pages/address-addedit/address-addedit');
 // 古树认养(列表页）
-const TreeList = () => import('@/pages/treeList/treeList');
+const ProductList = () => import('@/pages/product-list/product-list');
 // 古树详情
-const TreeDetail = () => import('@/pages/treeDetail/treeDetail');
+const ProductDetail = () => import('@/pages/product-detail/product-detail');
+// 古树认养-树木查看
+const ProductTreeList = () => import('@/pages/productTree-list/productTree-list');
+// 古树认养-树木查看-详情
+const ProductTreeDetail = () => import('@/pages/productTree-detail/productTree-detail');
 // 支付页
 const Pay = () => import('@/pages/pay/pay');
 // 已认养名单
@@ -170,12 +174,20 @@ export default new Router({
       component: AddressAddEdit
     },
     {
-      path: '/treeList',
-      component: TreeList
+      path: '/product-list',
+      component: ProductList
     },
     {
-      path: '/treeDetail',
-      component: TreeDetail
+      path: '/product-detail',
+      component: ProductDetail
+    },
+    {
+      path: '/productTree-list',
+      component: ProductTreeList
+    },
+    {
+      path: '/productTree-detail',
+      component: ProductTreeDetail
     },
     {
       path: '/pay',

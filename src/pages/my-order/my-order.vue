@@ -158,8 +158,8 @@
       changeStatus(index) {
         this.status = index;
       },
-      goTreeDetail() {
-        this.$router.push('/treeDetail');
+      goProductDetail() {
+        this.$router.push('/product-detail');
       }
     },
     components: {

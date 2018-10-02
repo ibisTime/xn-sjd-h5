@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="icons">
-        <div class="icon-item" @click="go('/treeList?typeCode=' + item.code)" v-for="item in proType">
+        <div class="icon-item" @click="go('/product-list?typeCode=' + item.code)" v-for="item in proType">
           <img :src="formatImg(item.pic)">
           <p>{{item.name}}</p>
         </div>
@@ -45,7 +45,7 @@
           <span class="fr more">更多</span>
         </div>
         <div class="proList">
-          <div class="item"  v-for="item in proList" @click="go('/treeDetail?code='+item.code)">
+          <div class="item"  v-for="item in proList" @click="go('/product-detail?code='+item.code)">
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>

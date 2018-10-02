@@ -1,4 +1,4 @@
-<template>
+ <template>
   <transition name="confirm-fade">
     <div class="loading-module-cont" v-show="showFlag">
       <span class="loading-module-text">{{text}}</span>

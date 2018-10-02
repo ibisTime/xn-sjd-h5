@@ -15,6 +15,20 @@ export function getProductDetail (data) {
     ...data
   });
 }
+// 分页查询认养产品的树
+export function getProductTreePage (data) {
+  return fetch(629035, {
+    start: 1,
+    limit: 5,
+    ...data
+  });
+}
+// 详情查询认养产品的树
+export function getProductTreeDetail (data) {
+  return fetch(629036, {
+    ...data
+  });
+}
 
 // 列表查产品分类
 export function getProductType (data) {
