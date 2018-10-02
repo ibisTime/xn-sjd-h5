@@ -13,7 +13,7 @@
       <div class="hot">
         <Scroll :pullUpLoad="pullUpLoad">
         <div class="proList">
-          <div class="item" @click="go('/treeDetail?code='+item.code)" v-for="item in this.proList">
+          <div class="item" @click="go('/product-detail?code='+item.code)" v-for="item in this.proList">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
@@ -84,8 +84,8 @@ export default {
     close() {
       this.showCheckIn = false;
     },
-    // goTreeDetail() {
-    //   this.$router.push('/treeDetail');
+    // goProductDetail() {
+    //   this.$router.push('/product-detail');
     // },
     go(url) {
       this.$router.push(url);

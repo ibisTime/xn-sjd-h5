@@ -1,6 +1,6 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="古树详情"></m-header>
+    <m-header class="cate-header" title="产品详情"></m-header>
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="slider-wrapper">
@@ -8,37 +8,44 @@
       </div>
       <div class="info">
         <div class="item">
+          <span>产品名称</span><span>{{detail.name}}</span>
+        </div>
+        <div class="item">
+          <span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>
+        </div>
+        <div class="item">
+          <span>已募集数量</span><span>{{detail.nowCount}}/{{detail.raiseCount}}</span>
+        </div>
+        <div class="item">
+          <span>古树产地</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
+        </div>
+        <div class="item">
           <span>古树学名</span><span>{{detail.scientificName}}</span>
         </div>
         <div class="item">
           <span>古树品种</span><span>{{detail.variety}}</span>
         </div>
-        <div class="item">
-          <span>古树分类</span><span>{{detail.categoryName}}</span>
-        </div>
-        <div class="item">
-          <span>古树级别</span><span>{{detail.rank}}</span>
-        </div>
-        <div class="item">
-          <span>古树产地</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
-        </div>
-        <div class="item" @click="go('/invitation')">
-          <span>古树定位</span>
-          <img src="./more@2x.png" alt="" class="fr more">
-        </div>
-        <div class="item" @click="go('/adopt-list?code=' + code)" v-show="detail.sellType === '3'">
+        <!--<div class="item" @click="go('/invitation')">-->
+          <!--<span>古树定位</span>-->
+          <!--<img src="./more@2x.png" alt="" class="fr more">-->
+        <!--</div>-->
+        <div class="item" @click="go('/adopt-list?code=' + code)">
           <span>已认养名单</span>
           <img src="./more@2x.png" alt="" class="fr more">
         </div>
+        <div class="item" @click="go('/productTree-list?code=' + code)">
+          <span>树木查看</span>
+          <img src="./more@2x.png" alt="" class="fr more">
+        </div>
       </div>
-      <!--<div class="gray"></div>-->
-      <!--<div class="description">-->
-        <!--<div class="description-title">-->
-          <!--<div class="border"></div>-->
-          <!--<span>图文详情</span>-->
-          <!--<div class="description-detail" v-html="descriptionDetail"></div>-->
-        <!--</div>-->
-      <!--</div>-->
+      <div class="gray"></div>
+      <div class="description">
+        <div class="description-title">
+          <div class="border"></div>
+          <span>图文详情</span>
+          <div class="description-detail" v-html="descriptionDetail">{{detail.description}}</div>
+        </div>
+      </div>
       <!--<div class="mall-content">-->
         <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
       <!--</div>-->
@@ -218,6 +225,12 @@ export default {
   .fr {
     float: right;
   }
+  .gray {
+    width: 100%;
+    height: 0.2rem;
+    padding: 0;
+    background: #f5f5f5;
+  }
   .banner-default {
     width: 100%;
     height: 4rem;
@@ -249,13 +262,10 @@ export default {
           height: 0.21rem;
           margin-top: 0.4rem;
         }
+        &:last-child{
+          border-bottom: none;
+        }
       }
-    }
-    .gray {
-      width: 100%;
-      height: 0.2rem;
-      padding: 0;
-      background: #f5f5f5;
     }
     .description {
       background: #fff;
@@ -272,6 +282,13 @@ export default {
         span {
           font-size: $font-size-medium-x;
           line-height: 0.42rem;
+        }
+      }
+      .description-detail{
+        padding: 0.2rem 0;
+        img{
+          max-width: 100%;
+          vertical-align: bottom;
         }
       }
     }

@@ -82,7 +82,7 @@
     <div class="tree" v-show="type === 1">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="tree-list">
-          <div class="item" @click="go('/treeDetail')">
+          <div class="item" @click="go('/product-detail')">
             <img src="./emotion@2x.png" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
@@ -114,7 +114,7 @@
               <p><span class="hot-pro-price">¥2480.00</span></p>
             </div>
           </div>
-          <div class="item" @click="goTreeDetail">
+          <div class="item" @click="goProductDetail">
             <img src="./emotion@2x.png" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
@@ -146,7 +146,7 @@
               <p><span class="hot-pro-price">¥2480.00</span></p>
             </div>
           </div>
-          <div class="item" @click="goTreeDetail">
+          <div class="item" @click="product-detail">
             <img src="./emotion@2x.png" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">捐赠认养古树</p>
@@ -203,8 +203,8 @@
       changeType(index) {
         this.type = index;
       },
-      goTreeDetail() {
-        this.$router.push('/treeDetail');
+      goProductDetail() {
+        this.$router.push('/product-detail');
       }
     },
     components: {
