@@ -19,7 +19,7 @@
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
               <p class="hot-pro-place"><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
+              <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}起</span></p>
             </div>
           </div>
         </div>

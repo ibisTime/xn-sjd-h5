@@ -3,13 +3,15 @@
     <m-header class="cate-header" title="树木查看"></m-header>
     <div class="productTree-list">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/productTree-detail?code=')">
+        <div class="item" @click="go('/productTree-detail?code='+item.code)" v-for="item in this.proList">
           <div class="info">
-            <img src="./tree@3x.png">
+           <div class="imgWrap" :style="getImgSyl(item.pic)">
+             <samp>{{item.status}}</samp>
+           </div>
             <div class="text">
-              <p class="title">古树名称</p>
-              <p class="position">浙江 杭州</p>
-              <div class="props"><span class="duration">年限：1年</span></div>
+              <p class="title">编号：{{item.code}}</p>
+              <p class="position">学名：{{item.scientificName}}</p>
+              <div class="props"><span class="duration">树级：{{item.rank}} / 树龄：{{item.age}}</span></div>
             </div>
           </div>
         </div>
@@ -44,6 +46,7 @@
         showCheckIn: false,
         pullUpLoad: null,
         currentIndex: +this.$route.query.index || 0,
+        code: '',
         index: 0
       };
     },
@@ -68,28 +71,39 @@
       },
       getPageOrders() {
         this.loading = true;
+        this.code = this.$route.query.code;
         Promise.all([
           getProductTreePage({
             start: this.start,
             limit: this.limit,
-            status: '0'
+            productCode: this.code
           })
         ]).then(([res1]) => {
           if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
             this.hasMore = false;
           }
           this.loading = false;
-          res1.list.map(function () {
+          res1.list.map(function (d) {
             res1.applyDatetime = formatDate(res1.applyDatetime);
+            if(d.pic) {
+              d.pic = d.pic.split('||')[0];
+            }
           });
           this.proList = this.proList.concat(res1.list);
           this.start++;
         }).catch(() => { this.loading = false; });
+      },
+      getImgSyl(imgs) {
+        let img = imgs ? formatImg(imgs) : './tree@3x.png';
+        return {
+          backgroundImage: `url(${img})`
+        };
       }
     },
     mounted() {
       this.pullUpLoad = null;
       this.loading = true;
+      this.getPageOrders();
     },
     components: {
       FullLoading,
@@ -141,12 +155,27 @@
           display: flex;
           font-size: 0;
           padding: 0.3rem;
-          img {
+          .imgWrap{
             width: 1.5rem;
             height: 1.5rem;
             flex: 0 0 1.5rem;
             margin-right: 0.2rem;
             border-radius: 0.08rem;
+            position: relative;
+            overflow: hidden;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+
+            samp {
+              position: absolute;
+              bottom: 0;
+              right: 0.06rem;
+              z-index: 9;
+              font-size: 0.2rem;
+              line-height: 2;
+              color: $color-red;
+            }
           }
           .text {
             display: flex;

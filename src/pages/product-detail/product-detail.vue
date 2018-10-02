@@ -43,7 +43,7 @@
         <div class="description-title">
           <div class="border"></div>
           <span>图文详情</span>
-          <div class="description-detail" v-html="descriptionDetail">{{detail.description}}</div>
+          <div class="description-detail" v-html="detail.description">{{detail.description}}</div>
         </div>
       </div>
       <!--<div class="mall-content">-->
@@ -124,7 +124,7 @@ export default {
       }],
       showCheckIn: false,
       pullUpLoad: null,
-      descriptionDetail: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>',
+      descriptionDetail: '',
       flag: false,
       number: 1,
       idCode: '',

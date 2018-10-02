@@ -3,18 +3,9 @@
     <m-header class="cate-header" title="树木详情"></m-header>
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
-      <div class="slider-wrapper">
-        <img :src="formatImg(detail.bannerPic)" class="banner-default">
-      </div>
       <div class="info">
         <div class="item">
-          <span>产品名称</span><span>{{detail.name}}</span>
-        </div>
-        <div class="item">
-          <span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>
-        </div>
-        <div class="item">
-          <span>已募集数量</span><span>{{detail.nowCount}}/{{detail.raiseCount}}</span>
+          <span>古树编码</span><span>{{detail.code}}</span>
         </div>
         <div class="item">
           <span>古树产地</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
@@ -25,18 +16,23 @@
         <div class="item">
           <span>古树品种</span><span>{{detail.variety}}</span>
         </div>
-        <!--<div class="item" @click="go('/invitation')">-->
-          <!--<span>古树定位</span>-->
-          <!--<img src="./more@2x.png" alt="" class="fr more">-->
-        <!--</div>-->
-        <div class="item" @click="go('/adopt-list?code=' + code)">
-          <span>已认养名单</span>
+        <div class="item">
+          <span>古树级别</span><span>{{detail.rank}}</span>
+        </div>
+        <div class="item">
+          <span>古树树龄</span><span>{{detail.age}}</span>
+        </div>
+        <div class="item" @click="go('/invitation')">
+          <span>古树定位</span>
           <img src="./more@2x.png" alt="" class="fr more">
         </div>
-        <div class="item" @click="go('/adopt-list?code=' + code)">
-          <span>树木查看</span>
-          <img src="./more@2x.png" alt="" class="fr more">
-        </div>
+      </div>
+      <div class="slider-wrapper" v-show="pics.length > '0'">
+        <slider :loop="loop">
+          <div class="banner-default" v-for="item in pics" :key="item">
+            <div :style="getImgSyl(item)"></div>
+          </div>
+        </slider>
       </div>
       </Scroll>
     </div>
@@ -51,7 +47,7 @@ import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import { formatAmount, formatImg, formatDate } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
-import { getProductDetail } from 'api/biz';
+import { getProductTreeDetail } from 'api/biz';
 export default {
   data() {
     return {
@@ -63,15 +59,16 @@ export default {
       text: '',
       showBack: false,
       proList: [{
-
       }],
       showCheckIn: false,
       pullUpLoad: null,
-      descriptionDetail: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>',
+      descriptionDetail: '',
       flag: false,
       number: 1,
       idCode: '',
       detail: {},
+      pics: [],
+      loop: false,
       choosedIndex: 0,
       code: '',   // 产品code
       identifyCode: '' // 下单识别码
@@ -90,35 +87,9 @@ export default {
     go(url) {
       this.$router.push(url);
     },
-    showPopUp() {
-      this.flag = true;
-    },
-    genghuan() {
-      this.flag = !this.flag;
-    },
-    add() {
-      this.number++;
-    },
-    sub() {
-      if (this.number >= 2) {
-        this.number--;
-      }
-    },
     confirm() {
       let userId = getCookie('userId');
-      if(userId) {
-        let proCode = this.detail.code;
-        let specsCode = this.detail.productSpecsList[this.choosedIndex].code;
-        let quantity = this.number;
-        if(this.detail.sellType !== '3') {
-          let type = this.detail.sellType;
-          this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
-        } else {
-          // 集体认养
-          let identifyCode = this.identifyCode || '';
-          this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&identifyCode=' + identifyCode);
-        }
-      } else {
+      if(!userId) {
         this.text = '您未登录';
         this.$refs.toast.show();
         setTimeout(() => {
@@ -126,8 +97,10 @@ export default {
         }, 1000);
       }
     },
-    chooseSpecs(index) {
-      this.choosedIndex = index;
+    getImgSyl(imgs) {
+      return {
+        backgroundImage: `url(${formatImg(imgs)})`
+      };
     }
   },
   mounted() {
@@ -135,12 +108,18 @@ export default {
     this.code = this.$route.query.code;
     this.loading = true;
     Promise.all([
-      getProductDetail({
+      getProductTreeDetail({
         code: this.code
       })
     ]).then(([res1]) => {
       this.loading = false;
       this.detail = res1;
+      if(res1.pic) {
+        this.pics = res1.pic.split('||');
+        if(this.pics.length > 1) {
+          this.loop = true;
+        }
+      }
     }).catch(() => { this.loading = false; });
   },
   components: {
@@ -160,7 +139,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0.98rem;
+  bottom: 0;
   width: 100%;
   .fl {
     float: left;
@@ -168,9 +147,22 @@ export default {
   .fr {
     float: right;
   }
-  .banner-default {
-    width: 100%;
+  .slider-wrapper {
+    padding-bottom: 0.2rem;
+    background: $color-highlight-background;
     height: 4rem;
+    width: 100%;
+    overflow: hidden;
+    .banner-default {
+      height: 100%;
+      div {
+        display: block;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+      }
+    }
   }
   .content {
     /*margin: 0.88rem 0;*/

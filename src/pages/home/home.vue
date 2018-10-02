@@ -239,10 +239,9 @@ export default {
       }
       a {
         display: block;
-        height: 100%;
         background-repeat: no-repeat;
         background-position: center;
-        background-size: 100% 100%;
+        background-size: cover;
       }
     }
     .notices {
