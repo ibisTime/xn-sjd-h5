@@ -15,7 +15,8 @@
                            :province="province"
                            :city="city"
                            :district="district"
-                           @change="cityChange">
+                           @change="cityChange"
+                           >
               </city-picker>
             </template>
             <span v-show="provErr" class="error-tip">{{provErr}}</span>
@@ -24,26 +25,26 @@
         <div class="form-item is-textarea border-bottom-1px">
           <div class="item-label">详细地址</div>
           <div class="item-input-wrapper">
-            <textarea v-model="address" @input="_addressValid" rows="2" class="item-input" placeholder="请输入详细地址信息"></textarea>
-            <span v-show="addressErr" class="error-tip">{{addressErr}}</span>
+            <textarea v-model="address" name="address" v-validate="address" rows="2" class="item-input" placeholder="请输入详细地址信息"></textarea>
+            <span v-show="errors.has('address')" class="error-tip">{{errors.first('address')}}</span>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-label">收货人</div>
           <div class="item-input-wrapper">
-            <input type="text" class="item-input" v-model="name" @input="_nameValid" placeholder="请输入姓名">
-            <span v-show="nameErr" class="error-tip">{{nameErr}}</span>
+            <input type="text" class="item-input" v-model="receiver" name="receiver" v-validate="'required'" placeholder="请输入姓名">
+            <span v-show="errors.has('receiver')" class="error-tip">{{errors.first('receiver')}}</span>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-label">联系方式</div>
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="mobile" @change="_mobileValid" placeholder="请输入手机号码">
-            <span v-show="mobErr" class="error-tip">{{mobErr}}</span>
+            <input type="tel" class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">
+            <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
           </div>
         </div>
         <div class="form-btn">
-          <button :disabled="setting" @click="saveAddress">确认认领</button>
+          <button @click="saveAddress">确认认领</button>
         </div>
         <!--<full-loading v-show="showLoading"></full-loading>-->
         <toast ref="toast" :text="toastText"></toast>
@@ -53,9 +54,6 @@
 </template>
 <script>
   import {addAddress, editAddress, getAddressList} from 'api/user';
-  import {mobileValid, realNameValid, addressValid} from 'common/js/util';
-  import {mapGetters, mapMutations} from 'vuex';
-  import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
   import CityPicker from 'base/city-picker/city-picker';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
@@ -64,11 +62,8 @@
   export default {
     data() {
       return {
-        setting: false,
         name: '',
-        nameErr: '',
         mobile: '',
-        mobErr: '',
         province: '',
         city: '',
         district: '',
@@ -79,7 +74,8 @@
         showLoading: true,
         isAlert: true,
         toastText: '',
-        headerTitle: '新增收货地址'
+        headerTitle: '新增收货地址',
+        receiver: ''
       };
     },
     created() {
@@ -90,12 +86,6 @@
       } else {
         // this._getAddressList();
       }
-    },
-    computed: {
-      ...mapGetters([
-        'addressList',
-        'currentAddrCode'
-      ])
     },
     methods: {
       getAddress() {
@@ -209,27 +199,6 @@
           this.setting = false;
         });
       },
-      _valid() {
-        let r1 = this._nameValid();
-        let r2 = this._mobileValid();
-        let r3 = this._provinceValid();
-        let r4 = this._addressValid();
-        return r1 && r2 && r3 && r4;
-      },
-      _nameValid() {
-        if (!this.name) {
-          this.nameErr = '不能为空';
-          return false;
-        }
-        let result = realNameValid(this.name);
-        this.nameErr = result.msg;
-        return !result.err;
-      },
-      _mobileValid() {
-        let result = mobileValid(this.mobile);
-        this.mobErr = result.msg;
-        return !result.err;
-      },
       _provinceValid() {
         if (!this.province) {
           this.provErr = '不能为空';
@@ -237,16 +206,7 @@
         }
         this.provErr = '';
         return true;
-      },
-      _addressValid() {
-        let result = addressValid(this.address);
-        this.addressErr = result.msg;
-        return !result.err;
-      },
-      ...mapMutations({
-        setAddressList: SET_ADDRESS_LIST,
-        setCurAddr: SET_CURRENT_ADDR
-      })
+      }
     },
     components: {
       CityPicker,

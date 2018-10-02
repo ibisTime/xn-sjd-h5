@@ -162,7 +162,6 @@
       },
       changeType(index) {
         this.type = index;
-        console.log(this.type);
       },
       changeEmotion(index) {
         this.emotion = index;

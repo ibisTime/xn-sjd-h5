@@ -33,7 +33,6 @@ Validator.extend('captcha', {
   getMessage: field => '格式错误',
   validate: value => /^\d{4}$/.test(value)
 });
-
 const config = {
   errorBagName: 'errors', // change if property conflicts
   fieldsBagName: 'fields',

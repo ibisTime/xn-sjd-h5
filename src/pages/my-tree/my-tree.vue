@@ -342,7 +342,8 @@ export default {
       }, {
         src: require('./6@2x.png'),
         text: '你怎么每天这么勤快呢'
-      }]
+      }],
+      other: 0
     };
   },
   methods: {
