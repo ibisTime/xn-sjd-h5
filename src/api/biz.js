@@ -1,5 +1,5 @@
 import fetch from 'common/js/fetch';
-// import {getUserId, formatDate} from 'common/js/util';
+import {getUserId} from 'common/js/util';
 
 // 分页查询认养产品
 export function getProductPage (data) {
@@ -60,20 +60,6 @@ export function getAccount (data) {
   });
 }
 
-// 详情查非集体订单
-export function getOrderDetail (data) {
-  return fetch(629046, {
-    ...data
-  });
-}
-
-// 详情查集体订单
-export function getOrganizeOrderDetail (data) {
-  return fetch(629056, {
-    ...data
-  });
-}
-
 // 支付非集体订单
 export function payOrder (data) {
   return fetch(629042, {
@@ -116,10 +102,62 @@ export function getMessage (data) {
   });
 }
 
-// 分页查集体认养订单
-export function getGroupOrderList (data) {
-  return fetch(629055, {
+/**
+ * 分页查询订单
+ * @param {number} start
+ * @param {number} limit
+ * @param {string} status
+ * @param {string} type 订单类型（1个人/2定向/3捐赠/4集体）
+ * */
+export function getPageOrders(start, limit, status, type) {
+  let params = {
+    start,
+    limit,
+    userId: getUserId()
+  };
+  let bizCode = '';
+
+  if (status.constructor === Array) {
+    params.statusList = status;
+  } else {
+    params.status = status;
+  }
+  // 集体订单
+  if (type === 4) {
+    bizCode = '629055';
+  } else {
+    if (type !== 0) {
+      params.type = type;
+    }
+    bizCode = '629045';
+  }
+  return fetch(bizCode, params);
+}
+
+// 详情查非集体订单
+export function getOrderDetail (data) {
+  return fetch(629046, {
     ...data
   });
 }
 
+// 详情查集体订单
+export function getOrganizeOrderDetail (data) {
+  return fetch(629056, {
+    ...data
+  });
+}
+
+/**
+ * 列表查询认养权/列表查询用户的树
+ * @param {string} status 状态(1待认养2认养中3已到期)
+ * @param {string} userId 持有人
+ * */
+export function getListUserTree({status, currentHolder}) {
+  let params = {
+    status: status || '2',
+    currentHolder: currentHolder || getUserId()
+  };
+
+  return fetch(629207, params);
+}

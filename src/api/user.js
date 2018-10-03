@@ -30,9 +30,9 @@ export function wxLogin(code, userReferee, activityCode, mobile, smsCaptcha) {
 /**
  * 获取用户详情
  */
-export function getUser() {
+export function getUser(userId) {
   return fetch(805121, {
-    userId: getUserId()
+    userId: userId || getUserId()
   });
 }
 

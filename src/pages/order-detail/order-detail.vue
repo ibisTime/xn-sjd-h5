@@ -1,16 +1,16 @@
 <template>
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="订单详情"></m-header>
-    <div class="status">
+    <div class="status" v-show="detail.status === '4'">
       <img src="./overdue@1.5x.png" class="icon">
       <p class="status-text">订单已过期</p>
     </div>
     <div class="gray"></div>
-    <div class="order-list" v-show="type === 0">
+    <div class="order-list">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="item" @click="go('/article-detail')">
           <div class="top">
-            <span class="item-code">D2986508238869</span>
+            <span class="item-code">{{detail.code}}</span>
             <span class="item-status">待支付</span>
           </div>
           <div class="info">
@@ -18,7 +18,7 @@
             <div class="text">
               <p class="title">古树名称</p>
               <p class="position">浙江 杭州</p>
-              <div class="props"><span class="duration">年限：1年</span><span class="price">¥2480.00</span></div>
+              <div class="props"><span class="duration">年限：1年</span><span class="price">¥{{formatAmount.price}}</span></div>
             </div>
           </div>
           <div class="gray"></div>
@@ -26,42 +26,89 @@
       </Scroll>
     </div>
     <div class="duration">
-      <div class="duration-item"><span class="name">起始时间</span><span>2018-10-10</span></div>
-      <div class="duration-item"><span class="name">终止时间</span><span>2018-10-10</span></div>
+      <div class="duration-item"><span class="name">起始时间</span><span>{{formatDate(detail.endDatetime, 'yyyy-MM-dd')}}</span></div>
+      <div class="duration-item"><span class="name">终止时间</span><span>{{formatDate(detail.startDatetime, 'yyyy-MM-dd')}}</span></div>
     </div>
   </div>
 </template>
 <script>
+  import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
+  import FullLoading from 'base/full-loading/full-loading';
+  import Slider from 'base/slider/slider';
+  import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
-
+  import { formatAmount, formatImg, formatDate } from 'common/js/util';
+  import { getOrderDetail, getOrganizeOrderDetail } from 'api/biz';
   export default {
     data() {
       return {
-        type: 0,
-        status: 0
+        title: '正在加载...',
+        type: '',
+        loading: true,
+        toastText: '',
+        currentList: [],
+        hasMore: false,
+        text: '',
+        showBack: false,
+        showCheckIn: false,
+        pullUpLoad: null,
+        flag: false,
+        idCode: '',
+        detail: {},
+        choosedIndex: 0,
+        code: ''   // 产品code
       };
     },
-    created() {
-      this.pullUpLoad = null;
-    },
     methods: {
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
+      formatImg(img) {
+        return formatImg(img);
+      },
+      formatDate(date, format) {
+        return formatDate(date, format);
+      },
       go(url) {
         this.$router.push(url);
       },
-      changeType(index) {
-        this.type = index;
-      },
-      changeStatus(index) {
-        this.status = index;
-      },
-      goProductDetail() {
-        this.$router.push('/product-detaul');
+      chooseSpecs(index) {
+        this.choosedIndex = index;
+      }
+    },
+    mounted() {
+      this.pullUpLoad = null;
+      this.code = this.$route.query.code;
+      this.type = this.$route.query.type;// 订单类型（1个人/2定向/3捐赠/4集体）
+      this.loading = true;
+      if(this.type === '4') {
+        Promise.all([
+          getOrganizeOrderDetail({
+            code: this.code
+          })
+        ]).then(([res1]) => {
+          this.loading = false;
+          this.detail = res1;
+        }).catch(() => { this.loading = false; });
+      } else {
+        Promise.all([
+          getOrderDetail({
+            code: this.code
+          })
+        ]).then(([res1]) => {
+          this.loading = false;
+          this.detail = res1;
+        }).catch(() => { this.loading = false; });
       }
     },
     components: {
-      Scroll,
-      MHeader
+      FullLoading,
+      Toast,
+      Slider,
+      NoResult,
+      MHeader,
+      Scroll
     }
   };
 </script>

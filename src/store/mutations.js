@@ -1,7 +1,13 @@
-// import * as types from './mutation-types';
+import * as types from './mutation-types';
 // import User from 'common/bean/me';
 
 const mutations = {
+  [types.SET_ORDER_LIST](state, list) {
+    state.orderList = list;
+  },
+  [types.SET_CURRENT_ORDER](state, order) {
+    state.currentOrder = order;
+  }
   // [types.SET_USER_STATE](state, me) {
   //   state.me = new User(me);
   // },

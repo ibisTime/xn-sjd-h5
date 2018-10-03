@@ -5,13 +5,14 @@
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="item" @click="go('/productTree-detail?code='+item.code)" v-for="item in this.proList">
           <div class="info">
-           <div class="imgWrap" :style="getImgSyl(item.pic)">
-             <samp>{{item.status}}</samp>
-           </div>
+            <div class="imgWrap" :style="getImgSyl(item.pic)"></div>
             <div class="text">
               <p class="title">编号：{{item.code}}</p>
               <p class="position">学名：{{item.scientificName}}</p>
-              <div class="props"><span class="duration">树级：{{item.rank}} / 树龄：{{item.age}}</span></div>
+              <div class="props">
+                <span class="duration">树级：{{item.rank}} / 树龄：{{item.age}}</span>
+                <samp class="status">{{statusList[item.status]}}</samp>
+              </div>
             </div>
           </div>
         </div>
@@ -28,8 +29,9 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import Scroll from 'base/scroll/scroll';
-  import { formatAmount, formatDate, formatImg } from 'common/js/util';
-  import { getProductTreePage } from 'api/biz';
+  import {formatAmount, formatDate, formatImg} from 'common/js/util';
+  import {getProductTreePage} from 'api/biz';
+  import defaultImg from './tree@3x.png';
 
   export default {
     data() {
@@ -47,7 +49,11 @@
         pullUpLoad: null,
         currentIndex: +this.$route.query.index || 0,
         code: '',
-        index: 0
+        index: 0,
+        statusList: {
+          '0': '待领养',
+          '1': '已领养'
+        }
       };
     },
     methods: {
@@ -85,16 +91,18 @@
           this.loading = false;
           res1.list.map(function (d) {
             res1.applyDatetime = formatDate(res1.applyDatetime);
-            if(d.pic) {
+            if (d.pic) {
               d.pic = d.pic.split('||')[0];
             }
           });
           this.proList = this.proList.concat(res1.list);
           this.start++;
-        }).catch(() => { this.loading = false; });
+        }).catch(() => {
+          this.loading = false;
+        });
       },
       getImgSyl(imgs) {
-        let img = imgs ? formatImg(imgs) : './tree@3x.png';
+        let img = imgs ? formatImg(imgs) : defaultImg;
         return {
           backgroundImage: `url(${img})`
         };
@@ -117,6 +125,7 @@
 </script>
 <style lang="scss" scoped>
   @import "~common/scss/variable";
+
   .adopt-list-wrapper {
     background: #fff;
     position: fixed;
@@ -155,7 +164,7 @@
           display: flex;
           font-size: 0;
           padding: 0.3rem;
-          .imgWrap{
+          .imgWrap {
             width: 1.5rem;
             height: 1.5rem;
             flex: 0 0 1.5rem;
@@ -166,16 +175,6 @@
             background-repeat: no-repeat;
             background-position: center;
             background-size: cover;
-
-            samp {
-              position: absolute;
-              bottom: 0;
-              right: 0.06rem;
-              z-index: 9;
-              font-size: 0.2rem;
-              line-height: 2;
-              color: $color-red;
-            }
           }
           .text {
             display: flex;
@@ -201,8 +200,17 @@
               color: #999;
               display: flex;
               justify-content: space-between;
+              position: relative;
+
               .duration {
 
+              }
+              .status {
+                position: absolute;
+                top: 0;
+                right: 0.06rem;
+                z-index: 9;
+                color: $color-red;
               }
             }
           }

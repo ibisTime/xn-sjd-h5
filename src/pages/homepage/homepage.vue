@@ -8,9 +8,9 @@
           <div class="in-content">
             <div class="card">
               <div class="me-info">
-                <img src="./avatar@2x.png" alt="">
+                <div class="userPhoto" :style="getImgSyl(userInfo.photo)"></div>
                 <div class="text">
-                  <p><span>KOALA</span><span class="lv">LV 1</span></p>
+                  <p><span>{{userInfo.nickname}}</span><span class="lv">LV{{userInfo.level}}</span></p>
                 </div>
               </div>
               <div class="type">
@@ -133,6 +133,10 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import { getUser } from 'api/user';
+  import { getListUserTree } from 'api/biz';
+  import {formatDate, formatImg} from 'common/js/util';
+  import defaltAvatarImg from './avatar@2x.png';
 
   export default {
     data() {
@@ -140,23 +144,48 @@
         type: 0,
         emotion: 1,
         share: false,
-        other: 0,      // 是否别人的主页
+        other: 0,      // 是否好友的主页
+        currentHolder: '', // userId 好友
         title: '我的主页',
-        borderTitle: '我的动态'
+        borderTitle: '我的动态',
+        loading: true,
+        userInfo: {},
+        userTree: {}
       };
     },
     created() {
       this.pullUpLoad = null;
+      this.getInitData();
     },
     mounted() {
       this.type = +this.$route.query.type || 0;  // 树的类型
       this.other = this.$route.query.other || 0;  // 是否别人的主页
+      this.currentHolder = this.$route.query.currentHolder || '';
       if(this.other) {
         this.title = 'TA的主页';
         this.borderTitle = 'TA的动态';
       }
     },
     methods: {
+      getInitData() {
+        Promise.all([
+          getUser(this.userId),
+          getListUserTree({currentHolder: this.userId})
+        ]).then(([userInfo, userTree]) => {
+          this.loading = false;
+          this.userInfo = userInfo;
+          this.userTree = userTree;
+        }).catch(() => { this.loading = false; });
+      },
+      getImgSyl(imgs) {
+        let img = imgs ? formatImg(imgs) : defaltAvatarImg;
+        return {
+          backgroundImage: `url(${img})`
+        };
+      },
+      formatDate(date, format) {
+        return formatDate(date, format);
+      },
       go(url) {
         this.$router.push(url);
       },
@@ -232,11 +261,10 @@
               padding: 0.2rem 0 0 0;
               .me-info {
                 text-align: center;
-                img {
+                .userPhoto {
                   width: 1.3rem;
                   height: 1.3rem;
                   margin-bottom: 0.34rem;
-                  border-radius: 50%;
                   border: 2px solid $color-highlight-background;
                 }
                 .text {

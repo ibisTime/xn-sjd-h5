@@ -28,3 +28,13 @@ body, html {
     visibility: hidden;
   }
 }
+
+// 用户头像
+.userPhoto{
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
