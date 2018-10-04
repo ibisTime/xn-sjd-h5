@@ -45,7 +45,7 @@
             type: this.type
           }).then((res) => {
             this.loading = false;
-            this.go('/pay?orderCode=' + res.code);
+            this.go('/pay?orderCode=' + res.code + '&type=' + this.type);
           }).catch(() => { this.loading = false; });
         } else {
           // 集体下单

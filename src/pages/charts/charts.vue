@@ -2,7 +2,7 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="好友排行榜"></m-header>
     <div class="me">
-      <div class="item" @click="go('/carbon-bubble')">
+      <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
         <div class="order">
           <img src="./no1@2x.png" alt="">
         </div>
@@ -17,7 +17,7 @@
     <div class="gray"></div>
     <div class="adopt-list">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/homepage?other=1')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -28,7 +28,7 @@
           </div>
           <span class="price fr">9.8kg</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -39,7 +39,7 @@
           </div>
           <span class="price fr">9.8kg</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -50,7 +50,7 @@
           </div>
           <span class="price fr">9.8kg</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -60,7 +60,7 @@
             <p class="date">获得了10个环保证书</p>
           </div>
           <span class="price fr">9.8kg</span>
-        </div><div class="item" @click="go('/carbon-bubble')">
+        </div><div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
         <div class="order">
           <img src="./no1@2x.png" alt="">
         </div>
@@ -70,7 +70,7 @@
           <p class="date">获得了10个环保证书</p>
         </div>
         <span class="price fr">9.8kg</span>
-      </div><div class="item" @click="go('/carbon-bubble')">
+      </div><div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
         <div class="order">
           <img src="./no1@2x.png" alt="">
         </div>
@@ -81,7 +81,7 @@
         </div>
         <span class="price fr">9.8kg</span>
       </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -92,7 +92,7 @@
           </div>
           <span class="price fr">9.8kg</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -103,7 +103,7 @@
           </div>
           <span class="price fr">9.8kg</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -114,7 +114,7 @@
           </div>
           <span class="price fr">9.8kg</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -125,7 +125,7 @@
           </div>
           <span class="price fr">9.8kg</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>
@@ -136,7 +136,7 @@
           </div>
           <span class="price fr">9.8kg</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
+        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
           <div class="order">
             <img src="./no1@2x.png" alt="">
           </div>

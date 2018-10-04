@@ -6,7 +6,7 @@
         <div class="in-content">
           <div class="card">
             <p>碳泡泡数量</p>
-            <p><span>{{amount}}</span></p>
+            <p><span>{{formatAmount(amount)}}</span></p>
           </div>
           <div class="money-list">
             <div class="money-item">
@@ -31,6 +31,7 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import {getAccountList} from 'api/account';
+  import { formatAmount } from 'common/js/util';
 
   export default {
     data() {
@@ -51,6 +52,9 @@
       });
     },
     methods: {
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
       go(url) {
         this.$router.push(url);
       },

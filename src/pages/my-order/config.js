@@ -20,11 +20,3 @@ export const CATEGORYS = [{
   key: '1',
   value: '已取消'
 }];
-
-export const ORDER_STATUS = {
-  '0': '待支付',
-  '1': '已取消',
-  '2': '待认养',
-  '3': '认养中',
-  '4': '已到期'
-};

@@ -13,61 +13,44 @@
                   <p><span>{{userInfo.nickname}}</span><span class="lv">LV{{userInfo.level}}</span></p>
                 </div>
               </div>
-              <div class="type">
-                <span @click="changeType(0)">全部</span>
-                <span @click="changeType(1)">古树名木</span>
-                <span @click="changeType(4)">水源林</span>
-                <span @click="changeType(3)">情感林</span>
-                <span @click="changeType(2)">果园林</span>
+              <div class="category-wrapper bg-transparent">
+                <category-scroll :currentIndex="currentIndex"
+                                 :categorys="categorys"
+                                 @select="selectCategory"></category-scroll>
               </div>
-              <div class="type triangle">
-                <img :class="!type ? 'active' : ''" src="./triangle@2x.png">
-                <img :class="type === 1 ? 'active' : ''" src="./triangle@2x.png">
-                <img :class="type === 4 ? 'active' : ''" src="./triangle@2x.png">
-                <img :class="type === 3 ? 'active' : ''" src="./triangle@2x.png">
-                <img :class="type === 2 ? 'active' : ''" src="./triangle@2x.png">
-              </div>
+              <!--<div class="type">-->
+                <!--<span @click="changeType(0)">全部</span>-->
+                <!--<span @click="changeType(1)">古树名木</span>-->
+                <!--<span @click="changeType(4)">水源林</span>-->
+                <!--<span @click="changeType(3)">情感林</span>-->
+                <!--<span @click="changeType(2)">果园林</span>-->
+              <!--</div>-->
+              <!--<div class="type triangle">-->
+                <!--<img :class="!type ? 'active' : ''" src="./triangle@2x.png">-->
+                <!--<img :class="type === 1 ? 'active' : ''" src="./triangle@2x.png">-->
+                <!--<img :class="type === 4 ? 'active' : ''" src="./triangle@2x.png">-->
+                <!--<img :class="type === 3 ? 'active' : ''" src="./triangle@2x.png">-->
+                <!--<img :class="type === 2 ? 'active' : ''" src="./triangle@2x.png">-->
+              <!--</div>-->
             </div>
           </div>
         </div>
       </div>
-      <div class="emotion-forest-type" v-show="type === 3">
-        <span :class="emotion === 1 ? 'active' : ''" @click="changeEmotion(1)">爱情林</span>
-        <span :class="emotion === 2 ? 'active' : ''" @click="changeEmotion(2)">亲子林</span>
-      </div>
+      <!--<div class="emotion-forest-type" v-show="type === 3">-->
+        <!--<span :class="emotion === 1 ? 'active' : ''" @click="changeEmotion(1)">爱情林</span>-->
+        <!--<span :class="emotion === 2 ? 'active' : ''" @click="changeEmotion(2)">亲子林</span>-->
+      <!--</div>-->
       <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
-        <!--<Scroll :pullUpLoad="pullUpLoad">-->
-          <div class="item">
-            <div class="tree-info" @click="goMyTree">
-              <p class="tree-name">银杏树</p>
-              <p class="tree-about">5,000亩  25,000棵树</p>
-            </div>
-            <div class="map">
-              <img src="./map@2x.png" alt="">
-              <p>查看地图</p>
-            </div>
+        <div class="item" v-for="item in this.userTree">
+          <div class="tree-info" @click="goMyTree">
+            <p class="tree-name">{{item.tree.scientificName}}</p>
+            <p class="tree-about"></p>
           </div>
-          <div class="item" @click="go('/carbon-bubble')">
-            <div class="tree-info">
-              <p class="tree-name">银杏树</p>
-              <p class="tree-about">5,000亩  25,000棵树</p>
-            </div>
-            <div class="map">
-              <img src="./map@2x.png" alt="">
-              <p>查看地图</p>
-            </div>
+          <div class="map">
+            <img src="./map@2x.png" alt="">
+            <p>查看地图</p>
           </div>
-          <div class="item" @click="go('/carbon-bubble')">
-            <div class="tree-info">
-              <p class="tree-name">银杏树</p>
-              <p class="tree-about">5,000亩  25,000棵树</p>
-            </div>
-            <div class="map">
-              <img src="./map@2x.png" alt="">
-              <p>查看地图</p>
-            </div>
-          </div>
-        <!--</Scroll>-->
+        </div>
       </div>
       <div class="gray"></div>
       <div class="dynamic">
@@ -132,9 +115,10 @@
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
+  import CategoryScroll from 'base/category-scroll/category-scroll';
   import MHeader from 'components/m-header/m-header';
   import { getUser } from 'api/user';
-  import { getListUserTree } from 'api/biz';
+  import { getListUserTree, getProductType } from 'api/biz';
   import {formatDate, formatImg} from 'common/js/util';
   import defaltAvatarImg from './avatar@2x.png';
 
@@ -150,7 +134,10 @@
         borderTitle: '我的动态',
         loading: true,
         userInfo: {},
-        userTree: {}
+        userTree: [],
+        currentIndex: +this.$route.query.index || 0,
+        index: 0,
+        categorys: [{value: '全部', key: ''}]
       };
     },
     created() {
@@ -158,7 +145,7 @@
       this.getInitData();
     },
     mounted() {
-      this.type = +this.$route.query.type || 0;  // 树的类型
+      this.index = +this.$route.query.type || 0;  // 树的类型
       this.other = this.$route.query.other || 0;  // 是否别人的主页
       this.currentHolder = this.$route.query.currentHolder || '';
       if(this.other) {
@@ -168,14 +155,33 @@
     },
     methods: {
       getInitData() {
+        this.type = this.categorys[this.index].key;
+        this.currentHolder = this.$route.query.currentHolder || '';
         Promise.all([
-          getUser(this.userId),
-          getListUserTree({currentHolder: this.userId})
-        ]).then(([userInfo, userTree]) => {
+          getUser(this.currentHolder),
+          getProductType({
+            orderDir: 'asc',
+            orderColumn: 'order_no',
+            status: '1'
+          })
+        ]).then(([userInfo, productType]) => {
           this.loading = false;
           this.userInfo = userInfo;
-          this.userTree = userTree;
+          productType.map(item => {
+            this.categorys.push({
+              key: item.code,
+              value: item.name
+            });
+          });
+          this.getUserTree();
         }).catch(() => { this.loading = false; });
+      },
+      getUserTree() {
+        this.type = this.categorys[this.index].key;
+        this.currentHolder = this.$route.query.currentHolder || '';
+        return getListUserTree({currentHolder: this.currentHolder, categoryCode: this.type}).then((userTree) => {
+          this.userTree = userTree;
+        }, () => {});
       },
       getImgSyl(imgs) {
         let img = imgs ? formatImg(imgs) : defaltAvatarImg;
@@ -207,11 +213,18 @@
         } else {
           this.go('/my-tree');
         }
+      },
+      selectCategory(index) {
+        this.index = index;
+        this.currentIndex = index;
+        this.userTree = [];
+        this.getUserTree();
       }
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      CategoryScroll
     }
   };
 </script>
@@ -235,6 +248,19 @@
       /*background-position: left;*/
       /*<!--background-position: -0.2rem;-->*/
     }
+    .category-wrapper {
+      width: 100%;
+      z-index: 100;
+      height: 0.9rem;
+      line-height: 0.9rem;
+      overflow: hidden;
+    }
+    .category-item{
+      padding: 0.1rem 0.33rem;
+      border-radius: 1rem;
+      font-size: $font-size-small;
+      line-height: 0.33rem;
+    }
     .out-content {
       position: absolute;
       top: 0.88rem;
@@ -252,7 +278,7 @@
           text-align: center;
         }
         .content {
-          padding: 0.43rem 0.3rem 0;
+          padding: 0.43rem 0 0;
           .in-content {
             .card {
               /*height: 3.2rem;*/

@@ -25,48 +25,54 @@
     <!--</div>-->
     <div class="gray"></div>
     <div class="order-list">
-      <Scroll>
-      <!--<Scroll ref="scroll"-->
-              <!--:data="currentList.data"-->
-              <!--:hasMore="currentList.hasMore"-->
-              <!--@pullingUp="getPageOrders">-->
-        <div class="item" @click="go('/order-detail')">
+      <scroll ref="scroll"
+              :data="currentList.data"
+              :hasMore="currentList.hasMore"
+              @pullingUp="getPageOrders">
+        <ul v-if="currentList">
+          <li class="item" v-for="(item, index) in currentList.data" @click="goDetail(item)">
           <div class="top">
-            <span class="item-code">D2986508238869</span>
-            <span class="item-status">待支付</span>
+            <span class="item-code">{{item.code}}</span>
+            <span class="item-status">{{formatStatus(item.status)}}</span>
           </div>
-          <div class="info">
-            <img src="./tree@3x.png">
-            <div class="text">
-              <p class="title">古树名称</p>
-              <p class="position">浙江 杭州</p>
-              <div class="props"><span class="duration">年限：1年</span><span class="price">¥2480.00</span></div>
+            <div class="info">
+              <div class="imgWrap" :style="getImgSyl(item.pic)"></div>
+              <div class="text">
+                <p class="title">{{item.product.name}}</p>
+                <p class="position">{{item.product.province}} {{item.product.city}} {{item.product.area}}</p>
+                <div class="props"><span class="duration">年限：{{item.product.raiseCount}}</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
+              </div>
             </div>
-          </div>
-          <!--<div class="clearfix btns" v-show="showBtns(item.status)">-->
-            <!--<span class="btn fr" v-show="showPayBtn(item.status)" @click.stop="payOrder(item)">立即支付</span>-->
-            <!--<span class="btn cancel fr" v-show="showCancelBtn(item.status)" @click.stop="_cancelOrder(item)">取消订单</span>-->
-          <!--</div>-->
-          <div class="gray"></div>
-        </div>
+            <div class="clearfix btns" v-show="showBtns(item.status)">
+              <span class="btn fr" v-show="showPayBtn(item.status)" @click.stop="payOrder(item)">立即支付</span>
+              <span class="btn cancel fr" v-show="showCancelBtn(item.status)" @click.stop="_cancelOrder(item)">取消订单</span>
+            </div>
+            <div class="gray"></div>
+          </li>
+        </ul>
+        <no-result v-show="!currentList.hasMore && !(currentList.data && currentList.data.length)" title="暂无订单" class="no-result-wrapper"></no-result>
       </Scroll>
     </div>
+    <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
+    <toast :text="toastText" ref="toast"></toast>
+    <router-view @updateNum="handleUpdateNum"></router-view>
     <full-loading v-show="fetching" :title="fetchText"></full-loading>
   </div>
 </template>
 <script>
-  import {CATEGORYS, ORDER_STATUS} from './config';
+  import {CATEGORYS} from './config';
+  import {ORDER_STATUS} from 'common/js/dict';
   import CategoryScroll from 'base/category-scroll/category-scroll';
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import Confirm from 'base/confirm/confirm';
+  import ConfirmInput from 'base/confirm-input/confirm-input';
   import {mapGetters, mapMutations, mapActions} from 'vuex';
   import {SET_ORDER_LIST, SET_CURRENT_ORDER} from 'store/mutation-types';
-  import {getPageOrders} from 'api/biz';
-  import {formatImg, setTitle} from 'common/js/util';
+  import {getPageOrders, cancelOrder} from 'api/biz';
+  import {formatAmount, formatImg, setTitle} from 'common/js/util';
   import defaultImg from './tree@3x.png';
 
   export default {
@@ -77,8 +83,11 @@
         currentCode: '',
         currentGoodsCode: '',
         fetching: false,
+        fetchText: '',
         categorys: CATEGORYS,
         currentIndex: +this.$route.query.index || 0,
+        text: '',
+        inputText: '',
         toastText: ''
       };
     },
@@ -138,11 +147,35 @@
       changeStatus(index) {
         this.status = index;
       },
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
       formatStatus(status) {
         return ORDER_STATUS[status];
       },
-      goProductDetail() {
-        this.$router.push('/product-detail');
+      goDetail(item) {
+        this.setCurrentOrder(item);
+        this.$router.push(`/order-detail?code=${item.code}`);
+      },
+      payOrder(item) {
+        this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
+      },
+      _cancelOrder(item) {
+        this.inputText = '取消原因';
+        this.curItem = item;
+        this.$refs.confirmInput.show();
+      },
+      showBtns(status) {
+        if (status !== '0') {
+          return false;
+        }
+        return true;
+      },
+      showPayBtn(status) {
+        return status === '0';
+      },
+      showCancelBtn(status) {
+        return status === '0';
       },
       selectCategory(index) {
         this.currentIndex = index;
@@ -151,10 +184,29 @@
           this.getPageOrders();
         }
       },
+      handleInputConfirm(text) {
+        this.fetching = true;
+        if (this.curItem.status === '0') {
+          this.cancelOrder(text);
+        }
+      },
+      handleUpdateNum(type) {
+        this.$emit('updateNum', type);
+      },
+      cancelOrder(text) {
+        this.fetchText = '取消中...';
+        cancelOrder(this.curItem.code, text).then(() => {
+          this.fetching = false;
+          this.editOrderListByCancel({
+            code: this.curItem.code
+          });
+        }).catch(() => {
+          this.fetching = false;
+        });
+      },
       getPageOrders() {
         let key = this.categorys[this.currentIndex].key;
         let status = key === 'all' ? '' : key;
-        console.log(this.currentList.hasMore);
         if (this.currentList.hasMore) {
           getPageOrders(this.currentList.start, this.currentList.limit, status, this.type).then((data) => {
             let _orderOri = this.orderList[key];
@@ -195,9 +247,7 @@
       }),
       ...mapActions([
         'editOrderListByRating',
-        'editOrderListByCancel',
-        'editOrderListByReceived',
-        'editOrderListByTk'
+        'editOrderListByCancel'
       ])
     },
     components: {
@@ -206,8 +256,8 @@
       Scroll,
       NoResult,
       FullLoading,
-      Confirm,
-      Toast
+      Toast,
+      ConfirmInput
     }
   };
 </script>
@@ -333,12 +383,17 @@
           display: flex;
           font-size: 0;
           padding: 0.3rem;
-          img {
+          .imgWrap {
             width: 1.5rem;
             height: 1.5rem;
             flex: 0 0 1.5rem;
             margin-right: 0.2rem;
             border-radius: 0.08rem;
+            position: relative;
+            overflow: hidden;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
           }
           .text {
             display: flex;
@@ -372,6 +427,27 @@
                 font-size: $font-size-medium-x;
                 color: #151515;
               }
+            }
+          }
+        }
+        .btns {
+          padding: 0.18rem 0.3rem;
+          border-top: 1px solid $color-border;
+
+          .btn {
+            font-size: 0.26rem;
+            display: inline-block;
+            margin-left: 0.2rem;
+            padding: 0 0.2rem;
+            height: 0.6rem;
+            line-height: 0.6rem;
+            border: 1px solid $primary-color;
+            border-radius: 0.06rem;
+            color: $primary-color;
+            confirm-wrapper
+            &.cancel {
+              border-color: #ccc;
+              color: $color-text-l;
             }
           }
         }

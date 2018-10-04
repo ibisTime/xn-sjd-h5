@@ -1,6 +1,7 @@
 <template>
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="订单详情"></m-header>
+    <div class="header-height"></div>
     <div class="status" v-show="detail.status === '4'">
       <img src="./overdue@1.5x.png" class="icon">
       <p class="status-text">订单已过期</p>
@@ -8,38 +9,49 @@
     <div class="gray"></div>
     <div class="order-list">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/article-detail')">
+        <div class="item" @click="go('/product-detail?code='+detail.productCode)">
           <div class="top">
             <span class="item-code">{{detail.code}}</span>
-            <span class="item-status">待支付</span>
+            <span class="item-status">{{formatStatus(detail.status)}}</span>
           </div>
           <div class="info">
             <img src="./tree@3x.png">
             <div class="text">
-              <p class="title">古树名称</p>
-              <p class="position">浙江 杭州</p>
-              <div class="props"><span class="duration">年限：1年</span><span class="price">¥{{formatAmount.price}}</span></div>
+              <p class="title">{{detail.product.name}}</p>
+              <p class="position">{{detail.product.province}} {{detail.product.city}} {{detail.product.area}}</p>
+              <div class="props"><span class="duration">年限：{{detail.product.raiseCount}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
             </div>
           </div>
           <div class="gray"></div>
         </div>
+        <div class="duration">
+          <div class="duration-item"><span class="name">起始时间</span><span>{{formatDate(detail.startDatetime, 'yyyy-MM-dd')}}</span></div>
+          <div class="duration-item"><span class="name">终止时间</span><span>{{formatDate(detail.endDatetime, 'yyyy-MM-dd')}}</span></div>
+        </div>
       </Scroll>
     </div>
-    <div class="duration">
-      <div class="duration-item"><span class="name">起始时间</span><span>{{formatDate(detail.endDatetime, 'yyyy-MM-dd')}}</span></div>
-      <div class="duration-item"><span class="name">终止时间</span><span>{{formatDate(detail.startDatetime, 'yyyy-MM-dd')}}</span></div>
+    <div class="btns" v-show="showBtns(detail.status)">
+      <div class="btn cancel" v-show="showCancelBtn(detail.status)" @click="_cancelOrder(detail)">取消订单</div>
+      <div class="btn" v-show="showPayBtn(detail.status)" @click="payOrder(detail)">立即支付</div>
     </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
+    <toast :text="toastText" ref="toast"></toast>
+    <router-view></router-view>
   </div>
 </template>
 <script>
+  import {ORDER_STATUS} from 'common/js/dict';
   import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import FullLoading from 'base/full-loading/full-loading';
+  import ConfirmInput from 'base/confirm-input/confirm-input';
   import Slider from 'base/slider/slider';
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import { formatAmount, formatImg, formatDate } from 'common/js/util';
-  import { getOrderDetail, getOrganizeOrderDetail } from 'api/biz';
+  import { getOrderDetail, getOrganizeOrderDetail, cancelOrder } from 'api/biz';
+
   export default {
     data() {
       return {
@@ -47,14 +59,10 @@
         type: '',
         loading: true,
         toastText: '',
-        currentList: [],
-        hasMore: false,
+        inputText: '',
+        loadingText: '',
         text: '',
-        showBack: false,
-        showCheckIn: false,
         pullUpLoad: null,
-        flag: false,
-        idCode: '',
         detail: {},
         choosedIndex: 0,
         code: ''   // 产品code
@@ -70,11 +78,51 @@
       formatDate(date, format) {
         return formatDate(date, format);
       },
+      formatStatus(status) {
+        return ORDER_STATUS[status];
+      },
       go(url) {
         this.$router.push(url);
       },
       chooseSpecs(index) {
         this.choosedIndex = index;
+      },
+      showBtns(status) {
+        if (status !== '1') {
+          return false;
+        }
+        return true;
+      },
+      showPayBtn(status) {
+        return status === '1';
+      },
+      showCancelBtn(status) {
+        return status === '1';
+      },
+      payOrder(item) {
+        this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
+      },
+      handleInputConfirm(text) {
+        this.loading = true;
+        if (this.curItem.status === '0') {
+          this.cancelOrder(text);
+        }
+      },
+      cancelOrder(text) {
+        this.loadingText = '取消中...';
+        cancelOrder(this.curItem.code, text).then(() => {
+          this.loading = false;
+          this.editOrderListByCancel({
+            code: this.curItem.code
+          });
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      _cancelOrder(item) {
+        this.inputText = '取消原因';
+        this.curItem = item;
+        this.$refs.confirmInput.show();
       }
     },
     mounted() {
@@ -104,16 +152,21 @@
     },
     components: {
       FullLoading,
-      Toast,
       Slider,
       NoResult,
       MHeader,
-      Scroll
+      Scroll,
+      Toast,
+      ConfirmInput
     }
   };
 </script>
 <style lang="scss" scoped>
   @import "~common/scss/variable";
+  .header-height{
+    width: 100%;
+    height: 0.88rem;
+  }
   .adopt-list-wrapper {
     background: #fff;
     position: fixed;
@@ -129,7 +182,6 @@
     }
     .status {
       padding: 0.56rem;
-      margin-top: 0.88rem;
       text-align: center;
       left: 0;
       .icon {
@@ -152,11 +204,6 @@
     }
     .order-list {
       background: $color-highlight-background;
-      /*position: absolute;*/
-      /*top: 3.9rem;*/
-      /*bottom: 0;*/
-      /*left: 0;*/
-      /*right: 0;*/
       .item {
         width: 100%;
         font-size: $font-size-medium-x;
@@ -222,6 +269,29 @@
               }
             }
           }
+        }
+      }
+    }
+    .btns {
+      display: flex;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0.98rem;
+      line-height: 0.98rem;
+      font-size: $font-size-large-s;
+      color: #fff;
+      border-top: 1px solid $color-border;
+
+      .btn {
+        flex: 1;
+        text-align: center;
+        background-color: $primary-color;
+
+        &.cancel {
+          color: $color-text;
+          background: #fff;
         }
       }
     }

@@ -50,7 +50,7 @@
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
               <p class="hot-pro-introduction">{{formatDate(item.updateDatetime, 'yyyy-MM-dd')}}</p>
-              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price fr">¥2480.00</span></p>
+              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price fr">¥{{formatAmount(item.minPrice)}}</span></p>
             </div>
           </div>
         </div>
@@ -422,7 +422,8 @@ export default {
             .hot-pro-title {
               font-size: $font-size-medium-x;
               line-height: 0.42rem;
-              margin-bottom: 0.1rem;
+              margin-bottom: 0.15rem;
+              margin-top: 0.15rem;
             }
             .hot-pro-introduction {
               color: $color-text-l;

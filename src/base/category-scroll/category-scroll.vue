@@ -5,7 +5,7 @@
         v-for="(item,index) in categorys"
         :key="index"
         ref="cate"
-        @click="_selectItem(index)"
+        @click="_selectItem($event, index)"
         class="category-item"
         :class="{active: index===currentIndex}"
         :style="_getItemColor(index)">
@@ -50,14 +50,17 @@
       }, 20);
 
       window.addEventListener('resize', () => {
-        if(!this.scroll) {
+        if (!this.scroll) {
           return;
         }
         this._setSliderWidth();
       });
     },
     methods: {
-      _selectItem(index) {
+      _selectItem(e, index) {
+        if (!e._constructed) {
+          return;
+        }
         this.scroll.scrollToElement(this.$refs.cate[index], 200, true);
         this.$emit('select', index);
       },
@@ -96,7 +99,7 @@
       _setSliderWidth() {
         let width = 0;
         let cates = this.$refs.cate;
-        for(let i = 0; i < this.categorys.length; i++) {
+        for (let i = 0; i < this.categorys.length; i++) {
           width += cates[i].clientWidth;
         }
         this.$refs.categoryGroup.style.width = width + 1 + 'px';
@@ -145,6 +148,19 @@
 
         &.active {
           color: $primary-color;
+        }
+      }
+    }
+  }
+
+  .bg-transparent {
+    .category .category-group {
+      background: transparent;
+      .category-item {
+        color: #fff;
+
+        &.active {
+          color: #FEAE62;
         }
       }
     }

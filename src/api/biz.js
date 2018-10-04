@@ -152,12 +152,36 @@ export function getOrganizeOrderDetail (data) {
  * 列表查询认养权/列表查询用户的树
  * @param {string} status 状态(1待认养2认养中3已到期)
  * @param {string} userId 持有人
+ * @param {string} categoryCode 分类编号
  * */
-export function getListUserTree({status, currentHolder}) {
+export function getListUserTree({status, currentHolder, categoryCode}) {
   let params = {
     status: status || '2',
-    currentHolder: currentHolder || getUserId()
+    currentHolder: currentHolder || getUserId(),
+    categoryCode
   };
 
   return fetch(629207, params);
+}
+
+/**
+ * 取消订单
+ * @param {string} code
+ * @param {string} remark
+ * */
+export function cancelOrder(code, remark) {
+  return fetch(629041, {
+    code,
+    remark,
+    userId: getUserId()
+  });
+}
+/**
+ * 获取当前订单积分抵扣金额
+ * @param {string} code 订单编号
+ * */
+export function getDeductibleAmount(code) {
+  return fetch(629048, {
+    code
+  });
 }

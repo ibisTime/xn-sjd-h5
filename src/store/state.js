@@ -1,7 +1,8 @@
 const state = {
   user: null,
   cnyAccount: null,
-  jfAccount: null
+  jfAccount: null,
+  orderList: {}
 };
 
 export default state;

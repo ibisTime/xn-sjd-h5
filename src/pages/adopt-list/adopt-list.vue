@@ -95,7 +95,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import { getGroupOrderList } from 'api/biz';
+  import { getPageOrders } from 'api/biz';
 
   export default {
     data() {
@@ -110,10 +110,11 @@
       }
     },
     mounted() {
-      getGroupOrderList({
+      getPageOrders({
         start: 1,
         limit: 100,
-        produceCode: this.code
+        produceCode: this.code,
+        type: 4
       }).then((res) => {
         this.list = res.list;
       });

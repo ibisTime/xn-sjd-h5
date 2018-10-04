@@ -65,7 +65,9 @@
         captBtnText: '获取验证码',
         isChecked: false,
         captcha: '',
-        sending: false
+        sending: false,
+        userReferee: '',
+        type: ''
       };
     },
     methods: {
@@ -75,10 +77,14 @@
           if (result && this.pwd === this.rePwd && this.isChecked) {
             this.loading = true;
             this.loadText = '注册中...';
+            this.userReferee = this.$route.query.userReferee;
+            this.type = this.$route.query.type;
             register({
               mobile: this.mobile,
               loginPwd: this.pwd,
-              smsCaptcha: this.captcha
+              smsCaptcha: this.captcha,
+              userReferee: this.userReferee,
+              userRefereeType: this.type
             }).then((data) => {
               if(data.code) {
                 this.text = '注册成功，即将跳转到登陆页';

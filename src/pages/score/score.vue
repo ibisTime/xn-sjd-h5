@@ -6,7 +6,7 @@
         <div class="in-content">
           <div class="card">
             <p>当前积分</p>
-            <p><span>{{amount}}</span></p>
+            <p><span>{{formatAmount(amount)}}</span></p>
           </div>
           <div class="money-list">
             <div class="money-item">
@@ -32,6 +32,7 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import {getAccountList} from 'api/account';
+  import {formatAmount} from 'common/js/util';
 
   export default {
     data() {
@@ -57,6 +58,9 @@
       },
       action() {
         this.go('/score/score-rules');
+      },
+      formatAmount(amount) {
+        return formatAmount(amount);
       }
     },
     components: {

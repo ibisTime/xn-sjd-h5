@@ -20,7 +20,7 @@
               </div>
               <div class="line fl"></div>
               <div class="score fl" @click="go('/score?accountNumber=' + jfAccountNumber + '&amount=' + jf)">
-                <p class="number">{{jf}}</p>
+                <p class="number">{{formatAmount(jf)}}</p>
                 <p class="text">积分</p>
               </div>
             </div>

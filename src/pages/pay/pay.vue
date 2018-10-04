@@ -35,7 +35,7 @@
         <div class="gray"></div>
         <div class="score">
           <p>积分抵扣</p>
-          <div class="info-item">最多可抵扣{{jf*rate}}元（剩余{{jf}}分）
+          <div class="info-item">使用{{formatAmount(rate.jfAmount)}}积分抵扣{{formatAmount(rate.cnyAmount)}}元（剩余{{formatAmount(jf)}}积分）
             <div class="label">
               <switch-option class="option" :value="isPublish" @update:value="updatePublish"></switch-option>
             </div>
@@ -57,8 +57,7 @@
   import Toast from 'base/toast/toast';
   import { getCookie } from 'common/js/cookie';
   import { formatAmount } from 'common/js/util';
-  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail } from 'api/biz';
-  import { getConfig } from 'api/general';
+  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount } from 'api/biz';
 
   export default {
     data() {
@@ -87,11 +86,11 @@
           getAccount({
             userId: userId
           }),
-          getConfig('jf_cny_rate')
+          getDeductibleAmount(this.orderCode)
         ])
           .then(([res1, res2, res3]) => {
             this.amount = res1.amount;
-            this.rate = res3.cvalue;
+            this.rate = res3;
             res2.list.map((item) => {
               if(item.currency === 'CNY') {
                 this.cny = item.amount;
@@ -110,11 +109,11 @@
           getAccount({
             userId: userId
           }),
-          getConfig('jf_cny_rate')
+          getDeductibleAmount(this.orderCode)
         ])
           .then(([res1, res2, res3]) => {
             this.amount = res1.amount;
-            this.rate = res3.cvalue;
+            this.rate = res3;
             res2.list.map((item) => {
               if(item.currency === 'CNY') {
                 this.cny = item.amount;
@@ -154,7 +153,7 @@
       // 支付订单
       payOrder() {
         let payType = this.wechat ? '3' : this.alipay ? '2' : '1';
-        let isJfDeduct = !!this.isPublish;
+        let isJfDeduct = this.isPublish ? 1 : 0;
         this.loading = true;
         if(this.orderCode[0] === 'G') {
           // 集体订单
