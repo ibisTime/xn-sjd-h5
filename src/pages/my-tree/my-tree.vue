@@ -1,12 +1,12 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" :title="headTitle"></m-header>
+    <m-header class="cate-header" :title="title"></m-header>
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="tree-panel">
         <div class="cover" v-show="cover"></div>
         <div class="juanzeng" v-show="juanzengShow">
-          <span>+10g</span>
+          <span>+{{presentTppQuantity}}g</span>
           <img src="./heart@2x.png">
         </div>
         <div class="tree-panel-danmu" v-show="danmuShow">
@@ -18,22 +18,10 @@
           <img :src="emoji" class="emoji">
         </div>
         <div class="carbon-bubbles">
-          <div class="bubble-item">
-            <div class="bubble">
+          <div class="bubble-item" v-for="item in tppList" @click="doCollectionTpp(item)">
+            <div class="bubble" :class="'status' + item.status">
               <img src="./bubble-light@2x.png">
-              <span>68g</span>
-            </div>
-          </div>
-          <div class="bubble-item">
-            <div class="bubble">
-              <img src="./bubble-light@2x.png">
-              <span>68g</span>
-            </div>
-          </div>
-          <div class="bubble-item">
-            <div class="bubble">
-              <img src="./bubble-light@2x.png">
-              <span>68g</span>
+              <span>{{formatAmount(item.quantity, 1)}}g</span>
             </div>
           </div>
         </div>
@@ -57,26 +45,26 @@
         </div>
         <img src="./romantic-story@2x.png" class="romantic-story" v-show="!other" @click="go('/emotion-channel')">
       </div>
-      <div class="battle">
+      <div class="battle" v-if="other === '1'" v-show="other === '1'">
         <div class="battle-bg">
-          <div class="battle-item">
+          <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
             <div class="battle-item-head">
-              <img src="./head.png" class="head">
+              <div class="userPhoto" :style="getImgSyl(comparisonData.toUserInfo.photo)"></div>
               <img src="./crown@2x.png" class="crown">
             </div>
             <div>
               <p class="info">TA收取你</p>
-              <p class="number">22g</p>
+              <p class="number">{{formatAmount(comparisonData.toUserWeekQuantity)}}g</p>
             </div>
           </div>
           <span class="vs">VS</span>
-          <div class="battle-item lose">
+          <div class="battle-item" :class="comparisonData.userIsWin ? 'win' : ''">
             <div>
               <p class="info">你收取TA</p>
-              <p class="number">12g</p>
+              <p class="number">{{formatAmount(comparisonData.userWeekQuantity)}}g</p>
             </div>
             <div class="battle-item-head">
-              <img src="./head.png"  class="head">
+              <div class="userPhoto" :style="getImgSyl(comparisonData.userInfo.photo)"></div>
               <img src="./crown@2x.png" class="crown">
             </div>
           </div>
@@ -280,7 +268,7 @@
     <convert v-show="convertFlag" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
     <convert-success v-show="convertSuccessFlag" @close="close('convertSuccessFlag')" @convertSuccess="convertSuccess"></convert-success>
     <certification v-show="certificationFlag" @close="close('certificationFlag')" @convertSuccess="convertSuccess"></certification>
-    <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess"></juanzeng>
+    <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="presentTppQuantity"></juanzeng>
     <router-view></router-view>
   </div>
 </template>
@@ -295,11 +283,15 @@ import ConvertSuccess from 'base/convert-success/convert-success';
 import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount } from 'common/js/util';
+import { getComparison, getPageTpp, collectionTpp } from 'api/biz';
+import { getSystemConfigCkey } from 'api/general';
+import {formatAmount, formatDate, formatImg} from 'common/js/util';
+import defaltAvatarImg from './avatar@2x.png';
+
 export default {
   data() {
     return {
-      title: '正在加载...',
+      title: '我的树',
       loading: true,
       toastText: '',
       hasMore: false,
@@ -317,7 +309,6 @@ export default {
       cover: false,
       tab: 0,
       propIdx: 0,
-      headTitle: '我的树',
       adopterIntroduction: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>',
       emoji: '',
       emojiText: '',
@@ -343,12 +334,93 @@ export default {
         src: require('./6@2x.png'),
         text: '你怎么每天这么勤快呢'
       }],
-      other: 0
+      other: 0,
+      comparisonData: {}, // 能量比拼
+      presentTppQuantity: 0, // PRESENT_TPP_QUANTITY 赠送碳泡泡的数量
+      adoptTreeCode: '', // 认养权编号
+      tppList: {} // 碳泡泡
     };
   },
+  created() {
+    this.other = this.$route.query.other || 0;  // 是否别人的主页
+    this.currentHolder = this.$route.query.currentHolder || '';
+    if(this.other) {
+      this.title = 'TA的树';
+      this.borderTitle = 'TA的动态';
+    }
+    this.getInitData();
+  },
   methods: {
-    formatAmount(amount) {
-      return formatAmount(amount);
+    getInitData() {
+      this.adoptTreeCode = this.$route.query.aTCode; // 认养权编号
+      Promise.all([
+        this.getTppList({
+          adoptTreeCode: this.adoptTreeCode
+        }),
+        this.getPresentTppQuantity()
+      ]).then(() => {
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
+
+      // 不是当前用户
+      if (this.other === '1') {
+        Promise.all([
+          this.getComparisonData(this.currentHolder)
+        ]).then(() => {
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
+      }
+    },
+    // 获取碳泡泡
+    getTppList(params) {
+      return getPageTpp(params).then((res) => {
+        this.tppList = res.list;
+      }, () => {});
+    },
+    // 收取碳泡泡
+    doCollectionTpp(item) {
+      if (item.status === '0') {
+        this.loading = true;
+        collectionTpp({
+          code: item.code,
+          userId: this.currentHolder
+        }).then(() => {
+          this.getTppList();
+        }, () => { this.loading = false; });
+      } else {
+        return;
+      }
+    },
+    // 获取赠送碳泡泡数量
+    getPresentTppQuantity() {
+      return getSystemConfigCkey('PRESENT_TPP_QUANTITY').then((data) => {
+        this.presentTppQuantity = this.formatAmount(data.cvalue);
+      }, () => {});
+    },
+    // 本周能量比拼
+    getComparisonData(toUserId) {
+      return getComparison(toUserId).then((data) => {
+        data.toUserIsWin = false; // 好友赢
+        data.userIsWin = false; // 自己赢
+        if (data.toUserWeekQuantity > data.userWeekQuantity) {
+          data.toUserIsWin = true;
+        } else if (data.toUserWeekQuantity < data.userWeekQuantity) {
+          data.userIsWin = true;
+        }
+        this.comparisonData = data;
+      }, () => {});
+    },
+    formatAmount(amount, len) {
+      return formatAmount(amount, len);
+    },
+    formatDate(date, format) {
+      return formatDate(date, format);
+    },
+    getImgSyl(imgs) {
+      let img = imgs ? formatImg(imgs) : defaltAvatarImg;
+      return {
+        backgroundImage: `url(${img})`
+      };
     },
     go(url) {
       this.$router.push(url);
@@ -422,13 +494,6 @@ export default {
       setTimeout(() => {
         this.danmuShow = false;
       }, 1000);
-    }
-  },
-  mounted() {
-    this.pullUpLoad = null;
-    this.other = this.$route.query.other || 0;  // 是否别人的树
-    if(this.other) {
-      this.headTitle = 'TA的树';
     }
   },
   components: {
@@ -536,11 +601,15 @@ export default {
       }
       .carbon-bubbles {
         position: absolute;
-        top: 2.5rem;
+        top: 2.4rem;
         display: flex;
         align-items: center;
+        left: 50%;
+        transform: translateX(-50%);
+
         .bubble-item {
           margin-right: 0.2rem;
+
           .bubble {
             position: relative;
             img {
@@ -548,14 +617,37 @@ export default {
               height: 1rem;
             }
             span {
-              font-size: $font-size-medium-x;
+              font-size: $font-size-medium-s;
               line-height: 0.41rem;
               color: $primary-color;
               position: absolute;
               top: 0.38rem;
-              left: 0.2rem;
+              left: 50%;
+              transform: translateX(-50%);
               font-family: 'AvenirNextCondensed-Bold';
             }
+
+            &.status1{
+              opacity: 0.6;
+            }
+          }
+          &:nth-of-type(1) .bubble{
+            top: -0.6rem;
+            right: 0.3rem;
+          }
+          &:nth-of-type(2) .bubble{
+            top: -0.1rem;
+          }
+          &:nth-of-type(3) .bubble{
+            top: -1.6rem;
+            left: 0.2rem;
+          }
+          &:nth-of-type(4) .bubble{
+            right: 0.2rem;
+          }
+          &:nth-of-type(5) .bubble{
+            top: 0.5rem;
+            left: 0.3rem;
           }
         }
       }
@@ -643,18 +735,18 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.64rem 0.4rem;
+        padding: 0.48rem 0.4rem 0;
         .battle-item {
           display: flex;
+          color: #ccc;
+
           .battle-item-head {
             position: relative;
-            .head {
+            .userPhoto {
               width: 0.8rem;
               height: 0.8rem;
-              border-radius: 50%;
               margin: 0 0.2rem;
-              border: 2px solid #f7c54b;
-              box-sizing: content-box;
+              border: none;
             }
             .crown {
               width: 0.44rem;
@@ -662,6 +754,7 @@ export default {
               position: absolute;
               top: -0.2rem;
               left: 0;
+              display: none;
             }
           }
           .info {
@@ -675,28 +768,20 @@ export default {
             font-size: $font-size-large;
             line-height: $font-size-large;
           }
-        }
-        .lose {
-          color: #ccc;
-          .battle-item-head {
-            position: relative;
-            .head {
-              width: 0.8rem;
-              height: 0.8rem;
-              border-radius: 50%;
-              margin: 0 0.2rem;
-              border: none;
-              box-sizing: content-box;
-            }
-            .crown {
-              display: none;
+          &.win {
+            .battle-item-head {
+              .userPhoto {
+                border: 2px solid #f7c54b;
+              }
+              .crown {
+                display: block;
+              }
             }
           }
         }
         .vs {
           color: $primary-color;
           font-size: 0.76rem;
-          /*margin: 0 0.52rem;*/
         }
       }
     }

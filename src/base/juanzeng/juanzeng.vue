@@ -6,7 +6,7 @@
       <img src="./juanzeng@2x.png" class="juanzeng">
       <p class="title">给好友捐赠</p>
       <p class="description">帮助好友的古树快快成长</p>
-      <p class="info">将自己的<span>10g碳泡泡</span>赠送给好友</p>
+      <p class="info">将自己的<span>{{quantity}}g碳泡泡</span>赠送给好友</p>
       <button @click="juanzengSuccess">确认捐赠</button>
     </div>
   </div>
@@ -17,6 +17,10 @@
       title: {
         type: String,
         default: '正在载入...'
+      },
+      quantity: {
+        type: String,
+        default: 0
       }
     },
     methods: {

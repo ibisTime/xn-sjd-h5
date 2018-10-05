@@ -103,6 +103,8 @@ export function getShareImg(imgs) {
 export function formatAmount(amount, len = 2) {
   if (isUnDefined(amount)) {
     return '--';
+  } else if (amount === 0) {
+    return '0';
   }
   amount = (+amount / 1000).toString();
   let reg = new RegExp('(\\.\\d{' + len + 1 + '})\\d*', 'ig');

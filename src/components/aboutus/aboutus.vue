@@ -18,7 +18,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import {setTitle} from 'common/js/util';
-  import {getUserSystemConfig} from 'api/general';
+  import {getSystemConfigCkey} from 'api/general';
 
   export default {
     data() {
@@ -33,9 +33,9 @@
       setTitle('关于我们');
       this.pullUpLoad = null;
       Promise.all([
-        getUserSystemConfig('aboutUs'),
-        getUserSystemConfig('telephone'),
-        getUserSystemConfig('serviceTime')
+        getSystemConfigCkey('aboutUs'),
+        getSystemConfigCkey('telephone'),
+        getSystemConfigCkey('serviceTime')
       ]).then(([aboutus, telephone, time]) => {
         this.loadingFlag = false;
         this.telephone = telephone.cvalue;

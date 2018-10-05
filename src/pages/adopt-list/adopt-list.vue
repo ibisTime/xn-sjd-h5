@@ -2,126 +2,104 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="已认养名单"></m-header>
     <div class="adopt-list">
-      <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
+      <scroll ref="scroll"
+              :data="dataList"
+              :hasMore="hasMore"
+              @pullingUp="getAdoptList">
+        <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)">
+          <div class="userPhoto" :style="getImgSyl()"></div>
           <div class="info">
             <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
+            <p class="date">{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}</p>
           </div>
-          <span class="price fr">¥2000.00</span>
+          <span class="price fr">¥{{formatAmount(item.amount)}}</span>
         </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
-          </div>
-          <span class="price fr">¥2000.00</span>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
-          </div>
-          <span class="price fr">¥2000.00</span>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
-          </div>
-          <span class="price fr">¥2000.00</span>
-        </div><div class="item" @click="go('/carbon-bubble')">
-        <img src="./avatar@2x.png" alt="">
-        <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">2018.09.14</p>
-        </div>
-        <span class="price fr">¥2000.00</span>
-      </div><div class="item" @click="go('/carbon-bubble')">
-        <img src="./avatar@2x.png" alt="">
-        <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">2018.09.14</p>
-        </div>
-        <span class="price fr">¥2000.00</span>
-      </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
-          </div>
-          <span class="price fr">¥2000.00</span>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
-          </div>
-          <span class="price fr">¥2000.00</span>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
-          </div>
-          <span class="price fr">¥2000.00</span>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">2018.09.14</p>
-          </div>
-          <span class="price fr">¥2000.00</span>
-        </div><div class="item" @click="go('/carbon-bubble')">
-        <img src="./avatar@2x.png" alt="">
-        <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">2018.09.14</p>
-        </div>
-        <span class="price fr">¥2000.00</span>
-      </div>
+        <no-result v-show="!hasMore && !(dataList && dataList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
       </Scroll>
     </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <toast :text="toastText" ref="toast"></toast>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import { getPageOrders } from 'api/biz';
+  import NoResult from 'base/no-result/no-result';
+  import FullLoading from 'base/full-loading/full-loading';
+  import Toast from 'base/toast/toast';
+  import {formatAmount, formatDate, formatImg, getUserId} from 'common/js/util';
+  import defaltAvatarImg from './avatar@2x.png';
+  import { getPageUserTree } from 'api/biz';
 
   export default {
     data() {
       return {
+        toastText: '',
+        loading: false,
+        loadingText: '',
+        dataList: [],
         start: 1,
-        limit: 10
+        limit: 20,
+        hasMore: true
       };
     },
+    created() {
+      this.getInitData();
+    },
     methods: {
+      getInitData() {
+        this.getAdoptList();
+      },
+      getAdoptList() {
+        this.loading = true;
+        this.code = this.$route.query.code;
+        Promise.all([
+          getPageUserTree({
+            start: this.start,
+            limit: this.limit,
+            productCode: this.code,
+            currentHolder: ''
+          })
+        ]).then(([res1]) => {
+          if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
+            this.hasMore = false;
+          }
+          this.loading = false;
+          this.dataList = res1.list;
+          this.start++;
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
       go(url) {
         this.$router.push(url);
+      },
+      goUserHome(item) {
+        if(item.currentHolder === getUserId()) {
+          this.go(`/homepage`);
+        } else {
+          this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
+        }
+      },
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
+      formatDate(date, format) {
+        return formatDate(date, format);
+      },
+      getImgSyl(imgs) {
+        let img = imgs ? formatImg(imgs) : defaltAvatarImg;
+        return {
+          backgroundImage: `url(${img})`
+        };
       }
-    },
-    mounted() {
-      getPageOrders({
-        start: 1,
-        limit: 100,
-        produceCode: this.code,
-        type: 4
-      }).then((res) => {
-        this.list = res.list;
-      });
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      NoResult,
+      FullLoading,
+      Toast
     }
   };
 </script>
@@ -156,7 +134,8 @@
         padding: 0.3rem 0;
         display: flex;
         align-items: center;
-        img {
+        .userPhoto {
+          width: 1rem;
           height: 1rem;
           margin-right: 0.2rem;
         }

@@ -8,6 +8,32 @@ export function getInitWXSDKConfig() {
   });
 }
 
+// 根据ckey获取系统参数
+export function getSystemConfigCkey(ckey) {
+  if (getSystemConfigCkey[ckey]) {
+    return Promise.resolve(getSystemConfigCkey[ckey]);
+  }
+  return fetch(630047, {
+    ckey
+  }).then((data) => {
+    getSystemConfigCkey[ckey] = data;
+    return Promise.resolve(data);
+  });
+}
+
+// 根据type获取系统参数
+export function getSystemConfigType(ckey) {
+  if (getSystemConfigType[ckey]) {
+    return Promise.resolve(getSystemConfigType[ckey]);
+  }
+  return fetch(630048, {
+    getSystemConfigType
+  }).then((data) => {
+    getSystemConfigCkey[ckey] = data;
+    return Promise.resolve(data);
+  });
+}
+
 // 获取用户的系统参数
 export function getUserSystemConfig(ckey) {
   if (getUserSystemConfig[ckey]) {
@@ -17,19 +43,6 @@ export function getUserSystemConfig(ckey) {
     ckey
   }).then((data) => {
     getUserSystemConfig[ckey] = data;
-    return Promise.resolve(data);
-  });
-}
-
-// 获取业务的系统参数
-export function getBizSystemConfig(ckey) {
-  if (getBizSystemConfig[ckey]) {
-    return Promise.resolve(getBizSystemConfig[ckey]);
-  }
-  return fetch(620917, {
-    ckey
-  }).then((data) => {
-    getBizSystemConfig[ckey] = data;
     return Promise.resolve(data);
   });
 }

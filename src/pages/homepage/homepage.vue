@@ -2,7 +2,7 @@
   <div class="me-wrapper">
     <m-header class="cate-header" :title="title" actText="分享" @action="action"></m-header>
     <div class="out-content">
-      <Scroll :pullUpLoad="pullUpLoad">
+      <Scroll>
       <div class="bg">
         <div class="content">
           <div class="in-content">
@@ -10,7 +10,10 @@
               <div class="me-info">
                 <div class="userPhoto" :style="getImgSyl(userInfo.photo)"></div>
                 <div class="text">
-                  <p><span>{{userInfo.nickname}}</span><span class="lv">LV{{userInfo.level}}</span></p>
+                  <p>
+                    <span>{{userInfo.nickname}}</span>
+                    <span class="lv">LV{{userInfo.level}}</span>
+                    <span class="follow" v-show="other === '1'" @click="setFollow()" >{{this.isFriend ? '取消关注' : '加关注'}}</span></p>
                 </div>
               </div>
               <div class="category-wrapper bg-transparent">
@@ -41,8 +44,8 @@
         <!--<span :class="emotion === 2 ? 'active' : ''" @click="changeEmotion(2)">亲子林</span>-->
       <!--</div>-->
       <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
-        <div class="item" v-for="item in this.userTree">
-          <div class="tree-info" @click="goMyTree">
+        <div class="item" v-for="item in userTree">
+          <div class="tree-info" @click="goMyTree(item)">
             <p class="tree-name">{{item.tree.scientificName}}</p>
             <p class="tree-about"></p>
           </div>
@@ -51,8 +54,35 @@
             <p>查看地图</p>
           </div>
         </div>
+        <no-result v-show="!loading && !(userTree && userTree.length)" title="还没有认养树" class="no-result-wrapper"></no-result>
       </div>
       <div class="gray"></div>
+      <div class="battle" v-if="other === '1'" v-show="other === '1'">
+        <div class="battle-bg">
+          <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
+            <div class="battle-item-head">
+              <div class="userPhoto" :style="getImgSyl(comparisonData.toUserInfo.photo)"></div>
+              <img src="./crown@2x.png" class="crown">
+            </div>
+            <div>
+              <p class="info">TA收取你</p>
+              <p class="number">{{formatAmount(comparisonData.toUserWeekQuantity)}}g</p>
+            </div>
+          </div>
+          <span class="vs">VS</span>
+          <div class="battle-item" :class="comparisonData.userIsWin ? 'win' : ''">
+            <div>
+              <p class="info">你收取TA</p>
+              <p class="number">{{formatAmount(comparisonData.userWeekQuantity)}}g</p>
+            </div>
+            <div class="battle-item-head">
+              <div class="userPhoto" :style="getImgSyl(comparisonData.userInfo.photo)"></div>
+              <img src="./crown@2x.png" class="crown">
+            </div>
+          </div>
+        </div>
+        <div class="gray"></div>
+      </div>
       <div class="dynamic">
         <div class="dynamic-title">
           <div class="border"></div>
@@ -111,15 +141,18 @@
       </div>
       <div class="share-cancel" @click="change">取消</div>
     </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import CategoryScroll from 'base/category-scroll/category-scroll';
+  import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
-  import { getUser } from 'api/user';
-  import { getListUserTree, getProductType } from 'api/biz';
-  import {formatDate, formatImg} from 'common/js/util';
+  import NoResult from 'base/no-result/no-result';
+  import { getUser, getHasRelationship, addRelationship, cancelRelationship } from 'api/user';
+  import { getListUserTree, getProductType, getComparison } from 'api/biz';
+  import {formatAmount, formatDate, formatImg} from 'common/js/util';
   import defaltAvatarImg from './avatar@2x.png';
 
   export default {
@@ -128,23 +161,22 @@
         type: 0,
         emotion: 1,
         share: false,
+        loading: false,
+        loadingText: '',
         other: 0,      // 是否好友的主页
         currentHolder: '', // userId 好友
         title: '我的主页',
         borderTitle: '我的动态',
-        loading: true,
-        userInfo: {},
-        userTree: [],
+        userInfo: {}, // 用户信息
+        userTree: [], // 认养的树
         currentIndex: +this.$route.query.index || 0,
         index: 0,
-        categorys: [{value: '全部', key: ''}]
+        categorys: [{value: '全部', key: ''}],
+        comparisonData: {}, // 能量比拼
+        isFriend: false // 是否是好友
       };
     },
     created() {
-      this.pullUpLoad = null;
-      this.getInitData();
-    },
-    mounted() {
       this.index = +this.$route.query.type || 0;  // 树的类型
       this.other = this.$route.query.other || 0;  // 是否别人的主页
       this.currentHolder = this.$route.query.currentHolder || '';
@@ -152,11 +184,13 @@
         this.title = 'TA的主页';
         this.borderTitle = 'TA的动态';
       }
+      this.getInitData();
     },
     methods: {
       getInitData() {
         this.type = this.categorys[this.index].key;
         this.currentHolder = this.$route.query.currentHolder || '';
+        this.other = this.$route.query.other || 0;  // 是否别人的主页
         Promise.all([
           getUser(this.currentHolder),
           getProductType({
@@ -175,12 +209,59 @@
           });
           this.getUserTree();
         }).catch(() => { this.loading = false; });
+        // 不是当前用户
+        if (this.other === '1') {
+          Promise.all([
+            this.getComparisonData(this.currentHolder),
+            this.getIsFriend(this.currentHolder)
+          ]).then(() => {
+            this.loading = false;
+          }).catch(() => { this.loading = false; });
+        }
       },
+      // 查询我和他是否建立关联
+      getIsFriend(toUserId) {
+        return getHasRelationship(toUserId).then((data) => {
+          this.isFriend = data;
+        }, () => {});
+      },
+      // 设置关注
+      setFollow() {
+        this.loading = true;
+        // 取消关注
+        if (this.isFriend) {
+          cancelRelationship(this.currentHolder).then((data) => {
+            this.isFriend = false;
+            this.loading = false;
+          }, () => { this.loading = false; });
+        // 加关注
+        } else {
+          addRelationship(this.currentHolder).then((data) => {
+            this.isFriend = true;
+            this.loading = false;
+          }, () => { this.loading = false; });
+        }
+      },
+      // 本周能量比拼
+      getComparisonData(toUserId) {
+        return getComparison(toUserId).then((data) => {
+          data.toUserIsWin = false; // 好友赢
+          data.userIsWin = false; // 自己赢
+          if (data.toUserWeekQuantity > data.userWeekQuantity) {
+            data.toUserIsWin = true;
+          } else if (data.toUserWeekQuantity < data.userWeekQuantity) {
+            data.userIsWin = true;
+          }
+          this.comparisonData = data;
+        }, () => {});
+      },
+      // 获取用户的树
       getUserTree() {
         this.type = this.categorys[this.index].key;
         this.currentHolder = this.$route.query.currentHolder || '';
         return getListUserTree({currentHolder: this.currentHolder, categoryCode: this.type}).then((userTree) => {
           this.userTree = userTree;
+          this.loading = false;
         }, () => {});
       },
       getImgSyl(imgs) {
@@ -188,6 +269,9 @@
         return {
           backgroundImage: `url(${img})`
         };
+      },
+      formatAmount(amount) {
+        return formatAmount(amount);
       },
       formatDate(date, format) {
         return formatDate(date, format);
@@ -207,23 +291,26 @@
       change() {
         this.share = !this.share;
       },
-      goMyTree() {
+      goMyTree(item) {
         if(this.other) {
-          this.go('/my-tree?other=1');
+          this.go(`/my-tree?other=1&currentHolder=${this.currentHolder}&aTCode=${item.code}`);
         } else {
-          this.go('/my-tree');
+          this.go(`/my-tree?aTCode=${item.code}`);
         }
       },
       selectCategory(index) {
         this.index = index;
         this.currentIndex = index;
         this.userTree = [];
+        this.loading = true;
         this.getUserTree();
       }
     },
     components: {
       Scroll,
       MHeader,
+      NoResult,
+      FullLoading,
       CategoryScroll
     }
   };
@@ -307,14 +394,22 @@
                   .lv {
                     background: #FEAE62;
                     border-radius: 0.06rem;
-                    width: 0.67rem;
-                    height: 0.33rem;
+                    line-height: 0.33rem;
                     display: inline-block;
                     color: #fff;
                     font-size: 0.24rem;
                     margin-left: 0.23rem;
-                    text-align: center;
-                    padding-top: 0.03rem;
+                    padding: 0 0.1rem;
+                  }
+                  .follow{
+                    background: #FEAE62;
+                    border-radius: 0.06rem;
+                    line-height: 0.33rem;
+                    display: inline-block;
+                    color: #fff;
+                    font-size: 0.24rem;
+                    margin-left: 0.23rem;
+                    padding: 0 0.1rem;
                   }
                 }
               }
@@ -549,6 +644,68 @@
         font-size: $font-size-medium;
         line-height: 0.9rem;
         text-align: center;
+      }
+    }
+
+    .battle {
+      height: 2.8rem;
+      background: $color-highlight-background;
+      padding: 0.3rem;
+      .battle-bg {
+        height: 100%;
+        background: url("./battle@2x.png") no-repeat;
+        background-size: 100% 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.48rem 0.4rem 0;
+        .battle-item {
+          display: flex;
+          color: #ccc;
+
+          .battle-item-head {
+            position: relative;
+            .userPhoto {
+              width: 0.8rem;
+              height: 0.8rem;
+              margin: 0 0.2rem;
+              border: none;
+            }
+            .crown {
+              width: 0.44rem;
+              height: 0.43rem;
+              position: absolute;
+              top: -0.2rem;
+              left: 0;
+              display: none;
+            }
+          }
+          .info {
+            font-size: $font-size-small;
+            line-height: $font-size-small;
+            margin-bottom: 0.2rem;
+            padding: 0;
+          }
+          .number {
+            font-family: 'PingFangSC-Semibold';
+            font-size: $font-size-large;
+            line-height: $font-size-large;
+          }
+          &.win {
+            .battle-item-head {
+              .userPhoto {
+                border: 2px solid #f7c54b;
+              }
+              .crown {
+                display: block;
+              }
+            }
+          }
+        }
+        .vs {
+          color: $primary-color;
+          font-size: 0.76rem;
+        }
       }
     }
   }

@@ -22,7 +22,7 @@
   import calendar from 'base/calendar/calendar';
   import SignMask from 'components/sign-mask/sign-mask';
   import FullLoading from 'base/full-loading/full-loading';
-  import {getUserSystemConfig} from 'api/general';
+  import {getSystemConfigCkey} from 'api/general';
   import {sign, signNum, signQuery} from 'api/me';
   import {getAccount, getSignIntegral} from 'api/account';
   import {formatAmount, formatDate} from 'common/js/util';
@@ -83,7 +83,7 @@
         });
       },
       showRule () {
-        getUserSystemConfig('cardsTradition').then((data) => {
+        getSystemConfigCkey('cardsTradition').then((data) => {
           this.text = data.cvalue;
         }).catch(() => {
           this.text = '暂无';

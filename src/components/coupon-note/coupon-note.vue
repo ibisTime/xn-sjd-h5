@@ -12,7 +12,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import {setTitle} from 'common/js/util';
-  import {getUserSystemConfig} from 'api/general';
+  import {getSystemConfigCkey} from 'api/general';
 
   export default {
     data() {
@@ -24,7 +24,7 @@
     created() {
       setTitle('使用说明');
       this.pullUpLoad = null;
-      getUserSystemConfig('cardsTradition').then((data) => {
+      getSystemConfigCkey('cardsTradition').then((data) => {
         this.loadingFlag = false;
         this.content = data.cvalue;
       }).catch(() => {

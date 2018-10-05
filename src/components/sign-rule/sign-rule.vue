@@ -13,7 +13,7 @@
 <script type="text/ecmascript-6">
   import Scroll from 'base/scroll/scroll';
   import {setTitle} from 'common/js/util';
-  import {getUserSystemConfig} from 'api/general';
+  import {getSystemConfigCkey} from 'api/general';
 
   export default {
     data () {
@@ -28,7 +28,7 @@
     },
     methods: {
       showRule () {
-        getUserSystemConfig('signRegulation').then((data) => {
+        getSystemConfigCkey('signRegulation').then((data) => {
           this.loadingFlag = false;
           this.text = data.cvalue;
         }).catch(() => {

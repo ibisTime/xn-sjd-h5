@@ -304,13 +304,16 @@ export function login(data) {
   });
 }
 
-// 注册
-export function register(data) {
-  return fetch(805041, {
-    mobile: data.mobile,
-    loginPwd: data.loginPwd,
-    smsCaptcha: data.smsCaptcha
-  });
+/**
+ * 注册
+ * @params  mobile
+ * @params  loginPwd
+ * @params  smsCaptcha
+ * @params  userReferee
+ * @params  userRefereeType
+ * */
+export function register(params) {
+  return fetch(805041, params);
 }
 
 // 详情查用户
@@ -342,3 +345,46 @@ export function completeInfo(data) {
   });
 }
 
+/**
+ * 分页查询用户间关系
+ * @params  limit
+ * @params  start
+ * @params  userId
+ * */
+export function getPageUserRelationship(params) {
+  return fetch(805157, {
+    limit: 20,
+    start: 1,
+    userId: getUserId(),
+    ...params
+  });
+}
+
+/**
+ * 查询我和他是否建立关联
+ * @params  toUser
+ * */
+export function getHasRelationship(toUser) {
+  return fetch(805156, {
+    toUser,
+    userId: getUserId(),
+    type: '2'
+  });
+}
+
+// 添加关系
+export function addRelationship(toUser) {
+  return fetch(805150, {
+    toUser,
+    userId: getUserId(),
+    type: '2'
+  });
+}
+// 接触关系
+export function cancelRelationship(toUser) {
+  return fetch(805151, {
+    toUser,
+    userId: getUserId(),
+    type: '2'
+  });
+}

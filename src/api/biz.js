@@ -74,13 +74,6 @@ export function payOrganizeOrder (data) {
   });
 }
 
-// 分页查认养权
-export function adoptionRightPage (data) {
-  return fetch(629205, {
-    ...data
-  });
-}
-
 // 第一人下单集体认养订单
 export function recognizeOrderFirst (data) {
   return fetch(629050, {
@@ -150,18 +143,36 @@ export function getOrganizeOrderDetail (data) {
 
 /**
  * 列表查询认养权/列表查询用户的树
- * @param {string} status 状态(1待认养2认养中3已到期)
- * @param {string} userId 持有人
- * @param {string} categoryCode 分类编号
+ * @params {string} status 状态(1待认养2认养中3已到期)
+ * @params {string} userId 持有人
+ * @params {string} categoryCode 分类编号
+ * @params {string} productCode 产品编号
  * */
-export function getListUserTree({status, currentHolder, categoryCode}) {
-  let params = {
-    status: status || '2',
-    currentHolder: currentHolder || getUserId(),
-    categoryCode
+export function getListUserTree(params) {
+  let data = {
+    status: '2',
+    currentHolder: getUserId(),
+    ...params
   };
+  return fetch(629207, data);
+}
 
-  return fetch(629207, params);
+/**
+ * 分页查询认养权/分页查询用户的树
+ * @params {string} status 状态(1待认养2认养中3已到期)
+ * @params {string} userId 持有人
+ * @params {string} categoryCode 分类编号
+ * @params {string} productCode 产品编号
+ * */
+export function getPageUserTree(params) {
+  let data = {
+    limit: 20,
+    start: 1,
+    status: '2',
+    currentHolder: getUserId(),
+    ...params
+  };
+  return fetch(629205, data);
 }
 
 /**
@@ -176,6 +187,7 @@ export function cancelOrder(code, remark) {
     userId: getUserId()
   });
 }
+
 /**
  * 获取当前订单积分抵扣金额
  * @param {string} code 订单编号
@@ -183,5 +195,40 @@ export function cancelOrder(code, remark) {
 export function getDeductibleAmount(code) {
   return fetch(629048, {
     code
+  });
+}
+
+/**
+ * 本周能量比拼
+ * @param {string} toUserId
+ * */
+export function getComparison(toUserId) {
+  return fetch(629900, {
+    toUserId,
+    userId: getUserId()
+  });
+}
+
+/**
+ * 分页查询碳泡泡
+ * @params {string} status （0待收取、1已收完、2已过期）
+ * */
+export function getPageTpp(params) {
+  return fetch(629355, {
+    limit: 5,
+    start: 1,
+    status: 0,
+    ...params
+  });
+}
+
+/**
+ * 收取碳泡泡
+ * @params {string} status （0待收取、1已收完、2已过期）
+ * */
+export function collectionTpp({code, userId}) {
+  return fetch(629350, {
+    code,
+    userId: userId || getUserId()
   });
 }

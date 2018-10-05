@@ -12,12 +12,12 @@
         <!--<img src="./../../common/image/banner-default.png" class="banner-default">-->
       </div>
       <div class="notices">
-        <div class="notice" v-for="item in noticeList">
-          <img src="./notice@2x.png">
+        <img class="tit" src="./notice@2x.png">
+        <div class="notice-wrap">
           <div class="border"></div>
-          <div class="title">{{item.title}}</div>
-          <div class="more">更多</div>
+          <div class="title notice" v-for="item in noticeList">{{item.title}}</div>
         </div>
+        <div class="more">更多</div>
       </div>
       <div class="icons">
         <div class="icon-item" @click="go('/product-list?typeCode=' + item.code)" v-for="item in proType">
@@ -229,7 +229,6 @@ export default {
     right: 0;
     overflow: auto;
     .slider-wrapper {
-      padding-bottom: 0.2rem;
       background: $color-highlight-background;
       height: 3rem;
       width: 100%;
@@ -238,6 +237,8 @@ export default {
         height: 100%;
       }
       a {
+        width: 100%;
+        height: 100%;
         display: block;
         background-repeat: no-repeat;
         background-position: center;
@@ -249,33 +250,57 @@ export default {
       width: 100%;
       height: 0.7rem;
       overflow: hidden;
-      .notice {
+      .tit {
+        width: 0.6rem;
+        height: 0.25rem;
+        position: absolute;
+        top: 50%;
+        left: 0.3rem;
+        transform: translateY(-50%);
+        z-index: 99;
+      }
+      .more {
+        line-height: 0.33rem;
+        color: #999;
+        position: absolute;
+        top: 50%;
+        right: 0.3rem;
+        transform: translateY(-50%);
+        z-index: 99;
+        font-size: 0.24rem;
+      }
+      .notice-wrap{
         display: flex;
         align-items: center;
         font-size: 0.24rem;
-        padding: 0.24rem 0.3rem;
+        padding: 0.24rem 0.77rem 0.24rem 1.2rem;
         background: $color-highlight-background;
         position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
-        img {
-          width: 0.6rem;
-          height: 0.25rem;
-          margin-right: 0.11rem;
-        }
+        height: 100%;
+        z-index: 9;
+
         .border {
           display: inline;
           width: 0;
           height: 0.15rem;
           border-right: 1px solid #ccc;
-          margin-right: 0.11rem;
+          margin-right: 0.2rem;
         }
+      }
+      .notice {
+        align-items: center;
+        font-size: 0.24rem;
+        padding: 0.24rem 0.3rem;
+        background: $color-highlight-background;
+        position: absolute;
+        left: 1.24rem;
+        width: calc(100% - 2.5rem);
         .title {
           line-height: 0.33rem;
           flex: 1;
-        }
-        .more {
-          line-height: 0.33rem;
-          color: #999;
         }
       }
       .notice:nth-child(1){

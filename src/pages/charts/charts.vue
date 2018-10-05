@@ -6,7 +6,7 @@
         <div class="order">
           <img src="./no1@2x.png" alt="">
         </div>
-        <img src="./avatar@2x.png" alt="">
+        <div class="userPhoto" :style="getImgSyl()"></div>
         <div class="info">
           <p class="name">你是我的教科书</p>
           <p class="date">获得了10个环保证书</p>
@@ -16,162 +16,110 @@
     </div>
     <div class="gray"></div>
     <div class="adopt-list">
-      <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
+      <scroll ref="scroll"
+              :data="userList"
+              :hasMore="hasMore"
+              @pullingUp="getUserList">
+        <div class="item" v-for="item in userList" @click="goUserHome(item)">
           <div class="order">
-            <img src="./no1@2x.png" alt="">
+            <img v-if="item.rowNo === 1" src="./no1@2x.png" alt="">
+            <img v-else-if="item.rowNo === 2" src="./no2@2x.png" alt="">
+            <img v-else-if="item.rowNo === 3" src="./no3@2x.png" alt="">
+            <samp class="rowNo" v-else>{{item.rowNo}}</samp>
           </div>
-          <img src="./avatar@2x.png" alt="">
+          <div class="userPhoto" :style="getImgSyl(item.toUserInfo.photo)"></div>
           <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
+            <p class="name">{{item.toUserInfo.nickname ? item.toUserInfo.nickname: item.toUserInfo.mobile}}</p>
+            <p class="date">获得了{{item.certificateCount}}个环保证书</p>
           </div>
-          <span class="price fr">9.8kg</span>
+          <span class="price fr">{{item.certificateCount}}kg</span>
         </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div><div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-        <div class="order">
-          <img src="./no1@2x.png" alt="">
-        </div>
-        <img src="./avatar@2x.png" alt="">
-        <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">获得了10个环保证书</p>
-        </div>
-        <span class="price fr">9.8kg</span>
-      </div><div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-        <div class="order">
-          <img src="./no1@2x.png" alt="">
-        </div>
-        <img src="./avatar@2x.png" alt="">
-        <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">获得了10个环保证书</p>
-        </div>
-        <span class="price fr">9.8kg</span>
-      </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div>
-        <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
-          <div class="order">
-            <img src="./no1@2x.png" alt="">
-          </div>
-          <img src="./avatar@2x.png" alt="">
-          <div class="info">
-            <p class="name">你是我的教科书</p>
-            <p class="date">获得了10个环保证书</p>
-          </div>
-          <span class="price fr">9.8kg</span>
-        </div>
+        <no-result v-show="!hasMore && !(userList && userList.length)" title="暂无好友" class="no-result-wrapper"></no-result>
       </Scroll>
     </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <toast :text="toastText" ref="toast"></toast>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import NoResult from 'base/no-result/no-result';
+  import FullLoading from 'base/full-loading/full-loading';
+  import Toast from 'base/toast/toast';
+  import { getPageUserRelationship } from 'api/user';
+  import {formatAmount, formatDate, formatImg} from 'common/js/util';
+  import defaltAvatarImg from './avatar@2x.png';
 
   export default {
     data() {
       return {
-        showBack: false
+        showBack: false,
+        toastText: '',
+        loading: false,
+        loadingText: '',
+        userList: [],
+        myInfo: {},
+        start: 1,
+        limit: 30,
+        hasMore: true
       };
     },
     created() {
-      this.pullUpLoad = null;
+      this.getInitData();
     },
     methods: {
+      getInitData() {
+        this.getUserList();
+      },
+      getUserList() {
+        this.loading = true;
+        this.code = this.$route.query.code;
+        Promise.all([
+          getPageUserRelationship({
+            start: this.start,
+            limit: this.limit
+          })
+        ]).then(([res1]) => {
+          if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
+            this.hasMore = false;
+          }
+          this.loading = false;
+          this.userList = res1.list;
+          this.start++;
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
+      formatDate(date, format) {
+        return formatDate(date, format);
+      },
+      getImgSyl(imgs) {
+        let img = imgs ? formatImg(imgs) : defaltAvatarImg;
+        return {
+          backgroundImage: `url(${img})`
+        };
+      },
       go(url) {
         this.$router.push(url);
+      },
+      goUserHome(item) {
+        if(item.mySelf === '1') {
+          this.go(`/homepage`);
+        } else {
+          this.go(`/homepage?other=1&currentHolder=${item.toUser}`);
+        }
       }
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      NoResult,
+      FullLoading,
+      Toast
     }
   };
 </script>
@@ -209,11 +157,18 @@
             width: 0.41rem;
             height: 0.51rem;
           }
+          .rowNo{
+            display: inline-block;
+            width: 0.41rem;
+            line-height: 0.51rem;
+            font-size: 0.28rem;
+            text-align: center;
+          }
         }
-        img {
+        .userPhoto {
           width: 0.8rem;
           height: 0.8rem;
-          margin-right: 0.2rem;
+          margin: 0 0.2rem;
         }
         .info {
           display: inline-block;
@@ -265,10 +220,10 @@
             height: 0.51rem;
           }
         }
-        img {
+        .userPhoto {
           width: 0.8rem;
           height: 0.8rem;
-          margin-right: 0.2rem;
+          margin: 0 0.2rem;
         }
         .info {
           display: inline-block;
