@@ -7,28 +7,57 @@
           <span class="name">产生项</span>
           <span class="score">分值</span>
         </div>
-        <div class="item">
-          <span class="name">注册成功</span>
-          <span class="score">50</span>
-        </div>
-        <div class="item">
-          <span class="name">注册成功</span>
-          <span class="score">50</span>
-        </div>
+        <scroll ref="scroll"
+          :data="systemConfigPage"
+          :hasMore="hasMore"
+          @pullingUp="getInitData">
+          <div class="item" v-for="(item, index) in systemConfigPage" :key="index">
+            <span class="name">{{item.remark}}</span>
+            <span class="score">{{item.cvalue}}</span>
+          </div>
+          <no-result v-show="!hasMore && !(systemConfigPage && systemConfigPage.length)" title="暂无积分规则" class="no-result-wrapper"></no-result>
+        </Scroll>
       </div>
     </div>
     <router-view></router-view>
   </div>
 </template>
 <script>
+  import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import {getSystemConfigPage} from 'api/general';
+  import NoResult from 'base/no-result/no-result';
   export default {
     data() {
       return {
+        systemConfigPage: [],
+        hasMore: true,
+        start: 1,
+        limit: 10
       };
     },
+    created() {
+      this.getConfigData();
+    },
+    methods: {
+      getInitData(){
+        this.getConfigData();
+      },
+      getConfigData(){
+        getSystemConfigPage('JF_RULE').then(data => {debugger
+          this.systemConfigPage = data.list;
+          if (data.list.length < this.limit || data.totalCount <= this.limit) {
+            this.hasMore = false;
+          }
+          this.systemConfigPage = data.list;
+          this.start ++;
+        })
+      }
+    },
     components: {
-      MHeader
+      Scroll,
+      MHeader,
+      NoResult
     }
   };
 </script>
@@ -72,6 +101,13 @@
           }
         }
       }
+    }
+    .no-result-wrapper {
+      position: absolute;
+      width: 100%;
+      top: 40%;
+      left: 0;
+      transform: translateY(-50%);
     }
   }
 

@@ -27,6 +27,8 @@ const OrderDetail = () => import('@/pages/order-detail/order-detail');
 const Money = () => import('@/pages/money/money');
 // 充值
 const Recharge = () => import('@/pages/recharge/recharge');
+// 充值成功
+const PaySucceed = () => import('@/pages/paySucceed/paySucceed');
 // 取现
 const Withdraw = () => import('@/pages/withdraw/withdraw');
 // 积分
@@ -43,6 +45,8 @@ const CarbonBubble = () => import('@/pages/carbonBubble/carbonBubble');
 const Settings = () => import('@/pages/settings/settings');
 // 修改手机号
 const ChangeMobile = () => import('@/pages/change-mobile/change-mobile');
+// 设置资金密码
+const setMoneyPaw = () => import('@/pages/moneyPaw/moneyPaw');
 // 银行卡列表页
 const Bankcard = () => import('@/pages/bankcard/bankcard');
 // 地址编辑页
@@ -158,6 +162,10 @@ export default new Router({
       component: ChangeMobile
     },
     {
+      path: '/set-money',
+      component: setMoneyPaw
+    },
+    {
       path: '/bankcard',
       component: Bankcard
     },
@@ -270,6 +278,10 @@ export default new Router({
     {
       path: '/recharge',
       component: Recharge
+    },
+    {
+      path: '/paySucceed',
+      component: PaySucceed
     },
     {
       path: '/score',

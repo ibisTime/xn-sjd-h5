@@ -3,7 +3,7 @@
     <div class="bg">
       <m-header class="cate-header" title="充值"></m-header>
       <div class="content">
-        <div class="have">当前余额：2480.00元</div>
+        <div class="have">当前余额：{{formatAmount(userAmount[0].amount)}}元</div>
         <div class="recharge">
           <p>充值金额</p>
           <p class="number">¥<input type="number" v-model="amount"></p>
@@ -12,14 +12,14 @@
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
-            <div @click="selectPayType(1)">
+            <!-- <div @click="selectPayType(1)">
               <img src="./wechat@2x.png" alt="">
               <div class="text">
                 <p>微信</p>
               </div>
               <img class="money fr" src="./choosed@2x.png" v-show="wechat">
               <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
-            </div>
+            </div> -->
             <div @click="selectPayType(2)">
               <img src="./alipay@2x.png" alt="">
               <div class="text">
@@ -28,20 +28,12 @@
               <img class="money fr" src="./choosed@2x.png" v-show="alipay">
               <img class="money fr" src="./unchoosed@2x.png" v-show="!alipay">
             </div>
-            <div @click="selectPayType(3)">
-              <img src="./balance@2x.png" alt="">
-              <div class="text">
-                <p>余额支付（剩余¥10.00）</p>
-              </div>
-              <img class="money fr" src="./choosed@2x.png" v-show="balance">
-              <img class="money fr" src="./unchoosed@2x.png" v-show="!balance">
-            </div>
           </div>
         </div>
       </div>
       <div class="footer">
         <span>金额：<span>{{amount}}</span><span>元</span></span>
-        <button class="fr">支付</button>
+        <button class="fr" @click="toRecharge">充值</button>
       </div>
     </div>
     <router-view></router-view>
@@ -50,21 +42,35 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {setTitle} from 'common/js/util';
+  import {setTitle, formatAmount} from 'common/js/util';
+  import {userAccount} from 'api/biz';
 
   export default {
     data() {
       return {
         wechat: true,
-        alipay: false,
+        alipay: true,
         balance: false,
-        amount: 0
+        amount: 0,
+        userAmount: [{
+          amount: 0
+        }]
       };
     },
     created() {
       setTitle('充值');
     },
+    mounted() {
+      userAccount().then(data => {
+        this.userAmount = data.filter(item => {
+          return item.currency == 'CNY';
+        });
+      });
+    },
     methods: {
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
       getTel() {
         if (this.telephone) {
           return `tel://${this.telephone}`;
@@ -89,6 +95,9 @@
           this.alipay = false;
           this.balance = true;
         }
+      },
+      toRecharge(){
+        this.$router.push('/paySucceed');
       }
     },
     components: {

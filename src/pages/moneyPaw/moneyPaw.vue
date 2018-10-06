@@ -1,21 +1,27 @@
 <template>
   <transition name="slide">
     <div class="change-mobile-wrapper">
-      <m-header class="cate-header" title="修改手机号"></m-header>
+      <m-header class="cate-header" title="设置资金密码"></m-header>
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" name="newMobile" v-model="newMobile" v-validate="'required|mobile'" placeholder="请输入新手机号">
-            <span v-show="errors.has('newMobile')" class="error-tip">{{errors.first('newMobile')}}</span>
+            <input v-focus type="tel" class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">
+            <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
           </div>
         </div>
         <div class="form-item  border-bottom-1px">
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" name="newCaptcha" v-model="newCaptcha" placeholder="请输入验证码">
-            <span v-show="errors.has('newCaptcha')" class="error-tip">{{errors.first('newCaptcha')}}</span>
+            <input type="tel" class="item-input" name="captcha" v-model="captcha" v-validate="'required'" placeholder="请输入验证码">
+            <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
           </div>
           <div class="item-btn">
-            <button :disabled="sending" @click="sendCaptcha" :class="[sending ? 'gray' : '']">{{captBtnText}}</button>
+            <button :disabled="sending" @click="sendCaptcha">{{captBtnText}}</button>
+          </div>
+        </div>
+        <div class="form-item border-bottom-1px">
+          <div class="item-input-wrapper">
+            <input type="password" class="item-input" name="moneyPaw" v-model="moneyPaw" placeholder="请输入资金密码">
+            <span v-show="errors.has('moneyPaw')" class="error-tip">{{errors.first('moneyPaw')}}</span>
           </div>
         </div>
         <div class="form-btn">
@@ -29,7 +35,7 @@
 <script>
   import MHeader from 'components/m-header/m-header';
   import {sendCaptcha} from 'api/general';
-  import {changeMobile} from 'api/user';
+  import {changeMobile, setUserMonPaw} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
 
@@ -42,20 +48,19 @@
         captcha: '',
         captBtnText: '获取验证码',
         mobile: '',
-        newMobile: '',
-        newCaptcha: ''
+        moneyPaw: ''
       };
     },
     methods: {
       // 发送验证码
       sendCaptcha() {
-        this.$validator.validate('newMobile').then((res) => {
+        this.$validator.validate('mobile').then((res) => {
           if(res) {
             this.sending = true;
             this.loading = true;
             sendCaptcha({
-              bizType: '805061',     // 接口号要换
-              mobile: this.newMobile
+              bizType: '805066',     // 接口号要换
+              mobile: this.mobile
             }).then(() => {
               this.loading = false;
               this._setInterval();
@@ -67,17 +72,17 @@
         });
       },
       _changeMobile() {
-        if (this.errors.items.length === 0 && this.mobile && this.newMobile && this.newCaptcha) {
+        if (this.errors.items.length == 0 && this.mobile && this.moneyPaw && this.captcha) {
           this.setting = true;
-          changeMobile(this.newMobile, this.newCaptcha)
-            .then(() => {
+          setUserMonPaw({
+            smsCaptcha: this.captcha,
+            tradePwd: this.moneyPaw
+          }).then(data => {
               this.$refs.toast.show();
               setTimeout(() => {
-                this.$router.push('/me');
-              }, 1000);
-            }).catch(() => {
-              this.setting = false;
-            });
+                  this.$router.push('/me');
+              }, 2000);
+          })
         }
       },
       _setInterval() {

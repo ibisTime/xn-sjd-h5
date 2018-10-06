@@ -6,7 +6,7 @@
               :data="dataList"
               :hasMore="hasMore"
               @pullingUp="getAdoptList">
-        <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)">
+        <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
           <div class="userPhoto" :style="getImgSyl()"></div>
           <div class="info">
             <p class="name">你是我的教科书</p>

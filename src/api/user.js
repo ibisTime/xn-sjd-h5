@@ -125,7 +125,7 @@ export function changeGender (gender) {
  * @param params {addressee, mobile, province, city, district, detailAddress, isDefault?}
  */
 export function addAddress(params) {
-  return fetch(805160, {
+  return fetch(805170, {
     userId: getUserId(),
     ...params
   });
@@ -136,7 +136,7 @@ export function addAddress(params) {
  * @param {string} code
  */
 export function deleteAddress(code) {
-  return fetch(805161, {code});
+  return fetch(805171, {code});
 }
 
 /**
@@ -144,7 +144,7 @@ export function deleteAddress(code) {
  * @param  params {code, addressee, mobile, province, city, district, detailAddress, isDefault?}
  */
 export function editAddress(params) {
-  return fetch(805162, {
+  return fetch(805172, {
     userId: getUserId(),
     ...params
   });
@@ -155,14 +155,14 @@ export function editAddress(params) {
  * @param {string} code
  */
 export function setDefaultAddress (code) {
-  return fetch(805163, {code});
+  return fetch(805173, {code});
 }
 
 /**
  * 列表查询地址
  */
 export function getAddressList() {
-  return fetch(805165, {
+  return fetch(805175, {
     userId: getUserId()
   });
 }
@@ -172,7 +172,7 @@ export function getAddressList() {
  * @param {string} code
  */
 export function getAddress(code) {
-  return fetch(805166, {code});
+  return fetch(805176, {code});
 }
 
 /**
@@ -388,3 +388,12 @@ export function cancelRelationship(toUser) {
     type: '2'
   });
 }
+
+// 设置资金密码
+export function setUserMonPaw(config) {
+  return fetch(805066, {
+    userId: getUserId(),
+    ...config
+  });
+}
+

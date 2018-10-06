@@ -1,19 +1,30 @@
 <template>
   <div class="bankcard-edit-wrapper">
-    <m-header class="cate-header" title="添加银行卡"></m-header>
+    <m-header class="cate-header" :title="bankTitle"></m-header>
     <div class="form-wrapper">
       <div class="form-item border-bottom-1px">
         <div class="item-label">银行卡</div>
         <div class="item-input-wrapper">
-          <input type="tel" class="item-input" v-model="realName" v-validate="'required'" name="realName" placeholder="银行卡类型">
-          <span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>
+          <select 
+            class="item-input" 
+            name="bankName"  
+            v-validate="'required'" 
+            v-model="bankName"
+          >
+            <option 
+              v-for="(item, index) in backCodeName"
+              :key="index"
+              :value="item.bankName"
+            >{{item.bankName}}</option>
+          </select>
+          <span v-show="errors.has('bankName')" class="error-tip">{{errors.first('bankName')}}</span>
         </div>
       </div>
       <div class="form-item border-bottom-1px">
-        <div class="item-label">支行名称</div>
+        <div class="item-label">卡号</div>
         <div class="item-input-wrapper">
-          <input type="text" class="item-input" v-model="realName" v-validate="'required'" name="realName" placeholder="银行支行名称">
-          <span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>
+          <input type="text" class="item-input" v-model="bankcardNumber" v-validate="'required'" name="bankcardNumber" placeholder="银行卡号">
+          <span v-show="errors.has('bankcardNumber')" class="error-tip">{{errors.first('bankcardNumber')}}</span>
         </div>
       </div>
     </div>
@@ -43,9 +54,9 @@
       <div class="form-item border-bottom-1px">
         <div class="item-label">验证码</div>
         <div class="item-input-wrapper">
-          <input type="tel" class="item-input" v-model="captcha" v-validate="'required'" name="captcha" placeholder="请输入验证码">
-          <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
-          <button :disabled="sending" class="captBtn">{{captBtnText}}</button>
+          <input type="tel" style="width: 60%;" class="item-input" v-model="captcha" v-validate="'required'" name="captcha" placeholder="请输入验证码">
+          <span v-show="errors.has('captcha')" class="error-tip" style="right: 2rem;">{{errors.first('captcha')}}</span>
+          <button :disabled="sending" class="captBtn" @click="sendCaptcha">{{captBtnText}}</button>
         </div>
       </div>
       <div class="buttons">
@@ -62,14 +73,17 @@
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
   import MHeader from 'components/m-header/m-header';
+  import {sendCaptcha} from 'api/general';
 
   export default {
     data() {
       return {
         bankcodeList: [],
+        bankTitle: '添加银行卡',
         setting: false,
         realName: '',
-        bankName: '',
+        bankName: '中国银行',
+        bankNameList: '',
         subbranch: '',
         bankcardNumber: '',
         bindMobile: '',
@@ -78,7 +92,11 @@
         idCard: '',
         mobile: '',
         captcha: '',
-        sending: false
+        sending: false,
+        userBackCode: '802020',
+        backCodeName: [],
+        isEdit: false,
+        code: ''
       };
     },
     created() {
@@ -97,17 +115,71 @@
       }
     },
     methods: {
+      // 发送验证码
+      sendCaptcha() {
+        this.$validator.validate('mobile').then((res) => {
+          if(res) {
+            this.sending = true;
+            this.loading = true;
+            sendCaptcha({
+              bizType: this.userBackCode,     // 接口号要换
+              mobile: this.mobile
+            }).then(() => {
+              this.loading = false;
+              this._setInterval();
+            }).catch(() => {
+              this.loading = false;
+              this._clearInterval();
+            });
+          }
+        });
+      },
+      _setInterval() {
+        let i = 60;
+        this.timer = setInterval(() => {
+          if (i === 0) {
+            this._clearInterval();
+          } else {
+            this.captBtnText = i-- + 's';
+          }
+        }, 1000);
+      },
+      _clearInterval() {
+        if (this.timer) {
+          clearInterval(this.timer);
+          this.sending = false;
+          this.captBtnText = '获取验证码';
+        }
+      },
       // 获取银行数据字典列表
       _getBankCodeList() {
         return getBankCodeList().then((data) => {
+          data.forEach(item => {
+            this.backCodeName.push(
+              {
+                bankCode: item.bankCode,
+                bankName: item.bankName
+              }
+            );
+          });
           this.bankcodeList = data;
-          this.bankName = data[0];
+          this.bankNameList = data[0];
           return data;
         });
       },
       _getBankCardList() {
         if (!this.bankcardList) {
           return getBankCardList().then((data) => {
+            if(data.length > 0) {
+              this.bankName = data[0].bankName;
+              this.bankcardNumber = data[0].bankcardNumber;
+              this.realName = data[0].realName;
+              this.bankTitle = '修改银行卡';
+              this.userBackCode = '802022';
+              this.text = '修改成功';
+              this.isEdit = true;
+              this.code = data[0].code;
+            }
             this.setBankCardList(data);
             return this._judgeBankCode(data);
           });
@@ -137,7 +209,7 @@
           let index = bankCode.findIndex((item) => {
             return item.bankCode === bankCard.bankCode;
           });
-          this.bankName = bankCode[index];
+          this.bankNameList = bankCode[index];
           this.realName = bankCard.realName;
           this.subbranch = bankCard.subbranch;
           this.bankcardNumber = bankCard.bankcardNumber;
@@ -145,26 +217,30 @@
         }, 100);
       },
       showLoading() {
-        return false;
-        // if (!this.$route.params.id) {   // 新增
-        //   return !this.bankcodeList.length;
-        // } else {   // 修改
-        //   return !this.bankcodeList.length || !this.bankName;
-        // }
+        // return false;
+        if (!this.$route.params.id) {   // 新增
+          return !this.bankcodeList.length;
+        } else {   // 修改
+          return !this.bankcodeList.length || !this.bankNameList;
+        }
       },
       saveBankCard() {
+        let setBackCode = this.backCodeName.filter(item => {
+          return item.bankName === this.bankName;
+        });
+        console.log(this.backCodeName);
         this.$validator.validateAll().then((result) => {
-          if(result) {
+          if (result) {
             let param = {
               bankcardNumber: this.bankcardNumber,
-              bankCode: this.bankName.bankCode,
-              bankName: this.bankName.bankName,
+              bankCode: setBackCode[0].bankCode,
+              bankName: this.bankName,
               subbranch: this.subbranch,
               bindMobile: this.bindMobile,
               realName: this.realName
             };
-            if (this.$route.params.id) {
-              param.code = this.$route.params.id;
+            if (this.isEdit) {
+              param.code = this.code;
               this._editBankCard(param);
             } else {
               this._addBankCard(param);
@@ -175,7 +251,6 @@
       _addBankCard(param) {
         addBankCard(param).then((code) => {
           this.setting = false;
-          this.text = '新增成功';
           this.$refs.toast.show();
           if (this.bankcardList) {
             param.code = code;
@@ -199,7 +274,7 @@
             bankcard: param
           });
           setTimeout(() => {
-            this.$router.back();
+            this.$router.push('/bankcard');
           }, 1000);
         }).catch(() => {
           this.setting = false;

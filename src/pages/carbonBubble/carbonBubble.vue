@@ -9,18 +9,24 @@
             <p><span>{{formatAmount(amount)}}</span></p>
           </div>
           <div class="money-list">
-            <div class="money-item">
-              <div class="img-cont">
-                <img src="./in@2x.png" alt="">
-              </div>
-              <div class="text">
-                <div class="text-top">
-                  <p>某种方式的收益</p>
-                  <span class="money">+1000</span>
+            <scroll ref="scroll"
+              :data="carbonList"
+              :hasMore="hasMore"
+              @pullingUp="getInitData">
+              <div class="money-item" v-for="(item, index) in carbonList" :key="index">
+                <div class="img-cont">
+                  <img src="./in@2x.png" alt="">
                 </div>
-                <div class="text-bottom">今天  12:34</div>
+                <div class="text">
+                  <div class="text-top">
+                    <p>{{item.bizNote}}</p>
+                    <span class="money">{{parseInt(item.transAmountString) > 0 ? '+' : ''}}{{formatAmount(item.transAmountString)}}</span>
+                  </div>
+                  <div class="text-bottom">{{new Date(item.createDatetime).toLocaleString()}}</div>
+                </div>
               </div>
-            </div>
+              <no-result v-show="!hasMore && !(carbonList && carbonList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+            </Scroll>
           </div>
         </div>
       </div>
@@ -32,26 +38,30 @@
   import MHeader from 'components/m-header/m-header';
   import {getAccountList} from 'api/account';
   import { formatAmount } from 'common/js/util';
+  import NoResult from 'base/no-result/no-result';
 
   export default {
     data() {
       return {
-        amount: 0
+        amount: 0,
+        start: 1,
+        limit: 10,
+        hasMore: true,
+        carbonList: []
       };
     },
     mounted() {
       this.accountNumber = this.$route.query.accountNumber;
       this.amount = +this.$route.query.amount;
       // 请求流水
-      getAccountList({
-        accountNumber: this.accountNumber,
-        start: 1,
-        limit: 100
-      }).then((res) => {
-        // console.log(res);
-      });
+      if(this.accountNumber) {
+        this.getCarbonBubble();
+      }
     },
     methods: {
+      getInitData() {
+        this.getCarbonBubble();
+      },
       formatAmount(amount) {
         return formatAmount(amount);
       },
@@ -60,11 +70,26 @@
       },
       action() {
         this.go('/score/score-rules');
+      },
+      getCarbonBubble(){
+        getAccountList({
+          accountNumber: this.accountNumber,
+          start: 1,
+          limit: 10
+        }).then((res) => {
+          console.log(res);
+          if (res.list.length < this.limit || res.totalCount <= this.limit) {
+            this.hasMore = false;
+          }
+          this.carbonList = res.list;
+          this.start ++;
+        });
       }
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      NoResult
     }
   };
 </script>

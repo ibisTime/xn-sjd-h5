@@ -8,6 +8,15 @@ export function getInitWXSDKConfig() {
   });
 }
 
+// 根据type分页查系统参数
+export function getSystemConfigPage(pType) {
+  return fetch(630045, {
+    start: 1,
+    limit: 10,
+    type: pType
+  });
+}
+
 // 根据ckey获取系统参数
 export function getSystemConfigCkey(ckey) {
   if (getSystemConfigCkey[ckey]) {
@@ -27,7 +36,7 @@ export function getSystemConfigType(ckey) {
     return Promise.resolve(getSystemConfigType[ckey]);
   }
   return fetch(630048, {
-    getSystemConfigType
+    type: ckey
   }).then((data) => {
     getSystemConfigCkey[ckey] = data;
     return Promise.resolve(data);

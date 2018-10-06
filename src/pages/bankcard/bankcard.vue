@@ -8,10 +8,10 @@
         </div>
         <div class="text">
           <div class="text-top">
-            <p>中国邮政储蓄银行</p>
+            <p>{{bankcardList[0].bankName}}</p>
           </div>
           <div class="text-middle">储蓄卡</div>
-          <div class="text-bottom bankcardNumber">****  ****  ****  9987</div>
+          <div class="text-bottom bankcardNumber">****  ****  ****  {{bankCode}}</div>
         </div>
       </div>
     </scroll>
@@ -30,7 +30,8 @@
   import Toast from 'base/toast/toast';
   import {prefixStyle} from 'common/js/dom';
   import {setTitle} from 'common/js/util';
-  // import {getBankCardList, deleteBankCard} from 'api/account';
+  import {changeMobile} from 'api/user';
+  import {getBankCardList, deleteBankCard} from 'api/account';
   // import {SET_BANKCARD_LIST} from 'store/mutation-types';
 
   const transform = prefixStyle('transform');
@@ -41,15 +42,19 @@
       return {
         delLoading: false,
         actText: '+',
-        bankcardList: []
+        bankcardList: [{
+          bankName: ''
+        }],
+        bankCode: ''
       };
     },
     created() {
       this.touch = {};
       this.currentItem = null;
-      // if (this.shouldGetData()) {
-      //   this._getBankCardList();
-      // }
+      // axios.post(`https://openapi.alipay.com/gateway.do?charset=UTF-8&method=alipay.trade.wap.pay&sign=B79r2fV8vB4fJPuECXS8YBFI6M5Vr5lmg4xLKFQ3Ad%2BHRjcvYPW3obks3GedHi1Ld08VQ0czmAFqIpLf%2Fvy8cBWfc4GgVuGZk5NiYz1xxMJtXiIy6LSx0QogNzpSOgr31SRt9mZtTkAk%2B0ZIboGT88WO%2BaLmf%2BC2kuNF3DIJ2xz73QZ5g%2FPQp1eoia%2BV9IyH47g7oKjzEDbtFpE20zjdVvmIBeGJ3ItWj7mgFiulpvAcZwtEijxjpkEm1esgL738Trtaz26xqM8ZZawr4rpx7byYdyMzxVKdSc8VFz%2FepGQSKFAp4Wb9%2FGZ42Rfo6GSPA0x1zk6IQMfKqoTEmeZ9lQ%3D%3D&return_url=http%3A%2F%2Fsjd.h5.hichengdai.com%2Fa.jspx&notify_url=http%3A%2F%2Fsjd.h5.hichengdai.com%2Falipay%2Fh5%2Fcallback&version=1.0&app_id=2018080260825970&sign_type=RSA2&timestamp=2018-10-06+19%3A35%3A43&alipay_sdk=alipay-sdk-java-3.3.0&format=json`).then(data => {
+      //   console.log(data.data)
+      // })
+      this._getBankCardList();
     },
     computed: {
       // ...mapGetters([
@@ -75,9 +80,14 @@
         }
       },
       _getBankCardList() {
-        // getBankCardList().then((data) => {
-        //   this.setBankcardList(data);
-        // }).catch(() => {});
+        getBankCardList().then((data) => {
+          this.bankcardList = data;
+          let bankcardNumber = data[0].bankcardNumber;
+          this.bankCode = bankcardNumber.substring(bankcardNumber.length - 4);
+          if(data.length > 0) {
+            this.actText = '修改';
+          }
+        }).catch(() => {});
       },
       deleteItem(item) {
         this.currentItem = item;

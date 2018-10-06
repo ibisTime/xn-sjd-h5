@@ -71,17 +71,20 @@
         showLoading: true,
         isAlert: true,
         toastText: '',
-        headerTitle: '新增收货地址'
+        headerTitle: '新增收货地址',
+        code: ''
       };
     },
     created() {
-      this.code = this.$route.params.id || '';
+      // this.code = this.$route.params.id || '';
+      this.code = sessionStorage.getItem('ressCode');
       if (this.code) {
         this.headerTitle = '修改收货地址';
         // this.getAddress();
       } else {
         // this._getAddressList();
       }
+      this._getAddressList();
     },
     methods: {
       getAddress() {
@@ -96,7 +99,7 @@
       },
       _getAddressList() {
         getAddressList().then((data) => {
-          this.setAddressList(data);
+          // this.setAddressList(data);
           if (this.code) {
             let index = data.findIndex((item) => {
               return item.code === this.code;
@@ -128,10 +131,10 @@
         this.province = prov;
         this.city = city;
         this.district = district;
-        this._provinceValid();
+        // this._provinceValid();
       },
       saveAddress() {
-        if (this._valid()) {
+        if (this.errors.items.length === 0 && this.mobile && this.name && this.address) {
           this.setting = true;
           let param = {
             addressee: this.name,
@@ -151,45 +154,47 @@
         }
       },
       _editAddress(param) {
-        editAddress(param).then(() => {
-          this.setting = false;
-          this.toastText = '修改成功';
-          this.$refs.toast.show();
-          let addressList = this.addressList.slice();
-          let index = addressList.findIndex((item) => {
-            return item.code === this.code;
+        if(this.errors.items.length === 0) {
+          editAddress(param).then(() => {
+            this.setting = false;
+            this.toastText = '修改成功';
+            this.$refs.toast.show();
+            // let addressList = this.addressList.slice();
+            // let index = addressList.findIndex((item) => {
+            //   return item.code === this.code;
+            // });
+            // if (addressList.length === 1) {
+            //   param.isDefault = '1';
+            // }
+            // addressList.splice(index, 1, param);
+            // this.setAddressList(addressList);
+            // this.setCurAddr(param);
+            setTimeout(() => {
+              this.$router.back();
+            }, 1000);
+          }).catch(() => {
+            this.setting = false;
           });
-          if (addressList.length === 1) {
-            param.isDefault = '1';
-          }
-          addressList.splice(index, 1, param);
-          this.setAddressList(addressList);
-          this.setCurAddr(param);
-          setTimeout(() => {
-            this.$router.back();
-          }, 1000);
-        }).catch(() => {
-          this.setting = false;
-        });
+        }
       },
       _addAddress(param) {
         addAddress(param).then((data) => {
           this.setting = false;
           this.toastText = '新增成功';
           this.$refs.toast.show();
-          let _item = {
-            code: data.code,
-            ...param
-          };
-          let addressList = this.addressList.slice();
-          if (addressList.length === 0) {
-            _item.isDefault = '1';
-          }
-          addressList.push(_item);
-          this.setCurAddr(_item);
-          this.setAddressList(addressList);
+          // let _item = {
+          //   code: data.code,
+          //   ...param
+          // };
+          // let addressList = this.addressList.splice();
+          // if (addressList.length === 0) {
+          //   _item.isDefault = '1';
+          // }
+          // addressList.push(_item);
+          // this.setCurAddr(_item);
+          // this.setAddressList(addressList);
           setTimeout(() => {
-            this.$router.back();
+            this.$router.push('/address');
           }, 1000);
         }).catch(() => {
           this.setting = false;

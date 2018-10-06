@@ -5,18 +5,18 @@
       <div class="addr-scroll-wrapper">
         <scroll :data="addressList" :hasMore="hasMore">
           <ul>
-            <li v-for="item in addressList" class="border-bottom-1px">
+            <li v-for="(item, index) in addressList" :key="index" class="border-bottom-1px">
               <div class="content" @click="selectItem(item)">
-                <div class="info"><span class="name">{{item.name}}</span><span class="mobile">{{item.mobile}}</span></div>
+                <div class="info"><span class="name">{{item.addressee}}</span><span class="mobile">{{item.mobile}}</span></div>
                 <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
               </div>
               <div class="opeator border-top-1px">
-                <div class="default" @click.top="setDefault(item)">
-                  <i class="icon-chose" :class="choseCls(item)"></i>
+                <div class="default" @click.stop="setDefault(item, index)">
+                  <i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>
                   <span>设为默认地址</span>
                 </div>
-                <button class="edit" @click.top="goEdit(item)">编辑</button>
-                <button class="delete" @click.top="deleteItem(item)">删除</button>
+                <button class="edit" @click.stop="goEdit(item)">编辑</button>
+                <button class="delete" @click.stop="deleteItem(item, index)">删除</button>
               </div>
             </li>
           </ul>
@@ -50,19 +50,13 @@
         hasMore: true,
         loadingFlag: false,
         loadingText: '',
-        addressList: [{
-          name: '东南',
-          mobile: '18888888888',
-          province: '浙江省',
-          city: '杭州市',
-          area: '余杭区',
-          address: '仓前街道'
-        }]
+        addressList: [],
+        deleteIndex: 0
       };
     },
     created() {
       this.currentItem = null;
-      // this.getAddress();
+      this.getAddress();
     },
     updated() {
       this.getAddress();
@@ -71,6 +65,14 @@
       // ...mapGetters([
       //   'addressList'
       // ])
+      /* {
+          name: '东南',
+          mobile: '18888888888',
+          province: '浙江省',
+          city: '杭州市',
+          area: '余杭区',
+          address: '仓前街道'
+        } */
     },
     methods: {
       action() {
@@ -83,8 +85,10 @@
         if (this.shouldGetData()) {
           if (!this.addressList.length) {
             getAddressList().then((data) => {
+              console.log(data);
+              this.addressList = data;
               this.hasMore = false;
-              this.setAddressList(data);
+              // this.setAddressList(data);
             }).catch(() => {
               this.hasMore = false;
             });
@@ -94,21 +98,29 @@
         }
       },
       shouldGetData() {
-        if (/\/user\/[^/]+\/setting\/address/.test(this.$route.path) || this.$route.path === '/category/confirm/address') {
+        if (/\/address/.test(this.$route.path) || this.$route.path === '/category/confirm/address') {
           setTitle('地址列表');
           return this.hasMore;
+        }else{
+          return !this.hasMore;
         }
       },
-      setDefault(item) {
+      setDefault(item, index) {
         if (item.isDefault !== '1') {
           this.loadingText = '设置中...';
           this.loadingFlag = true;
           setDefaultAddress(item.code).then(() => {
             this.loadingFlag = false;
-            this.setDefaultAddress({
-              code: item.code
+            // this.setDefaultAddress({
+            //   code: item.code
+            // });
+            this.addressList.forEach((item, i) => {
+              if (index === i) {
+                this.addressList[index].isDefault = '1';
+              }else{
+                this.addressList[i].isDefault = '0';
+              }
             });
-            item.isDefault = '1';
             this.setCurAddr(item);
           }).catch(() => {
             this.loadingFlag = false;
@@ -116,7 +128,8 @@
         }
       },
       goEdit(item) {
-        this.$router.push(`${this.$route.path}/${item.code}`);
+        sessionStorage.setItem('ressCode', item.code);
+        this.$router.push(`/address-addedit`);
       },
       selectItem(item) {
         this.setCurAddr(item);
@@ -127,11 +140,12 @@
       goAdd() {
         this.$router.push(this.$route.path + '/add');
       },
-      choseCls(item) {
-        return item.isDefault === '1' ? 'active' : '';
-      },
-      deleteItem(item) {
+      // choseCls(item) {
+      //   return item.isDefault === '1' ? 'active' : '';
+      // },
+      deleteItem(item, index) {
         this.currentItem = item;
+        this.deleteIndex = index;
         this.$refs.confirm.show();
       },
       _deleteAddress() {
@@ -140,9 +154,10 @@
           this.loadingFlag = true;
           deleteAddress(this.currentItem.code).then(() => {
             this.loadingFlag = false;
-            this.deleteAddress({
-              code: this.currentItem.code
-            });
+            // this.deleteAddress({
+            //   code: this.currentItem.code
+            // });
+            this.addressList.splice(this.deleteIndex, 1);
           }).catch(() => {
             this.loadingFlag = false;
           });

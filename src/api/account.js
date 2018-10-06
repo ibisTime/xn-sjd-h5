@@ -60,7 +60,7 @@ export function getBankCard(code) {
  * @param params {bankcardNumber, bankCode, bankName, subbranch, bindMobile, realName}
  */
 export function addBankCard(params) {
-  return fetch(802010, {
+  return fetch(802020, {
     userId: getUserId(),
     type: 1,
     currency: 'CNY',
@@ -69,7 +69,7 @@ export function addBankCard(params) {
 }
 // 删除银行卡
 export function deleteBankCard(code) {
-  return fetch(802011, {
+  return fetch(802021, {
     code
   });
 }
@@ -78,7 +78,7 @@ export function deleteBankCard(code) {
  * @param params {code, bankcardNumber, bankCode, bankName, subbranch, bindMobile, realName}
  */
 export function editBankCard(params) {
-  return fetch(802012, {
+  return fetch(802022, {
     status: 1,
     type: 1,
     currency: 'CNY',
@@ -88,7 +88,7 @@ export function editBankCard(params) {
 }
 // 获取银行卡列表
 export function getBankCardList() {
-  return fetch(802016, {
+  return fetch(802026, {
     userId: getUserId(),
     status: 1
   });

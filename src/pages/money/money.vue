@@ -13,18 +13,24 @@
             </div>
           </div>
           <div class="money-list">
-            <div class="money-item">
-              <div class="img-cont">
-                <img src="./in@2x.png" alt="">
-              </div>
-              <div class="text">
-                <div class="text-top">
-                  <p>某种方式的收益</p>
-                  <span class="money">+1000.00</span>
+            <scroll ref="scroll"
+              :data="accountList"
+              :hasMore="hasMore"
+              @pullingUp="getUserAccount">
+              <div class="money-item" v-for="(item, index) in accountList" :key="index">
+                <div class="img-cont">
+                  <img src="./in@2x.png" alt="">
                 </div>
-                <div class="text-bottom">今天  12:34</div>
+                <div class="text">
+                  <div class="text-top">
+                    <p>{{item.bizNote}}</p>
+                    <span class="money">{{parseInt(item.transAmountString) > 0 ? '+' : ''}}{{formatAmount(item.transAmountString)}}</span>
+                  </div>
+                  <div class="text-bottom">{{new Date(item.createDatetime).toLocaleString()}}</div>
+                </div>
               </div>
-            </div>
+              <no-result v-show="!hasMore && !(accountList && accountList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+            </Scroll>
           </div>
         </div>
       </div>
@@ -37,6 +43,7 @@
   import MHeader from 'components/m-header/m-header';
   import { formatAmount } from 'common/js/util';
   import { getAccountList } from 'api/account';
+  import NoResult from 'base/no-result/no-result';
 
   export default {
     data() {
@@ -44,34 +51,56 @@
         content: '',
         time: '',
         amount: 0,
+        start: 1,
+        limit: 10,
+        hasMore: true,
         loadingFlag: true,
-        protocol: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
+        protocol: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>',
+        accountList: []
       };
     },
     mounted() {
-      this.accountNumber = this.$route.query.accountNumber;
-      this.amount = +this.$route.query.amount;
-      // 请求流水
-      getAccountList({
-        accountNumber: this.accountNumber,
-        start: 1,
-        limit: 100
-      }).then((res) => {
-        // console.log(res);
-      });
+      this.getUserAccount();
     },
     methods: {
+      getInitData() {
+        this.getUserAccount();
+      },
       formatAmount(amount) {
         return formatAmount(amount);
       },
       go(url) {
         this.$router.push(url);
+      },
+      getUserAccount(){
+        this.accountNumber = this.$route.query.accountNumber;
+        this.amount = +this.$route.query.amount;
+        // 请求流水
+        if(this.accountNumber){
+          getAccountList({
+            accountNumber: this.accountNumber,
+            start: 1,
+            limit: 10
+          }).then((res) => {console.log(res);
+            if (res.list.length < this.limit || res.totalCount <= this.limit) {
+              this.hasMore = false;
+            }
+            this.accountList = res.list;
+            this.start++;
+          });
+        }
       }
     },
     components: {
       Scroll,
-      MHeader
-    }
+      MHeader,
+      NoResult
+    },
+    watch:{
+      $route(){
+        this.getUserAccount();
+      }
+    },
   };
 </script>
 <style lang="scss" scoped>

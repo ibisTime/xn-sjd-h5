@@ -232,3 +232,23 @@ export function collectionTpp({code, userId}) {
     userId: userId || getUserId()
   });
 }
+
+// 列表查支付渠道
+export function paymentType() {
+  return fetch(802116);
+}
+
+// 申请提现
+export function payApplyFor(config) {
+  return fetch(802350, {
+    applyUser: getUserId(),
+    ...config
+  });
+}
+
+// 列表查询用户账户
+export function userAccount() {
+  return fetch(802301, {
+    userId: getUserId()
+  });
+}

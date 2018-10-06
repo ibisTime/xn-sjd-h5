@@ -9,18 +9,24 @@
             <p><span>{{formatAmount(amount)}}</span></p>
           </div>
           <div class="money-list">
-            <div class="money-item">
-              <div class="img-cont">
-                <img src="./in@2x.png" alt="">
-              </div>
-              <div class="text">
-                <div class="text-top">
-                  <p>某种方式的收益</p>
-                  <span class="money">+1000</span>
+            <scroll ref="scroll"
+              :data="jfAccountList"
+              :hasMore="hasMore"
+              @pullingUp="getInitData">
+              <div class="money-item" v-for="(item, index) in jfAccountList" :key="index">
+                <div class="img-cont">
+                  <img src="./in@2x.png" alt="">
                 </div>
-                <div class="text-bottom">今天  12:34</div>
+                <div class="text">
+                  <div class="text-top">
+                    <p>{{item.bizNote}}</p>
+                    <span class="money">{{parseInt(item.transAmountString) > 0 ? '+' : ''}}{{formatAmount(item.transAmountString)}}</span>
+                  </div>
+                  <div class="text-bottom">{{new Date(item.createDatetime).toLocaleString()}}</div>
+                </div>
               </div>
-            </div>
+              <no-result v-show="!hasMore && !(jfAccountList && jfAccountList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+            </Scroll>
           </div>
         </div>
       </div>
@@ -31,28 +37,32 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import NoResult from 'base/no-result/no-result';
   import {getAccountList} from 'api/account';
   import {formatAmount} from 'common/js/util';
 
   export default {
     data() {
       return {
-        amount: 0
+        amount: 0,
+        start: 1,
+        limit: 10,
+        hasMore: true,
+        jfAccountList: []
       };
     },
     mounted() {
       this.accountNumber = this.$route.query.accountNumber;
       this.amount = +this.$route.query.amount;
       // 请求流水
-      getAccountList({
-        accountNumber: this.accountNumber,
-        start: 1,
-        limit: 100
-      }).then((res) => {
-        // console.log(res);
-      });
+      if(this.accountNumber){
+        this.getAccountData();
+      }
     },
     methods: {
+      getInitData() {
+        this.getAccountData();
+      },
       go(url) {
         this.$router.push(url);
       },
@@ -61,11 +71,25 @@
       },
       formatAmount(amount) {
         return formatAmount(amount);
+      },
+      getAccountData(){
+        getAccountList({
+          accountNumber: this.accountNumber,
+          start: 1,
+          limit: 10
+        }).then((res) => {
+          if (res.list.length < this.limit || res.totalCount <= this.limit) {
+            this.hasMore = false;
+          }
+          this.jfAccountList = res.list;
+          this.start ++;
+        });
       }
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      NoResult
     }
   };
 </script>

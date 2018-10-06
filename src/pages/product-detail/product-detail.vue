@@ -71,7 +71,7 @@
       <div class="packaging">
         <p class="packaging-title">认养年限(年)</p>
         <div class="select">
-          <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)">
+          <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">
             <span>{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>
             <img src="./choosed@2x.png" v-show="choosedIndex === index">
             <img src="./unchoosed@2x.png" v-show="!choosedIndex === index">
