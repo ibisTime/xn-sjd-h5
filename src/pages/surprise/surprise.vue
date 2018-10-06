@@ -13,20 +13,20 @@
             <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
           </div>
         </div>
-        <div class="form-item  border-bottom-1px">
-          <div class="item-label">对象昵称</div>
-          <div class="item-input-wrapper">
-            <input class="item-input" v-model="nickname" v-validate="'required'" placeholder="请输入对方昵称">
-            <span v-show="errors.has('nickname')" class="error-tip">{{errors.first('nickname')}}</span>
-          </div>
-        </div>
-        <div class="form-item border-bottom-1px">
-          <div class="item-label">对方姓名</div>
-          <div class="item-input-wrapper">
-            <input class="item-input" name="realName" v-model="realName" v-validate="'required'" placeholder="请输入对方姓名">
-            <span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>
-          </div>
-        </div>
+        <!--<div class="form-item  border-bottom-1px">-->
+          <!--<div class="item-label">对象昵称</div>-->
+          <!--<div class="item-input-wrapper">-->
+            <!--<input class="item-input" v-model="nickname" v-validate="'required'" placeholder="请输入对方昵称">-->
+            <!--<span v-show="errors.has('nickname')" class="error-tip">{{errors.first('nickname')}}</span>-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-item border-bottom-1px">-->
+          <!--<div class="item-label">对方姓名</div>-->
+          <!--<div class="item-input-wrapper">-->
+            <!--<input class="item-input" name="realName" v-model="realName" v-validate="'required'" placeholder="请输入对方姓名">-->
+            <!--<span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>-->
+          <!--</div>-->
+        <!--</div>-->
         <div class="form-btn">
           <button @click="give">确认赠送</button>
         </div>
@@ -39,6 +39,7 @@
   import MHeader from 'components/m-header/m-header';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
+  import { GiveTree } from 'api/biz';
 
   export default {
     mixins: [directiveMixin],
@@ -47,13 +48,29 @@
         captErr: '',
         mobile: '',
         nickname: '',
-        realName: ''
+        realName: '',
+        adoptTreeCode: '', // 认养权编号
+        other: 0,
+        currentHolder: ''
       };
     },
     created() {
+      this.other = this.$route.query.other;
+      this.currentHolder = this.$route.query.currentHolder;
+      this.adoptTreeCode = this.$route.query.aTCode;
     },
     methods: {
-      give() {}
+      give() {
+        GiveTree({
+          code: this.adoptTreeCode,
+          toMobile: this.mobile
+        }).then(() => {
+          this.go(`/my-tree?aTCode=${this.adoptTreeCode}`);
+        }, () => {});
+      },
+      go(url) {
+        this.$router.push(url);
+      }
     },
     components: {
       Toast,

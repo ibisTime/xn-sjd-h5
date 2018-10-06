@@ -88,16 +88,16 @@
         this.choosedIndex = index;
       },
       showBtns(status) {
-        if (status !== '1') {
+        if (status !== '0') {
           return false;
         }
         return true;
       },
       showPayBtn(status) {
-        return status === '1';
+        return status === '0';
       },
       showCancelBtn(status) {
-        return status === '1';
+        return status === '0';
       },
       payOrder(item) {
         this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);

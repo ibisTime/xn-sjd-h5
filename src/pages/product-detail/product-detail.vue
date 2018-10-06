@@ -43,7 +43,7 @@
         <div class="description-title">
           <div class="border"></div>
           <span>图文详情</span>
-          <div class="description-detail" v-html="detail.description">{{detail.description}}</div>
+          <div class="description-detail" v-html="detailDescription"></div>
         </div>
       </div>
       <!--<div class="mall-content">-->
@@ -124,7 +124,7 @@ export default {
       }],
       showCheckIn: false,
       pullUpLoad: null,
-      descriptionDetail: '',
+      detailDescription: '',
       flag: false,
       number: 1,
       idCode: '',
@@ -198,6 +198,7 @@ export default {
     ]).then(([res1]) => {
       this.loading = false;
       this.detail = res1;
+      this.detailDescription = res1.description;
     }).catch(() => { this.loading = false; });
   },
   components: {
@@ -285,6 +286,8 @@ export default {
         }
       }
       .description-detail{
+        font-size: 0.26rem;
+        line-height: 1.8;
         padding: 0.2rem 0;
         img{
           max-width: 100%;
