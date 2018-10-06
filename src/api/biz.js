@@ -175,6 +175,13 @@ export function getPageUserTree(params) {
   return fetch(629205, data);
 }
 
+// 详情查询认养权
+export function getUserTreeDetail(code) {
+  return fetch(629206, {
+    code
+  });
+}
+
 /**
  * 取消订单
  * @param {string} code
@@ -223,6 +230,17 @@ export function getPageTpp(params) {
 }
 
 /**
+ * 赠送碳泡泡
+ * @params {string} toUserId
+ * */
+export function GiveTpp({toUserId, userId}) {
+  return fetch(629360, {
+    toUserId,
+    userId: userId || getUserId()
+  });
+}
+
+/**
  * 收取碳泡泡
  * @params {string} status （0待收取、1已收完、2已过期）
  * */
@@ -230,5 +248,46 @@ export function collectionTpp({code, userId}) {
   return fetch(629350, {
     code,
     userId: userId || getUserId()
+  });
+}
+
+/**
+ * 分页查询日志
+ * @params {string} type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡）
+ * @params {string} adoptTreeCode 认养权编号
+ * @params {string} adoptUserId 认养人编号
+ * */
+export function getPageJournal(params) {
+  return fetch(629305, {
+    limit: 20,
+    start: 1,
+    ...params
+  });
+}
+
+/**
+ * 赠送树
+ * @params {string} code 认养权编号
+ * @params {number} toMobile 赠送对象手机号
+ * */
+export function GiveTree({code, toMobile}) {
+  return fetch(629200, {
+    code,
+    toMobile,
+    userId: getUserId()
+  });
+}
+
+/**
+ * 分页查询日志
+ * @params {string} type  类型（0保护罩/1一件收取)
+ * @params {string} adoptTreeCode 认养权编号
+ * @params {string} adoptUserId 认养人编号
+ * */
+export function getPageProps(params) {
+  return fetch(629305, {
+    limit: 20,
+    start: 1,
+    ...params
   });
 }

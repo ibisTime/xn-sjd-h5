@@ -226,6 +226,7 @@
         height: 0.16rem;
         border-radius: 50%;
         background: rgba(255,255,255,0.6);
+        border: 1px solid $primary-color;
 
         &.active {
           background: $primary-color;

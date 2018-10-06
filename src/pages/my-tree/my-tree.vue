@@ -25,10 +25,12 @@
             </div>
           </div>
         </div>
+        <!-- 证书 -->
         <div class="certification" @click="certification" v-show="!other">
           <img src="./certification@2x.png" class="certification">
           <span>x5</span>
         </div>
+        <!-- 礼物 -->
         <div class="me" @click="go('/gift')">
           <img src="./head.png">
           <span>礼物</span>
@@ -37,7 +39,7 @@
           <img src="./map@2x.png">
           <img src="./prop@2x.png" @click="props" v-show="!other">
           <img src="./strategy@2x.png" @click="go('/strategy')" v-show="!other">
-          <img src="./give@2x.png" @click="go('/surprise')" v-show="!other">
+          <img src="./give@2x.png" @click="goSurprise" v-show="!other">
         </div>
         <div class="icons-other" v-show="other">
           <img src="./danmu@2x.png" @click="danmu" >
@@ -45,6 +47,7 @@
         </div>
         <img src="./romantic-story@2x.png" class="romantic-story" v-show="!other" @click="go('/emotion-channel')">
       </div>
+      <!-- 能量比拼 -->
       <div class="battle" v-if="other === '1'" v-show="other === '1'">
         <div class="battle-bg">
           <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
@@ -70,68 +73,58 @@
           </div>
         </div>
       </div>
+      <!-- 用户 -->
       <div class="tab" v-show="!other">
         <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">最新动态</span>
-        <span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>
+        <!--<span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>-->
         <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
       </div>
+      <!-- 用户 - 最新动态/认养人/古树详情 -->
       <div class="tab-panel" v-show="!other">
+        <!-- 最新动态 -->
         <div class="dynamic" v-show="tab === 0">
+          <!-- 访客 -->
           <div class="heads">
             <div class="head-item">
               <img src="./head.png">
-              <span class="number">10g</span>
-            </div>
-            <div class="head-item">
-              <img src="./head.png">
-              <span class="number">10g</span>
-            </div>
-            <div class="head-item">
-              <img src="./head.png">
-              <span class="number">10g</span>
-            </div>
-            <div class="head-item">
-              <img src="./head.png">
-              <span class="number">10g</span>
-            </div>
-            <div class="head-item">
-              <img src="./head.png">
-              <span class="number">10g</span>
-            </div>
-            <div class="head-item">
-              <img src="./head.png">
-              <span class="number">10g</span>
+              <!--<span class="number">10g</span>-->
             </div>
           </div>
+          <!-- 动态 -->
           <div class="dynamic-info">
-            <div class="dynamic-info-item">
-              <p><span class="name">空荡荡</span><span class="activity">收取8g</span><span class="time">1小时前</span></p>
+            <div class="dynamic-info-item" v-for="item in dynamicsList">
+              <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
+              <p v-if="item.type === '1'">
+                <span class="name">{{item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname : ''}}</span>
+                <span class="activity">赠送{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+              </p>
+              <p v-if="item.type === '2'">
+                <span class="name">{{item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname : ''}}</span>
+                <span class="activity">留言</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+              </p>
+              <p v-if="item.type === '3'">
+                <span class="name">{{item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname : ''}}</span>
+                <span class="activity">收取{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+              </p>
             </div>
-            <div class="dynamic-info-item">
-              <p><span class="name">空荡荡</span><span class="activity">收取8g</span><span class="time">1小时前</span></p>
-            </div>
-            <div class="dynamic-info-item">
-              <p><span class="name">空荡荡</span><span class="activity">收取8g</span><span class="time">1小时前</span></p>
-            </div>
-            <div class="dynamic-info-item">
-              <p><span class="name">空荡荡</span><span class="activity">收取8g</span><span class="time">1小时前</span></p>
-            </div>
+            <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
           </div>
-          <div class="more">查看更多</div>
         </div>
-        <div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1"></div>
+        <!-- 认养人介绍 -->
+        <!--<div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1"></div>-->
+        <!-- 古树详情 -->
         <div class="tree-detail" v-show="tab === 2">
+          <!--<div class="item">-->
+            <!--<span>古树昵称</span><span>樟子松鼠</span>-->
+          <!--</div>-->
           <div class="item">
-            <span>古树昵称</span><span>樟子松鼠</span>
+            <span>古树学名</span><span>{{treeDetail.tree ? treeDetail.tree.scientificName : ''}}</span>
           </div>
           <div class="item">
-            <span>古树学名</span><span>樟子松</span>
+            <span>古树编码</span><span>{{treeDetail.treeNumber}}</span>
           </div>
           <div class="item">
-            <span>古树编码</span><span>28020065389</span>
-          </div>
-          <div class="item">
-            <span>古树品种</span><span>常绿乔木</span>
+            <span>古树品种</span><span>{{treeDetail.tree ? treeDetail.tree.variety : ''}}</span>
           </div>
           <div class="item">
             <span>养护单位</span><span>28020065389</span>
@@ -139,9 +132,9 @@
           <div class="item">
             <span>养护人</span><span>庭园观赏及绿化树种</span>
           </div>
-          <div class="item">
-            <span>当前认养人</span><span>三级</span>
-          </div>
+          <!--<div class="item">-->
+            <!--<span>当前认养人</span><span>三级</span>-->
+          <!--</div>-->
           <div class="item" @click="go('/invitation')">
             <span>历史认养人</span>
             <img src="./more@2x.png" class="fr more">
@@ -153,49 +146,44 @@
         </div>
       </div>
       <div class="gray" v-show="other"></div>
+      <!-- TA的动态 -->
       <div class="dynamic-other" v-show="other">
-          <div class="dynamic-title">
-            <div class="border"></div>
-            <span>TA的动态</span>
-          </div>
-          <div class="daily">
-            <div class="daily-title">今天</div>
-            <div class="daily-content">
-              <div class="daily-content-item">
-                <div class="daily-content-item-info">
-                  <img src="./steal@2x.png" alt="">
-                  <p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>收取1g</p>
-                  <p class="time">19:00</p>
-                </div>
+        <div class="dynamic-title">
+          <div class="border"></div>
+          <span>TA的动态</span>
+        </div>
+        <div class="daily">
+          <div class="daily-content">
+            <div class="daily-content-item" v-for="item in dynamicsList">
+              <div v-show="isShowDate(item)">
+                <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
                 <div class="border"></div>
               </div>
-              <div class="daily-content-item">
-                <div class="daily-content-item-info">
-                  <img src="./protect@2x.png" alt="">
-                  <p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>
-                  <p class="time">19:00</p>
-                </div>
-                <div class="border"></div>
+              <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
+              <div class="daily-content-item-info" v-if="item.type === '1'">
+                <img src="./steal@2x.png" alt="">
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : ''}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
-              <div class="daily-content-item">
-                <div class="daily-content-item-message">
-                  <div class="message-border">
-                    <img src="./head.png" alt="" class="head">
-                    <div class="message-text">
-                      <p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>
-                      <p class="activity">来收取能量，被保护罩阻挡了</p>
-                    </div>
-                    <img src="./cover@2x.png" alt="" class="cover">
-                  </div>
-                  <p class="time">19:00</p>
-                </div>
-                <div class="border"></div>
+              <div class="daily-content-item-info" v-if="item.type === '2'">
+                <img src="./steal@2x.png" alt="">
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : ''}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
+              <div class="daily-content-item-info" v-if="item.type === '3'">
+                <img src="./steal@2x.png" alt="">
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : ''}}</span>收取{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+              </div>
+              <div class="border"></div>
             </div>
           </div>
+          <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
         </div>
+      </div>
       </Scroll>
     </div>
+    <!-- 道具 -->
     <div :class="['mask',flag ? 'show' : '']" @click="change"></div>
     <div :class="['props',flag && propFlag ? 'show' : '']">
       <div class="title">
@@ -203,26 +191,33 @@
         <span @click="changeProps(1)" :class="propIdx === 1 ? 'active' : ''">一键收取</span>
         <img src="./close@2x.png" @click="close('propFlag')">
       </div>
-      <div class="content" v-show="propIdx === 0">
+      <div class="content">
         <div class="content-prop">
-          <div class="prop-item">
-            <div class="prop-item-title">保护罩</div>
-            <div class="prop-item-condition">每天限量50万</div>
-            <div class="prop-item-img">
-              <img src="./cover-small@2x.png">
-              <span>2天</span>
-            </div>
-            <div class="prop-item-score enable" @click="convert">200积分</div>
-          </div>
-          <div class="prop-item">
-            <div class="prop-item-title">钻石保护罩</div>
-            <div class="prop-item-condition">钻石会员尊享</div>
-            <div class="prop-item-img">
-              <img src="./cover-small@2x.png">
-              <span>3天</span>
-            </div>
-            <div class="prop-item-score">200积分</div>
-          </div>
+          <prop-scroll :currentIndex="propCurrentIndex"
+                       :dataList="propsList"
+                       ref="propScroll"
+                       @select="selectProp"></prop-scroll>
+
+          <!--<div class="wrap" ref="propWrap">-->
+            <!--<div class="prop-item" ref="propItem">-->
+              <!--<div class="prop-item-title">保护罩</div>-->
+              <!--<div class="prop-item-condition">每天限量50万</div>-->
+              <!--<div class="prop-item-img">-->
+                <!--<img src="./cover-small@2x.png">-->
+                <!--<span>2天</span>-->
+              <!--</div>-->
+              <!--<div class="prop-item-score enable" @click="convert">200积分</div>-->
+            <!--</div>-->
+            <!--<div class="prop-item">-->
+              <!--<div class="prop-item-title">钻石保护罩</div>-->
+              <!--<div class="prop-item-condition">钻石会员尊享</div>-->
+              <!--<div class="prop-item-img">-->
+                <!--<img src="./cover-small@2x.png">-->
+                <!--<span>3天</span>-->
+              <!--</div>-->
+              <!--<div class="prop-item-score">200积分</div>-->
+            <!--</div>-->
+          <!--</div>-->
         </div>
         <div class="score">
           <span>我的积分：3455 </span><img src="./more@2x.png">
@@ -268,13 +263,14 @@
     <convert v-show="convertFlag" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
     <convert-success v-show="convertSuccessFlag" @close="close('convertSuccessFlag')" @convertSuccess="convertSuccess"></convert-success>
     <certification v-show="certificationFlag" @close="close('certificationFlag')" @convertSuccess="convertSuccess"></certification>
-    <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="presentTppQuantity"></juanzeng>
+    <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="String(presentTppQuantity)"></juanzeng>
     <router-view></router-view>
   </div>
 </template>
 <script>
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
+import PropScroll from 'base/prop-scroll/prop-scroll';
 import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
@@ -283,9 +279,9 @@ import ConvertSuccess from 'base/convert-success/convert-success';
 import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
-import { getComparison, getPageTpp, collectionTpp } from 'api/biz';
+import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail, getPageProps } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
-import {formatAmount, formatDate, formatImg} from 'common/js/util';
+import {formatAmount, formatDate, formatImg, getUserId} from 'common/js/util';
 import defaltAvatarImg from './avatar@2x.png';
 
 export default {
@@ -338,7 +334,19 @@ export default {
       comparisonData: {}, // 能量比拼
       presentTppQuantity: 0, // PRESENT_TPP_QUANTITY 赠送碳泡泡的数量
       adoptTreeCode: '', // 认养权编号
-      tppList: {} // 碳泡泡
+      tppList: {}, // 碳泡泡
+      dynamics: {
+        start: 1,
+        limit: 20,
+        hasMore: true
+      }, // 动态
+      dynamicsList: [], // 动态数据
+      treeDetail: {}, // 树详情
+      propsData: {
+        type: '0'
+      }, // 道具配置
+      propCurrentIndex: 0, // 道具配置
+      propsList: [] // 道具数据
     };
   },
   created() {
@@ -357,7 +365,10 @@ export default {
         this.getTppList({
           adoptTreeCode: this.adoptTreeCode
         }),
-        this.getPresentTppQuantity()
+        this.getPresentTppQuantity(),
+        this.getDynamicsList(),
+        this.getTreeDetail(),
+        this.getPropList()
       ]).then(() => {
         this.loading = false;
       }).catch(() => { this.loading = false; });
@@ -371,11 +382,42 @@ export default {
         }).catch(() => { this.loading = false; });
       }
     },
+    getPropList() {
+      getPageProps({}).then((data) => {
+      }).catch(() => { this.loading = false; });
+    },
+    // 查询树详情
+    getTreeDetail() {
+      return getUserTreeDetail(this.adoptTreeCode).then((data) => {
+        this.treeDetail = data;
+      }, () => {});
+    },
+    // 分页查询动态
+    getDynamicsList() {
+      getPageJournal({
+        start: this.dynamics.start,
+        adoptUserId: this.currentHolder,
+        adoptTreeCode: this.adoptTreeCode
+      }).then((data) => {
+        if (data.list.length < this.dynamics.limit || data.totalCount <= this.dynamics.limit) {
+          this.dynamics.hasMore = false;
+        }
+        this.dynamics.start++;
+        this.dynamicsList = this.dynamicsList.concat(data.list);
+      }, () => {});
+    },
     // 获取碳泡泡
     getTppList(params) {
       return getPageTpp(params).then((res) => {
         this.tppList = res.list;
       }, () => {});
+    },
+    // 赠送碳泡泡
+    doGiveTpp() {
+      this.loading = true;
+      return GiveTpp({
+        toUserId: this.currentHolder
+      }).then(() => {}, () => { this.loading = false; });
     },
     // 收取碳泡泡
     doCollectionTpp(item) {
@@ -394,7 +436,7 @@ export default {
     // 获取赠送碳泡泡数量
     getPresentTppQuantity() {
       return getSystemConfigCkey('PRESENT_TPP_QUANTITY').then((data) => {
-        this.presentTppQuantity = this.formatAmount(data.cvalue);
+        this.presentTppQuantity = data.cvalue;
       }, () => {});
     },
     // 本周能量比拼
@@ -409,6 +451,25 @@ export default {
         }
         this.comparisonData = data;
       }, () => {});
+    },
+    // 动态 是否显示日期
+    isShowDate(item) {
+      let creadDate = formatDate(item.createDatetime, 'MM-dd');
+      if (creadDate === this.dynamics.tmplDate) {
+        return false;
+      } else {
+        this.dynamics.tmplDate = creadDate;
+        return true;
+      }
+    },
+    // 动态 格式化显示日期
+    formatDynamicsDate(item) {
+      let creadDate = formatDate(item.createDatetime, 'MM-dd');
+      let nowDate = formatDate(new Date(), 'MM-dd');
+      if(creadDate === nowDate) {
+        creadDate = '今日';
+      }
+      return creadDate;
     },
     formatAmount(amount, len) {
       return formatAmount(amount, len);
@@ -425,6 +486,12 @@ export default {
     go(url) {
       this.$router.push(url);
     },
+    goSurprise() {
+      this.go(`/surprise?aTCode=${this.adoptTreeCode}`);
+    },
+    getUserId() {
+      return getUserId();
+    },
     showPopUp() {
       this.flag = true;
     },
@@ -436,10 +503,16 @@ export default {
     },
     changeProps(index) {
       this.propIdx = index;
+      setTimeout(() => {
+        this.$refs.propScroll.scroll.refresh();
+      }, 10);
     },
     props() {
       this.flag = true;
       this.propFlag = true;
+      setTimeout(() => {
+        this.$refs.propScroll.scroll.refresh();
+      }, 20);
     },
     danmu() {
       this.flag = true;
@@ -474,11 +547,13 @@ export default {
       this.convertSuccessFlag = true;
     },
     juanzengSuccess() {
-      this.close('juanzengFlag');
-      this.juanzengShow = true;
-      setTimeout(() => {
-        this.juanzengShow = false;
-      }, 1000);
+      this.doGiveTpp().then(() => {
+        this.close('juanzengFlag');
+        this.juanzengShow = true;
+        setTimeout(() => {
+          this.juanzengShow = false;
+        }, 1000);
+      }, () => {});
     },
     certification() {
       this.certificationFlag = true;
@@ -494,6 +569,9 @@ export default {
       setTimeout(() => {
         this.danmuShow = false;
       }, 1000);
+    },
+    selectProp(index) {
+      this.currentIndex = index;
     }
   },
   components: {
@@ -503,6 +581,7 @@ export default {
     NoResult,
     MHeader,
     Scroll,
+    PropScroll,
     Convert,
     ConvertSuccess,
     Certification,
@@ -789,12 +868,14 @@ export default {
       height: 0.9rem;
       padding: 0 0.6rem;
       display: flex;
-      justify-content: space-between;
+      /*justify-content: space-between;*/
       background: $color-highlight-background;
       border-bottom: 1px solid $color-border;
+
       span {
         font-size: 0.3rem;
         line-height: 0.9rem;
+        margin-right: 0.9rem;
       }
       .active {
         color: $primary-color;
@@ -1078,7 +1159,67 @@ export default {
       }
     }
     .content {
+      top: 1rem;
+
       .content-prop {
+        padding: 0.4rem;
+        height: 4.88rem;
+        /*overflow-x: auto;
+        overflow-y: hidden;
+        .wrap{
+          height: 4.08rem;
+        }
+        .prop-item {
+          float: left;
+          width: 2.74rem;
+          height: 4.08rem;
+          border: 1px solid #e5e5e5;
+          border-radius: 0.15rem;
+          padding: 0.3rem;
+          text-align: center;
+          .prop-item-title {
+            font-size: $font-size-medium;
+            line-height: 0.4rem;
+            margin-bottom: 0.08rem;
+          }
+          .prop-item-condition {
+            color: #FFA40F;
+            border: 1px solid #FFA40F;
+            border-radius: 1rem;
+            font-size: $font-size-small;
+            line-height: 0.33rem;
+            margin-bottom: 0.25rem;
+          }
+          .prop-item-img {
+            position: relative;
+            margin-bottom: 0.25rem;
+            img {
+              width: 1.37rem;
+              height: 1.37rem;
+            }
+            span {
+              color: #438A0F;
+              font-size: $font-size-small;
+              line-height: 0.33rem;
+              position: absolute;
+              bottom: 0.15rem;
+              left: 0.85rem;
+            }
+          }
+          .prop-item-score {
+            height: 0.64rem;
+            background: #ccc;
+            color: $color-highlight-background;
+            font-size: $font-size-medium-x;
+            line-height: 0.64rem;
+            border-radius: 0.05rem;
+          }
+          .enable {
+            background: $primary-color;
+          }
+        }*/
+      }
+      /* .content-prop {
         padding: 0.4rem 0.74rem;
         display: flex;
         justify-content: space-between;
@@ -1130,7 +1271,7 @@ export default {
             background: $primary-color;
           }
         }
-      }
+      } */
       .score {
         color: #666;
         font-size: $font-size-medium;

@@ -2,7 +2,10 @@
   <div class="me-wrapper">
     <m-header class="cate-header" :title="title" actText="分享" @action="action"></m-header>
     <div class="out-content">
-      <Scroll>
+      <Scroll ref="scroll"
+              :data="dynamicsList"
+              :hasMore="dynamics.hasMore"
+              @pullingUp="getDynamicsList">
       <div class="bg">
         <div class="content">
           <div class="in-content">
@@ -13,7 +16,7 @@
                   <p>
                     <span>{{userInfo.nickname}}</span>
                     <span class="lv">LV{{userInfo.level}}</span>
-                    <span class="follow" v-show="other === '1'" @click="setFollow()" >{{this.isFriend ? '取消关注' : '加关注'}}</span></p>
+                    <span class="follow" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '取消关注' : '加关注'}}</span></p>
                 </div>
               </div>
               <div class="category-wrapper bg-transparent">
@@ -89,41 +92,57 @@
           <span>{{borderTitle}}</span>
         </div>
         <div class="daily">
-          <div class="daily-title">今天</div>
           <div class="daily-content">
-            <div class="daily-content-item">
-              <div class="daily-content-item-info">
+            <div class="daily-content-item" v-for="item in dynamicsList">
+              <div v-show="isShowDate(item)">
+                <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+                <div class="border"></div>
+              </div>
+              <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
+              <div class="daily-content-item-info" v-if="item.type === '1'">
                 <img src="./steal@2x.png" alt="">
-                <p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>收取1g</p>
-                <p class="time">19:00</p>
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>赠送{{formatAmount(item.quantity)}}g</p>
+                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+              </div>
+              <div class="daily-content-item-info" v-if="item.type === '2'">
+                <img src="./steal@2x.png" alt="">
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>留言{{formatAmount(item.quantity)}}g</p>
+                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+              </div>
+              <div class="daily-content-item-info" v-if="item.type === '3'">
+                <img src="./steal@2x.png" alt="">
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>收取{{formatAmount(item.quantity)}}g</p>
+                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="border"></div>
             </div>
-            <div class="daily-content-item">
-              <div class="daily-content-item-info">
-                <img src="./protect@2x.png" alt="">
-                <p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>
-                <p class="time">19:00</p>
-              </div>
-              <div class="border"></div>
-            </div>
-            <div class="daily-content-item">
-              <div class="daily-content-item-message">
-                <div class="message-border">
-                  <img src="./head.png" alt="" class="head">
-                  <div class="message-text">
-                    <p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>
-                    <p class="activity">来收取能量，被保护罩阻挡了</p>
-                  </div>
-                  <img src="./cover@2x.png" alt="" class="cover">
-                </div>
-                <p class="time">19:00</p>
-              </div>
-              <div class="border"></div>
-            </div>
+            <!--<div class="daily-content-item">-->
+              <!--<div class="daily-content-item-info">-->
+                <!--<img src="./protect@2x.png" alt="">-->
+                <!--<p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>-->
+                <!--<p class="time">19:00</p>-->
+              <!--</div>-->
+              <!--<div class="border"></div>-->
+            <!--</div>-->
+            <!--<div class="daily-content-item">-->
+              <!--<div class="daily-content-item-message">-->
+                <!--<div class="message-border">-->
+                  <!--<img src="./head.png" alt="" class="head">-->
+                  <!--<div class="message-text">-->
+                    <!--<p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>-->
+                    <!--<p class="activity">来收取能量，被保护罩阻挡了</p>-->
+                  <!--</div>-->
+                  <!--<img src="./cover@2x.png" alt="" class="cover">-->
+                <!--</div>-->
+                <!--<p class="time">19:00</p>-->
+              <!--</div>-->
+              <!--<div class="border"></div>-->
+            <!--</div>-->
+            <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
           </div>
         </div>
       </div>
+      <toast :text="toastText" ref="toast"></toast>
       <div class="mask" @click="change" v-show="share"></div>
       </Scroll>
     </div>
@@ -148,10 +167,11 @@
   import Scroll from 'base/scroll/scroll';
   import CategoryScroll from 'base/category-scroll/category-scroll';
   import FullLoading from 'base/full-loading/full-loading';
+  import Toast from 'base/toast/toast';
   import MHeader from 'components/m-header/m-header';
   import NoResult from 'base/no-result/no-result';
   import { getUser, getHasRelationship, addRelationship, cancelRelationship } from 'api/user';
-  import { getListUserTree, getProductType, getComparison } from 'api/biz';
+  import { getListUserTree, getProductType, getComparison, getPageJournal } from 'api/biz';
   import {formatAmount, formatDate, formatImg} from 'common/js/util';
   import defaltAvatarImg from './avatar@2x.png';
 
@@ -163,6 +183,7 @@
         share: false,
         loading: false,
         loadingText: '',
+        toastText: '',
         other: 0,      // 是否好友的主页
         currentHolder: '', // userId 好友
         title: '我的主页',
@@ -173,7 +194,13 @@
         index: 0,
         categorys: [{value: '全部', key: ''}],
         comparisonData: {}, // 能量比拼
-        isFriend: false // 是否是好友
+        isFriend: false, // 是否是好友
+        dynamics: {
+          start: 1,
+          limit: 20,
+          hasMore: true
+        }, // 动态
+        dynamicsList: [] // 动态数据
       };
     },
     created() {
@@ -191,6 +218,7 @@
         this.type = this.categorys[this.index].key;
         this.currentHolder = this.$route.query.currentHolder || '';
         this.other = this.$route.query.other || 0;  // 是否别人的主页
+
         Promise.all([
           getUser(this.currentHolder),
           getProductType({
@@ -198,9 +226,10 @@
             orderColumn: 'order_no',
             status: '1'
           })
-        ]).then(([userInfo, productType]) => {
+        ]).then(([userInfo, productType, typeData]) => {
           this.loading = false;
           this.userInfo = userInfo;
+
           productType.map(item => {
             this.categorys.push({
               key: item.code,
@@ -208,6 +237,7 @@
             });
           });
           this.getUserTree();
+          this.getDynamicsList();
         }).catch(() => { this.loading = false; });
         // 不是当前用户
         if (this.other === '1') {
@@ -218,6 +248,19 @@
             this.loading = false;
           }).catch(() => { this.loading = false; });
         }
+      },
+      // 分页查询动态
+      getDynamicsList() {
+        getPageJournal({
+          start: this.dynamics.start,
+          adoptUserId: this.currentHolder
+        }).then((data) => {
+          if (data.list.length < this.dynamics.limit || data.totalCount <= this.dynamics.limit) {
+            this.dynamics.hasMore = false;
+          }
+          this.dynamics.start++;
+          this.dynamicsList = this.dynamicsList.concat(data.list);
+        }, () => {});
       },
       // 查询我和他是否建立关联
       getIsFriend(toUserId) {
@@ -276,6 +319,25 @@
       formatDate(date, format) {
         return formatDate(date, format);
       },
+      // 动态 是否显示日期
+      isShowDate(item) {
+        let creadDate = formatDate(item.createDatetime, 'MM-dd');
+        if (creadDate === this.dynamics.tmplDate) {
+          return false;
+        } else {
+          this.dynamics.tmplDate = creadDate;
+          return true;
+        }
+      },
+      // 动态 格式化显示日期
+      formatDynamicsDate(item) {
+        let creadDate = formatDate(item.createDatetime, 'MM-dd');
+        let nowDate = formatDate(new Date(), 'MM-dd');
+        if(creadDate === nowDate) {
+          creadDate = '今日';
+        }
+        return creadDate;
+      },
       go(url) {
         this.$router.push(url);
       },
@@ -311,6 +373,7 @@
       MHeader,
       NoResult,
       FullLoading,
+      Toast,
       CategoryScroll
     }
   };
@@ -531,7 +594,7 @@
             font-size: $font-size-large-ss;
             line-height: $font-size-large-s;
             font-family: PingFangSC-Semibold;
-            margin-bottom: 0.32rem;
+            margin: 0.15rem 0;
           }
           .daily-content {
             .daily-content-item {

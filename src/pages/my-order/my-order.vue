@@ -65,9 +65,9 @@
   import CategoryScroll from 'base/category-scroll/category-scroll';
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import NoResult from 'base/no-result/no-result';
-  import FullLoading from 'base/full-loading/full-loading';
-  import Toast from 'base/toast/toast';
+  import NoResult from 'base/no-result/no-result'; // 暂无数据
+  import FullLoading from 'base/full-loading/full-loading'; // loading
+  import Toast from 'base/toast/toast'; // 已加载完/加载时的loading
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import {mapGetters, mapMutations, mapActions} from 'vuex';
   import {SET_ORDER_LIST, SET_CURRENT_ORDER} from 'store/mutation-types';
