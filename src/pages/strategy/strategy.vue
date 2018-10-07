@@ -91,7 +91,7 @@ export default {
       // STRATEGY
       getSystemConfigCkey('STRATEGY').then((data) => {
         this.loading = false;
-        this.detail = `<p>${data.cvalue}</p>`;
+        this.detail = data.cvalue;
       }).catch(() => { this.loading = false; });
     },
     formatAmount(amount) {

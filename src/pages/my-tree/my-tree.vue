@@ -187,8 +187,8 @@
     <div :class="['mask',flag ? 'show' : '']" @click="change"></div>
     <div :class="['props',flag && propFlag ? 'show' : '']">
       <div class="title">
-        <span @click="changeProps(0)" :class="propIdx === 0 ? 'active' : ''">保护罩</span>
-        <span @click="changeProps(1)" :class="propIdx === 1 ? 'active' : ''">一键收取</span>
+        <span @click="changeProps(0)" :class="propsData.type === 0 ? 'active' : ''">保护罩</span>
+        <span @click="changeProps(1)" :class="propsData.type === 1 ? 'active' : ''">一键收取</span>
         <img src="./close@2x.png" @click="close('propFlag')">
       </div>
       <div class="content">
@@ -279,7 +279,7 @@ import ConvertSuccess from 'base/convert-success/convert-success';
 import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
-import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail, getPageProps } from 'api/biz';
+import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail, getListProps } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import {formatAmount, formatDate, formatImg, getUserId} from 'common/js/util';
 import defaltAvatarImg from './avatar@2x.png';
@@ -343,7 +343,7 @@ export default {
       dynamicsList: [], // 动态数据
       treeDetail: {}, // 树详情
       propsData: {
-        type: '0'
+        type: 0
       }, // 道具配置
       propCurrentIndex: 0, // 道具配置
       propsList: [] // 道具数据
@@ -382,8 +382,16 @@ export default {
         }).catch(() => { this.loading = false; });
       }
     },
+    // 查询道具列表
     getPropList() {
-      getPageProps({}).then((data) => {
+      getListProps({
+        type: this.propsData.type
+      }).then((data) => {
+        this.propsList = data;
+        this.loading = false;
+        setTimeout(() => {
+          this.$refs.propScroll.scroll.refresh();
+        }, 10);
       }).catch(() => { this.loading = false; });
     },
     // 查询树详情
@@ -502,10 +510,8 @@ export default {
       this.tab = index;
     },
     changeProps(index) {
-      this.propIdx = index;
-      setTimeout(() => {
-        this.$refs.propScroll.scroll.refresh();
-      }, 10);
+      this.propsData.type = index;
+      this.getPropList();
     },
     props() {
       this.flag = true;
