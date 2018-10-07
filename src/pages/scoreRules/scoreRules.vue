@@ -40,18 +40,23 @@
       this.getConfigData();
     },
     methods: {
-      getInitData(){
+      getInitData() {
         this.getConfigData();
       },
-      getConfigData(){
-        getSystemConfigPage('JF_RULE').then(data => {debugger
-          this.systemConfigPage = data.list;
-          if (data.list.length < this.limit || data.totalCount <= this.limit) {
-            this.hasMore = false;
-          }
-          this.systemConfigPage = data.list;
-          this.start ++;
-        })
+      getConfigData() {
+        if (this.hasMore) {
+          getSystemConfigPage({
+            type: 'JF_RULE',
+            start: this.start,
+            limit: this.limit
+          }).then(data => {
+            if (data.totalPage <= this.start) {
+              this.hasMore = false;
+            }
+            this.systemConfigPage = this.systemConfigPage.concat(data.list);
+            this.start ++;
+          });
+        }
       }
     },
     components: {
@@ -75,6 +80,10 @@
     }
     .bg {
       .content {
+        position: absolute;
+        top: 0rem;
+        bottom: 0.62rem;
+        width: 100%;
         padding: 0.62rem 0.3rem;
         .title {
           font-size: $font-size-medium-x;

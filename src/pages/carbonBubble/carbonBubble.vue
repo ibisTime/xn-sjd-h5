@@ -71,19 +71,20 @@
       action() {
         this.go('/score/score-rules');
       },
-      getCarbonBubble(){
-        getAccountList({
-          accountNumber: this.accountNumber,
-          start: 1,
-          limit: 10
-        }).then((res) => {
-          console.log(res);
-          if (res.list.length < this.limit || res.totalCount <= this.limit) {
-            this.hasMore = false;
-          }
-          this.carbonList = res.list;
-          this.start ++;
-        });
+      getCarbonBubble() {
+        if(this.hasMore) {
+          getAccountList({
+            accountNumber: this.accountNumber,
+            start: this.start,
+            limit: this.limit
+          }).then((res) => {
+            if (res.totalPage <= this.start) {
+              this.hasMore = false;
+            }
+            this.carbonList = [...this.carbonList, ...res.list];
+            this.start ++;
+          });
+        }
       }
     },
     components: {

@@ -12,7 +12,7 @@
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
-            <!-- <div @click="selectPayType(1)">
+            <!-- <div @click="selectPayType(5)">
               <img src="./wechat@2x.png" alt="">
               <div class="text">
                 <p>微信</p>
@@ -20,7 +20,7 @@
               <img class="money fr" src="./choosed@2x.png" v-show="wechat">
               <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
             </div> -->
-            <div @click="selectPayType(2)">
+            <div @click="selectPayType(3)">
               <img src="./alipay@2x.png" alt="">
               <div class="text">
                 <p>支付宝</p>
@@ -37,6 +37,7 @@
       </div>
     </div>
     <router-view></router-view>
+    <toast :text="text" ref="toast"></toast>
   </div>
 </template>
 <script>
@@ -44,17 +45,24 @@
   import MHeader from 'components/m-header/m-header';
   import {setTitle, formatAmount} from 'common/js/util';
   import {userAccount} from 'api/biz';
+  import {userRecharge} from 'api/user';
+  import Toast from 'base/toast/toast';
 
   export default {
     data() {
       return {
-        wechat: true,
+        wechat: false,
         alipay: true,
         balance: false,
-        amount: 0,
+        amount: 100,
+        text: '',
         userAmount: [{
           amount: 0
-        }]
+        }],
+        config: {
+          amount: '',
+          payType: '3'
+        }
       };
     },
     created() {
@@ -63,7 +71,7 @@
     mounted() {
       userAccount().then(data => {
         this.userAmount = data.filter(item => {
-          return item.currency == 'CNY';
+          return item.currency === 'CNY';
         });
       });
     },
@@ -82,27 +90,38 @@
         this.$router.push(url);
       },
       selectPayType(index) {
-        if(index === 1) {
+        if(index === 5) {
           this.wechat = true;
           this.alipay = false;
           this.balance = false;
-        } else if(index === 2) {
+        } else if(index === 3) {
           this.wechat = false;
           this.alipay = true;
           this.balance = false;
-        } else if(index === 3) {
-          this.wechat = false;
-          this.alipay = false;
-          this.balance = true;
-        }
+        };
+        this.config.payType = index.toString();
+        // else if(index === 3) {
+        //   this.wechat = false;
+        //   this.alipay = false;
+        //   this.balance = true;
+        // }
       },
-      toRecharge(){
-        this.$router.push('/paySucceed');
+      toRecharge() {
+        this.config.amount = this.amount * 1000;
+        userRecharge(this.config).then(data => {
+          this.text = '正在跳转支付宝...';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            location.href = data.signOrder;
+          }, 1000);
+        });
+        // this.$router.push('/paySucceed');
       }
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      Toast
     }
   };
 </script>

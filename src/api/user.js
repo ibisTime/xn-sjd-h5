@@ -397,3 +397,11 @@ export function setUserMonPaw(config) {
   });
 }
 
+// 充值
+export function userRecharge(config) {
+  return fetch(802343, {
+    userId: getUserId(),
+    ...config
+  });
+}
+

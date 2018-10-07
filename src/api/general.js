@@ -9,12 +9,8 @@ export function getInitWXSDKConfig() {
 }
 
 // 根据type分页查系统参数
-export function getSystemConfigPage(pType) {
-  return fetch(630045, {
-    start: 1,
-    limit: 10,
-    type: pType
-  });
+export function getSystemConfigPage(config) {
+  return fetch(630045, config);
 }
 
 // 根据ckey获取系统参数

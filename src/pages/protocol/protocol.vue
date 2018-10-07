@@ -1,11 +1,24 @@
 <template>
   <div class="protocol-wrapper">
     <m-header class="cate-header" :title="title"></m-header>
-    <div class="protocol" v-html="protocol"></div>
+    <!--  v-html="protocol" -->
+    <div class="protocol">
+      <p v-html="xyText"></p>
+      <!-- <table>
+        <tbody>
+          <tr>
+            <td width="240px" height="240px">
+              
+              <img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e">
+            </td>
+          </tr>
+        </tbody>
+      </table> -->
+    </div>
     <div class="footer" v-show="sign">
       <div class="confirm" @click="confirm()">我已阅读并签署</div>
     </div>
-    <full-loading v-show="loading" :title="loadText"></full-loading>
+    <!-- <full-loading v-show="loading" :title="loadText"></full-loading> -->
   </div>
 </template>
 <script>
@@ -14,6 +27,7 @@
   import MHeader from 'components/m-header/m-header';
   import { getCookie } from 'common/js/cookie';
   import { placeOrder, recognizeOrder, recognizeOrderFirst } from 'api/biz';
+  import { getSystemConfigCkey } from 'api/general';
 
   export default {
     data() {
@@ -21,7 +35,8 @@
         title: '协议',
         sign: false,
         loadingFlag: true,
-        protocol: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
+        protocol: '',
+        xyText: ''
       };
     },
     mounted() {
@@ -31,6 +46,9 @@
       this.quantity = this.$route.query.quantity || '';
       this.type = this.$route.query.type || '';
       this.identifyCode = this.$route.query.identifyCode || '';
+      getSystemConfigCkey('REGISTRATION_AGREEMENT').then(data => {
+        this.xyText = data.cvalue;
+      });
     },
     methods: {
       confirm() {
@@ -93,15 +111,16 @@
   @import "~common/scss/variable";
 
   .protocol-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
+    // position: fixed;
+    // top: 0;
+    // left: 0;
     width: 100%;
     height: 100%;
     background: #fff;
     .protocol {
       margin: 0.88rem 0;
       padding: 0.6rem 0.3rem;
+      font-size: 0.4rem;
     }
     .footer {
       height: 0.98rem;
@@ -125,6 +144,10 @@
         display: inline-block;
         text-align: center;
       }
+    }
+    table{
+      text-align: center;
+      font-size: 0.4rem;
     }
   }
 </style>

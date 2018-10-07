@@ -55,7 +55,7 @@
       this.accountNumber = this.$route.query.accountNumber;
       this.amount = +this.$route.query.amount;
       // 请求流水
-      if(this.accountNumber){
+      if(this.accountNumber) {
         this.getAccountData();
       }
     },
@@ -72,18 +72,20 @@
       formatAmount(amount) {
         return formatAmount(amount);
       },
-      getAccountData(){
-        getAccountList({
-          accountNumber: this.accountNumber,
-          start: 1,
-          limit: 10
-        }).then((res) => {
-          if (res.list.length < this.limit || res.totalCount <= this.limit) {
-            this.hasMore = false;
-          }
-          this.jfAccountList = res.list;
-          this.start ++;
-        });
+      getAccountData() {
+        if(this.hasMore) {
+          getAccountList({
+            accountNumber: this.accountNumber,
+            start: this.start,
+            limit: this.limit
+          }).then((res) => {
+            if (res.totalPage <= this.start) {
+              this.hasMore = false;
+            }
+            this.jfAccountList = [...this.jfAccountList, ...res.list];
+            this.start ++;
+          });
+        }
       }
     },
     components: {
@@ -141,6 +143,10 @@
           }
           .money-list {
             background: $color-highlight-background;
+            position: absolute;
+            top: 4rem;
+            bottom: 0.5rem;
+            width: 90%;
             .money-item {
               display: flex;
               align-items: center;

@@ -16,15 +16,16 @@
   import MHeader from 'components/m-header/m-header';
 
   export default {
-      data(){
-          return {
-              headerTitle: '支付成功'
-          }
-      },
-      components: {
-          MHeader
-      }
-  }
+    data() {
+      return {
+        headerTitle: '支付成功'
+      };
+    },
+    components: {
+      MHeader
+    }
+  };
+
 </script>
 
 <style scoped>

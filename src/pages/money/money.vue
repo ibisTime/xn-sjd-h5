@@ -72,20 +72,20 @@
       go(url) {
         this.$router.push(url);
       },
-      getUserAccount(){
+      getUserAccount() {
         this.accountNumber = this.$route.query.accountNumber;
         this.amount = +this.$route.query.amount;
         // 请求流水
-        if(this.accountNumber){
+        if(this.accountNumber) {
           getAccountList({
             accountNumber: this.accountNumber,
-            start: 1,
-            limit: 10
-          }).then((res) => {console.log(res);
-            if (res.list.length < this.limit || res.totalCount <= this.limit) {
+            start: this.start,
+            limit: this.limit
+          }).then((res) => {
+            if (res.totalPage <= this.start) {
               this.hasMore = false;
             }
-            this.accountList = res.list;
+            this.accountList = [...this.accountList, ...res.list];
             this.start++;
           });
         }
@@ -96,11 +96,11 @@
       MHeader,
       NoResult
     },
-    watch:{
-      $route(){
+    watch: {
+      $route() {
         this.getUserAccount();
       }
-    },
+    }
   };
 </script>
 <style lang="scss" scoped>
@@ -174,6 +174,10 @@
           }
           .money-list {
             background: $color-highlight-background;
+            position: absolute;
+            top: 4rem;
+            bottom: 0.5rem;
+            width: 90%;
             .money-item {
               display: flex;
               align-items: center;

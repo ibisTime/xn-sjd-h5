@@ -30,8 +30,8 @@
   import Toast from 'base/toast/toast';
   import {prefixStyle} from 'common/js/dom';
   import {setTitle} from 'common/js/util';
-  import {changeMobile} from 'api/user';
-  import {getBankCardList, deleteBankCard} from 'api/account';
+  // import {changeMobile} from 'api/user';
+  import {getBankCardList} from 'api/account';
   // import {SET_BANKCARD_LIST} from 'store/mutation-types';
 
   const transform = prefixStyle('transform');

@@ -65,6 +65,7 @@
     data() {
       return {
         errMsg: '',
+        text: '',
         inputText: '资金密码',
         inpType: 'password',
         wechat: true,
@@ -99,7 +100,7 @@
       this.getQxFee('USERDZTS');
       userAccount().then(data => {
         this.userAmount = data.filter(item => {
-          return item.currency == 'CNY';
+          return item.currency === 'CNY';
         });
         this.config.accountNumber = this.userAmount[0].accountNumber;
         sessionStorage.setItem('accountNumber', this.userAmount[0].accountNumber);
@@ -139,32 +140,39 @@
           this.balance = true;
         }
       },
-      getQxFee(cKey){
+      getQxFee(cKey) {
         getSystemConfigCkey(cKey).then(data => {
-          switch(cKey){
+          switch(cKey) {
             case 'USERQXFL': this.qxFee = parseFloat(data.cvalue) * 100; break;
             case 'USERMONTIMES': this.maxQx = parseFloat(data.cvalue); break;
             case 'USERQXBS': this.qxBei = parseFloat(data.cvalue); break;
             case 'QXDBZDJE': this.dbiMax = parseFloat(data.cvalue); break;
             case 'USERDZTS': this.qxDay = parseFloat(data.cvalue); break;
           }
-        })
+        });
       },
-      userTxMoney(){
+      userTxMoney() {
         this.$refs.confirmInput.show();
       },
-      handleInputConfirm(data){
+      handleInputConfirm(data) {
         let amount = (this.config.amount * 1000).toString();
         this.config.tradePwd = data;
         payApplyFor({
           ...this.config,
           amount
-          }).then(data => {
+        }).then(data => {
           this.errMsg = data.errorInfo;
-          if(this.errMsg){
+          if(this.errMsg) {
+            this.text = this.errMsg;
             this.$refs.toast.show();
+          }else{
+            this.text = '操作成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.$router.push('/me');
+            }, 1000);
           }
-        })
+        });
       }
     },
     components: {

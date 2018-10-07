@@ -35,7 +35,7 @@
 <script>
   import MHeader from 'components/m-header/m-header';
   import {sendCaptcha} from 'api/general';
-  import {changeMobile, setUserMonPaw} from 'api/user';
+  import {setUserMonPaw} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
 
@@ -72,17 +72,18 @@
         });
       },
       _changeMobile() {
-        if (this.errors.items.length == 0 && this.mobile && this.moneyPaw && this.captcha) {
+        if (this.errors.items.length === 0 && this.mobile && this.moneyPaw && this.captcha) {
           this.setting = true;
           setUserMonPaw({
             smsCaptcha: this.captcha,
             tradePwd: this.moneyPaw
           }).then(data => {
-              this.$refs.toast.show();
-              setTimeout(() => {
-                  this.$router.push('/me');
-              }, 2000);
-          })
+            this.$refs.toast.show();
+
+            setTimeout(() => {
+              this.$router.push('/me');
+            }, 2000);
+          });
         }
       },
       _setInterval() {
