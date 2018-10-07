@@ -1,6 +1,6 @@
 <template>
   <div class="full-screen-wrapper content">
-    <div class="header"><img src="./back.png" @click="back"></div>
+    <!--<div class="header"><img src="./back.png" @click="back"></div>-->
     <div class="title">注册</div>
     <div class="content">
       <div class="form-login">
@@ -171,8 +171,7 @@
     }
     .title {
       font-size: $font-size-large-xx;
-      margin-bottom: 0.76rem;
-      padding: 0 0.2rem;
+      padding: 0.3rem 0.2rem 0.76rem;
     }
     .content {
       width: 100%;
@@ -208,6 +207,8 @@
               background: $color-highlight-background;
               border-radius: 0.04rem;
               margin-top: 0.16rem;
+              position: relative;
+              z-index: 99;
             }
           }
         }

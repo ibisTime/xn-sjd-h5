@@ -3,28 +3,36 @@
     <div class="check-in-wrapper"></div>
     <div class="full-loading">
       <img src="./close@2x.png" class="close" @click="close">
-      <p class="title">保护罩</p>
-      <p class="tradition">每天限量50万</p>
-      <p class="description">使用后保护碳泡泡<span>1</span>天内不被收取</p>
-      <p class="know-more">了解详情<img src="./more-green@2x.png"></p>
-      <button @click="convertSuccess">200积分兑换</button>
+      <p class="title">{{propsDetail.name}}</p>
+      <p class="tradition">{{propsDetail.description}}</p>
+      <p class="description">使用后保护碳泡泡<span>{{propsDetail.validityTerm}}</span>小时内不被收取</p>
+      <!--<p class="know-more">了解详情<img src="./more-green@2x.png"></p>-->
+      <button class="convertBtn" @click="convertSuccess(propsDetail.code)">{{formatAmount(propsDetail.price)}}积分兑换</button>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
+  import { formatAmount } from 'common/js/util';
   export default {
     props: {
       title: {
         type: String,
         default: '正在载入...'
+      },
+      propsDetail: {
+        type: Object,
+        default: {}
       }
     },
     methods: {
       close() {
         this.$emit('close');
       },
-      convertSuccess() {
-        this.$emit('convertSuccess');
+      convertSuccess(code) {
+        this.$emit('convertSuccess', code);
+      },
+      formatAmount(amount, len) {
+        return formatAmount(amount, len);
       }
     }
   };
@@ -104,6 +112,7 @@
       color: $color-highlight-background;
       font-size: $font-size-medium-xx;
       line-height: 0.9rem;
+      margin-top: 0.3rem;
     }
   }
 </style>

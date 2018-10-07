@@ -5,10 +5,10 @@
       <img src="./close@2x.png" class="close" @click="close">
       <img src="./convert-success@2x.png" class="convert-success">
       <p class="title">兑换成功</p>
-      <p class="description">使用后保护碳泡泡<span>1</span>天内不被收取</p>
+      <p class="description">使用后保护碳泡泡<span>{{propsDetail.validityTerm}}</span>小时内不被收取</p>
       <div class="buttons">
-        <button @click="close">暂不使用</button>
-        <button>立即使用</button>
+        <!--<button @click="close">暂不使用</button>-->
+        <button @click="useProps(propsDetail.code)">立即使用</button>
       </div>
     </div>
   </div>
@@ -19,11 +19,18 @@
       title: {
         type: String,
         default: '正在载入...'
+      },
+      propsDetail: {
+        type: Object,
+        default: {}
       }
     },
     methods: {
       close() {
         this.$emit('close');
+      },
+      useProps(code) {
+        this.$emit('useProps', code);
       }
     }
   };
@@ -89,7 +96,7 @@
     }
     .buttons {
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       button {
         height: 0.9rem;
         padding: 0.22rem 0.4rem;

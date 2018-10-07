@@ -197,7 +197,7 @@
                        :dataList="propsList"
                        ref="propScroll"
                        @select="selectProp"
-                       @buy="convert"
+                       @buy="showBuy"
                       ></prop-scroll>
 
           <!--<div class="wrap" ref="propWrap">-->
@@ -261,11 +261,11 @@
         </div>
       </div>
     </div>
-    <toast ref="toast" :text="text"></toast>
-    <convert v-show="convertFlag" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
-    <convert-success v-show="convertSuccessFlag" @close="close('convertSuccessFlag')" @convertSuccess="convertSuccess"></convert-success>
+    <convert v-show="convertFlag" :propsDetail="propsData.buyItem" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
+    <convert-success v-show="convertSuccessFlag" :propsDetail="propsData.buyItem" @close="close('convertSuccessFlag')" @convertSuccess="convertSuccess"></convert-success>
     <certification v-show="certificationFlag" @close="close('certificationFlag')" @convertSuccess="convertSuccess"></certification>
     <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="String(presentTppQuantity)"></juanzeng>
+    <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
   </div>
 </template>
@@ -281,7 +281,8 @@ import ConvertSuccess from 'base/convert-success/convert-success';
 import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
-import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail, getListProps } from 'api/biz';
+import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
+        getListProps, buyProps } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import {formatAmount, formatDate, formatImg, getUserId} from 'common/js/util';
 import defaltAvatarImg from './avatar@2x.png';
@@ -345,7 +346,8 @@ export default {
       dynamicsList: [], // 动态数据
       treeDetail: {}, // 树详情
       propsData: {
-        type: 0
+        type: 0,
+        buyItem: {} // 购买道具编号
       }, // 道具配置
       propCurrentIndex: 0, // 道具配置
       propsList: [] // 道具数据
@@ -526,8 +528,9 @@ export default {
       this.flag = true;
       this.danmuFlag = true;
     },
-    convert() {
+    showBuy(item) {
       this.convertFlag = true;
+      this.propsData.buyItem = item;
     },
     close(closeWho) {
       this.flag = false;
@@ -550,9 +553,13 @@ export default {
         this.danmuFlag = false;
       }
     },
-    convertSuccess() {
-      this.close('convertFlag');
+    convertSuccess(code) {
       this.convertSuccessFlag = true;
+      this.loading = true;
+      buyProps(code).then(() => {
+        this.close('convertFlag');
+        this.convertSuccessFlag = true;
+      }).catch(() => { this.loading = false; });
     },
     juanzengSuccess() {
       this.doGiveTpp().then(() => {
