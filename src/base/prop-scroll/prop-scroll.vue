@@ -92,12 +92,11 @@
         this.$emit('select', index);
       },
       _buyProps(items) {
-        this.$emit('buy', items);
-        // if (items.status === 1) {
-        //   this.$emit('buy', items);
-        // } else {
-        //   return false;
-        // }
+        if (items.status === 1) {
+          this.$emit('buy', items);
+        } else {
+          return false;
+        }
       },
       scrollToEleByIndex(index) {
         this.scroll.scrollToElement(this.$refs.propItem[index], 200, true);

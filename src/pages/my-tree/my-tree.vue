@@ -554,7 +554,6 @@ export default {
       }
     },
     convertSuccess(code) {
-      this.convertSuccessFlag = true;
       this.loading = true;
       buyProps(code).then(() => {
         this.close('convertFlag');
