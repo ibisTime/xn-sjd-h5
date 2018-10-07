@@ -27,13 +27,13 @@
         class="prop-item"
         :class="{active: index===currentIndex}">
         <div class="item-wrap">
-          <div class="prop-item-title">保护罩</div>
-          <div class="prop-item-condition">每天限量50万</div>
+          <div class="prop-item-title">{{item.name}}</div>
+          <div class="prop-item-condition">{{item.description}}</div>
           <div class="prop-item-img">
-            <div class="userPhoto" :style="getImgSyl('')"></div>
-            <span>2天</span>
+            <div class="userPhoto" :style="getImgSyl(item.pic)"></div>
+            <span>{{item.validityTerm}}h</span>
           </div>
-          <div class="prop-item-score enable" @click="_convert()">200积分</div>
+          <div class="prop-item-score enable" @click="_convert()">{{formatAmount(item.price)}}积分</div>
         </div>
       </div>
     </div>
@@ -42,7 +42,7 @@
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
-  import { formatImg } from 'common/js/util';
+  import { formatAmount, formatImg } from 'common/js/util';
   import defaltImg from './cover-small@2x.png';
 
   export default {
@@ -74,6 +74,9 @@
           }
           this._setSliderWidth();
         });
+      },
+      formatAmount(amount, len) {
+        return formatAmount(amount, len);
       },
       getImgSyl(imgs) {
         let img = imgs ? formatImg(imgs) : defaltImg;
@@ -152,12 +155,16 @@
         margin-bottom: 0.08rem;
       }
       .prop-item-condition {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
         color: #FFA40F;
         border: 1px solid #FFA40F;
         border-radius: 1rem;
         font-size: $font-size-small;
         line-height: 0.33rem;
         margin-bottom: 0.25rem;
+        padding: 0 0.1rem;
       }
       .prop-item-img {
         position: relative;

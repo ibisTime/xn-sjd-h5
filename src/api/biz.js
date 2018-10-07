@@ -298,15 +298,49 @@ export function GiveTree({code, toMobile}) {
 }
 
 /**
- * 分页查询日志
+ * 分页查询道具
  * @params {string} type  类型（0保护罩/1一件收取)
- * @params {string} adoptTreeCode 认养权编号
- * @params {string} adoptUserId 认养人编号
+ * @params {string} status （0上架/1下架）
  * */
 export function getPageProps(params) {
   return fetch(629305, {
     limit: 20,
     start: 1,
     ...params
+  });
+}
+
+/**
+ * 列表查询道具
+ * @params {string} type  类型（0保护罩/1一件收取)
+ * @params {string} status （0上架/1下架）
+ * */
+export function getListProps(params) {
+  return fetch(629507, {
+    ...params
+  });
+}
+
+/**
+ * 购买道具
+ * @params {string} toolCode  道具编号
+ * */
+export function buyProps(toolCode) {
+  return fetch(629510, {
+    toolCode,
+    userId: getUserId()
+  });
+}
+
+/**
+ * 使用道具
+ * @params {string} toolOrderCode  道具订单编号
+ * @params {string} adoptTreeCode 认养权编号
+ * */
+export function useProps({toolOrderCode, adoptTreeCode}) {
+  return fetch(629511, {
+    toolOrderCode,
+    adoptTreeCode,
+    userId: getUserId()
   });
 }
