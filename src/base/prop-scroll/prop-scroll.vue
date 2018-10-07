@@ -33,7 +33,7 @@
             <div class="userPhoto" :style="getImgSyl(item.pic)"></div>
             <span>{{item.validityTerm}}h</span>
           </div>
-          <div class="prop-item-score enable" @click="_convert()">{{formatAmount(item.price)}}积分</div>
+          <div class="prop-item-score enable" @click="_buyProps()">{{formatAmount(item.price)}}积分</div>
         </div>
       </div>
     </div>
@@ -90,6 +90,9 @@
         }
         this.scroll.scrollToElement(this.$refs.propItem[index], 200, true);
         this.$emit('select', index);
+      },
+      _buyProps(e, index) {
+        this.$emit('buy', index);
       },
       scrollToEleByIndex(index) {
         this.scroll.scrollToElement(this.$refs.propItem[index], 200, true);

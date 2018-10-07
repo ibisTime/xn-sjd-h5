@@ -196,7 +196,9 @@
           <prop-scroll :currentIndex="propCurrentIndex"
                        :dataList="propsList"
                        ref="propScroll"
-                       @select="selectProp"></prop-scroll>
+                       @select="selectProp"
+                       @buy="convert"
+                      ></prop-scroll>
 
           <!--<div class="wrap" ref="propWrap">-->
             <!--<div class="prop-item" ref="propItem">-->
