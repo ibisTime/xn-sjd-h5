@@ -76,6 +76,7 @@
     },
     methods: {
       action() {
+        sessionStorage.clear('ressCode');
         this.go('/address-addedit');
       },
       go(url) {

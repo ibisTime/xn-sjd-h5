@@ -8,7 +8,7 @@
             <p>当前余额</p>
             <p><span>¥</span><span>{{formatAmount(amount)}}</span></p>
             <div class="btn">
-              <button @click="go('/money/withdraw')">提现</button>
+              <button @click="go('/withdraw')">提现</button>
               <button @click="go('/recharge')">充值</button>
             </div>
           </div>
@@ -26,10 +26,10 @@
                     <p>{{item.bizNote}}</p>
                     <span class="money">{{parseInt(item.transAmountString) > 0 ? '+' : ''}}{{formatAmount(item.transAmountString)}}</span>
                   </div>
-                  <div class="text-bottom">{{new Date(item.createDatetime).toLocaleString()}}</div>
+                  <div class="text-bottom">{{formatDate(item.createDatetime).toLocaleString()}}</div>
                 </div>
               </div>
-              <no-result v-show="!hasMore && !(accountList && accountList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+              <no-result v-show="!hasMore && !(accountList && accountList.length)" title="暂无资金流水" class="no-result-wrapper"></no-result>
             </Scroll>
           </div>
         </div>
@@ -41,7 +41,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import { formatAmount } from 'common/js/util';
+  import { formatAmount, formatDate } from 'common/js/util';
   import { getAccountList } from 'api/account';
   import NoResult from 'base/no-result/no-result';
 
@@ -65,6 +65,9 @@
     methods: {
       getInitData() {
         this.getUserAccount();
+      },
+      formatDate(time) {
+        return formatDate(time);
       },
       formatAmount(amount) {
         return formatAmount(amount);

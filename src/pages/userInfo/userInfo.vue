@@ -122,7 +122,8 @@
                 gender: this.sex,
                 age: this.age,
                 realName: this.realName,
-                nickname: this.nickname
+                nickname: this.nickname,
+                idNo: this.idNo
               })
             ]).then(([res1, res2, res3]) => {
               this.loading = false;
@@ -214,7 +215,7 @@
         this.token = res1.uploadToken;
         this.user = res2;
         this.nickname = this.user.nickname || '';
-        this.sex = this.user.gender || '男';
+        this.sex = this.user.gender === '1' ? '男' : '女' || '男';
         this.age = this.user.age || '';
         this.realName = this.user.realName || '';
         this.idNo = this.user.idNo || '';
@@ -306,6 +307,11 @@
     }
     input::-webkit-input-placeholder {
       color: #ccc;
+    }
+  }
+  .item-input-wrapper{
+    input{
+      width: 54%;
     }
   }
 </style>

@@ -268,12 +268,12 @@ export default new Router({
         {
           path: 'recharge',
           component: Recharge
-        },
-        {
-          path: 'withdraw',
-          component: Withdraw
         }
       ]
+    },
+    {
+      path: '/withdraw',
+      component: Withdraw
     },
     {
       path: '/recharge',

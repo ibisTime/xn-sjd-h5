@@ -1,7 +1,7 @@
 <template>
   <transition name="slide">
     <div class="change-mobile-wrapper">
-      <m-header class="cate-header" title="修改手机号"></m-header>
+      <!-- <m-header class="cate-header" title="修改手机号"></m-header> -->
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
@@ -32,6 +32,7 @@
   import {changeMobile} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
+  import {setTitle} from 'common/js/util';
 
   export default {
     mixins: [directiveMixin],
@@ -45,6 +46,9 @@
         newMobile: '',
         newCaptcha: ''
       };
+    },
+    created() {
+      setTitle('修改手机号');
     },
     methods: {
       // 发送验证码

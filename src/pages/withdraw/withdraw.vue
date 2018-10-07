@@ -1,52 +1,54 @@
 <template>
-  <div class="me-wrapper full-screen-wrapper">
+  <div class="me-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="提现"></m-header>
+      <!-- <m-header class="cate-header" title="提现" style="z-inex"></m-header> -->
       <div class="content">
-        <div class="bk">
-          <img src="./bankcard@2x.png" alt="">
-          <select 
-            name="bk_select" 
-            id="bk_select" 
-            class="bk_set" 
-            v-model="config.payCardInfo"
-          >
-            <option 
-              :value="item.bankName"
-              v-for="(item, index) in payList"
-              :key="index"
-            >{{item.bankName}}</option>
-          </select>
-          <img src="./more@2x.png" alt="" class="fr more">
-        </div>
-        <div class="gray"></div>
-        <div class="recharge">
-          <p>银行卡号</p>
-          <p class="card_no"><input type="number" v-model="config.payCardNo"></p>
-        </div>
-        <div class="gray"></div>
-        <div class="recharge">
-          <p>提现金额（收取 {{qxFee}}%服务费）</p>
-          <p class="number"><input type="number" v-model="config.amount"></p>
-          <div class="have">
-            <span class="fl">可用余额 {{formatAmount(userAmount[0].amount)}} 元</span>
-            <span class="fr">全部提取</span>
+        <Scroll :pullUpLoad="pullUpLoad">
+          <div class="bk">
+            <img src="./bankcard@2x.png" alt="">
+            <select 
+              name="bk_select" 
+              id="bk_select" 
+              class="bk_set" 
+              v-model="config.payCardInfo"
+            >
+              <option 
+                :value="item.bankName"
+                v-for="(item, index) in payList"
+                :key="index"
+              >{{item.bankName}}</option>
+            </select>
+            <img src="./more@2x.png" alt="" class="fr more">
           </div>
-        </div>
-        <div class="gray"></div>
-        <div class="recharge">
-          <p>提现说明</p>
-          <textarea name="" id="" rows="2" v-model="config.applyNote"></textarea>
-        </div>
-        <div class="gray"></div>
-        <div class="withdraw-rules">
-          <p>提取规则：</p>
-          <p>1.每月最大提现次数{{maxQx}}次；</p>
-          <p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>
-          <p>3.T+{{qxDay}}到账</p>
-        </div>
+          <div class="gray"></div>
+          <div class="recharge">
+            <p>银行卡号</p>
+            <p class="card_no"><input type="number" v-model="config.payCardNo"></p>
+          </div>
+          <div class="gray"></div>
+          <div class="recharge">
+            <p>提现金额（收取 {{qxFee}}%服务费）</p>
+            <p class="number"><input type="number" v-model="config.amount"></p>
+            <div class="have">
+              <span class="fl">可用余额 {{formatAmount(userAmount[0].amount)}} 元</span>
+              <span class="fr">全部提取</span>
+            </div>
+          </div>
+          <div class="gray"></div>
+          <div class="recharge">
+            <p>提现说明</p>
+            <textarea name="" id="" rows="2" v-model="config.applyNote"></textarea>
+          </div>
+          <div class="gray"></div>
+          <div class="withdraw-rules">
+            <p>提取规则：</p>
+            <p>1.每月最大提现次数{{maxQx}}次；</p>
+            <p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>
+            <p>3.T+{{qxDay}}到账</p>
+          </div>
+          <div class="btn"><button @click="userTxMoney">提现</button></div>
+        </Scroll>
       </div>
-      <div class="btn"><button @click="userTxMoney">提现</button></div>
       <confirm-input ref="confirmInput" :text="inputText" :inpType="inpType" @confirm="handleInputConfirm"></confirm-input>
         <toast ref="toast" :text="errMsg"></toast>
     </div>
@@ -60,10 +62,12 @@
   import {getSystemConfigCkey} from 'api/general';
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import Toast from 'base/toast/toast';
+  import Scroll from 'base/scroll/scroll';
 
   export default {
     data() {
       return {
+        pullUpLoad: null,
         errMsg: '',
         text: '',
         inputText: '资金密码',
@@ -91,6 +95,7 @@
     },
     created() {
       setTitle('提现');
+      this.pullUpLoad = null;
     },
     mounted() {
       this.getQxFee('USERQXFL');
@@ -178,7 +183,8 @@
     components: {
       Toast,
       MHeader,
-      ConfirmInput
+      ConfirmInput,
+      Scroll
     }
   };
 </script>
@@ -200,8 +206,8 @@
         text-align: center;
       }
       .content {
-        padding: 0.88rem 0 0 0;
-        margin-bottom: 0.48rem;
+        // padding: 0.88rem 0 0 0;
+        // height: 5rem;
         background: #f5f5f5;
         div {
           padding: 0 0.3rem;
@@ -249,8 +255,8 @@
             }
           }
           p.card_no{
-            padding-top: .2rem;
-            padding-bottom: .3rem;
+            padding-top: .05rem;
+            padding-bottom: .15rem;
             input{
               font-size: .36rem;
             }
@@ -281,7 +287,7 @@
           padding-top: 0.28rem;
           font-size: $font-size-small;
           color: $color-text-l;
-          margin-bottom: .44rem;
+          margin-bottom: .24rem;
           p {
             line-height: 0.36rem;
           }
@@ -289,6 +295,7 @@
       }
       .btn {
         padding: 0 0.3rem;
+        padding-bottom: 2rem;
         button {
           width: 100%;
           height: 0.84rem;

@@ -22,10 +22,10 @@
                     <p>{{item.bizNote}}</p>
                     <span class="money">{{parseInt(item.transAmountString) > 0 ? '+' : ''}}{{formatAmount(item.transAmountString)}}</span>
                   </div>
-                  <div class="text-bottom">{{new Date(item.createDatetime).toLocaleString()}}</div>
+                  <div class="text-bottom">{{formatDate(item.createDatetime).toLocaleString()}}</div>
                 </div>
               </div>
-              <no-result v-show="!hasMore && !(jfAccountList && jfAccountList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+              <no-result v-show="!hasMore && !(jfAccountList && jfAccountList.length)" title="暂无积分流水" class="no-result-wrapper"></no-result>
             </Scroll>
           </div>
         </div>
@@ -39,7 +39,7 @@
   import MHeader from 'components/m-header/m-header';
   import NoResult from 'base/no-result/no-result';
   import {getAccountList} from 'api/account';
-  import {formatAmount} from 'common/js/util';
+  import {formatAmount, formatDate} from 'common/js/util';
 
   export default {
     data() {
@@ -68,6 +68,9 @@
       },
       action() {
         this.go('/score/score-rules');
+      },
+      formatDate(time) {
+        return formatDate(time);
       },
       formatAmount(amount) {
         return formatAmount(amount);
