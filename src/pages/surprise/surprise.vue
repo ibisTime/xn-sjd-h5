@@ -3,7 +3,7 @@
     <div class="surprise-wrapper">
       <m-header class="cate-header" title="赠送"></m-header>
       <div class=pic>
-        <img src="./tree.png" alt="">
+        <img :src="formatImg(this.pic)">
       </div>
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
@@ -38,6 +38,7 @@
 <script>
   import MHeader from 'components/m-header/m-header';
   import {directiveMixin} from 'common/js/mixin';
+  import {formatImg} from 'common/js/util';
   import Toast from 'base/toast/toast';
   import { GiveTree } from 'api/biz';
 
@@ -51,15 +52,20 @@
         realName: '',
         adoptTreeCode: '', // 认养权编号
         other: 0,
-        currentHolder: ''
+        currentHolder: '',
+        pic: ''
       };
     },
-    created() {
+    mounted() {
       this.other = this.$route.query.other;
       this.currentHolder = this.$route.query.currentHolder;
       this.adoptTreeCode = this.$route.query.aTCode;
+      this.pic = this.$route.query.pic;
     },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
       give() {
         GiveTree({
           code: this.adoptTreeCode,

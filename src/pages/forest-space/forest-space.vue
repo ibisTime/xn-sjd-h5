@@ -1,9 +1,9 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="我的林空间" :showBack="showBack"></m-header>
+    <!--<m-header class="cate-header" title="我的林空间" :showBack="showBack"></m-header>-->
     <div class="content">
       <div class="me" @click="change">
-        <img src="./head.png" alt="">
+        <img :src="formatImg(user.photo)">
       </div>
       <img src="./charts@2x.png" alt="" class="charts" @click="go('/charts')">
       <div @click="go('/homepage?type=1')" class="block t1"></div>
@@ -15,9 +15,9 @@
       <div class="mask" @click="change"></div>
       <div class="me-content" v-show="flag">
         <div class="me-info">
-          <img src="./head.png" alt="">
+          <img :src="formatImg(user.photo)">
           <div class="text">
-            <p><span>KOALA</span><span class="lv">LV 1</span></p>
+            <p><span>{{user.nickname}}</span><span class="lv">LV {{user.level}}</span></p>
           </div>
         </div>
         <div class="me-content-list">
@@ -44,6 +44,7 @@
         </div>
       </div>
     </div>
+    <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <m-footer></m-footer>
     <router-view></router-view>
@@ -57,7 +58,9 @@ import MFooter from 'components/m-footer/m-footer';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount } from 'common/js/util';
+import { formatAmount, formatImg, setTitle } from 'common/js/util';
+import { getCookie } from 'common/js/cookie';
+import { getUserDetail } from 'api/user';
 export default {
   // name: "home",
   data() {
@@ -74,12 +77,16 @@ export default {
       }],
       showCheckIn: false,
       pullUpLoad: null,
-      flag: false
+      flag: false,
+      user: {}
     };
   },
   methods: {
     formatAmount(amount) {
       return formatAmount(amount);
+    },
+    formatImg(img) {
+      return formatImg(img);
     },
     action() {
       this.showCheckIn = true;
@@ -96,33 +103,21 @@ export default {
   },
   mounted() {
     this.pullUpLoad = null;
-    // let userId;
-    // if (this.$route.query.userId) {
-    //   userId = this.$route.query.userId;
-    //   setCookie("userId", userId);
-    // } else {
-    //   userId = getCookie("userId");
-    // }
-    // Promise.all([
-    //   getUser1(userId),
-    //   checkRed(userId)
-    // ]).then(([res1, res2]) => {
-    //   this.userinfo = res1;
-    //   this.balance = res1.wareAmount;
-    //   setCookie("level", res1.level);
-    //   getLevel(res1.level).then(item => {
-    //     this.loading = false;
-    //     res1.level = item[0].name;
-    //   });
-    //   setCookie('isWare', res2.isWare);
-    //   if(this.balance < res2.redAmount) {
-    //     this.toastText = '您云仓余额低于红线，请购买';
-    //     this.$refs.toast.show();
-    //     setTimeout(() => {
-    //       this.$router.push('/threshold');
-    //     }, 2000)
-    //   }
-    // }).catch(() => { this.loading = false });
+    setTitle('我的林空间');
+    let userId = getCookie('userId');
+    if(!userId) {
+      this.text = '您未登录';
+      this.$refs.toast.show();
+      setTimeout(() => {
+        this.$router.push('/login?me=1');
+      }, 1000);
+    } else {
+      this.loading = true;
+      getUserDetail({userId: userId}).then((res) => {
+        this.user = res;
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
+    }
   },
   components: {
     FullLoading,
@@ -157,7 +152,7 @@ export default {
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
-    top: 0.88rem;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
@@ -196,6 +191,7 @@ export default {
       height: 1.5rem;
       /*border: 1px solid black;*/
       position: absolute;
+      z-index: 999;
     }
     .t1 {
       top: 0.8rem;
@@ -211,7 +207,7 @@ export default {
     }
     .t4 {
       right: 1.5rem;
-      top: 7rem;
+      top: 8rem;
     }
   }
   .side {

@@ -1,6 +1,6 @@
 <template>
   <div class="me-wrapper">
-    <m-header class="cate-header" :title="title" actText="分享" @action="action"></m-header>
+    <!--<m-header class="cate-header" :title="title" actText="分享" @action="action"></m-header>-->
     <div class="out-content">
       <Scroll ref="scroll"
               :data="dynamicsList"
@@ -172,7 +172,7 @@
   import NoResult from 'base/no-result/no-result';
   import { getUser, getHasRelationship, addRelationship, cancelRelationship } from 'api/user';
   import { getListUserTree, getProductType, getComparison, getPageJournal } from 'api/biz';
-  import {formatAmount, formatDate, formatImg} from 'common/js/util';
+  import {formatAmount, formatDate, formatImg, setTitle, getUserId} from 'common/js/util';
   import defaltAvatarImg from './avatar@2x.png';
 
   export default {
@@ -203,20 +203,21 @@
         dynamicsList: [] // 动态数据
       };
     },
-    created() {
+    mounted() {
+      setTitle('我的主页');
       this.index = +this.$route.query.type || 0;  // 树的类型
       this.other = this.$route.query.other || 0;  // 是否别人的主页
-      this.currentHolder = this.$route.query.currentHolder || '';
+      this.currentHolder = this.$route.query.currentHolder || getUserId();
       if(this.other) {
         this.title = 'TA的主页';
         this.borderTitle = 'TA的动态';
+        setTitle('TA的主页');
       }
       this.getInitData();
     },
     methods: {
       getInitData() {
-        this.type = this.categorys[this.index].key;
-        this.currentHolder = this.$route.query.currentHolder || '';
+        this.currentHolder = this.$route.query.currentHolder || getUserId();
         this.other = this.$route.query.other || 0;  // 是否别人的主页
 
         Promise.all([
@@ -236,6 +237,7 @@
               value: item.name
             });
           });
+          this.type = this.categorys[this.index].key;
           this.getUserTree();
           this.getDynamicsList();
         }).catch(() => { this.loading = false; });
@@ -301,7 +303,7 @@
       // 获取用户的树
       getUserTree() {
         this.type = this.categorys[this.index].key;
-        this.currentHolder = this.$route.query.currentHolder || '';
+        this.currentHolder = this.$route.query.currentHolder || getUserId();
         return getListUserTree({currentHolder: this.currentHolder, categoryCode: this.type}).then((userTree) => {
           this.userTree = userTree;
           this.loading = false;
@@ -413,7 +415,7 @@
     }
     .out-content {
       position: absolute;
-      top: 0.88rem;
+      top: 0;
       bottom: 0;
       left: 0;
       right: 0;

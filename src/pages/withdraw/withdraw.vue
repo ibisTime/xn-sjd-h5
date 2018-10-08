@@ -6,13 +6,13 @@
         <Scroll :pullUpLoad="pullUpLoad">
           <div class="bk">
             <img src="./bankcard@2x.png" alt="">
-            <select 
-              name="bk_select" 
-              id="bk_select" 
-              class="bk_set" 
+            <select
+              name="bk_select"
+              id="bk_select"
+              class="bk_set"
               v-model="config.payCardInfo"
             >
-              <option 
+              <option
                 :value="item.bankName"
                 v-for="(item, index) in payList"
                 :key="index"

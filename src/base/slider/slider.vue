@@ -55,7 +55,7 @@
           if(this.autoPlay) {
             this._play();
           }
-        }, 100);
+        }, 1000);
       });
 
       window.addEventListener('resize', () => {
@@ -131,7 +131,7 @@
         });
       },
       _onScrollEnd() {
-        let pageIndex = this.slider.getCurrentPage().pageX;
+        let pageIndex = this.slider.getCurrentPage().pageX + 1;
         if(this.loop) {
           pageIndex -= 1;
         }

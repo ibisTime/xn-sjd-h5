@@ -1,7 +1,7 @@
 <template>
   <div class="full-screen-wrapper login-content">
     <!--<m-header class="cate-header"></m-header>-->
-    <div class="header"><img src="./back.png" @click="back"></div>
+    <!--<div class="header"><img src="./back.png" @click="back"></div>-->
     <div class="title">欢迎回来</div>
     <div class="content">
       <div class="form-login">
@@ -26,12 +26,12 @@
       <span class="fl" @click="go('/register')">立即注册</span>
       <span class="fr">忘记密码？</span>
     </div>
-    <div class="wx-login" @click="AppId">
-      <span class="wing"></span>
-      <img src="./wx-login@2x.png" alt="">
-      <span>微信快速登录</span>
-      <span class="wing"></span>
-    </div>
+    <!--<div class="wx-login" @click="AppId">-->
+      <!--<span class="wing"></span>-->
+      <!--<img src="./wx-login@2x.png" alt="">-->
+      <!--<span>微信快速登录</span>-->
+      <!--<span class="wing"></span>-->
+    <!--</div>-->
     <full-loading v-show="loading" :title="loadText"></full-loading>
     <toast ref="toast" :text="text"></toast>
   </div>
@@ -144,6 +144,7 @@
       }
     }
     .title {
+      margin-top: 2rem;
       font-size: $font-size-large-xx;
       margin-bottom: 0.76rem;
       padding: 0 0.2rem;

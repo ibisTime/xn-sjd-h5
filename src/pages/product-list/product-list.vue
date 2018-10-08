@@ -1,10 +1,13 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="认养列表"></m-header>
+    <!--<m-header class="cate-header" title="认养列表"></m-header>-->
     <div class="header clearfix category-wrapper">
       <category-scroll :currentIndex="currentIndex"
                        :categorys="categorys"
                        @select="selectCategory"></category-scroll>
+      <category-scroll :currentIndex="currentIndexSub"
+                       :categorys="categorysSub"
+                       @select="selectCategorySub"></category-scroll>
     </div>
     <div class="content">
       <div class="bulletin">
@@ -29,6 +32,7 @@
         <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
       <!--</div>-->
     </div>
+    <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
   </div>
@@ -41,9 +45,9 @@ import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
-import { formatAmount, formatDate, formatImg } from 'common/js/util';
+import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getDictList } from 'api/general';
-import { getProductPage } from 'api/biz';
+import { getProductPage, getProductType } from 'api/biz';
 export default {
   data() {
     return {
@@ -56,7 +60,8 @@ export default {
       limit: 10,
       hasMore: true,
       proList: [],
-      categorys: [{value: '全部', key: ''}],
+      categorys: [],
+      categorysSub: [],
       sellTypeObj: {},
         // {value: '个人', key: '0'},
         // {value: '定向', key: '1'},
@@ -65,7 +70,9 @@ export default {
       showCheckIn: false,
       pullUpLoad: null,
       currentIndex: +this.$route.query.index || 0,
-      index: 0
+      currentIndexSub: +this.$route.query.index || 0,
+      index: 0,
+      indexSub: 0
     };
   },
   methods: {
@@ -84,41 +91,73 @@ export default {
     close() {
       this.showCheckIn = false;
     },
-    // goProductDetail() {
-    //   this.$router.push('/product-detail');
-    // },
     go(url) {
       this.$router.push(url);
     },
     selectCategory(index) {
       this.index = index;
+      this.indexSub = 0;
+      this.currentIndexSub = 0;
       this.currentIndex = index;
       this.start = 1;
       this.limit = 10;
       this.proList = [];
-      this.getPageOrders();
+      this.categorysSub = [];
+      this.getSubType();
+      // this.getPageOrders();
+    },
+    selectCategorySub(index) {
+      this.indexSub = index;
+      this.currentIndexSub = index;
+      this.start = 1;
+      this.limit = 10;
+      this.proList = [];
+      this.getSubType();
+    },
+    // 获取下级分类
+    getSubType() {
+      // console.log(this.categorys);
+      this.loading = true;
+      this.categorysSub = [];
+      getProductType({
+        parentCode: this.categorys[this.index].key,
+        status: '1'
+      }).then((res) => {
+        res.map((item) => {
+          this.categorysSub.push({
+            value: item.name,
+            key: item.code
+          });
+        });
+        // console.log(this.indexSub);
+        // console.log(this.categorysSub);
+        this.selectdType = this.categorysSub.length ? this.categorysSub[this.indexSub].key : this.categorys[this.index].key;
+        this.getPageOrders();
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     getPageOrders() {
-      let sellType = this.categorys[this.index].key;
+      // let sellType = this.categorys[this.index].key;
+      // let sellType = this.selectdType;
       this.loading = true;
       Promise.all([
         getProductPage({
           start: this.start,
           limit: this.limit,
-          sellType: sellType,
-          categoryCode: this.categoryCode,
+          // sellType: sellType,
+          categoryCode: this.selectdType,
           status: '4'
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
           this.hasMore = false;
         }
-        this.loading = false;
         res1.list.map(function () {
           res1.applyDatetime = formatDate(res1.applyDatetime);
         });
         this.proList = this.proList.concat(res1.list);
         this.start++;
+        this.loading = false;
       }).catch(() => { this.loading = false; });
     }
   },
@@ -126,18 +165,34 @@ export default {
     this.pullUpLoad = null;
     this.loading = true;
     this.categoryCode = this.$route.query.typeCode || '';
+    setTitle('认养列表');
     Promise.all([
-      getDictList('sell_type')
-    ]).then(([res1]) => {
+      getDictList('sell_type'),
+      getProductType({
+        orderDir: 'asc',
+        orderColumn: 'order_no',
+        status: '1'
+      })
+    ]).then(([res1, res2]) => {
       this.loading = false;
       res1.map((item) => {
-        this.categorys.push({
-          value: item.dvalue,
-          key: item.dkey
-        });
         this.sellTypeObj[item.dkey] = item.dvalue;
       });
-      this.getPageOrders();
+      res2.map((item) => {
+        if(!item.parentCode) {
+          this.categorys.push({
+            value: item.name,
+            key: item.code
+          });
+        }
+        // debugger;
+        this.categorys.map((item, index) => {
+          if(item.code === this.categoryCode) {
+            this.index = index;
+          }
+        });
+      });
+      this.getSubType();
     }).catch(() => { this.loading = false; });
   },
   components: {
@@ -168,18 +223,17 @@ export default {
   }
   .category-wrapper {
     position: absolute;
-    top: 0.88rem;
+    top: 0;
     left: 0;
     width: 100%;
     z-index: 100;
     overflow: hidden;
-    height: 0.8rem;
     line-height: 0.8rem;
     background: #fff;
     border-bottom: 1px solid $color-border;
   }
   .content {
-    margin: 1.68rem 0 0;
+    margin: 1.6rem 0 0;
     .bulletin {
       display: flex;
       align-items: center;
@@ -211,7 +265,7 @@ export default {
       padding: 0 0.3rem 0;
       background: $color-highlight-background;
       position: absolute;
-      top: 2.5rem;
+      top: 2.4rem;
       bottom: 0;
       left: 0;
       right: 0;

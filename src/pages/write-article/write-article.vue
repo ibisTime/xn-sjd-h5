@@ -1,21 +1,20 @@
 <template>
   <div class="write-article-wrapper full-screen-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="发布文章" actText="保存" @action="action"></m-header>
+      <m-header class="cate-header" title="发布文章"></m-header>
       <div class="content">
         <div class="in-content">
           <div class="user-info-list">
             <div>
-              <input type="text" name="title" v-model="title" v-validate="required" placeholder="标题">
+              <input type="text" name="title" v-model="title" v-validate="'required'" placeholder="标题">
               <span v-show="errors.has('title')" class="error-tip">{{errors.first('title')}}</span>
             </div>
             <div class="text">
-              <textarea v-model="text" v-validate="required" rows="5" class="item-input" placeholder="发表下你的感想吧"></textarea>
+              <textarea v-model="text" v-validate="'required'" rows="5" class="item-input" placeholder="发表下你的感想吧"></textarea>
             </div>
           </div>
           <div class="avatar">
-            <!--<img :src="getAvatar()"/>-->
-
+            <img :src="formatImg(item.key)" v-for="item in photos"/>
             <qiniu
               ref="qiniu"
               style="visibility: hidden;position: absolute;"
@@ -25,24 +24,22 @@
                    type="file"
                    :multiple="multiple"
                    ref="fileInput"
+                   @change="fileChange($event)"
                    accept="image/*"/>
           </div>
           <div class="gray"></div>
           <div class="user-info-list">
             <div>
-              <select v-validate="'required'" name="sex" v-model="sex">
-                <option value="" style="display: none">关联古树</option>
-                <option value="男">男</option>
-                <option value="女">女</option>
+              <select v-validate="'required'" name="adoptTreeCode" v-model="adoptTreeCode">
+                <option :value="item.code" v-for="item in list">{{item.tree.scientificName}}</option>
               </select>
               <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
             </div>
             <div>
-              <select v-validate="'required'" name="type" v-model="type">
-                <option value="" style="display: none">关联古树</option>
-                <option value="公开">公开</option>
-                <option value="私密">私密</option>
-                <option value="仅好友可见">仅好友可见</option>
+              <select v-validate="'required'" name="openLevel" v-model="openLevel">
+                <option value="1">公开</option>
+                <option value="2">私密</option>
+                <option value="3">仅好友可见</option>
               </select>
               <span v-show="errors.has('type')" class="error-tip">{{errors.first('type')}}</span>
             </div>
@@ -50,32 +47,57 @@
         </div>
       </div>
       <div class="button">
-        <button>发布</button>
+        <button @click="fabu">发布</button>
       </div>
     </div>
-    <router-view></router-view>
+    <full-loading v-show="loading"></full-loading>
+    <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
+  import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import Qiniu from 'base/qiniu/qiniu';
   import MHeader from 'components/m-header/m-header';
-  import {formatImg} from 'common/js/util';
+  import FullLoading from 'base/full-loading/full-loading';
+  import EXIF from 'exif-js';
+  import { getQiniuToken } from 'api/general';
+  import {formatImg, getImgData} from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
+  import { getListUserTree, addArticle } from 'api/biz';
 
   export default {
     data() {
       return {
-        sex: '男',
-        type: '公开',
+        loading: false,
+        adoptTreeCode: '',
+        openLevel: '1',
         title: '',
         text: '',
         token: '',
-        uploadUrl: ''
+        uploadUrl: '',
+        multiple: false,
+        photos: [],
+        list: [] // 认养权列表
       };
     },
-    created() {
+    mounted() {
+      this.uploadUrl = 'http://up-z0.qiniu.com';
+      this.userId = getCookie('userId');
+      this.loading = true;
+      Promise.all([
+        getQiniuToken(),
+        getListUserTree()
+      ]).then(([res1, res2]) => {
+        this.token = res1.uploadToken;
+        this.list = res2;
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
       go(url) {
         this.$router.push(url);
       },
@@ -85,14 +107,111 @@
         }
         return formatImg(this.preview || this.user.photo);
       },
-      action() {
-        // 保存方法
+      // 发布文章
+      fabu() {
+        // console.log(this.title);
+        // console.log(this.text);
+        // console.log(this.photos);
+        // console.log(this.openLevel);
+        // console.log(this.adoptTreeCode);
+        let photoList = [];
+        this.photos.map((item) => {
+          photoList.push(item.key);
+        });
+        addArticle({
+          title: this.title,
+          content: this.text,
+          photoList: photoList,
+          openLevel: this.openLevel,
+          adoptTreeCode: this.adoptTreeCode,
+          updater: this.userId,
+          publishUserId: this.userId,
+          type: '2',
+          dealType: '1'
+        }).then((res) => {
+          if(res.code) {
+            this.text = '发布成功，待平台审核';
+            this.$refs.toast.show();
+            this.loading = false;
+            setTimeout(() => {
+              this.$router.back();
+            }, 1000);
+          }
+        }).catch(() => { this.loading = false; });
+      },
+      /**
+       * 从相册中选择图片
+       * */
+      fileChange(e) {
+        let files;
+        if (e.dataTransfer) {
+          files = e.dataTransfer.files;
+        } else if (e.target) {
+          files = e.target.files;
+        }
+        let self = this;
+        let file = files[0];
+        let orientation;
+        EXIF.getData(file, function() {
+          orientation = EXIF.getTag(this, 'Orientation');
+        });
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          getImgData(file.type, this.result, orientation, function(data) {
+            let _url = URL.createObjectURL(file);
+            let item = {
+              preview: data,
+              ok: false,
+              type: file.type,
+              key: _url.split('/').pop() + '.' + file.name.split('.').pop()
+            };
+            self.uploadPhoto(data, item.key).then(() => {
+              item = {
+                ...item,
+                ok: true
+              };
+              if(item.ok === true) {
+                self.photos.push(item);
+              }
+              console.log(self.photos);
+              self.updatePhotos(item);
+            }).catch(err => {
+              self.onUploadError(err);
+            });
+            self.$refs.fileInput.value = null;
+          });
+        };
+        reader.readAsDataURL(file);
+      },
+      /**
+       * 图片上传完成后更新photos
+       * */
+      updatePhotos(item) {
+        for (let i = 0; i < this.photos.length; i++) {
+          if (this.photos[i].key === item.key) {
+            this.photos.splice(i, 1, item);
+            break;
+          }
+        }
+      },
+      uploadPhoto(base64, key) {
+        return this.$refs.qiniu.uploadByBase64(base64, key);
+      },
+      /**
+       * 处理图片上传错误事件
+       * @param error 错误信息
+       */
+      onUploadError(error) {
+        this.text = (error.body && error.body.error) || `${error.message}:10M` || '图片上传出错';
+        this.$refs.toast.show();
       }
     },
     components: {
       Scroll,
       MHeader,
-      Qiniu
+      Qiniu,
+      FullLoading,
+      Toast
     }
   };
 </script>
@@ -119,14 +238,15 @@
         margin-bottom: 1.62rem;
         .in-content {
           .avatar {
-            height: 2.6rem;
             border-bottom: 1px solid $color-border;
             position: relative;
             padding: 0 0.3rem;
+            font-size: 0;
             img {
-              width: 1.1rem;
-              height: 1.1rem;
-              margin-top: 0.75rem;
+              width: 1.6rem;
+              height: 1.6rem;
+              margin: 0.35rem 0.3rem 0 0;
+              vertical-align: bottom;
             }
             .input-file {
               width: 1.6rem;
@@ -184,6 +304,7 @@
           color: $color-highlight-background;
           width: 100%;
           height: 100%;
+          font-size: 0.3rem;
         }
       }
     }

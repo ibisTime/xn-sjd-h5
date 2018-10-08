@@ -1,106 +1,86 @@
 <template>
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="情感频道" actText="发布" @action="action"></m-header>
-    <div class="adopt-list">
-      <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
+    <div class="adopt-list" v-show="list.length">
+      <Scroll :data="list"
+              :hasMore="hasMore"
+              @pullingUp="getPageOrders">
+        <div class="item" @click="go('/article-detail?code=' + item.code)" v-for="item in list">
+          <img :src="formatImg(item.photoList[0])">
           <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
+            <p class="title">{{item.title}}</p>
+            <p class="prop"><span class="date">{{formatDate(item.publishDatetime)}}</span></p>
           </div>
         </div>
       </Scroll>
     </div>
+    <div v-show="!hasMore && !list.length" class="no-result-wrapper">
+      <no-result title="抱歉，暂无内容"></no-result>
+    </div>
+    <full-loading v-show="loading"></full-loading>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import FullLoading from 'base/full-loading/full-loading';
+  import NoResult from 'base/no-result/no-result';
+  import { setTitle, formatDate, formatImg } from 'common/js/util';
+  import { getArticlePage } from 'api/biz';
 
   export default {
     data() {
       return {
-        showBack: false
+        showBack: false,
+        start: 1,
+        limit: 10,
+        hasMore: true,
+        loading: false,
+        list: []
       };
     },
-    created() {
+    mounted() {
+      setTitle('情感频道');
       this.pullUpLoad = null;
+      this.getPageOrders();
     },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
+      formatDate(date) {
+        return formatDate(date, 'yyyy-MM-dd');
+      },
       go(url) {
         this.$router.push(url);
       },
       action() {
         this.go('/write-article');
+      },
+      getPageOrders() {
+        this.loading = true;
+        getArticlePage({
+          start: this.start,
+          limit: this.limit,
+          status: '5',
+          openLevel: '1'
+        }).then((res) => {
+          this.loading = false;
+          if (res.list.length < this.limit || res.totalCount <= this.limit) {
+            this.hasMore = false;
+          }
+          this.list = this.list.concat(res.list);
+          this.start++;
+          this.loading = false;
+          console.log(this.list);
+        }).catch(() => { });
       }
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      FullLoading,
+      NoResult
     }
   };
 </script>

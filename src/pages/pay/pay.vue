@@ -1,19 +1,19 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="支付订单"></m-header>
+      <!--<m-header class="cate-header" title="支付订单"></m-header>-->
       <div class="content">
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
-            <div @click="selectPayType(1)">
-              <img src="./wechat@2x.png" alt="">
-              <div class="text">
-                <p>微信</p>
-              </div>
-              <img class="money fr" src="./choosed@2x.png" v-show="wechat">
-              <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
-            </div>
+            <!--<div @click="selectPayType(1)">-->
+              <!--<img src="./wechat@2x.png" alt="">-->
+              <!--<div class="text">-->
+                <!--<p>微信</p>-->
+              <!--</div>-->
+              <!--<img class="money fr" src="./choosed@2x.png" v-show="wechat">-->
+              <!--<img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">-->
+            <!--</div>-->
             <div @click="selectPayType(2)">
               <img src="./alipay@2x.png" alt="">
               <div class="text">
@@ -56,16 +56,16 @@
   import SwitchOption from 'base/switch-option/switch-option';
   import Toast from 'base/toast/toast';
   import { getCookie } from 'common/js/cookie';
-  import { formatAmount } from 'common/js/util';
+  import { formatAmount, setTitle } from 'common/js/util';
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount } from 'api/biz';
 
   export default {
     data() {
       return {
         text: '',
-        wechat: true,    // 微信支付
+        // wechat: true,    // 微信支付
         alipay: false,   // 支付宝支付
-        balance: false,  // 余额支付
+        balance: true,  // 余额支付
         isPublish: false,
         cny: 0,
         jf: 0,
@@ -74,6 +74,7 @@
       };
     },
     mounted() {
+      setTitle('支付订单');
       this.orderCode = this.$route.query.orderCode || '';
       let userId = getCookie('userId');
       this.loading = true;
@@ -152,7 +153,7 @@
       },
       // 支付订单
       payOrder() {
-        let payType = this.wechat ? '3' : this.alipay ? '2' : '1';
+        let payType = this.wechat ? '3' : this.alipay ? '3' : '1';
         let isJfDeduct = this.isPublish ? 1 : 0;
         this.loading = true;
         if(this.orderCode[0] === 'G') {
@@ -164,11 +165,19 @@
           }).then((res) => {
             this.loading = false;
             if(res) {
-              this.text = '支付成功';
-              this.$refs.toast.show();
-              setTimeout(() => {
-                this.$router.push('/my-order');
-              }, 1000);
+              if(payType === '3' && res.signOrder) {
+                this.text = '正在跳转支付宝...';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  location.href = res.signOrder;
+                }, 1000);
+              } else {
+                this.text = '支付成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/my-order');
+                }, 1000);
+              }
             }
           }).catch(() => {
             this.loading = false;
@@ -182,11 +191,19 @@
           }).then((res) => {
             this.loading = false;
             if(res) {
-              this.text = '支付成功';
-              this.$refs.toast.show();
-              setTimeout(() => {
-                this.$router.push('/my-order');
-              }, 1000);
+              if(payType === '3' && res.signOrder) {
+                this.text = '正在跳转支付宝...';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  location.href = res.signOrder;
+                }, 1000);
+              } else {
+                this.text = '支付成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/my-order');
+                }, 1000);
+              }
             }
           }).catch(() => {
             this.loading = false;
@@ -220,7 +237,7 @@
         text-align: center;
       }
       .content {
-        padding: 0.88rem 0 0 0;
+        padding: 0 0 0 0;
         margin-bottom: 0.98rem;
         background: #f5f5f5;
         div {

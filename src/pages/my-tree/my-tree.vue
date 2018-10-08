@@ -1,6 +1,6 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" :title="title"></m-header>
+    <!--<m-header class="cate-header" :title="title"></m-header>-->
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="tree-panel">
@@ -127,15 +127,15 @@
             <span>古树品种</span><span>{{treeDetail.tree ? treeDetail.tree.variety : ''}}</span>
           </div>
           <div class="item">
-            <span>养护单位</span><span>28020065389</span>
+            <span>养护单位</span><span>{{treeDetail.maintainer ? treeDetail.maintainer.company : '暂无养护单位'}}</span>
           </div>
           <div class="item">
-            <span>养护人</span><span>庭园观赏及绿化树种</span>
+            <span>养护人</span><span>{{treeDetail.maintainer ? treeDetail.maintainer.name : '暂无养护人'}}</span>
           </div>
           <!--<div class="item">-->
             <!--<span>当前认养人</span><span>三级</span>-->
           <!--</div>-->
-          <div class="item" @click="go('/invitation')">
+          <div class="item" @click="go('/adopt-list?history=1&code=' + treeDetail.productCode)">
             <span>历史认养人</span>
             <img src="./more@2x.png" class="fr more">
           </div>
@@ -198,6 +198,7 @@
                        ref="propScroll"
                        @select="selectProp"
                        @buy="showBuy"
+                       @use="showUse"
                       ></prop-scroll>
 
           <!--<div class="wrap" ref="propWrap">-->
@@ -222,7 +223,7 @@
           <!--</div>-->
         </div>
         <div class="score">
-          <span>我的积分：3455 </span><img src="./more@2x.png">
+          <span>我的积分：{{jf}} </span><img src="./more@2x.png">
         </div>
       </div>
     </div>
@@ -262,8 +263,8 @@
       </div>
     </div>
     <convert v-show="convertFlag" :propsDetail="propsData.buyItem" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
-    <convert-success v-show="convertSuccessFlag" :propsDetail="propsData.buyItem" @close="close('convertSuccessFlag')" @convertSuccess="convertSuccess"></convert-success>
-    <certification v-show="certificationFlag" @close="close('certificationFlag')" @convertSuccess="convertSuccess"></certification>
+    <convert-success v-show="convertSuccessFlag" :propsDetail="propsData.buyItem" @close="close('convertSuccessFlag')" @useProps="useProps"></convert-success>
+    <certification v-show="certificationFlag" @close="close('certificationFlag')"></certification>
     <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="String(presentTppQuantity)"></juanzeng>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
@@ -282,9 +283,10 @@ import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
-        getListProps, buyProps } from 'api/biz';
+        getListProps, buyProps, getPropsOrder, useProps, getAccount } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
-import {formatAmount, formatDate, formatImg, getUserId} from 'common/js/util';
+import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
+import { getCookie } from 'common/js/cookie';
 import defaltAvatarImg from './avatar@2x.png';
 
 export default {
@@ -350,16 +352,20 @@ export default {
         buyItem: {} // 购买道具编号
       }, // 道具配置
       propCurrentIndex: 0, // 道具配置
-      propsList: [] // 道具数据
+      propsList: [], // 道具数据,
+      jf: 0  // 我有多少积分
     };
   },
-  created() {
+  mounted() {
+    setTitle('我的树');
     this.other = this.$route.query.other || 0;  // 是否别人的主页
     this.currentHolder = this.$route.query.currentHolder || '';
     if(this.other) {
       this.title = 'TA的树';
       this.borderTitle = 'TA的动态';
+      setTitle('TA的树');
     }
+    this.userId = getCookie('userId');
     this.getInitData();
   },
   methods: {
@@ -372,7 +378,8 @@ export default {
         this.getPresentTppQuantity(),
         this.getDynamicsList(),
         this.getTreeDetail(),
-        this.getPropList()
+        this.getPropList(),
+        this.getJF()
       ]).then(() => {
         this.loading = false;
       }).catch(() => { this.loading = false; });
@@ -389,13 +396,14 @@ export default {
     // 查询道具列表
     getPropList() {
       getListProps({
-        type: this.propsData.type
+        type: this.propsData.type,
+        userId: this.getUserId()
       }).then((data) => {
         this.propsList = data;
         this.loading = false;
         setTimeout(() => {
           this.$refs.propScroll.scroll.refresh();
-        }, 10);
+        }, 1000);
       }).catch(() => { this.loading = false; });
     },
     // 查询树详情
@@ -423,6 +431,17 @@ export default {
       return getPageTpp(params).then((res) => {
         this.tppList = res.list;
       }, () => {});
+    },
+    // 获取我的积分
+    getJF() {
+      getAccount({ userId: this.userId }).then((res) => {
+        res.list.map((item) => {
+          if(item.currency === 'JF') {
+            this.jf = item.amount;
+            this.jfAccountNumber = item.accountNumber;
+          }
+        });
+      });
     },
     // 赠送碳泡泡
     doGiveTpp() {
@@ -499,7 +518,7 @@ export default {
       this.$router.push(url);
     },
     goSurprise() {
-      this.go(`/surprise?aTCode=${this.adoptTreeCode}`);
+      this.go(`/surprise?aTCode=${this.adoptTreeCode}&pic=${this.treeDetail.tree.pic}`);
     },
     getUserId() {
       return getUserId();
@@ -553,6 +572,7 @@ export default {
         this.danmuFlag = false;
       }
     },
+    // 兑换道具
     convertSuccess(code) {
       this.loading = true;
       buyProps(code).then(() => {
@@ -586,6 +606,32 @@ export default {
     },
     selectProp(index) {
       this.currentIndex = index;
+    },
+    showUse(item) {
+      this.propsData.buyItem = item;
+      this.convertSuccessFlag = true;
+    },
+    // 使用道具
+    useProps(code) {
+      this.loading = true;
+      getPropsOrder({
+        status: '0'
+      }).then((res) => {
+        if(res.length) {
+          res.map((item) => {
+            if(item.toolCode === code) {
+              useProps({
+                toolOrderCode: item.code,
+                adoptTreeCode: this.adoptTreeCode
+              }).then(() => {
+                this.loading = false;
+                this.close('convertSuccessFlag');
+                this.convertSuccessFlag = true;
+              }).catch(() => { this.loading = false; });
+            }
+          });
+        }
+      });
     }
   },
   components: {
@@ -621,7 +667,7 @@ export default {
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
-    top: 0.88rem;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;

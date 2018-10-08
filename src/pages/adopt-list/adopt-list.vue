@@ -1,15 +1,15 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="已认养名单"></m-header>
+    <!--<m-header class="cate-header" title="已认养名单"></m-header>-->
     <div class="adopt-list">
       <scroll ref="scroll"
               :data="dataList"
               :hasMore="hasMore"
               @pullingUp="getAdoptList">
         <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
-          <div class="userPhoto" :style="getImgSyl()"></div>
+          <div class="userPhoto" :style="getImgSyl(item.user ? item.user.photo : '')"></div>
           <div class="info">
-            <p class="name">你是我的教科书</p>
+            <p class="name">{{item.user ? item.user.nickname : item.user.mobile}}</p>
             <p class="date">{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}</p>
           </div>
           <span class="price fr">¥{{formatAmount(item.amount)}}</span>
@@ -27,7 +27,7 @@
   import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import {formatAmount, formatDate, formatImg, getUserId} from 'common/js/util';
+  import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
   import defaltAvatarImg from './avatar@2x.png';
   import { getPageUserTree } from 'api/biz';
 
@@ -43,7 +43,13 @@
         hasMore: true
       };
     },
-    created() {
+    mounted() {
+      let history = this.$route.query.history || false;
+      if(history) {
+        setTitle('历史认养人');
+      } else {
+        setTitle('已认养名单');
+      }
       this.getInitData();
     },
     methods: {
@@ -121,7 +127,7 @@
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 0.88rem;
+      top: 0;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;

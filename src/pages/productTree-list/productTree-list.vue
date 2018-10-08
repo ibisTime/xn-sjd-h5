@@ -1,6 +1,6 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="树木查看"></m-header>
+    <!--<m-header class="cate-header" title="树木查看"></m-header>-->
     <div class="productTree-list">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="item" @click="go('/productTree-detail?code='+item.code)" v-for="item in this.proList">
@@ -29,7 +29,7 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import Scroll from 'base/scroll/scroll';
-  import {formatAmount, formatDate, formatImg} from 'common/js/util';
+  import {formatAmount, formatDate, formatImg, setTitle} from 'common/js/util';
   import {getProductTreePage} from 'api/biz';
   import defaultImg from './tree@3x.png';
 
@@ -110,6 +110,7 @@
       }
     },
     mounted() {
+      setTitle('树木查看');
       this.pullUpLoad = null;
       this.loading = true;
       this.getPageOrders();
@@ -149,7 +150,7 @@
     .productTree-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 0.88rem;
+      top: 0;
       bottom: 0;
       left: 0;
       right: 0;

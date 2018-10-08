@@ -4,7 +4,7 @@
       <m-header class="cate-header" title="邀请好友"></m-header>
       <div class="content">
         <div class="border">
-          <img src="./code.png" alt="">
+          <div class="erweimaPic" id="qrcode"></div>
         </div>
         <div class="text">
           <span class="wing"></span>
@@ -17,28 +17,46 @@
   </div>
 </template>
 <script>
+  const QRCode = require('js-qrcode');
   import MHeader from 'components/m-header/m-header';
   import {setTitle} from 'common/js/util';
-
+  import { getCookie } from 'common/js/cookie';
+  import { getConfig } from 'api/general';
   export default {
     data() {
       return {
         wechat: true,
         alipay: false,
         balance: false,
-        amount: 0
+        amount: 0,
+        url: ''
       };
     },
-    created() {
-      setTitle('提现');
+    mounted() {
+      setTitle('邀请');
+      this.userId = getCookie('userId');
+      getConfig('REGISTER_URL').then((res) => {
+        this.url += `${res.cvalue}&userRefereeType=U&userReferee=${this.userId}`;
+        // 用插件生成二维码
+        const container = document.getElementById('qrcode');
+
+        // 设置转换二维码图片的参数
+        const qr = new QRCode(container, {
+          width: 474,
+          height: 474,
+          typeNumber: -1,
+          correctLevel: 2,
+          background: '#ffffff',
+          foreground: '#000000'
+        });
+        qr.make(this.url);
+      });
     },
     methods: {
-      getTel() {
-        if (this.telephone) {
-          return `tel://${this.telephone}`;
-        } else {
-          return '';
-        }
+      getUrl() {
+        getConfig('REGISTER_URL').then((res) => {
+          console.log(res);
+        });
       },
       go(url) {
         this.$router.push(url);

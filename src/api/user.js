@@ -73,19 +73,6 @@ export function bindMobile(mobile, smsCaptcha, isSendSms = '0') {
 }
 
 /**
- * 修改手机号
- * @param {string} newMobile
- * @param {string} smsCaptcha
- */
-export function changeMobile(newMobile, smsCaptcha) {
-  return fetch(805061, {
-    newMobile,
-    smsCaptcha,
-    userId: getUserId()
-  });
-}
-
-/**
  * 设置支付密码
  * @param {string} tradePwd
  * @param {string} smsCaptcha
@@ -402,6 +389,19 @@ export function userRecharge(config) {
   return fetch(802343, {
     userId: getUserId(),
     ...config
+  });
+}
+
+/**
+ * 修改手机号
+ * @param {string} newMobile
+ * @param {string} smsCaptcha
+ */
+export function changeMobile(newMobile, smsCaptcha) {
+  return fetch(805061, {
+    newMobile,
+    smsCaptcha,
+    userId: getUserId()
   });
 }
 

@@ -344,3 +344,39 @@ export function useProps({toolOrderCode, adoptTreeCode}) {
     userId: getUserId()
   });
 }
+
+// 列表查询道具购买订单
+export function getPropsOrder(data) {
+  return fetch(629517, {
+    userId: getUserId(),
+    ...data
+  });
+}
+
+// 查询用户公司信息
+export function getCompany(data) {
+  return fetch(630068, {
+    ...data
+  });
+}
+
+// 新增文章
+export function addArticle(data) {
+  return fetch(629340, {
+    ...data
+  });
+}
+
+// 分页查文章
+export function getArticlePage(data) {
+  return fetch(629345, {
+    ...data
+  });
+}
+
+// 详情查文章
+export function getArticleDetail(data) {
+  return fetch(629346, {
+    ...data
+  });
+}

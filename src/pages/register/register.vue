@@ -12,20 +12,20 @@
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="captcha" v-validate="'required'" name="captcha" placeholder="请输入验证码">
+            <input type="tel" class="item-input captcha" v-model="captcha" name="captcha" placeholder="请输入验证码">
             <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
             <button :disabled="sending" @click="sendCaptcha" class="captBtn">{{captBtnText}}</button>
           </div>
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="tradePwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码">
+            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码">
             <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
           </div>
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="reTradePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码">
+            <input type="password" class="item-input" name="rePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码">
             <span v-show="errors.has('rePwd')" class="error-tip">{{errors.first('rePwd')}}</span>
           </div>
         </div>
@@ -73,12 +73,13 @@
     methods: {
       // 注册
       register() {
+        // debugger;
         this.$validator.validateAll().then((result) => {
           if (result && this.pwd === this.rePwd && this.isChecked) {
             this.loading = true;
             this.loadText = '注册中...';
             this.userReferee = this.$route.query.userReferee;
-            this.type = this.$route.query.type;
+            this.type = this.$route.query.userRefereeType;
             register({
               mobile: this.mobile,
               loginPwd: this.pwd,
@@ -96,6 +97,11 @@
             }).catch(() => {
               this.loading = false;
             });
+          } else {
+            if(!this.isChecked) {
+              this.text = '请阅读协议';
+              this.$refs.toast.show();
+            }
           }
         });
       },
@@ -196,7 +202,10 @@
               width: 79%;
               height: 100%;
             }
-            input[type="tel"] {
+            /*input[type="tel"] {*/
+              /*width: 65%;*/
+            /*}*/
+            input.captcha {
               width: 65%;
             }
             .captBtn {

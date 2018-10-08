@@ -1,6 +1,6 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="产品详情"></m-header>
+    <!--<m-header class="cate-header" title="产品详情"></m-header>-->
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="slider-wrapper">
@@ -106,7 +106,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount, formatImg, formatDate } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getProductDetail } from 'api/biz';
 export default {
@@ -188,6 +188,7 @@ export default {
     }
   },
   mounted() {
+    setTitle('产品详情');
     this.pullUpLoad = null;
     this.code = this.$route.query.code;
     this.loading = true;
@@ -239,7 +240,7 @@ export default {
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
-    top: 0.88rem;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;

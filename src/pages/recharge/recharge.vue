@@ -108,6 +108,7 @@
       },
       toRecharge() {
         this.config.amount = this.amount * 1000;
+        // location.href = 'http://www.baidu.com';
         userRecharge(this.config).then(data => {
           this.text = '正在跳转支付宝...';
           this.$refs.toast.show();

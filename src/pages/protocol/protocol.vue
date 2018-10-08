@@ -1,6 +1,6 @@
 <template>
   <div class="protocol-wrapper">
-    <m-header class="cate-header" :title="title"></m-header>
+    <!--<m-header class="cate-header" :title="title"></m-header>-->
     <!--  v-html="protocol" -->
     <div class="protocol">
       <p v-html="xyText"></p>
@@ -8,7 +8,7 @@
         <tbody>
           <tr>
             <td width="240px" height="240px">
-              
+
               <img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e">
             </td>
           </tr>
@@ -18,7 +18,7 @@
     <div class="footer" v-show="sign">
       <div class="confirm" @click="confirm()">我已阅读并签署</div>
     </div>
-    <!-- <full-loading v-show="loading" :title="loadText"></full-loading> -->
+   <full-loading v-show="loading" :title="loadText"></full-loading>
   </div>
 </template>
 <script>
@@ -26,8 +26,8 @@
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
   import { getCookie } from 'common/js/cookie';
-  import { placeOrder, recognizeOrder, recognizeOrderFirst } from 'api/biz';
-  import { getSystemConfigCkey } from 'api/general';
+  import { placeOrder, recognizeOrder, recognizeOrderFirst, getProductDetail, getCompany } from 'api/biz';
+  import { setTitle } from 'common/js/util';
 
   export default {
     data() {
@@ -36,19 +36,27 @@
         sign: false,
         loadingFlag: true,
         protocol: '',
-        xyText: ''
+        xyText: '',
+        loading: false
       };
     },
     mounted() {
+      setTitle('协议');
       this.sign = this.$route.query.sign || '';
       this.proCode = this.$route.query.proCode || '';
       this.specsCode = this.$route.query.specsCode || '';
       this.quantity = this.$route.query.quantity || '';
       this.type = this.$route.query.type || '';
       this.identifyCode = this.$route.query.identifyCode || '';
-      getSystemConfigCkey('REGISTRATION_AGREEMENT').then(data => {
-        this.xyText = data.cvalue;
-      });
+      this.loading = true;
+      Promise.all([
+        getProductDetail({code: this.proCode}).then((res) => {
+          getCompany({userId: res.ownerId}).then((data) => {
+            this.loading = false;
+            this.xyText = data.contractTemplate;
+          });
+        })
+      ]).catch(() => { this.loading = false; });
     },
     methods: {
       confirm() {
@@ -118,16 +126,17 @@
     height: 100%;
     background: #fff;
     .protocol {
-      margin: 0.88rem 0;
+      margin: 0 0;
       padding: 0.6rem 0.3rem;
       font-size: 0.4rem;
     }
     .footer {
+      background: #fff;
       height: 0.98rem;
       line-height: 0.9rem;
       color: #fff;
       font-size: $font-size-medium-x;
-      position: absolute;
+      position: fixed;
       bottom: 0;
       width: 100%;
       left: 0;

@@ -71,18 +71,22 @@
         });
       },
       _changeMobile() {
-        if (this.errors.items.length === 0 && this.mobile && this.newMobile && this.newCaptcha) {
-          this.setting = true;
-          changeMobile(this.newMobile, this.newCaptcha)
-            .then(() => {
-              this.$refs.toast.show();
-              setTimeout(() => {
-                this.$router.push('/me');
-              }, 1000);
-            }).catch(() => {
-              this.setting = false;
-            });
-        }
+        this.$validator.validateAll().then((result) => {
+          if(result) {
+            this.setting = true;
+            this.loading = true;
+            changeMobile(this.newMobile, this.newCaptcha)
+              .then((res) => {
+                console.log(res);
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/me');
+                }, 1000);
+              }).catch(() => {
+                this.setting = false;
+              });
+          }
+        });
       },
       _setInterval() {
         let i = 60;
@@ -120,7 +124,7 @@
     background: $color-highlight-background;
     .form-wrapper {
       padding: 0 0.3rem;
-      margin-top: 0.88rem;
+      /*margin-top: 0.88rem;*/
       .form-item .item-btn {
         width: 1.68rem;
         padding-right: 0;

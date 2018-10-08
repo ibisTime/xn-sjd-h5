@@ -2,43 +2,62 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="文章详情"></m-header>
     <div class="content">
-      <Scroll :pullUpLoad="pullUpLoad">
-        <div class="title">在林空间里，我的古树第一次修剪了树干</div>
-        <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-        <div class="context" v-html="context"></div>
+      <Scroll>
+        <div class="title">{{detail.title}}</div>
+        <p class="prop"><span class="date">{{formatDate(detail.publishDatetime)}}</span></p>
+        <div class="context">
+          <div class="context-content">{{detail.content}}</div>
+          <img :src="formatImg(item)" v-for="item in detail.photoList">
+        </div>
       </Scroll>
     </div>
-    <div class="footer">
-      <div class="collect">
-        <img src="./uncollect@2x.png" v-show="!collectFlag" @click="collect">
-        <img src="./collect@2x.png" v-show="collectFlag">
-        <span>120</span>
-      </div>
-      <div class="border"></div>
-      <div class="laud">
-        <img src="./unlaud@2x.png" v-show="!laudFlag" @click="laud">
-        <img src="./laud@2x.png" v-show="laudFlag">
-        <span>120</span>
-      </div>
-    </div>
+    <!--<div class="footer">-->
+      <!--<div class="collect">-->
+        <!--<img src="./uncollect@2x.png" v-show="!collectFlag" @click="collect">-->
+        <!--<img src="./collect@2x.png" v-show="collectFlag">-->
+        <!--<span>120</span>-->
+      <!--</div>-->
+      <!--<div class="border"></div>-->
+      <!--<div class="laud">-->
+        <!--<img src="./unlaud@2x.png" v-show="!laudFlag" @click="laud">-->
+        <!--<img src="./laud@2x.png" v-show="laudFlag">-->
+        <!--<span>120</span>-->
+      <!--</div>-->
+    <!--</div>-->
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import { getArticleDetail } from 'api/biz';
+  import { setTitle, formatDate, formatImg } from 'common/js/util';
 
   export default {
     data() {
       return {
         collectFlag: false,
         laudFlag: false,
+        detail: {},
         context: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
       };
     },
-    created() {
-      this.pullUpLoad = null;
+    mounted() {
+      setTitle('文章详情');
+      let code = this.$route.query.code;
+      getArticleDetail({
+        code: code
+      }).then((res) => {
+        this.detail = res;
+        console.log(this.detail);
+      });
     },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
+      formatDate(date) {
+        return formatDate(date, 'yyyy-MM-dd');
+      },
       go(url) {
         this.$router.push(url);
       },
@@ -65,7 +84,7 @@
     background: #fff;
     position: fixed;
     width: 100%;
-    bottom: 0.98rem;
+    bottom: 0;
     top: 0;
     left: 0;
     .fl {

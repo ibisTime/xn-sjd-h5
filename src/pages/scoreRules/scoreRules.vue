@@ -7,10 +7,11 @@
           <span class="name">产生项</span>
           <span class="score">分值</span>
         </div>
+
         <scroll ref="scroll"
           :data="systemConfigPage"
           :hasMore="hasMore"
-          @pullingUp="getInitData">
+          @pullingUp="getConfigData">
           <div class="item" v-for="(item, index) in systemConfigPage" :key="index">
             <span class="name">{{item.remark}}</span>
             <span class="score">{{item.cvalue}}</span>
@@ -36,7 +37,7 @@
         limit: 10
       };
     },
-    created() {
+    mounted() {
       this.getConfigData();
     },
     methods: {
@@ -50,7 +51,7 @@
             start: this.start,
             limit: this.limit
           }).then(data => {
-            if (data.totalPage <= this.start) {
+            if (data.list.length < this.limit || data.totalCount <= this.limit) {
               this.hasMore = false;
             }
             this.systemConfigPage = this.systemConfigPage.concat(data.list);
@@ -82,6 +83,7 @@
       .content {
         position: absolute;
         top: 0rem;
+        left: 0;
         bottom: 0.62rem;
         width: 100%;
         padding: 0.62rem 0.3rem;

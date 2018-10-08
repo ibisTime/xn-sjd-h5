@@ -1,6 +1,6 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
-    <m-header class="cate-header" title="设置"></m-header>
+    <!--<m-header class="cate-header" title="设置"></m-header>-->
     <div class="settings-list">
       <div class="item" @click="go('/change-mobile')">
         <span>修改手机号</span>
@@ -31,7 +31,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {clearUser} from 'common/js/util';
+  import {clearUser, setTitle} from 'common/js/util';
   // import {getAppId} from 'api/general';
   import MFooter from 'components/m-footer/m-footer';
 
@@ -39,7 +39,8 @@
     data() {
       return {};
     },
-    created() {
+    mounted() {
+      setTitle('设置');
       this.pullUpLoad = null;
     },
     methods: {
@@ -87,7 +88,6 @@
     }
     .settings-list {
       background: $color-highlight-background;
-      margin-top: 0.88rem;
       padding: 0 0.3rem;
       margin-bottom: 1.63rem;
       /*position: absolute;*/

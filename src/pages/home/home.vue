@@ -1,6 +1,6 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="首页" :showBack="showBack" actText="签到" @action="action"></m-header>
+    <!--<m-header class="cate-header" title="首页" :showBack="showBack" actText="签到" @action="action"></m-header>-->
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="slider-wrapper">
@@ -46,6 +46,7 @@
         </div>
         <div class="proList">
           <div class="item"  v-for="item in proList" @click="go('/product-detail?code='+item.code)">
+            <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
@@ -75,9 +76,9 @@ import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import CheckIn from 'base/check-in/check-in';
-import { formatAmount, formatImg, formatDate } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
-import { getBanner } from 'api/general';
+import { getBanner, getDictList } from 'api/general';
 import { getProductPage, getProductType, signIn, getMessage } from 'api/biz';
 export default {
   // name: "home",
@@ -97,7 +98,8 @@ export default {
       proType: [],
       loop: false,
       noticeList: [],
-      bulletinList: []
+      bulletinList: [],
+      sellTypeObj: {}
     };
   },
   methods: {
@@ -141,6 +143,7 @@ export default {
     }
   },
   mounted() {
+    setTitle('首页');
     this.pullUpLoad = null;
     this.loading = true;
     Promise.all([
@@ -161,17 +164,25 @@ export default {
       getMessage({
         status: '1',
         type: '2'
-      })
-    ]).then(([res1, res2, res3, res4, res5]) => {
+      }),
+      getDictList('sell_type')
+    ]).then(([res1, res2, res3, res4, res5, res6]) => {
       this.banners = res1;
       if(this.banners.length > 1) {
         this.loop = true;
       }
       this.proList = res2.list;
-      this.proType = res3;
+      res3.map((item) => {
+        if(!item.parentCode) {
+          this.proType.push(item);
+        }
+      });
       this.noticeList = res4.slice(0, 2);
       this.bulletinList = res5.slice(0, 2);
       this.loading = false;
+      res6.map((item) => {
+        this.sellTypeObj[item.dkey] = item.dvalue;
+      });
     }).catch(() => { this.loading = false; });
   },
   components: {
@@ -223,7 +234,7 @@ export default {
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
-    top: 0.88rem;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
@@ -435,6 +446,21 @@ export default {
           border: 1px solid #e6e6e6;
           border-radius: 0.04rem;
           display: inline-block;
+          position: relative;
+          .sell-type {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #566272;
+            opacity: 0.5;
+            width: 0.8rem;
+            height: 0.4rem;
+            font-size: 0.24rem;
+            line-height: 0.4rem;
+            text-align: center;
+            color: $color-highlight-background;
+            border-radius: 0.05rem;
+          }
           .hot-pro-img {
             height: 2.3rem;
             width: 100%;

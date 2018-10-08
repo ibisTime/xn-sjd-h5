@@ -108,6 +108,8 @@
           if (result) {
             this.loading = true;
             this.loadText = '修改中...';
+            console.log(this.photos);
+            console.log(this.user);
             // 修改头像
             // 修改昵称
             // 完善资料
@@ -129,6 +131,7 @@
               this.loading = false;
               if(res1.isSuccess && res2.isSuccess && res3.isSuccess) {
                 this.text = '修改成功';
+                this.$refs.toast.show();
                 setTimeout(() => {
                   this.$router.push('/me');
                 }, 1000);

@@ -33,7 +33,8 @@
             <div class="userPhoto" :style="getImgSyl(item.pic)"></div>
             <span>{{item.validityTerm}}h</span>
           </div>
-          <div class="prop-item-score" :class="item.status === 1 ? 'enable' : ''" @click="_buyProps(item)">{{formatAmount(item.price)}}积分</div>
+          <div v-show="item.isBuy === '0'" class="prop-item-score" :class="item.status === '1' ? 'enable' : ''" @click="_buyProps(item)">{{formatAmount(item.price)}}积分</div>
+          <div v-show="item.isBuy === '1'" class="prop-item-score enable" @click="_useProps(item)">立即使用</div>
         </div>
       </div>
     </div>
@@ -92,11 +93,14 @@
         this.$emit('select', index);
       },
       _buyProps(items) {
-        if (items.status === 1) {
+        if (items.status === '1') {
           this.$emit('buy', items);
         } else {
           return false;
         }
+      },
+      _useProps(items) {
+        this.$emit('use', items);
       },
       scrollToEleByIndex(index) {
         this.scroll.scrollToElement(this.$refs.propItem[index], 200, true);

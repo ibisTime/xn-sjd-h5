@@ -85,7 +85,8 @@
             this.hasMore = false;
           }
           this.loading = false;
-          this.userList = res1.list;
+          this.userList = this.userList.concat(res1.list);
+          console.log(this.userList);
           this.start++;
         }).catch(() => {
           this.loading = false;

@@ -1,12 +1,12 @@
 <template>
   <div class="me-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="我的" :showBack="showBack"></m-header>
+      <!--<m-header class="cate-header" title="我的" :showBack="showBack"></m-header>-->
       <div class="content">
         <div class="in-content">
           <div class="card">
             <div class="info" @click="go('/userInfo')">
-              <img :src="src">
+              <img :src="src" class="head">
               <div class="text">
                 <p><span>{{userDetail.nickname || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
                 <p class="mobile">{{userDetail.mobile}}</p>
@@ -50,11 +50,11 @@
           <span>我的文章</span>
           <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item" @click="go('/my-collect')">
-          <img src="./collection@2x.png">
-          <span>我的收藏</span>
-          <img src="./more@2x.png" class="fr more">
-        </div>
+        <!--<div class="item" @click="go('/my-collect')">-->
+          <!--<img src="./collection@2x.png">-->
+          <!--<span>我的收藏</span>-->
+          <!--<img src="./more@2x.png" class="fr more">-->
+        <!--</div>-->
         <div class="item" @click="go('/invitation')">
           <img src="./invitation@2x.png">
           <span>邀请有礼</span>
@@ -78,7 +78,7 @@
   import MHeader from 'components/m-header/m-header';
   import MFooter from 'components/m-footer/m-footer';
   import Scroll from 'base/scroll/scroll';
-  import { formatAmount, formatImg } from 'common/js/util';
+  import { formatAmount, formatImg, setTitle } from 'common/js/util';
   import {getCookie} from 'common/js/cookie';
   import {getUserDetail} from 'api/user';
   import { getAccount } from 'api/biz';
@@ -111,6 +111,7 @@
       }
     },
     mounted() {
+      setTitle('我的');
       let userId = getCookie('userId');
       if(userId) {
         this.loading = true;
@@ -195,6 +196,10 @@
               img {
                 width: 1.1rem;
                 vertical-align: middle;
+              }
+              .head {
+                height: 1.1rem;
+                border-radius: 50%;
               }
               .text {
                 display: inline-block;
