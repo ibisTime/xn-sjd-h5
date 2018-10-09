@@ -2,12 +2,14 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="文章详情"></m-header>
     <div class="content">
-      <Scroll>
+      <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
         <div class="title">{{detail.title}}</div>
         <p class="prop"><span class="date">{{formatDate(detail.publishDatetime)}}</span></p>
-        <div class="context">
-          <div class="context-content">{{detail.content}}</div>
-          <img :src="formatImg(item)" v-for="item in detail.photoList">
+        <div class="context" ref="description">
+          <div class="context-content">
+            <p v-for="item in contextList">{{item}}</p>
+          </div>
+          <img :src="formatImg(item)" v-for="item in detail.photolist">
         </div>
       </Scroll>
     </div>
@@ -35,9 +37,11 @@
   export default {
     data() {
       return {
+        pullUpLoad: null,
         collectFlag: false,
         laudFlag: false,
         detail: {},
+        contextList: [],
         context: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
       };
     },
@@ -48,6 +52,9 @@
         code: code
       }).then((res) => {
         this.detail = res;
+        this.detail.photolist = this.detail.photo.split('||');
+        this.contextList = this.detail.content.split(/\n/);
+        console.log(this.contextList);
         console.log(this.detail);
       });
     },
@@ -70,6 +77,31 @@
         // 调接口点赞
         this.laudFlag = true;
         // 点赞数+1
+      },
+      _refreshScroll() {
+        setTimeout(() => {
+          this.$refs.scroll.refresh();
+          let imgs = this.$refs.description.getElementsByTagName('img');
+          for (let i = 0; i < imgs.length; i++) {
+            let _img = imgs[i];
+            if (_img.complete) {
+              setTimeout(() => {
+                this.$refs.scroll.refresh();
+              }, 20);
+              continue;
+            }
+            _img.onload = () => {
+              setTimeout(() => {
+                this.$refs.scroll.refresh();
+              }, 20);
+            };
+          }
+        }, 20);
+      }
+    },
+    watch: {
+      detail() {
+        this._refreshScroll();
       }
     },
     components: {
@@ -124,8 +156,10 @@
         padding-top: 0.3rem;
         font-size: $font-size-medium-s;
         line-height: 0.37rem;
+        .context-content {
+          margin-bottom: 0.3rem;
+        }
         img {
-          padding: 0 0.3rem;
           width: 100%;
         }
       }

@@ -3,51 +3,56 @@
     <div class="bg">
       <m-header class="cate-header" title="发布文章"></m-header>
       <div class="content">
-        <div class="in-content">
-          <div class="user-info-list">
-            <div>
-              <input type="text" name="title" v-model="title" v-validate="'required'" placeholder="标题">
-              <span v-show="errors.has('title')" class="error-tip">{{errors.first('title')}}</span>
+        <Scroll :pullUpLoad="pullUpLoad">
+          <div class="in-content">
+            <div class="user-info-list">
+              <div>
+                <input type="text" name="title" v-model="title" v-validate="'required'" placeholder="标题">
+                <span v-show="errors.has('title')" class="error-tip">{{errors.first('title')}}</span>
+              </div>
+              <div class="text">
+                <textarea v-model="text" v-validate="'required'" rows="5" class="item-input" placeholder="发表下你的感想吧"></textarea>
+              </div>
             </div>
-            <div class="text">
-              <textarea v-model="text" v-validate="'required'" rows="5" class="item-input" placeholder="发表下你的感想吧"></textarea>
+            <div class="avatar">
+              <img :src="formatImg(item.key)" v-for="item in photos" class="avatar-photos"/>
+              <qiniu
+                ref="qiniu"
+                style="visibility: hidden;position: absolute;"
+                :token="token"
+                :uploadUrl="uploadUrl"></qiniu>
+              <div class="input-box">
+                <input class="input-file"
+                       type="file"
+                       :multiple="multiple"
+                       ref="fileInput"
+                       @change="fileChange($event)"
+                       accept="image/*"/>
+                <img src="./upload@2x.png">
+              </div>
             </div>
-          </div>
-          <div class="avatar">
-            <img :src="formatImg(item.key)" v-for="item in photos"/>
-            <qiniu
-              ref="qiniu"
-              style="visibility: hidden;position: absolute;"
-              :token="token"
-              :uploadUrl="uploadUrl"></qiniu>
-            <input class="input-file"
-                   type="file"
-                   :multiple="multiple"
-                   ref="fileInput"
-                   @change="fileChange($event)"
-                   accept="image/*"/>
-          </div>
-          <div class="gray"></div>
-          <div class="user-info-list">
-            <div>
-              <select v-validate="'required'" name="adoptTreeCode" v-model="adoptTreeCode">
-                <option :value="item.code" v-for="item in list">{{item.tree.scientificName}}</option>
-              </select>
-              <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+            <div class="gray"></div>
+            <div class="user-info-list">
+              <div>
+                <select v-validate="'required'" name="adoptTreeCode" v-model="adoptTreeCode">
+                  <option :value="item.code" v-for="item in list">{{item.tree.scientificName}}</option>
+                </select>
+                <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+              </div>
+              <div>
+                <select v-validate="'required'" name="openLevel" v-model="openLevel">
+                  <option value="1">公开</option>
+                  <option value="2">私密</option>
+                  <option value="3">仅好友可见</option>
+                </select>
+                <span v-show="errors.has('type')" class="error-tip">{{errors.first('type')}}</span>
+              </div>
             </div>
-            <div>
-              <select v-validate="'required'" name="openLevel" v-model="openLevel">
-                <option value="1">公开</option>
-                <option value="2">私密</option>
-                <option value="3">仅好友可见</option>
-              </select>
-              <span v-show="errors.has('type')" class="error-tip">{{errors.first('type')}}</span>
+            <div class="button">
+              <button @click="fabu">发布</button>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="button">
-        <button @click="fabu">发布</button>
+        </Scroll>
       </div>
     </div>
     <full-loading v-show="loading"></full-loading>
@@ -69,6 +74,7 @@
   export default {
     data() {
       return {
+        pullUpLoad: null,
         loading: false,
         adoptTreeCode: '',
         openLevel: '1',
@@ -109,19 +115,15 @@
       },
       // 发布文章
       fabu() {
-        // console.log(this.title);
-        // console.log(this.text);
-        // console.log(this.photos);
-        // console.log(this.openLevel);
-        // console.log(this.adoptTreeCode);
-        let photoList = [];
+        let photoArr = [];
         this.photos.map((item) => {
-          photoList.push(item.key);
+          photoArr.push(item.key);
         });
+        let photo = photoArr.join('||');
         addArticle({
           title: this.title,
           content: this.text,
-          photoList: photoList,
+          photo: photo,
           openLevel: this.openLevel,
           adoptTreeCode: this.adoptTreeCode,
           updater: this.userId,
@@ -173,7 +175,6 @@
               if(item.ok === true) {
                 self.photos.push(item);
               }
-              console.log(self.photos);
               self.updatePhotos(item);
             }).catch(err => {
               self.onUploadError(err);
@@ -235,25 +236,59 @@
       }
       .content {
         padding: 0.88rem 0 0;
-        margin-bottom: 1.62rem;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: auto;
         .in-content {
           .avatar {
             border-bottom: 1px solid $color-border;
             position: relative;
             padding: 0 0.3rem;
             font-size: 0;
-            img {
+            .avatar-photos {
               width: 1.6rem;
               height: 1.6rem;
               margin: 0.35rem 0.3rem 0 0;
               vertical-align: bottom;
             }
-            .input-file {
-              width: 1.6rem;
-              height: 1.6rem;
-              background: url("./upload@2x.png") no-repeat;
-              background-size: 100% 100%;
-              font-size: 0;
+            .input-box {
+              display: inline-block;
+              position: relative;
+              img {
+                /*width: 1.6rem;*/
+                /*height: 1.6rem;*/
+                /*margin: 0.35rem 0.3rem 0 0;*/
+                /*vertical-align: bottom;*/
+                width: 1.6rem;
+                height: 1.6rem;
+                /* margin: 0.35rem 0.3rem 0 0; */
+                vertical-align: bottom;
+                float: left;
+                /* position: absolute; */
+                /* left: 0; */
+                z-index: 32;
+                top: 0;
+              }
+              .input-file {
+                /*width: 1.6rem;*/
+                /*height: 1.6rem;*/
+                /*background: url("./upload@2x.png") no-repeat;*/
+                /*background-size: 100% 100%;*/
+                /*font-size: 0;*/
+                width: 1.6rem;
+                height: 1.6rem;
+                /* background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAAAXNSR…4DLF+LuRQIl+NhHIW6HReVShmFyYDddmm3zSa+mpqaN/8H23Hj+bUf5sYAAAAASUVORK5CYII=) no-repeat; */
+                /*background-size: 100% 100%;*/
+                font-size: 0;
+                /* float: left; */
+                z-index: 44;
+                position: absolute;
+                left: 0;
+                opacity: 0;
+              }
             }
           }
           .user-info-list {

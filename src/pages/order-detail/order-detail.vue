@@ -19,7 +19,7 @@
             <div class="text">
               <p class="title">{{detail.product.name}}</p>
               <p class="position">{{detail.product.province}} {{detail.product.city}} {{detail.product.area}}</p>
-              <div class="props"><span class="duration">年限：{{detail.product.raiseCount}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
+              <div class="props"><span class="duration">年限：{{detail.adoptYear}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
             </div>
           </div>
           <div class="gray"></div>
@@ -34,10 +34,12 @@
       <div class="btn cancel" v-show="showCancelBtn(detail.status)" @click="_cancelOrder(detail)">取消订单</div>
       <div class="btn" v-show="showPayBtn(detail.status)" @click="payOrder(detail)">立即支付</div>
     </div>
+    <div class="btns" v-show="detail.status === '3'">
+      <div class="btn" @click="goTree">看看这棵树</div>
+    </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast :text="toastText" ref="toast"></toast>
-    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -123,6 +125,9 @@
         this.inputText = '取消原因';
         this.curItem = item;
         this.$refs.confirmInput.show();
+      },
+      goTree() {
+        this.go(`/my-tree?aTCode=${this.detail.adoptOrderTreeList[0].code}`);
       }
     },
     mounted() {

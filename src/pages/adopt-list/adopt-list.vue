@@ -63,8 +63,7 @@
           getPageUserTree({
             start: this.start,
             limit: this.limit,
-            productCode: this.code,
-            currentHolder: ''
+            productCode: this.code
           })
         ]).then(([res1]) => {
           if (res1.list.length < this.limit || res1.totalCount <= this.limit) {

@@ -6,7 +6,7 @@
       <div class="form-login">
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input v-focus type="tel" class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入账号">
+            <input v-focus type="tel" class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">
             <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
           </div>
         </div>
@@ -19,13 +19,13 @@
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码">
+            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码（6～16个字符或字母组成）">
             <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
           </div>
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="rePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码">
+            <input type="password" class="item-input" name="rePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码（6～16个字符或字母组成）">
             <span v-show="errors.has('rePwd')" class="error-tip">{{errors.first('rePwd')}}</span>
           </div>
         </div>
@@ -36,7 +36,7 @@
         <img src="./checkbox.png" alt="" v-show="isChecked">
         <div class="check-border" v-show="!isChecked"></div>
       </div>
-      我已阅读并接受<span @click="go('/protocol')">《时间岛产品服务条款》</span>
+      我已阅读并接受<span @click="go('/protocol?register=1')">《氧林产品服务条款》</span>
     </div>
     <div class="login-btn">
       <button @click="register">注册</button>
@@ -79,7 +79,8 @@
             this.loading = true;
             this.loadText = '注册中...';
             this.userReferee = this.$route.query.userReferee;
-            this.type = this.$route.query.userRefereeType;
+            this.type = this.$route.query.type;
+            console.log(this.type);
             register({
               mobile: this.mobile,
               loginPwd: this.pwd,

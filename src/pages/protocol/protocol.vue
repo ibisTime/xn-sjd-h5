@@ -1,9 +1,11 @@
 <template>
-  <div class="protocol-wrapper">
+  <div class="protocol-wrapper" :style="{bottom: register ? '0' : '0.98rem'}">
     <!--<m-header class="cate-header" :title="title"></m-header>-->
     <!--  v-html="protocol" -->
     <div class="protocol">
-      <p v-html="xyText"></p>
+      <Scroll :pullUpLoad="pullUpLoad">
+        <p v-html="xyText" class="rich-text-description"></p>
+      </Scroll>
       <!-- <table>
         <tbody>
           <tr>
@@ -27,6 +29,7 @@
   import MHeader from 'components/m-header/m-header';
   import { getCookie } from 'common/js/cookie';
   import { placeOrder, recognizeOrder, recognizeOrderFirst, getProductDetail, getCompany } from 'api/biz';
+  import { getSystemConfigCkey } from 'api/general';
   import { setTitle } from 'common/js/util';
 
   export default {
@@ -37,26 +40,38 @@
         loadingFlag: true,
         protocol: '',
         xyText: '',
-        loading: false
+        loading: false,
+        loadText: '',
+        pullUpLoad: null,
+        register: ''
       };
     },
     mounted() {
       setTitle('协议');
+      this.pullUpLoad = null;
       this.sign = this.$route.query.sign || '';
       this.proCode = this.$route.query.proCode || '';
       this.specsCode = this.$route.query.specsCode || '';
       this.quantity = this.$route.query.quantity || '';
       this.type = this.$route.query.type || '';
       this.identifyCode = this.$route.query.identifyCode || '';
+      this.register = this.$route.query.register || '';
       this.loading = true;
-      Promise.all([
-        getProductDetail({code: this.proCode}).then((res) => {
-          getCompany({userId: res.ownerId}).then((data) => {
-            this.loading = false;
-            this.xyText = data.contractTemplate;
-          });
-        })
-      ]).catch(() => { this.loading = false; });
+      if(this.register) {
+        getSystemConfigCkey('REGISTRATION_AGREEMENT').then((res) => {
+          this.loading = false;
+          this.xyText = res.cvalue;
+        }).catch(() => { this.loading = false; });
+      } else {
+        Promise.all([
+          getProductDetail({code: this.proCode}).then((res) => {
+            getCompany({userId: res.ownerId}).then((data) => {
+              this.loading = false;
+              this.xyText = data.contractTemplate;
+            });
+          })
+        ]).catch(() => { this.loading = false; });
+      }
     },
     methods: {
       confirm() {
@@ -119,16 +134,20 @@
   @import "~common/scss/variable";
 
   .protocol-wrapper {
-    // position: fixed;
-    // top: 0;
-    // left: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0.98rem;
     width: 100%;
-    height: 100%;
     background: #fff;
     .protocol {
       margin: 0 0;
-      padding: 0.6rem 0.3rem;
-      font-size: 0.4rem;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: auto;
     }
     .footer {
       background: #fff;

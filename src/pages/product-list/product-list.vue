@@ -10,13 +10,13 @@
                        @select="selectCategorySub"></category-scroll>
     </div>
     <div class="content">
-      <div class="bulletin">
-        <div class="title">恭喜Bluce，成功参加See的传承认养</div>
-      </div>
-      <div class="hot">
+      <!--<div class="bulletin">-->
+        <!--<div class="title">恭喜Bluce，成功参加See的传承认养</div>-->
+      <!--</div>-->
+      <div class="hot" v-show="proList.length">
         <Scroll :pullUpLoad="pullUpLoad">
         <div class="proList">
-          <div class="item" @click="go('/product-detail?code='+item.code)" v-for="item in this.proList">
+          <div class="item" @click="go('/product-detail?code='+item.code)" v-for="item in proList">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
@@ -28,9 +28,9 @@
         </div>
         </Scroll>
       </div>
-      <!--<div class="mall-content">-->
-        <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
-      <!--</div>-->
+      <div class="mall-content">
+        <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+      </div>
     </div>
     <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
@@ -61,7 +61,7 @@ export default {
       hasMore: true,
       proList: [],
       categorys: [],
-      categorysSub: [],
+      categorysSub: [{value: '全部', key: 'all'}],
       sellTypeObj: {},
         // {value: '个人', key: '0'},
         // {value: '定向', key: '1'},
@@ -102,7 +102,7 @@ export default {
       this.start = 1;
       this.limit = 10;
       this.proList = [];
-      this.categorysSub = [];
+      this.categorysSub = [{value: '全部', key: 'all'}];
       this.getSubType();
       // this.getPageOrders();
     },
@@ -112,16 +112,17 @@ export default {
       this.start = 1;
       this.limit = 10;
       this.proList = [];
-      this.getSubType();
+      this.getPageOrders();
     },
     // 获取下级分类
     getSubType() {
-      // console.log(this.categorys);
       this.loading = true;
-      this.categorysSub = [];
+      this.categorysSub = [{value: '全部', key: 'all'}];
       getProductType({
         parentCode: this.categorys[this.index].key,
-        status: '1'
+        status: '1',
+        orderDir: 'asc',
+        orderColumn: 'order_no'
       }).then((res) => {
         res.map((item) => {
           this.categorysSub.push({
@@ -129,22 +130,26 @@ export default {
             key: item.code
           });
         });
-        // console.log(this.indexSub);
-        // console.log(this.categorysSub);
-        this.selectdType = this.categorysSub.length ? this.categorysSub[this.indexSub].key : this.categorys[this.index].key;
+        this.selectdType = this.categorysSub[this.indexSub].key;
         this.getPageOrders();
         this.loading = false;
       }).catch(() => { this.loading = false; });
     },
     getPageOrders() {
-      // let sellType = this.categorys[this.index].key;
-      // let sellType = this.selectdType;
+      if(this.categorysSub[this.indexSub].key === 'all') {
+        this.parentCategoryCode = this.categorys[this.index].key;
+        this.selectdType = '';
+      } else {
+        this.parentCategoryCode = '';
+        this.selectdType = this.categorysSub[this.indexSub].key;
+      }
       this.loading = true;
       Promise.all([
         getProductPage({
           start: this.start,
           limit: this.limit,
           // sellType: sellType,
+          parentCategoryCode: this.parentCategoryCode,
           categoryCode: this.selectdType,
           status: '4'
         })
@@ -174,7 +179,6 @@ export default {
         status: '1'
       })
     ]).then(([res1, res2]) => {
-      this.loading = false;
       res1.map((item) => {
         this.sellTypeObj[item.dkey] = item.dvalue;
       });
@@ -185,13 +189,14 @@ export default {
             key: item.code
           });
         }
-        // debugger;
-        this.categorys.map((item, index) => {
-          if(item.code === this.categoryCode) {
-            this.index = index;
-          }
-        });
       });
+      this.categorys.map((item, index) => {
+        if(item.key === this.categoryCode) {
+          this.index = index;
+          this.currentIndex = index;
+        }
+      });
+      this.loading = false;
       this.getSubType();
     }).catch(() => { this.loading = false; });
   },
@@ -265,7 +270,8 @@ export default {
       padding: 0 0.3rem 0;
       background: $color-highlight-background;
       position: absolute;
-      top: 2.4rem;
+      /*top: 2.4rem;*/
+      top: 1.6rem;
       bottom: 0;
       left: 0;
       right: 0;
@@ -278,7 +284,7 @@ export default {
         font-size: 0;
         .item {
           width: 3.3rem;
-          height: 4.17rem;
+          height: 5.17rem;
           margin-top: 0.3rem;
           border: 1px solid #e6e6e6;
           border-radius: 0.04rem;
@@ -286,10 +292,10 @@ export default {
           position: relative;
           .sell-type {
             position: absolute;
-            right: 0;
+            left: 0;
             top: 0;
-            background: #566272;
-            opacity: 0.5;
+            background: #F7B524;
+            /*opacity: 0.5;*/
             width: 0.8rem;
             height: 0.4rem;
             font-size: 0.24rem;
@@ -299,7 +305,7 @@ export default {
             border-radius: 0.05rem;
           }
           .hot-pro-img {
-            height: 2.3rem;
+            height: 3.3rem;
             width: 100%;
             margin-bottom: 0.2rem;
           }

@@ -36,11 +36,11 @@
             <span class="item-status">{{formatStatus(item.status)}}</span>
           </div>
             <div class="info">
-              <div class="imgWrap" :style="getImgSyl(item.pic)"></div>
+              <div class="imgWrap" :style="getImgSyl(item.product.listPic)"></div>
               <div class="text">
                 <p class="title">{{item.product.name}}</p>
                 <p class="position">{{item.product.province}} {{item.product.city}} {{item.product.area}}</p>
-                <div class="props"><span class="duration">年限：{{item.product.raiseCount}}</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
+                <div class="props"><span class="duration">年限：{{item.adoptYear}}</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
               </div>
             </div>
             <div class="clearfix btns" v-show="showBtns(item.status)">

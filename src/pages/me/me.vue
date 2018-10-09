@@ -4,8 +4,8 @@
       <!--<m-header class="cate-header" title="我的" :showBack="showBack"></m-header>-->
       <div class="content">
         <div class="in-content">
-          <div class="card">
-            <div class="info" @click="go('/userInfo')">
+          <div :class="['card',getUserId() ? '' : 'card-bg']">
+            <div class="info" @click="go('/settings')" v-show="getUserId()">
               <img :src="src" class="head">
               <div class="text">
                 <p><span>{{userDetail.nickname || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
@@ -13,7 +13,7 @@
               </div>
               <img src="./more@2x.png" class="me-more fr">
             </div>
-            <div class="account">
+            <div class="account" v-show="getUserId()">
               <div class="money fl" @click.stop="go('/money?accountNumber=' + cnyAccountNumber + '&amount=' + cny)">
                 <p class="number">{{formatAmount(cny)}}</p>
                 <p class="text">余额</p>
@@ -23,6 +23,10 @@
                 <p class="number">{{formatAmount(jf)}}</p>
                 <p class="text">积分</p>
               </div>
+            </div>
+            <div class="noUser">
+              <button class="login" @click="$router.push('/login')">登录</button>
+              <button class="register" @click="$router.push('/register')">注册</button>
             </div>
           </div>
         </div>
@@ -78,7 +82,7 @@
   import MHeader from 'components/m-header/m-header';
   import MFooter from 'components/m-footer/m-footer';
   import Scroll from 'base/scroll/scroll';
-  import { formatAmount, formatImg, setTitle } from 'common/js/util';
+  import { formatAmount, formatImg, setTitle, getUserId } from 'common/js/util';
   import {getCookie} from 'common/js/cookie';
   import {getUserDetail} from 'api/user';
   import { getAccount } from 'api/biz';
@@ -103,11 +107,19 @@
       this.pullUpLoad = null;
     },
     methods: {
+      getUserId() {
+        return getUserId();
+      },
       formatAmount(amount) {
         return formatAmount(amount);
       },
       go(url) {
-        this.$router.push(url);
+        if(getUserId()) {
+          this.$router.push(url);
+        } else {
+          this.text = '您未登录！';
+          this.$refs.toast.show();
+        }
       }
     },
     mounted() {
@@ -139,12 +151,6 @@
           });
           this.loading = false;
         }).catch(() => { this.loading = false; });
-      } else {
-        this.text = '您未登录';
-        this.$refs.toast.show();
-        setTimeout(() => {
-          this.$router.push('/login?me=1');
-        }, 1000);
       }
     },
     components: {
@@ -184,13 +190,14 @@
       .content {
         padding: 0.88rem 0.3rem 0;
         .in-content {
+          background: $color-highlight-background;
           .card {
             height: 3.2rem;
             background: $color-highlight-background;
             border-radius: 0.12rem;
             box-shadow: 0 8px 16px 0 #EBEFED;
             margin-bottom: 0.25rem;
-            padding: 0.5rem 0.5rem 0 0.5rem;
+            padding: 0.5rem;
             .info {
               height: 1.1rem;
               img {
@@ -263,6 +270,34 @@
                 color: #666;
               }
             }
+            .noUser {
+              width: 100%;
+              text-align: center;
+              font-size: 0;
+              height: 100%;
+              button {
+                width: 1.54rem;
+                height: 0.62rem;
+                border-radius: 0.04rem;
+                font-size: 0.3rem;
+                border: 1px solid $primary-color;
+                margin-top: 0.79rem;
+              }
+              .login {
+                background: $primary-color;
+                color: $color-highlight-background;
+              }
+              .register {
+                background: $color-highlight-background;
+                color: $primary-color;
+                margin-left: 0.4rem;
+              }
+            }
+          }
+          .card-bg {
+            background: url("./decoration@2x.png") no-repeat;
+            background-size: contain;
+            background-position: bottom;
           }
         }
       }

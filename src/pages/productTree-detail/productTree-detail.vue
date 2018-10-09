@@ -5,7 +5,7 @@
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="info">
         <div class="item">
-          <span>古树编码</span><span>{{detail.code}}</span>
+          <span>古树编码</span><span>{{detail.treeNumber}}</span>
         </div>
         <div class="item">
           <span>古树产地</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>

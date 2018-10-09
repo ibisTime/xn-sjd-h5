@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="我的碳泡泡" actText="积分规则" @action="action"></m-header>
+      <m-header class="cate-header" title="我的碳泡泡" actText="碳泡泡规则" @action="action"></m-header>
       <div class="content">
         <div class="in-content">
           <div class="card">
@@ -37,7 +37,9 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import {getAccountList} from 'api/account';
+  import { getAccount } from 'api/biz';
   import { formatAmount, formatDate } from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
   import NoResult from 'base/no-result/no-result';
 
   export default {
@@ -53,9 +55,22 @@
     mounted() {
       this.accountNumber = this.$route.query.accountNumber;
       this.amount = +this.$route.query.amount;
+      this.userId = getCookie('userId');
       // 请求流水
       if(this.accountNumber) {
         this.getCarbonBubble();
+      } else {
+        getAccount({
+          userId: this.userId
+        }).then((res) => {
+          res.list.map((item) => {
+            if(item.currency === 'TPP') {
+              this.amount = item.amount;
+              this.accountNumber = item.accountNumber;
+            }
+          });
+          this.getCarbonBubble();
+        });
       }
     },
     methods: {
@@ -72,7 +87,7 @@
         this.$router.push(url);
       },
       action() {
-        this.go('/score/score-rules');
+        this.go('/tpp-rules');
       },
       getCarbonBubble() {
         if(this.hasMore) {

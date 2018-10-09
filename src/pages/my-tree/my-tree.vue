@@ -10,7 +10,7 @@
           <img src="./heart@2x.png">
         </div>
         <div class="tree-panel-danmu" v-show="danmuShow">
-          <img src="./head.png" class="head">
+          <img :src="getAvatar()" class="head">
           <div class="info">
             <span class="name">hhh</span>
             <span class="context">{{emojiText}}</span>
@@ -32,7 +32,7 @@
         </div>
         <!-- 礼物 -->
         <div class="me" @click="go('/gift')">
-          <img src="./head.png">
+          <img :src="getAvatar()">
           <span>礼物</span>
         </div>
         <div class="icons">
@@ -86,7 +86,7 @@
           <!-- 访客 -->
           <div class="heads">
             <div class="head-item">
-              <img src="./head.png">
+              <img :src="getAvatar()">
               <!--<span class="number">10g</span>-->
             </div>
           </div>
@@ -285,6 +285,7 @@ import MHeader from 'components/m-header/m-header';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
         getListProps, buyProps, getPropsOrder, useProps, getAccount } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
+import { getUserDetail } from 'api/user';
 import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import defaltAvatarImg from './avatar@2x.png';
@@ -353,11 +354,13 @@ export default {
       }, // 道具配置
       propCurrentIndex: 0, // 道具配置
       propsList: [], // 道具数据,
-      jf: 0  // 我有多少积分
+      jf: 0,  // 我有多少积分
+      userDetail: {}
     };
   },
   mounted() {
     setTitle('我的树');
+    this.userId = getCookie('userId');
     this.other = this.$route.query.other || 0;  // 是否别人的主页
     this.currentHolder = this.$route.query.currentHolder || '';
     if(this.other) {
@@ -379,7 +382,8 @@ export default {
         this.getDynamicsList(),
         this.getTreeDetail(),
         this.getPropList(),
-        this.getJF()
+        this.getJF(),
+        this.getUserDetail()
       ]).then(() => {
         this.loading = false;
       }).catch(() => { this.loading = false; });
@@ -442,6 +446,19 @@ export default {
           }
         });
       });
+    },
+    // 获取用户详情
+    getUserDetail() {
+      getUserDetail({userId: this.userId}).then((res) => {
+        this.userDetail = res;
+      }).catch(() => {});
+    },
+    getAvatar() {
+      if (!this.userDetail.photo) {
+        return require('./../../common/image/avatar@2x.png');
+      } else {
+        return formatImg(this.userDetail.photo);
+      }
     },
     // 赠送碳泡泡
     doGiveTpp() {

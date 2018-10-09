@@ -6,7 +6,7 @@
               :hasMore="hasMore"
               @pullingUp="getPageOrders">
         <div class="item" @click="go('/article-detail?code=' + item.code)" v-for="item in list">
-          <img :src="formatImg(item.photoList[0])">
+          <img :src="formatImg(item.photolist[0])">
           <div class="info">
             <p class="title">{{item.title}}</p>
             <p class="prop"><span class="date">{{formatDate(item.publishDatetime)}}</span></p>
@@ -31,7 +31,6 @@
   export default {
     data() {
       return {
-        showBack: false,
         start: 1,
         limit: 10,
         hasMore: true,
@@ -41,7 +40,6 @@
     },
     mounted() {
       setTitle('情感频道');
-      this.pullUpLoad = null;
       this.getPageOrders();
     },
     methods: {
@@ -69,10 +67,12 @@
           if (res.list.length < this.limit || res.totalCount <= this.limit) {
             this.hasMore = false;
           }
+          res.list.map((item) => {
+            item.photolist = item.photo.split('||');
+          });
           this.list = this.list.concat(res.list);
           this.start++;
           this.loading = false;
-          console.log(this.list);
         }).catch(() => { });
       }
     },
@@ -98,6 +98,9 @@
     }
     .fr {
       float: right;
+    }
+    .no-result-wrapper {
+      margin-top: 0.8rem;
     }
     .adopt-list {
       background: $color-highlight-background;

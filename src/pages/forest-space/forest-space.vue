@@ -3,7 +3,7 @@
     <!--<m-header class="cate-header" title="我的林空间" :showBack="showBack"></m-header>-->
     <div class="content">
       <div class="me" @click="change">
-        <img :src="formatImg(user.photo)">
+        <img :src="src">
       </div>
       <img src="./charts@2x.png" alt="" class="charts" @click="go('/charts')">
       <div @click="go('/homepage?type=1')" class="block t1"></div>
@@ -15,13 +15,13 @@
       <div class="mask" @click="change"></div>
       <div class="me-content" v-show="flag">
         <div class="me-info">
-          <img :src="formatImg(user.photo)">
+          <img :src="src">
           <div class="text">
-            <p><span>{{user.nickname}}</span><span class="lv">LV {{user.level}}</span></p>
+            <p><span>{{user.nickname ? user.nickname : '未设置昵称'}}</span><span class="lv">LV {{user.level}}</span></p>
           </div>
         </div>
         <div class="me-content-list">
-          <div class="item">
+          <div class="item" @click="go('/userInfo')">
             <img src="./change-avatar@2x.png" alt="">
             <span>修改头像</span>
           </div>
@@ -29,7 +29,7 @@
             <img src="./carbon-bubble@2x.png" alt="">
             <span>我的碳泡泡</span>
           </div>
-          <div class="item">
+          <div class="item" @click="go('/my-article')">
             <img src="./romantic-story@2x.png" alt="">
             <span>我的浪漫故事</span>
           </div>
@@ -47,7 +47,6 @@
     <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <m-footer></m-footer>
-    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -58,7 +57,7 @@ import MFooter from 'components/m-footer/m-footer';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount, formatImg, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getUserDetail } from 'api/user';
 export default {
@@ -66,7 +65,7 @@ export default {
   data() {
     return {
       title: '正在加载...',
-      loading: true,
+      loading: false,
       toastText: '',
       currentList: [],
       hasMore: false,
@@ -78,10 +77,14 @@ export default {
       showCheckIn: false,
       pullUpLoad: null,
       flag: false,
-      user: {}
+      user: {},
+      src: ''
     };
   },
   methods: {
+    getUserId() {
+      return getUserId();
+    },
     formatAmount(amount) {
       return formatAmount(amount);
     },
@@ -95,26 +98,32 @@ export default {
       this.showCheckIn = false;
     },
     go(url) {
-      this.$router.push(url);
+      if(getUserId()) {
+        this.$router.push(url);
+      } else {
+        this.text = '您未登录';
+        this.$refs.toast.show();
+      }
     },
     change() {
-      this.flag = !this.flag;
+      if(getUserId()) {
+        this.flag = !this.flag;
+      } else {
+        this.text = '您未登录';
+        this.$refs.toast.show();
+      }
     }
   },
   mounted() {
     this.pullUpLoad = null;
     setTitle('我的林空间');
     let userId = getCookie('userId');
-    if(!userId) {
-      this.text = '您未登录';
-      this.$refs.toast.show();
-      setTimeout(() => {
-        this.$router.push('/login?me=1');
-      }, 1000);
-    } else {
+    this.src = require('./../../common/image/avatar@2x.png');
+    if(userId) {
       this.loading = true;
       getUserDetail({userId: userId}).then((res) => {
         this.user = res;
+        this.src = formatImg(this.user.photo) || require('./../../common/image/avatar@2x.png');
         this.loading = false;
       }).catch(() => { this.loading = false; });
     }
@@ -229,7 +238,7 @@ export default {
       left: 0;
     }
     .me-content {
-      width: 5.78rem;
+      width: 3.78rem;
       height: 100%;
       background: $color-highlight-background;
       position: absolute;

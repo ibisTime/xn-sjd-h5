@@ -93,12 +93,13 @@
               smsCaptcha: this.captcha,
               tradePwd: this.moneyPaw
             }).then(data => {
+              this.text = '设置成功';
               this.$refs.toast.show();
 
               setTimeout(() => {
-                this.$router.push('/me');
+                this.$router.back();
               }, 2000);
-            });
+            }).catch(() => { this.setting = false; });
           } else {
             if(!this.captcha) {
               this.text = '请填写验证码';

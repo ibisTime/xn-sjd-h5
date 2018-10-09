@@ -44,9 +44,10 @@
       </div>
       <div class="footer">
         <span>金额：<span>{{formatAmount(amount)}}</span><span>元</span></span>
-        <button class="fr" @click="payOrder">支付</button>
+        <button class="fr" @click="pay">支付</button>
       </div>
     </div>
+    <confirm-input ref="confirmInput" :inpType="'password'" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast ref="toast" :text="text"></toast>
   </div>
 </template>
@@ -55,9 +56,11 @@
   import MHeader from 'components/m-header/m-header';
   import SwitchOption from 'base/switch-option/switch-option';
   import Toast from 'base/toast/toast';
+  import ConfirmInput from 'base/confirm-input/confirm-input';
   import { getCookie } from 'common/js/cookie';
   import { formatAmount, setTitle } from 'common/js/util';
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount } from 'api/biz';
+  import { getUserDetail } from 'api/user';
 
   export default {
     data() {
@@ -70,7 +73,8 @@
         cny: 0,
         jf: 0,
         amount: 0,
-        rate: 0
+        rate: 0,
+        inputText: ''
       };
     },
     mounted() {
@@ -87,20 +91,21 @@
           getAccount({
             userId: userId
           }),
-          getDeductibleAmount(this.orderCode)
-        ])
-          .then(([res1, res2, res3]) => {
-            this.amount = res1.amount;
-            this.rate = res3;
-            res2.list.map((item) => {
-              if(item.currency === 'CNY') {
-                this.cny = item.amount;
-              }
-              if(item.currency === 'JF') {
-                this.jf = item.amount;
-              }
-            });
+          getDeductibleAmount(this.orderCode),
+          getUserDetail({userId: userId})
+        ]).then(([res1, res2, res3, res4]) => {
+          this.amount = res1.amount;
+          this.rate = res3;
+          res2.list.map((item) => {
+            if(item.currency === 'CNY') {
+              this.cny = item.amount;
+            }
+            if(item.currency === 'JF') {
+              this.jf = item.amount;
+            }
           });
+          this.userDetail = res4;
+        });
       } else {
         // 非集体订单
         Promise.all([
@@ -110,20 +115,21 @@
           getAccount({
             userId: userId
           }),
-          getDeductibleAmount(this.orderCode)
-        ])
-          .then(([res1, res2, res3]) => {
-            this.amount = res1.amount;
-            this.rate = res3;
-            res2.list.map((item) => {
-              if(item.currency === 'CNY') {
-                this.cny = item.amount;
-              }
-              if(item.currency === 'JF') {
-                this.jf = item.amount;
-              }
-            });
+          getDeductibleAmount(this.orderCode),
+          getUserDetail({userId: userId})
+        ]).then(([res1, res2, res3, res4]) => {
+          this.amount = res1.amount;
+          this.rate = res3;
+          res2.list.map((item) => {
+            if(item.currency === 'CNY') {
+              this.cny = item.amount;
+            }
+            if(item.currency === 'JF') {
+              this.jf = item.amount;
+            }
           });
+          this.userDetail = res4;
+        });
       }
     },
     methods: {
@@ -151,32 +157,42 @@
       updatePublish(val) {
         this.isPublish = val;
       },
+      pay() {
+        this.payType = this.wechat ? '5' : this.alipay ? '3' : '1';
+        if(!this.userDetail.tradepwdFlag && this.payType === '1') {
+          this.text = '请先去设置交易密码';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/set-money');
+          }, 1000);
+        } else {
+          if(this.payType === '1') {
+            this.inputText = '交易密码';
+            // this.curItem = item;
+            this.$refs.confirmInput.show();
+          } else {
+            this.payOrder();
+          }
+        }
+      },
       // 支付订单
       payOrder() {
-        let payType = this.wechat ? '3' : this.alipay ? '3' : '1';
         let isJfDeduct = this.isPublish ? 1 : 0;
         this.loading = true;
         if(this.orderCode[0] === 'G') {
           // 集体订单
           payOrganizeOrder({
             code: this.orderCode,
-            payType: payType,
-            isJfDeduct: isJfDeduct
+            payType: this.payType,
+            isJfDeduct: isJfDeduct,
+            tradePwd: this.pwd || ''
           }).then((res) => {
             this.loading = false;
             if(res) {
-              if(payType === '3' && res.signOrder) {
-                this.text = '正在跳转支付宝...';
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  location.href = res.signOrder;
-                }, 1000);
+              if(this.payType === '3' && res.signOrder) {
+                this._alipay(res);
               } else {
-                this.text = '支付成功';
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  this.$router.push('/my-order');
-                }, 1000);
+                this.paySuccess();
               }
             }
           }).catch(() => {
@@ -186,36 +202,49 @@
           // 非集体订单
           payOrder({
             code: this.orderCode,
-            payType: payType,
-            isJfDeduct: isJfDeduct
+            payType: this.payType,
+            isJfDeduct: isJfDeduct,
+            tradePwd: this.pwd || ''
           }).then((res) => {
             this.loading = false;
             if(res) {
-              if(payType === '3' && res.signOrder) {
-                this.text = '正在跳转支付宝...';
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  location.href = res.signOrder;
-                }, 1000);
+              if(this.payType === '3' && res.signOrder) {
+                this._alipay(res);
               } else {
-                this.text = '支付成功';
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  this.$router.push('/my-order');
-                }, 1000);
+                this.paySuccess();
               }
             }
           }).catch(() => {
             this.loading = false;
           });
         }
+      },
+      _alipay(res) {
+        this.text = '正在跳转支付宝...';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          location.href = res.signOrder;
+        }, 1000);
+      },
+      paySuccess() {
+        this.text = '支付成功';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/my-order');
+        }, 1000);
+      },
+      // 输入交易密码后点击确定执行的方法
+      handleInputConfirm(text) {
+        this.pwd = text;
+        this.payOrder();
       }
     },
     components: {
       Scroll,
       MHeader,
       SwitchOption,
-      Toast
+      Toast,
+      ConfirmInput
     }
   };
 </script>

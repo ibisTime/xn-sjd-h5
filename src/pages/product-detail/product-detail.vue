@@ -2,10 +2,14 @@
   <div class="home-wrapper">
     <!--<m-header class="cate-header" title="产品详情"></m-header>-->
     <div class="content">
-      <Scroll :pullUpLoad="pullUpLoad">
-      <div class="slider-wrapper">
-        <img :src="formatImg(detail.bannerPic)" class="banner-default">
-      </div>
+      <Scroll ref='scroll' :pullUpLoad="pullUpLoad">
+        <div class="slider-wrapper">
+          <slider :loop="loop">
+            <div class="home-slider" v-for="item in banners" :key="item">
+              <a :style="getImgSyl(item)"></a>
+            </div>
+          </slider>
+        </div>
       <div class="info">
         <div class="item">
           <span>产品名称</span><span>{{detail.name}}</span>
@@ -82,7 +86,7 @@
         <span>认养份数</span>
         <div class="right">
           <img class="diamonds right-item" @click="add" src="./add@2x.png">
-          <input class="num right-item" v-model="number">
+          <input class="num right-item" v-model="number" type="number">
           <img class="diamonds right-item" @click="sub" src="./sub@2x.png">
         </div>
       </div>
@@ -131,7 +135,9 @@ export default {
       detail: {},
       choosedIndex: 0,
       code: '',   // 产品code
-      identifyCode: '' // 下单识别码
+      identifyCode: '', // 下单识别码
+      banners: [],
+      loop: false
     };
   },
   methods: {
@@ -185,6 +191,31 @@ export default {
     },
     chooseSpecs(index) {
       this.choosedIndex = index;
+    },
+    getImgSyl(imgs) {
+      return {
+        backgroundImage: `url(${formatImg(imgs)})`
+      };
+    },
+    _refreshScroll() {
+      setTimeout(() => {
+        this.$refs.scroll.refresh();
+        let imgs = this.$refs.description.getElementsByTagName('img');
+        for (let i = 0; i < imgs.length; i++) {
+          let _img = imgs[i];
+          if (_img.complete) {
+            setTimeout(() => {
+              this.$refs.scroll.refresh();
+            }, 20);
+            continue;
+          }
+          _img.onload = () => {
+            setTimeout(() => {
+              this.$refs.scroll.refresh();
+            }, 20);
+          };
+        }
+      }, 20);
     }
   },
   mounted() {
@@ -200,7 +231,16 @@ export default {
       this.loading = false;
       this.detail = res1;
       this.detailDescription = res1.description;
+      this.banners = this.detail.bannerPic.split('||');
+      if(this.banners.length) {
+        this.loop = true;
+      }
     }).catch(() => { this.loading = false; });
+  },
+  watch: {
+    detailDescription() {
+      this._refreshScroll();
+    }
   },
   components: {
     FullLoading,
@@ -235,7 +275,7 @@ export default {
   }
   .banner-default {
     width: 100%;
-    height: 4rem;
+    height: 7.5rem;
   }
   .content {
     /*margin: 0.88rem 0;*/
@@ -246,7 +286,28 @@ export default {
     right: 0;
     overflow: auto;
     .slider-wrapper {
+      padding-bottom: 0.2rem;
       background: $color-highlight-background;
+      height: 7.5rem;
+      width: 100%;
+      overflow: hidden;
+      .slider {
+        .dots {
+          .dot {
+            background: #eee;
+          }
+        }
+      }
+      .home-slider {
+        height: 100%;
+      }
+      a {
+        display: block;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100% 100%;
+      }
     }
     .info {
       background: $color-highlight-background;

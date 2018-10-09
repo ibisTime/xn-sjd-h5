@@ -39,7 +39,7 @@
         <div class="title">{{item.title}}</div>
         <div class="more">更多</div>
       </div>
-      <div class="hot">
+      <div class="hot" v-show="proList.length">
         <div class="title">
           <span class="fl hot-title">热门推荐</span>
           <span class="fr more">更多</span>
@@ -60,11 +60,11 @@
         <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
       <!--</div>-->
       </Scroll>
+      <div class="sign" @click="action"></div>
     </div>
     <full-loading v-show="loading"></full-loading>
-    <toast ref="toast" :text="text"></toast>
     <m-footer></m-footer>
-    <check-in :title="title" v-show="showCheckIn" @close="close"></check-in>
+    <check-in v-show="showCheckIn" @close="close" :signTpp="signTpp"></check-in>
   </div>
 </template>
 <script>
@@ -99,7 +99,8 @@ export default {
       loop: false,
       noticeList: [],
       bulletinList: [],
-      sellTypeObj: {}
+      sellTypeObj: {},
+      signTpp: '0'
     };
   },
   methods: {
@@ -120,7 +121,9 @@ export default {
         signIn({
           userId: userId
         }).then((res) => {
+          this.signTpp = formatAmount(res.tppAmount);
           this.showCheckIn = true;
+          this.loading = false;
         }).catch(() => { this.loading = false; });
       } else {
         this.text = '您未登录';
@@ -143,13 +146,15 @@ export default {
     }
   },
   mounted() {
-    setTitle('首页');
+    setTitle('氧林');
     this.pullUpLoad = null;
     this.loading = true;
     Promise.all([
       getBanner(),
       getProductPage({
         location: '1',
+        orderDir: 'asc',
+        orderColumn: 'order_no',
         status: '4'
       }),
       getProductType({
@@ -177,8 +182,8 @@ export default {
           this.proType.push(item);
         }
       });
-      this.noticeList = res4.slice(0, 2);
-      this.bulletinList = res5.slice(0, 2);
+      this.noticeList = res4.slice(0, 1);
+      this.bulletinList = res5.slice(0, 1);
       this.loading = false;
       res6.map((item) => {
         this.sellTypeObj[item.dkey] = item.dvalue;
@@ -213,14 +218,6 @@ export default {
     75% {top: -0.7rem;opacity: 0}
     100%{top:0.7rem;opacity: 0}
   }
-  @-webkit-keyframes anim2{
-
-    0% {top: -0.7rem;opacity: 0}
-    25% {top: 0.7rem;opacity: 0}
-    50% {top: 0.7rem;opacity: 1}
-    100%{top: -0.7rem;opacity: 1}
-  }
-
   .fl {
     float: left;
   }
@@ -260,7 +257,9 @@ export default {
       position: relative;
       width: 100%;
       height: 0.7rem;
-      overflow: hidden;
+      display: -webkit-box;
+      overflow-x: scroll;
+      -webkit-overflow-scrolling:touch;
       .tit {
         width: 0.6rem;
         height: 0.25rem;
@@ -309,23 +308,25 @@ export default {
         position: absolute;
         left: 1.24rem;
         width: calc(100% - 2.5rem);
+        overflow: scroll;
         .title {
           line-height: 0.33rem;
           flex: 1;
         }
       }
-      .notice:nth-child(1){
-        -webkit-animation: anim1 3s linear infinite;
-      }
+      /*.notice:nth-child(1){*/
+        /*-webkit-animation: anim1 3s linear infinite;*/
+      /*}*/
 
-      .notice:nth-child(2){
-        -webkit-animation: anim2 3s linear infinite;
-      }
+      /*.notice:nth-child(2){*/
+        /*-webkit-animation: anim2 3s linear infinite;*/
+      /*}*/
     }
     .icons {
       width: 100%;
       height: 2.25rem;
-      padding-top: 0.26rem;
+      /*padding-top: 0.26rem;*/
+      padding: 0.26rem 0.3rem;
       background: #fff;
       display: flex;
       margin-bottom: 0.2rem;
@@ -441,7 +442,7 @@ export default {
         font-size: 0;
         .item {
           width: 3.3rem;
-          height: 3.98rem;
+          height: 4.98rem;
           margin-top: 0.24rem;
           border: 1px solid #e6e6e6;
           border-radius: 0.04rem;
@@ -449,10 +450,10 @@ export default {
           position: relative;
           .sell-type {
             position: absolute;
-            right: 0;
+            left: 0;
             top: 0;
-            background: #566272;
-            opacity: 0.5;
+            background: #F7B524;
+            /*opacity: 0.5;*/
             width: 0.8rem;
             height: 0.4rem;
             font-size: 0.24rem;
@@ -462,7 +463,7 @@ export default {
             border-radius: 0.05rem;
           }
           .hot-pro-img {
-            height: 2.3rem;
+            height: 3.3rem;
             width: 100%;
           }
           .hot-pro-text {
@@ -492,6 +493,15 @@ export default {
           }
         }
       }
+    }
+    .sign {
+      width: 1.24rem;
+      height: 1.24rem;
+      position: fixed;
+      right: 0.3rem;
+      bottom: 1.3rem;
+      background: url('./sign@2x.png') no-repeat;
+      background-size: 100% 100%;
     }
   }
 }

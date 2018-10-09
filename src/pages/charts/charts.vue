@@ -2,16 +2,16 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="好友排行榜"></m-header>
     <div class="me">
-      <div class="item" @click="go('/homepage?other=1&currentHolder=U123')">
+      <div class="item" @click="goUserHome(userDetail)">
         <div class="order">
           <img src="./no1@2x.png" alt="">
         </div>
-        <div class="userPhoto" :style="getImgSyl()"></div>
+        <div class="userPhoto" :style="getImgSyl(userDetail.toUserInfo.photo)"></div>
         <div class="info">
-          <p class="name">你是我的教科书</p>
-          <p class="date">获得了10个环保证书</p>
+          <p class="name">{{userDetail.toUserInfo.nickname ? userDetail.toUserInfo.nickname: jiami(userDetail.toUserInfo.mobile)}}</p>
+          <p class="date">获得了{{userDetail.certificateCount}}个环保证书</p>
         </div>
-        <span class="price fr">9.8kg</span>
+        <span class="price fr">{{userDetail.certificateCount}}kg</span>
       </div>
     </div>
     <div class="gray"></div>
@@ -29,7 +29,7 @@
           </div>
           <div class="userPhoto" :style="getImgSyl(item.toUserInfo.photo)"></div>
           <div class="info">
-            <p class="name">{{item.toUserInfo.nickname ? item.toUserInfo.nickname: item.toUserInfo.mobile}}</p>
+            <p class="name">{{item.toUserInfo.nickname ? item.toUserInfo.nickname: jiami(item.toUserInfo.mobile)}}</p>
             <p class="date">获得了{{item.certificateCount}}个环保证书</p>
           </div>
           <span class="price fr">{{item.certificateCount}}kg</span>
@@ -49,7 +49,8 @@
   import Toast from 'base/toast/toast';
   import { getPageUserRelationship } from 'api/user';
   import {formatAmount, formatDate, formatImg} from 'common/js/util';
-  import defaltAvatarImg from './avatar@2x.png';
+  import { getCookie } from 'common/js/cookie';
+  import defaltAvatarImg from './../../common/image/avatar@2x.png';
 
   export default {
     data() {
@@ -62,10 +63,12 @@
         myInfo: {},
         start: 1,
         limit: 30,
-        hasMore: true
+        hasMore: true,
+        userDetail: {}
       };
     },
-    created() {
+    mounted() {
+      this.userId = getCookie('userId');
       this.getInitData();
     },
     methods: {
@@ -86,7 +89,12 @@
           }
           this.loading = false;
           this.userList = this.userList.concat(res1.list);
-          console.log(this.userList);
+          console.log(this.userlist);
+          this.userList.map((item) => {
+            if(item.toUser === this.userId) {
+              this.userDetail = item;
+            }
+          });
           this.start++;
         }).catch(() => {
           this.loading = false;
@@ -113,6 +121,10 @@
         } else {
           this.go(`/homepage?other=1&currentHolder=${item.toUser}`);
         }
+      },
+      // 加密
+      jiami(mobile) {
+        return mobile.substr(0, 3) + '****' + mobile.substr(7);
       }
     },
     components: {

@@ -1,30 +1,33 @@
 <template>
-  <div class="me-wrapper full-screen-wrapper">
-    <div class="bg full-screen-wrapper">
-      <m-header class="cate-header" title="邀请好友"></m-header>
-      <div class="content">
-        <div class="border">
-          <div class="erweimaPic" id="qrcode"></div>
-        </div>
-        <div class="text">
-          <span class="wing"></span>
-          <span>扫 描 二 维 码 ，惊 喜 不 断</span>
-          <span class="wing"></span>
-        </div>
-      </div>
+  <div class="me-wrapper">
+    <div class="bg">
+      <m-header class="cate-header" title="邀请好友" actText="分享" @action="action"></m-header>
+      <div class="erweimaPic" id="qrcode"></div>
+      <!--<div class="content">-->
+        <!--<div class="border">-->
+          <!--<div class="erweimaPic" id="qrcode"></div>-->
+        <!--</div>-->
+        <!--<div class="text">-->
+          <!--<span class="wing"></span>-->
+          <!--<span>扫 描 二 维 码 ，惊 喜 不 断</span>-->
+          <!--<span class="wing"></span>-->
+        <!--</div>-->
+      <!--</div>-->
     </div>
-    <router-view></router-view>
+    <full-loading v-show="loading"></full-loading>
   </div>
 </template>
 <script>
   const QRCode = require('js-qrcode');
   import MHeader from 'components/m-header/m-header';
+  import FullLoading from 'base/full-loading/full-loading';
   import {setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import { getConfig } from 'api/general';
   export default {
     data() {
       return {
+        loading: false,
         wechat: true,
         alipay: false,
         balance: false,
@@ -33,10 +36,11 @@
       };
     },
     mounted() {
-      setTitle('邀请');
+      setTitle('邀请好友');
       this.userId = getCookie('userId');
+      this.loading = true;
       getConfig('REGISTER_URL').then((res) => {
-        this.url += `${res.cvalue}&userRefereeType=U&userReferee=${this.userId}`;
+        this.url += `${res.cvalue}&type=U&userReferee=${this.userId}`;
         // 用插件生成二维码
         const container = document.getElementById('qrcode');
 
@@ -50,35 +54,18 @@
           foreground: '#000000'
         });
         qr.make(this.url);
-      });
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     methods: {
-      getUrl() {
-        getConfig('REGISTER_URL').then((res) => {
-          console.log(res);
-        });
-      },
       go(url) {
         this.$router.push(url);
       },
-      selectPayType(index) {
-        if(index === 1) {
-          this.wechat = true;
-          this.alipay = false;
-          this.balance = false;
-        } else if(index === 2) {
-          this.wechat = false;
-          this.alipay = true;
-          this.balance = false;
-        } else if(index === 3) {
-          this.wechat = false;
-          this.alipay = false;
-          this.balance = true;
-        }
-      }
+      action() {}
     },
     components: {
-      MHeader
+      MHeader,
+      FullLoading
     }
   };
 </script>
@@ -95,7 +82,19 @@
     .bg {
       background: url("invitation@2x.png") no-repeat;
       background-size: 100% 100%;
-      margin-top: 0.88rem;
+      text-align: center;
+      position: fixed;
+      top: 0.88rem;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      .erweimaPic {
+        width: 4.3rem;
+        height: 4.3rem;
+        position: fixed;
+        bottom: 2rem;
+        left: 1.6rem;
+      }
       .title {
         font-size: 0.36rem;
         color: #fff;

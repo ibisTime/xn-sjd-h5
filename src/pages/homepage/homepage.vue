@@ -173,7 +173,7 @@
   import { getUser, getHasRelationship, addRelationship, cancelRelationship } from 'api/user';
   import { getListUserTree, getProductType, getComparison, getPageJournal } from 'api/biz';
   import {formatAmount, formatDate, formatImg, setTitle, getUserId} from 'common/js/util';
-  import defaltAvatarImg from './avatar@2x.png';
+  import defaltAvatarImg from './../../common/image/avatar@2x.png';
 
   export default {
     data() {
@@ -205,7 +205,7 @@
     },
     mounted() {
       setTitle('我的主页');
-      this.index = +this.$route.query.type || 0;  // 树的类型
+      // this.index = +this.$route.query.type || 0;  // 树的类型
       this.other = this.$route.query.other || 0;  // 是否别人的主页
       this.currentHolder = this.$route.query.currentHolder || getUserId();
       if(this.other) {
@@ -225,9 +225,10 @@
           getProductType({
             orderDir: 'asc',
             orderColumn: 'order_no',
-            status: '1'
+            status: '1',
+            level: '1'
           })
-        ]).then(([userInfo, productType, typeData]) => {
+        ]).then(([userInfo, productType]) => {
           this.loading = false;
           this.userInfo = userInfo;
 
@@ -237,7 +238,10 @@
               value: item.name
             });
           });
+          console.log(this.categorys);
+          console.log(this.index);
           this.type = this.categorys[this.index].key;
+          console.log(this.type);
           this.getUserTree();
           this.getDynamicsList();
         }).catch(() => { this.loading = false; });
@@ -304,7 +308,7 @@
       getUserTree() {
         this.type = this.categorys[this.index].key;
         this.currentHolder = this.$route.query.currentHolder || getUserId();
-        return getListUserTree({currentHolder: this.currentHolder, categoryCode: this.type}).then((userTree) => {
+        return getListUserTree({currentHolder: this.currentHolder, parentCategoryCode: this.type}).then((userTree) => {
           this.userTree = userTree;
           this.loading = false;
         }, () => {});

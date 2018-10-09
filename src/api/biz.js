@@ -150,7 +150,6 @@ export function getOrganizeOrderDetail (data) {
  * */
 export function getListUserTree(params) {
   let data = {
-    status: '2',
     currentHolder: getUserId(),
     ...params
   };
@@ -166,10 +165,6 @@ export function getListUserTree(params) {
  * */
 export function getPageUserTree(params) {
   let data = {
-    limit: 20,
-    start: 1,
-    status: '2',
-    currentHolder: getUserId(),
     ...params
   };
   return fetch(629205, data);

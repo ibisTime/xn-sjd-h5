@@ -1,7 +1,7 @@
 <template>
   <div class="full-screen-wrapper login-content">
     <!--<m-header class="cate-header"></m-header>-->
-    <!--<div class="header"><img src="./back.png" @click="back"></div>-->
+    <div class="header"><img src="./back.png" @click="back"></div>
     <div class="title">欢迎回来</div>
     <div class="content">
       <div class="form-login">
@@ -13,7 +13,7 @@
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="pwd" v-model="pwd" v-validate="'required|min:6|max:16'" placeholder="请输入密码（6～16个字符或字母组成">
+            <input type="password" class="item-input" name="pwd" v-model="pwd" v-validate="'required|min:6|max:16'" placeholder="请输入密码">
             <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
           </div>
         </div>
@@ -82,11 +82,7 @@
         this.$router.push(url);
       },
       back() {
-        if(this.me) {
-          this.go('/home');
-        } else {
-          this.$router.back();
-        }
+        this.go('/home');
       },
       AppId() {
         // 获取用户appid

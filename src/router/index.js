@@ -35,6 +35,8 @@ const Withdraw = () => import('@/pages/withdraw/withdraw');
 const Score = () => import('@/pages/score/score');
 // 积分规则
 const ScoreRules = () => import('@/pages/scoreRules/scoreRules');
+// 碳泡泡规则
+const tppRules = () => import('@/pages/tppRules/tppRules');
 // 邀请
 const Invitation = () => import('@/pages/invitation/invitation');
 // 完善资料
@@ -292,6 +294,10 @@ export default new Router({
           component: ScoreRules
         }
       ]
+    },
+    {
+      path: '/tpp-rules',
+      component: tppRules
     }
   ]
 });

@@ -93,52 +93,57 @@
       },
       getAvatar() {
         if (!this.userId) {
-          return require('./avatar@2x.png');
+          return require('./../../common/image/avatar@2x.png');
         }
         if(this.photos.length || this.user.photo) {
           return formatImg(this.photos.length ? this.photos[0].key : this.user.photo);
         } else {
-          return require('./avatar@2x.png');
+          return require('./../../common/image/avatar@2x.png');
         }
       },
+      // 保存
       action() {
         this.sex = this.sex === '男' ? '1' : '0';
-        this.$validator.validateAll().then((result) => {
-          console.log(result);
-          if (result) {
-            this.loading = true;
-            this.loadText = '修改中...';
-            console.log(this.photos);
-            console.log(this.user);
-            // 修改头像
-            // 修改昵称
-            // 完善资料
-            Promise.all([
-              changeAvatar({
-                photo: this.photos.length ? this.photos[0].key : this.user.photo
-              }),
-              changeNickname({
-                nickname: this.nickname
-              }),
-              completeInfo({
-                gender: this.sex,
-                age: this.age,
-                realName: this.realName,
-                nickname: this.nickname,
-                idNo: this.idNo
-              })
-            ]).then(([res1, res2, res3]) => {
-              this.loading = false;
-              if(res1.isSuccess && res2.isSuccess && res3.isSuccess) {
-                this.text = '修改成功';
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  this.$router.push('/me');
-                }, 1000);
-              }
-            }).catch(() => { this.loading = false; });
-          }
-        });
+        if(!this.photos.length) {
+          this.text = '请上传头像';
+          this.$refs.toast.show();
+        } else {
+          this.$validator.validateAll().then((result) => {
+            if (result) {
+              this.loading = true;
+              this.loadText = '修改中...';
+              console.log(this.photos);
+              console.log(this.user);
+              // 修改头像
+              // 修改昵称
+              // 完善资料
+              Promise.all([
+                changeAvatar({
+                  photo: this.photos.length ? this.photos[0].key : this.user.photo
+                }),
+                changeNickname({
+                  nickname: this.nickname
+                }),
+                completeInfo({
+                  gender: this.sex,
+                  age: this.age,
+                  realName: this.realName,
+                  nickname: this.nickname,
+                  idNo: this.idNo
+                })
+              ]).then(([res1, res2, res3]) => {
+                this.loading = false;
+                if(res1.isSuccess && res2.isSuccess && res3.isSuccess) {
+                  this.text = '修改成功';
+                  this.$refs.toast.show();
+                  setTimeout(() => {
+                    this.$router.push('/me');
+                  }, 1000);
+                }
+              }).catch(() => { this.loading = false; });
+            }
+          });
+        }
       },
       /**
        * 从相册中选择图片
