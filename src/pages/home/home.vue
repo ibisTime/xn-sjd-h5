@@ -17,7 +17,7 @@
           <div class="border"></div>
           <div class="title notice" v-for="item in noticeList">{{item.title}}</div>
         </div>
-        <div class="more">更多</div>
+        <div class="more" @click="go('/notices')">更多</div>
       </div>
       <div class="icons">
         <div class="icon-item" @click="go('/product-list?typeCode=' + item.code)" v-for="item in proType">
@@ -42,11 +42,12 @@
       <div class="hot" v-show="proList.length">
         <div class="title">
           <span class="fl hot-title">热门推荐</span>
-          <span class="fr more">更多</span>
+          <span class="fr more" @click="go('/hot-product-list')">更多</span>
         </div>
         <div class="proList">
           <div class="item"  v-for="item in proList" @click="go('/product-detail?code='+item.code)">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
+            <div class="sell-type-right">{{item.raiseCount === item.nowCount ? '已被认养' : '认养中'}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
@@ -64,6 +65,7 @@
     </div>
     <full-loading v-show="loading"></full-loading>
     <m-footer></m-footer>
+    <toast ref="toast" :text="text"></toast>
     <check-in v-show="showCheckIn" @close="close" :signTpp="signTpp"></check-in>
   </div>
 </template>
@@ -218,6 +220,11 @@ export default {
     75% {top: -0.7rem;opacity: 0}
     100%{top:0.7rem;opacity: 0}
   }
+
+  @-webkit-keyframes anim2{
+    0% {transform: translateX(-0.25rem);}
+    100%{transform: translateX(-100%);}
+  }
   .fl {
     float: left;
   }
@@ -314,9 +321,9 @@ export default {
           flex: 1;
         }
       }
-      /*.notice:nth-child(1){*/
-        /*-webkit-animation: anim1 3s linear infinite;*/
-      /*}*/
+      .notice:nth-child(1){
+        -webkit-animation: anim1 3s linear infinite;
+      }
 
       /*.notice:nth-child(2){*/
         /*-webkit-animation: anim2 3s linear infinite;*/
@@ -454,7 +461,21 @@ export default {
             top: 0;
             background: #F7B524;
             /*opacity: 0.5;*/
-            width: 0.8rem;
+            padding: 0 0.1rem;
+            height: 0.4rem;
+            font-size: 0.24rem;
+            line-height: 0.4rem;
+            text-align: center;
+            color: $color-highlight-background;
+            border-radius: 0.05rem;
+          }
+          .sell-type-right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #969998;
+            /*opacity: 0.5;*/
+            padding: 0 0.1rem;
             height: 0.4rem;
             font-size: 0.24rem;
             line-height: 0.4rem;

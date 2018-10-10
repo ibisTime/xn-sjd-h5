@@ -152,7 +152,8 @@ export default {
           // sellType: sellType,
           parentCategoryCode: this.parentCategoryCode,
           categoryCode: this.selectdType,
-          status: '4'
+          status: '4',
+          location: '1'
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {

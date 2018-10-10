@@ -2,16 +2,26 @@
   <div class="bankcard-wrapper">
     <m-header class="cate-header" title="我的银行卡" :actText="actText" @action="action"></m-header>
     <scroll class="bankcard-content" :hasMore="!bankcardList">
-      <div class="bankcard-item">
-        <div class="img-cont">
-          <img src="./mail-logo@2x.png" alt="">
-        </div>
-        <div class="text">
-          <div class="text-top">
-            <p>{{bankcardList[0].bankName}}</p>
+      <div class="bankcard-item" :key="item.code" v-for="(item, index) in bankcardList">
+        <div class="content"
+             ref="bankcard"
+             @click="go('/bankcard-addedit?code=' + item.code)"
+             @touchstart.stop.prevent="touchstart(index,$event)"
+             @touchmove.stop.prevent="touchmove($event)"
+             @touchend.stop.prevent="touchend($event)">
+          <div class="img-cont">
+            <img src="./bankcard@2x.png" alt="">
           </div>
-          <div class="text-middle">储蓄卡</div>
-          <div class="text-bottom bankcardNumber">****  ****  ****  {{bankCode}}</div>
+          <div class="text">
+            <div class="text-top">
+              <p>{{item.bankName}}</p>
+            </div>
+            <div class="text-middle">储蓄卡</div>
+            <div class="text-bottom bankcardNumber">{{formatBankcardNum(item.bankcardNumber)}}</div>
+          </div>
+        </div>
+        <div ref="deleteEle" class="delete" @click="deleteItem(item)">
+          <p>删除</p>
         </div>
       </div>
     </scroll>
@@ -31,7 +41,7 @@
   import {prefixStyle} from 'common/js/dom';
   import {setTitle} from 'common/js/util';
   // import {changeMobile} from 'api/user';
-  import {getBankCardList} from 'api/account';
+  import {getBankCardList, delBankCard} from 'api/account';
   // import {SET_BANKCARD_LIST} from 'store/mutation-types';
 
   const transform = prefixStyle('transform');
@@ -82,37 +92,47 @@
       _getBankCardList() {
         getBankCardList().then((data) => {
           this.bankcardList = data;
-          let bankcardNumber = data[0].bankcardNumber;
-          this.bankCode = bankcardNumber.substring(bankcardNumber.length - 4);
-          if(data.length > 0) {
-            this.actText = '修改';
-          }
+          // let bankcardNumber = data[0].bankcardNumber;
+          // this.bankcardList.map((item) => {
+          //   let reg = /^(\d{4})\d+(\d{4})$/;
+          //   item.bankcardNumber = item.bankcardNumber.replace(reg, '$1****$2');
+          //   let account = '';
+          //   for (let i = 0; i < item.bankcardNumber.length; i++) {    /* 可将以下空格改为-,效果也不错 */
+          //     if (i === 4) account = account + ' '; /* 帐号第四位数后加空格 */
+          //     if (i === 8) account = account + ' '; /* 帐号第八位数后加空格 */
+          //     if (i === 12) account = account + ' ';/* 帐号第十二位后数后加空格 */
+          //     account = account + item.bankcardNumber.substr(i, 1);
+          //   }
+          //   // item.bankcardNumber = item.bankcardNumber.substring(bankcardNumber.length - 4);
+          // });
+          // this.bankCode = bankcardNumber.substring(bankcardNumber.length - 4);
+          // if(data.length > 0) {
+          //   this.actText = '修改';
+          // }
         }).catch(() => {});
       },
       deleteItem(item) {
+        console.log(item);
         this.currentItem = item;
         this.$refs.confirm.show();
       },
       _deleteBankCard() {
-        // if (this.currentItem) {
-        //   this.delLoading = true;
-        //   deleteBankCard(this.currentItem.code).then(() => {
-        //     this.delLoading = false;
-        //     this.deleteBankCard({
-        //       code: this.currentItem.code
-        //     });
-        //   }).catch(() => {
-        //     this.delLoading = false;
-        //   });
-        // }
-      },
-      selectItem(item) {
-        this.$router.push(this.$route.path + '/' + item.code);
+        if (this.currentItem) {
+          this.delLoading = true;
+          delBankCard({code: this.currentItem.code}).then(() => {
+            this.delLoading = false;
+            this._getBankCardList();
+          }).catch(() => {
+            this.delLoading = false;
+          });
+        }
       },
       goAdd() {
         this.$router.push(this.$route.path + '/add');
       },
       touchstart(index, event) {
+        console.log(index);
+        console.log(event);
         this.touch.initiated = true;
         // 用来判断是否是一次移动
         this.touch.moved = false;
@@ -161,8 +181,8 @@
 
         if (deltaX <= 0) {
           if (deltaX <= -15) {
-            currentElem.style[transform] = 'translate3d(-78px,0,0)';
-            this.touch[index].offset = -78;
+            currentElem.style[transform] = 'translate3d(-60px,0,0)';
+            this.touch[index].offset = -60;
             zIndex = 0;
           } else {
             currentElem.style[transform] = 'translate3d(0,0,0)';
@@ -226,10 +246,40 @@
         width: 100%;
         height: 3.2rem;
         border-radius: 0.12rem;
-        background: url("./post-bank@2x.png") no-repeat;
-        background-size: 100% 100%;
-        padding: 0.48rem;
+        margin-bottom: 0.3rem;
         display: flex;
+        position: relative;
+        .content {
+          background: transparent;
+          border-style: dashed;
+          justify-content: center;
+          display: flex;
+          height: 100%;
+          width: 100%;
+          background: url("./bankcard-bg@2x.png") no-repeat;
+          background-size: 100% 100%;
+          padding: 0.48rem;
+        }
+        .delete {
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 1.2rem;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          z-index: -1;
+          border-radius: 0.12rem;
+          font-size: $font-size-medium;
+          background: #d30000;
+          color: #fff;
+
+          p+p {
+            margin-top: 12px;
+          }
+        }
         .img-cont {
           width: 0.8rem;
           height: 0.8rem;

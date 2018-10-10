@@ -47,7 +47,7 @@
         <div class="description-title">
           <div class="border"></div>
           <span>图文详情</span>
-          <div class="description-detail" v-html="detailDescription"></div>
+          <div class="description-detail" v-html="detailDescription" ref="description"></div>
         </div>
       </div>
       <!--<div class="mall-content">-->
@@ -58,7 +58,8 @@
     <div class="footer">
       <!--<button @click="showPopUp">集体下单</button>-->
       <!--<button @click="showPopUp">捐赠下单</button>-->
-      <button @click="showPopUp">申请认养</button>
+      <button @click="showPopUp" v-show="detail.raiseCount !== detail.nowCount">申请认养</button>
+      <button class="disabled" v-show="detail.raiseCount === detail.nowCount">已被认养</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
@@ -78,7 +79,7 @@
           <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">
             <span>{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>
             <img src="./choosed@2x.png" v-show="choosedIndex === index">
-            <img src="./unchoosed@2x.png" v-show="!choosedIndex === index">
+            <img src="./unchoosed@2x.png" v-show="choosedIndex !== index">
           </div>
         </div>
       </div>
@@ -132,7 +133,7 @@ export default {
       flag: false,
       number: 1,
       idCode: '',
-      detail: {},
+      detail: {productSpecsList: [{price: 0}]},
       choosedIndex: 0,
       code: '',   // 产品code
       identifyCode: '', // 下单识别码
@@ -232,7 +233,7 @@ export default {
       this.detail = res1;
       this.detailDescription = res1.description;
       this.banners = this.detail.bannerPic.split('||');
-      if(this.banners.length) {
+      if(this.banners.length >= 2) {
         this.loop = true;
       }
     }).catch(() => { this.loading = false; });
@@ -379,6 +380,9 @@ export default {
       border-radius: 0.08rem;
       color: $color-highlight-background;
       font-size: 0.32rem;
+    }
+    .disabled {
+      background: #969998;
     }
   }
   .mask {

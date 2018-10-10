@@ -1,7 +1,7 @@
 <template>
   <div class="full-screen-wrapper content">
     <!--<div class="header"><img src="./back.png" @click="back"></div>-->
-    <div class="title">注册</div>
+    <div class="title">忘记密码</div>
     <div class="content">
       <div class="form-login">
         <div class="form-item">
@@ -19,34 +19,21 @@
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码（6～16个字符或字母组成）">
+            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入新密码（6～16个字符或字母）">
             <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
           </div>
         </div>
-        <div class="form-item">
-          <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="rePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码（6～16个字符或字母组成）">
-            <span v-show="errors.has('rePwd')" class="error-tip">{{errors.first('rePwd')}}</span>
-          </div>
-        </div>
       </div>
-    </div>
-    <div class="sure">
-      <div class="ck" @click="checked">
-        <img src="./checkbox.png" alt="" v-show="isChecked">
-        <div class="check-border" v-show="!isChecked"></div>
-      </div>
-      我已阅读并接受<span @click="go('/protocol?register=1')">《氧林产品服务条款》</span>
     </div>
     <div class="login-btn">
-      <button @click="register">注册</button>
+      <button @click="resetPwd">确定</button>
     </div>
     <full-loading v-show="loading" :title="loadText"></full-loading>
     <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
-  import {register} from 'api/user';
+  import {reSetPwd} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
   import {sendCaptcha} from 'api/general';
   import FullLoading from 'base/full-loading/full-loading';
@@ -63,7 +50,6 @@
         pwd: '',
         rePwd: '',
         captBtnText: '获取验证码',
-        isChecked: false,
         captcha: '',
         sending: false,
         userReferee: '',
@@ -71,25 +57,18 @@
       };
     },
     methods: {
-      // 注册
-      register() {
-        // debugger;
+      // 重置密码
+      resetPwd() {
         this.$validator.validateAll().then((result) => {
-          if (result && this.pwd === this.rePwd && this.isChecked) {
+          if (result) {
             this.loading = true;
-            this.loadText = '注册中...';
-            this.userReferee = this.$route.query.userReferee;
-            this.type = this.$route.query.type;
-            console.log(this.type);
-            register({
+            reSetPwd({
               mobile: this.mobile,
-              loginPwd: this.pwd,
-              smsCaptcha: this.captcha,
-              userReferee: this.userReferee,
-              userRefereeType: this.type
+              newLoginPwd: this.pwd,
+              smsCaptcha: this.captcha
             }).then((data) => {
-              if(data.code) {
-                this.text = '注册成功，即将跳转到登陆页';
+              if(data.isSuccess) {
+                this.text = '重置成功，即将跳转到登陆页';
                 this.$refs.toast.show();
                 this.loading = false;
                 setTimeout(() => {
@@ -99,17 +78,8 @@
             }).catch(() => {
               this.loading = false;
             });
-          } else {
-            if(!this.isChecked) {
-              this.text = '请阅读协议';
-              this.$refs.toast.show();
-            }
           }
         });
-      },
-      checked(e) {
-        e.preventDefault();
-        this.isChecked = !this.isChecked;
       },
       // 发送验证码
       sendCaptcha() {
@@ -118,7 +88,7 @@
             this.sending = true;
             this.loading = true;
             sendCaptcha({
-              bizType: '805041',
+              bizType: '805063',
               mobile: this.mobile
             }).then(() => {
               this.loading = false;
@@ -205,7 +175,7 @@
               height: 100%;
             }
             /*input[type="tel"] {*/
-              /*width: 65%;*/
+            /*width: 65%;*/
             /*}*/
             input.captcha {
               width: 65%;

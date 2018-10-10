@@ -13,19 +13,15 @@
               v-model="config.payCardInfo"
             >
               <option
-                :value="item.bankName"
-                v-for="(item, index) in payList"
+                :value="item.code"
+                v-for="(item, index) in bankcardList"
                 :key="index"
-              >{{item.bankName}}</option>
+              >{{item.bankName}}{{formatBankcardNum(item.bankcardNumber)}}</option>
             </select>
             <img src="./more@2x.png" alt="" class="fr more">
           </div>
           <div class="gray"></div>
-          <div class="recharge">
-            <p>银行卡号</p>
-            <p class="card_no"><input type="number" v-model="config.payCardNo"></p>
-          </div>
-          <div class="gray"></div>
+
           <div class="recharge">
             <p>提现金额（收取 {{qxFee}}%服务费）</p>
             <p class="number"><input type="number" v-model="config.amount"></p>
@@ -59,6 +55,7 @@
   import MHeader from 'components/m-header/m-header';
   import {setTitle, formatAmount} from 'common/js/util';
   import {paymentType, payApplyFor, userAccount} from 'api/biz';
+  import { getBankCardList } from 'api/account';
   import {getSystemConfigCkey} from 'api/general';
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import Toast from 'base/toast/toast';
@@ -70,7 +67,7 @@
         pullUpLoad: null,
         errMsg: '',
         text: '',
-        inputText: '资金密码',
+        inputText: '支付密码',
         inpType: 'password',
         wechat: true,
         alipay: false,
@@ -90,60 +87,40 @@
           payCardNo: '',
           applyUserType: 'C',
           amount: 100
-        }
+        },
+        bankcardList: []
       };
     },
-    created() {
+    mounted() {
       setTitle('提现');
       this.pullUpLoad = null;
-    },
-    mounted() {
       this.getQxFee('USERQXFL');
       this.getQxFee('USERMONTIMES');
       this.getQxFee('USERQXBS');
       this.getQxFee('QXDBZDJE');
       this.getQxFee('USERDZTS');
-      userAccount().then(data => {
-        this.userAmount = data.filter(item => {
+      Promise.all([
+        userAccount(),
+        paymentType(),
+        getBankCardList()
+      ]).then(([res1, res2, res3]) => {
+        this.userAmount = res1.filter(item => {
           return item.currency === 'CNY';
         });
         this.config.accountNumber = this.userAmount[0].accountNumber;
         sessionStorage.setItem('accountNumber', this.userAmount[0].accountNumber);
-      });
-      paymentType().then(data => {
-        data.forEach(item => {
+        res2.forEach(item => {
           this.payList.push({bankName: item.bankName});
         });
-      });
+        this.bankcardList = res3;
+      }).catch(() => {});
     },
     methods: {
       formatAmount(amount) {
         return formatAmount(amount);
       },
-      getTel() {
-        if (this.telephone) {
-          return `tel://${this.telephone}`;
-        } else {
-          return '';
-        }
-      },
       go(url) {
         this.$router.push(url);
-      },
-      selectPayType(index) {
-        if(index === 1) {
-          this.wechat = true;
-          this.alipay = false;
-          this.balance = false;
-        } else if(index === 2) {
-          this.wechat = false;
-          this.alipay = true;
-          this.balance = false;
-        } else if(index === 3) {
-          this.wechat = false;
-          this.alipay = false;
-          this.balance = true;
-        }
       },
       getQxFee(cKey) {
         getSystemConfigCkey(cKey).then(data => {
@@ -178,6 +155,11 @@
             }, 1000);
           }
         });
+      },
+      formatBankcardNum(num) {
+        let reg = /^(\d{4})\d+(\d{4})$/;
+        num = num.replace(reg, '**** **** **** $1');
+        return num;
       }
     },
     components: {
@@ -209,8 +191,10 @@
         // padding: 0.88rem 0 0 0;
         // height: 5rem;
         background: #f5f5f5;
-        div {
+        .scroll-content {
           padding: 0 0.3rem;
+        }
+        div {
           background: #ffffff;
         }
         .bk {
@@ -294,7 +278,6 @@
         }
       }
       .btn {
-        padding: 0 0.3rem;
         padding-bottom: 2rem;
         button {
           width: 100%;

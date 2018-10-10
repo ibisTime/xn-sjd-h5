@@ -11,7 +11,7 @@
         <img src="./more@2x.png" alt="" class="fr more">
       </div>
       <div class="item" @click="go('/set-money')">
-        <span>设置资金密码</span>
+        <span>设置支付密码</span>
         <img src="./more@2x.png" alt="" class="fr more">
       </div>
       <div class="item" @click="go('/userInfo')">

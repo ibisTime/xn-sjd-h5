@@ -7,6 +7,8 @@ Vue.use(Router);
 const Login = () => import('@/pages/login/login');
 // 注册页
 const Register = () => import('@/pages/register/register');
+// 忘记密码
+const ForgetPwd = () => import('@/pages/forget-pwd/forget-pwd');
 // 首页
 const Home = () => import('@/pages/home/home');
 // 协议页
@@ -47,7 +49,7 @@ const CarbonBubble = () => import('@/pages/carbonBubble/carbonBubble');
 const Settings = () => import('@/pages/settings/settings');
 // 修改手机号
 const ChangeMobile = () => import('@/pages/change-mobile/change-mobile');
-// 设置资金密码
+// 设置支付密码
 const setMoneyPaw = () => import('@/pages/moneyPaw/moneyPaw');
 // 银行卡列表页
 const Bankcard = () => import('@/pages/bankcard/bankcard');
@@ -59,6 +61,8 @@ const Address = () => import('@/pages/address-list/address-list');
 const AddressAddEdit = () => import('@/pages/address-addedit/address-addedit');
 // 古树认养(列表页）
 const ProductList = () => import('@/pages/product-list/product-list');
+// 热门古树(列表页）
+const HotProductList = () => import('@/pages/hot-product-list/hot-product-list');
 // 古树详情
 const ProductDetail = () => import('@/pages/product-detail/product-detail');
 // 古树认养-树木查看
@@ -97,6 +101,10 @@ const EmotionChannel = () => import('@/pages/emotion-channel/emotion-channel');
 const ArticleDetail = () => import('@/pages/article-detail/article-detail');
 // 商城
 const Mall = () => import('@/pages/mall/mall');
+// 公告
+const Notices = () => import('@/pages/notices/notices');
+// 公告
+const NoticeDetail = () => import('@/pages/notice-detail/notice-detail');
 export default new Router({
   routes: [
     {
@@ -110,6 +118,10 @@ export default new Router({
     {
       path: '/register',
       component: Register
+    },
+    {
+      path: '/forget-pwd',
+      component: ForgetPwd
     },
     {
       path: '/home',
@@ -186,6 +198,10 @@ export default new Router({
     {
       path: '/product-list',
       component: ProductList
+    },
+    {
+      path: '/hot-product-list',
+      component: HotProductList
     },
     {
       path: '/product-detail',
@@ -298,6 +314,14 @@ export default new Router({
     {
       path: '/tpp-rules',
       component: tppRules
+    },
+    {
+      path: '/notices',
+      component: Notices
+    },
+    {
+      path: '/notice-detail',
+      component: NoticeDetail
     }
   ]
 });

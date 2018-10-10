@@ -24,7 +24,7 @@
     </div>
     <div class="register-findpwd">
       <span class="fl" @click="go('/register')">立即注册</span>
-      <span class="fr">忘记密码？</span>
+      <span class="fr" @click="go('/forget-pwd')">忘记密码？</span>
     </div>
     <!--<div class="wx-login" @click="AppId">-->
       <!--<span class="wing"></span>-->

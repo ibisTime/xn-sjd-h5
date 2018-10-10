@@ -15,7 +15,7 @@
             <span class="item-status">{{formatStatus(detail.status)}}</span>
           </div>
           <div class="info">
-            <img src="./tree@3x.png">
+            <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
             <div class="text">
               <p class="title">{{detail.product.name}}</p>
               <p class="position">{{detail.product.province}} {{detail.product.city}} {{detail.product.area}}</p>
@@ -53,6 +53,7 @@
   import MHeader from 'components/m-header/m-header';
   import { formatAmount, formatImg, formatDate } from 'common/js/util';
   import { getOrderDetail, getOrganizeOrderDetail, cancelOrder } from 'api/biz';
+  import defaultImg from './tree@3x.png';
 
   export default {
     data() {
@@ -128,6 +129,12 @@
       },
       goTree() {
         this.go(`/my-tree?aTCode=${this.detail.adoptOrderTreeList[0].code}`);
+      },
+      getImgSyl(imgs) {
+        let img = imgs ? formatImg(imgs) : defaultImg;
+        return {
+          backgroundImage: `url(${img})`
+        };
       }
     },
     mounted() {
@@ -233,12 +240,17 @@
           display: flex;
           font-size: 0;
           padding: 0.3rem;
-          img {
+          .imgWrap {
             width: 1.5rem;
             height: 1.5rem;
             flex: 0 0 1.5rem;
             margin-right: 0.2rem;
             border-radius: 0.08rem;
+            position: relative;
+            overflow: hidden;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
           }
           .text {
             display: flex;

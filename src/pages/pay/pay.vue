@@ -160,14 +160,14 @@
       pay() {
         this.payType = this.wechat ? '5' : this.alipay ? '3' : '1';
         if(!this.userDetail.tradepwdFlag && this.payType === '1') {
-          this.text = '请先去设置交易密码';
+          this.text = '请先去设置支付密码';
           this.$refs.toast.show();
           setTimeout(() => {
             this.$router.push('/set-money');
           }, 1000);
         } else {
           if(this.payType === '1') {
-            this.inputText = '交易密码';
+            this.inputText = '支付密码';
             // this.curItem = item;
             this.$refs.confirmInput.show();
           } else {
@@ -233,7 +233,7 @@
           this.$router.push('/my-order');
         }, 1000);
       },
-      // 输入交易密码后点击确定执行的方法
+      // 输入支付密码后点击确定执行的方法
       handleInputConfirm(text) {
         this.pwd = text;
         this.payOrder();

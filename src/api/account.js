@@ -94,6 +94,20 @@ export function getBankCardList() {
   });
 }
 
+// 详情查银行卡
+export function getBankCardDetail(data) {
+  return fetch(802027, {
+    ...data
+  });
+}
+
+// 删除银行卡
+export function delBankCard(data) {
+  return fetch(802021, {
+    ...data
+  });
+}
+
 // 获取签到积分
 export function getSignIntegral(accountNumber, bizType) {
   return fetch(802900, {

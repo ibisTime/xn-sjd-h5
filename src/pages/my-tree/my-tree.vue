@@ -475,7 +475,7 @@ export default {
           code: item.code,
           userId: this.currentHolder
         }).then(() => {
-          this.getTppList();
+          this.getTppList({adoptTreeCode: this.adoptTreeCode});
         }, () => { this.loading = false; });
       } else {
         return;

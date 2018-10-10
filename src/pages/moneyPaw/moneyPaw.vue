@@ -1,7 +1,7 @@
 <template>
   <transition name="slide">
     <div class="change-mobile-wrapper">
-      <!--<m-header class="cate-header" title="设置资金密码"></m-header>-->
+      <!--<m-header class="cate-header" title="设置支付密码"></m-header>-->
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
@@ -20,7 +20,7 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="moneyPaw" v-validate="'required'" v-model="moneyPaw" placeholder="请输入资金密码">
+            <input type="password" class="item-input" name="moneyPaw" v-validate="'required'" v-model="moneyPaw" placeholder="请输入支付密码">
             <span v-show="errors.has('moneyPaw')" class="error-tip">{{errors.first('moneyPaw')}}</span>
           </div>
         </div>
@@ -55,7 +55,7 @@
       };
     },
     mounted() {
-      setTitle('设置资金密码');
+      setTitle('设置支付密码');
       this.userId = getCookie('userId');
       this.loading = true;
       Promise.all([
@@ -107,7 +107,7 @@
               return;
             }
             if(!this.moneyPaw) {
-              this.text = '请填写资金密码';
+              this.text = '请填写支付密码';
               this.$refs.toast.show();
               return;
             }

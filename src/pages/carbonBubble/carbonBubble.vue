@@ -132,12 +132,17 @@
         text-align: center;
       }
       .content {
-        padding: 0.96rem 0.3rem;
+        margin: 0.88rem 0.3rem;
         margin-bottom: 0.98rem;
         .in-content {
           border-top-left-radius: 0.12rem;
           border-top-right-radius: 0.12rem;
           background: #fff;
+          position: fixed;
+          top: 0.88rem;
+          left: 0.3rem;
+          right: 0.3rem;
+          bottom: 0;
           .card {
             height: 2.8rem;
             border-radius: 0.12rem;
@@ -160,6 +165,12 @@
           }
           .money-list {
             background: $color-highlight-background;
+            position: absolute;
+            top: 3.05rem;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            overflow: auto;
             .money-item {
               display: flex;
               align-items: center;

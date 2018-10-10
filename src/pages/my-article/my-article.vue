@@ -8,7 +8,7 @@
         <div class="item" @click="go('/article-detail?code=' + item.code)" v-for="item in list">
           <img :src="formatImg(item.photolist[0])">
           <div class="info">
-            <p class="title">{{item.title}}</p>
+            <p class="title"><span class="title-title">{{item.title}}</span><span class="title-status">{{statusObj[item.status]}}</span></p>
             <p class="prop"><span class="date">{{formatDate(item.publishDatetime)}}</span></p>
           </div>
         </div>
@@ -27,7 +27,7 @@
   import NoResult from 'base/no-result/no-result';
   import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
   import { getArticlePage } from 'api/biz';
-  // import { getDictList } from 'api/general';
+  import { getDictList } from 'api/general';
 
   export default {
     data() {
@@ -36,16 +36,17 @@
         limit: 10,
         hasMore: true,
         loading: false,
-        list: []
+        list: [],
+        statusObj: {}
       };
     },
     mounted() {
       setTitle('我的文章');
-      // getDictList('article_status').then((res) => {
-      //   res.map((item) => {
-      //     this.statusObk[item.dkey] = item.dvalue;
-      //   });
-      // });
+      getDictList('article_status').then((res) => {
+        res.map((item) => {
+          this.statusObj[item.dkey] = item.dvalue;
+        });
+      });
       this.getPageOrders();
     },
     methods: {
@@ -137,6 +138,10 @@
             display: flex;
             justify-content: space-between;
             flex: 1;
+            .title-status {
+              font-size: 0.2rem;
+              color: red;
+            }
           }
           .prop {
             font-size: $font-size-small;

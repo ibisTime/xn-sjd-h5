@@ -95,6 +95,13 @@ export function getMessage (data) {
   });
 }
 
+// 详情查消息
+export function getMessageDetail (data) {
+  return fetch(805307, {
+    ...data
+  });
+}
+
 /**
  * 分页查询订单
  * @param {number} start

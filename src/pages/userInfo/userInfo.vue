@@ -103,7 +103,6 @@
       },
       // 保存
       action() {
-        this.sex = this.sex === '男' ? '1' : '0';
         if(!this.photos.length) {
           this.text = '请上传头像';
           this.$refs.toast.show();
@@ -112,8 +111,7 @@
             if (result) {
               this.loading = true;
               this.loadText = '修改中...';
-              console.log(this.photos);
-              console.log(this.user);
+              this.sex = this.sex === '男' ? '1' : '0';
               // 修改头像
               // 修改昵称
               // 完善资料
@@ -133,6 +131,7 @@
                 })
               ]).then(([res1, res2, res3]) => {
                 this.loading = false;
+                this.sex = this.sex === '1' ? '男' : '女';
                 if(res1.isSuccess && res2.isSuccess && res3.isSuccess) {
                   this.text = '修改成功';
                   this.$refs.toast.show();
@@ -269,6 +268,7 @@
               width: 1.1rem;
               height: 1.1rem;
               margin-top: 0.75rem;
+              border-radius: 50%;
             }
             .input-file {
               position: absolute;

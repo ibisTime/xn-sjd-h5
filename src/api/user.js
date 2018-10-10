@@ -376,7 +376,7 @@ export function cancelRelationship(toUser) {
   });
 }
 
-// 设置资金密码
+// 设置支付密码
 export function setUserMonPaw(config) {
   return fetch(805066, {
     userId: getUserId(),
@@ -402,6 +402,13 @@ export function changeMobile(newMobile, smsCaptcha) {
     newMobile,
     smsCaptcha,
     userId: getUserId()
+  });
+}
+
+// 重置密码
+export function reSetPwd(data) {
+  return fetch(805063, {
+    ...data
   });
 }
 

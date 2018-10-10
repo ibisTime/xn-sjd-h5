@@ -31,16 +31,16 @@
               @pullingUp="getPageOrders">
         <ul v-if="currentList">
           <li class="item" v-for="(item, index) in currentList.data" @click="goDetail(item)">
-          <div class="top">
-            <span class="item-code">{{item.code}}</span>
-            <span class="item-status">{{formatStatus(item.status)}}</span>
-          </div>
+            <div class="top">
+              <span class="item-code">{{item.code}}</span>
+              <span class="item-status">{{formatStatus(item.status)}}</span>
+            </div>
             <div class="info">
               <div class="imgWrap" :style="getImgSyl(item.product.listPic)"></div>
               <div class="text">
-                <p class="title">{{item.product.name}}</p>
+                <p class="title"><span class="title-title">{{item.product.name}}</span><span class="title-number" v-show="item.status === '3' || item.status === '4'">x{{item.treeList.length}}</span></p>
                 <p class="position">{{item.product.province}} {{item.product.city}} {{item.product.area}}</p>
-                <div class="props"><span class="duration">年限：{{item.adoptYear}}</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
+                <div class="props"><span class="duration">年限：{{item.adoptYear}}</span><span class="price" v-show="!item.jfDeductAmount">¥{{formatAmount(item.price)}}</span><span class="price" v-show="item.jfDeductAmount">¥{{formatAmount(item.payAmount)}}+{{formatAmount(item.jfDeductAmount)}}积分</span></div>
               </div>
             </div>
             <div class="clearfix btns" v-show="showBtns(item.status)">

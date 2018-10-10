@@ -178,7 +178,7 @@
           .money-list {
             background: $color-highlight-background;
             position: absolute;
-            top: 4rem;
+            top: 4.4rem;
             bottom: 0.5rem;
             width: 90%;
             .money-item {

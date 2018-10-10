@@ -5,13 +5,13 @@
       <div class="form-item border-bottom-1px">
         <div class="item-label">银行卡</div>
         <div class="item-input-wrapper">
-          <select 
-            class="item-input" 
-            name="bankName"  
-            v-validate="'required'" 
-            v-model="bankName"
+          <select
+            class="item-input"
+            name="bankName"
+            v-validate="'required'"
+            v-model="bankcardDetail.bankName"
           >
-            <option 
+            <option
               v-for="(item, index) in backCodeName"
               :key="index"
               :value="item.bankName"
@@ -23,7 +23,7 @@
       <div class="form-item border-bottom-1px">
         <div class="item-label">卡号</div>
         <div class="item-input-wrapper">
-          <input type="text" class="item-input" v-model="bankcardNumber" v-validate="'required'" name="bankcardNumber" placeholder="银行卡号">
+          <input type="text" class="item-input" v-model="bankcardDetail.bankcardNumber" v-validate="'required'" name="bankcardNumber" placeholder="银行卡号">
           <span v-show="errors.has('bankcardNumber')" class="error-tip">{{errors.first('bankcardNumber')}}</span>
         </div>
       </div>
@@ -33,7 +33,7 @@
       <div class="form-item border-bottom-1px">
         <div class="item-label">持卡人</div>
         <div class="item-input-wrapper">
-          <input type="text" class="item-input" v-model="realName" v-validate="'required'" name="realName" placeholder="持卡人姓名">
+          <input type="text" class="item-input" v-model="bankcardDetail.realName" v-validate="'required'" name="realName" placeholder="持卡人姓名">
           <span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>
         </div>
       </div>
@@ -69,11 +69,12 @@
 </template>
 <script>
   // import {SET_BANKCARD_LIST} from 'store/mutation-types';
-  import {getBankCardList, getBankCodeList, addBankCard, editBankCard} from 'api/account';
+  import {getBankCardList, getBankCodeList, addBankCard, editBankCard, getBankCardDetail} from 'api/account';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
   import MHeader from 'components/m-header/m-header';
   import {sendCaptcha} from 'api/general';
+  import { setTitle } from 'common/js/util';
 
   export default {
     data() {
@@ -96,23 +97,36 @@
         userBackCode: '802020',
         backCodeName: [],
         isEdit: false,
-        code: ''
+        code: '',
+        bankcardDetail: {bankcardNumber: '', bankName: '', realName: ''}
       };
     },
     created() {
-      if (this.$route.params.id) {
-        Promise.all([
-          this._getBankCardList(),
-          this._getBankCodeList()
-        ]).then(([bankCard, bankCode]) => {
-          this._initPageData(bankCard, bankCode);
-        }).catch(() => {});
+      // if (this.$route.params.id) {
+      //   Promise.all([
+      //     this._getBankCardList(),
+      //     this._getBankCodeList()
+      //   ]).then(([bankCard, bankCode]) => {
+      //     this._initPageData(bankCard, bankCode);
+      //   }).catch(() => {});
+      // } else {
+      //   Promise.all([
+      //     this._getBankCardList(),
+      //     this._getBankCodeList()
+      //   ]).then(() => {}).catch(() => {});
+      // }
+      if(this.$route.query.code) {
+        this.code = this.$route.query.code;
+        // 有银行卡code，则进行修改银行卡
+        setTitle('修改银行卡');
+        this.bankTitle = '修改银行卡';
+        this.isEdit = true;
+        this.getBankCardDetail();
       } else {
-        Promise.all([
-          this._getBankCardList(),
-          this._getBankCodeList()
-        ]).then(() => {}).catch(() => {});
+        // 新增银行卡
+        setTitle('添加银行卡');
       }
+      this._getBankCodeList();
     },
     methods: {
       // 发送验证码
@@ -232,12 +246,12 @@
         this.$validator.validateAll().then((result) => {
           if (result) {
             let param = {
-              bankcardNumber: this.bankcardNumber,
+              bankcardNumber: this.bankcardDetail.bankcardNumber,
               bankCode: setBackCode[0].bankCode,
-              bankName: this.bankName,
+              bankName: this.bankcardDetail.bankName,
               subbranch: this.subbranch,
               bindMobile: this.bindMobile,
-              realName: this.realName
+              realName: this.bankcardDetail.realName
             };
             if (this.isEdit) {
               param.code = this.code;
@@ -270,15 +284,20 @@
           this.setting = false;
           this.text = '修改成功';
           this.$refs.toast.show();
-          this.editBankCard({
-            bankcard: param
-          });
           setTimeout(() => {
             this.$router.push('/bankcard');
           }, 1000);
         }).catch(() => {
           this.setting = false;
         });
+      },
+      // 获取银行卡详情
+      getBankCardDetail() {
+        getBankCardDetail({
+          code: this.code
+        }).then((res) => {
+          this.bankcardDetail = res;
+        }).catch(() => { });
       }
     },
     components: {
