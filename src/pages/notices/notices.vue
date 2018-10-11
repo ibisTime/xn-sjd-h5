@@ -47,7 +47,11 @@
         this.$router.push(url);
       },
       cut(str, num) {
-        return str.slice(1, num) + '...';
+        if(str.length > num) {
+          return str.slice(0, num) + '...';
+        } else {
+          return str;
+        }
       }
     },
     components: {

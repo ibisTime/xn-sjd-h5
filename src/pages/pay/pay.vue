@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="footer">
-        <span>金额：<span>{{formatAmount(amount)}}</span><span>元</span></span>
+        <span>金额：<span>{{isPublish ? formatAmount(amount-rate.cnyAmount) : formatAmount(amount)}}</span><span>元</span></span>
         <button class="fr" @click="pay">支付</button>
       </div>
     </div>
@@ -236,7 +236,14 @@
       // 输入支付密码后点击确定执行的方法
       handleInputConfirm(text) {
         this.pwd = text;
-        this.payOrder();
+        if(!this.pwd) {
+          this.text = '请填写支付密码';
+          this.$refs.toast.show();
+          this.inputText = '支付密码';
+          this.$refs.confirmInput.show();
+        } else {
+          this.payOrder();
+        }
       }
     },
     components: {

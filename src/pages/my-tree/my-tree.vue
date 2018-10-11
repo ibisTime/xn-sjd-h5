@@ -28,10 +28,10 @@
         <!-- 证书 -->
         <div class="certification" @click="certification" v-show="!other">
           <img src="./certification@2x.png" class="certification">
-          <span>x5</span>
+          <span>x{{certificationNum}}</span>
         </div>
         <!-- 礼物 -->
-        <div class="me" @click="go('/gift')">
+        <div class="me" @click="go('/gift?code=' + adoptTreeCode)">
           <img :src="getAvatar()">
           <span>礼物</span>
         </div>
@@ -223,7 +223,7 @@
           <!--</div>-->
         </div>
         <div class="score">
-          <span>我的积分：{{jf}} </span><img src="./more@2x.png">
+          <span>我的积分：{{formatAmount(jf)}} </span><img src="./more@2x.png">
         </div>
       </div>
     </div>
@@ -264,7 +264,7 @@
     </div>
     <convert v-show="convertFlag" :propsDetail="propsData.buyItem" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
     <convert-success v-show="convertSuccessFlag" :propsDetail="propsData.buyItem" @close="close('convertSuccessFlag')" @useProps="useProps"></convert-success>
-    <certification v-show="certificationFlag" @close="close('certificationFlag')"></certification>
+    <certification v-show="certificationFlag" @close="close('certificationFlag')" :certificationArr="certificationArr" :head="getAvatar()" :name="userDetail.nickname"></certification>
     <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="String(presentTppQuantity)"></juanzeng>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
@@ -283,7 +283,7 @@ import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
-        getListProps, buyProps, getPropsOrder, useProps, getAccount } from 'api/biz';
+        getListProps, buyProps, getPropsOrder, useProps, getAccount, getListUserTree } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import { getUserDetail } from 'api/user';
 import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
@@ -355,7 +355,9 @@ export default {
       propCurrentIndex: 0, // 道具配置
       propsList: [], // 道具数据,
       jf: 0,  // 我有多少积分
-      userDetail: {}
+      userDetail: {},
+      certificationNum: 0,   // 我有多少证书
+      certificationArr: []  // 证书列表
     };
   },
   mounted() {
@@ -363,6 +365,7 @@ export default {
     this.userId = getCookie('userId');
     this.other = this.$route.query.other || 0;  // 是否别人的主页
     this.currentHolder = this.$route.query.currentHolder || '';
+    this.adoptTreeCode = this.$route.query.aTCode; // 认养权编号
     if(this.other) {
       this.title = 'TA的树';
       this.borderTitle = 'TA的动态';
@@ -373,7 +376,6 @@ export default {
   },
   methods: {
     getInitData() {
-      this.adoptTreeCode = this.$route.query.aTCode; // 认养权编号
       Promise.all([
         this.getTppList({
           adoptTreeCode: this.adoptTreeCode
@@ -383,7 +385,8 @@ export default {
         this.getTreeDetail(),
         this.getPropList(),
         this.getJF(),
-        this.getUserDetail()
+        this.getUserDetail(),
+        this.getListUserTree()
       ]).then(() => {
         this.loading = false;
       }).catch(() => { this.loading = false; });
@@ -409,6 +412,16 @@ export default {
           this.$refs.propScroll.scroll.refresh();
         }, 1000);
       }).catch(() => { this.loading = false; });
+    },
+    // 查认养权(也就是证书）
+    getListUserTree() {
+      getListUserTree({
+        currentHolder: this.userId
+      }).then((res) => {
+        this.certificationNum = res.length;
+        this.certificationArr = res;
+        console.log(this.certificationArr);
+      }).catch(() => {});
     },
     // 查询树详情
     getTreeDetail() {
@@ -557,7 +570,10 @@ export default {
       this.flag = true;
       this.propFlag = true;
       setTimeout(() => {
-        this.$refs.propScroll.scroll.refresh();
+        // this.$refs.propScroll.scroll.refresh();
+        let e = document.createEvent('HTMLEvents');
+        e.initEvent('resize', true, true);
+        window.dispatchEvent(e);
       }, 20);
     },
     danmu() {
@@ -608,6 +624,11 @@ export default {
     },
     certification() {
       this.certificationFlag = true;
+      setTimeout(() => {
+        let e = document.createEvent('HTMLEvents');
+        e.initEvent('resize', true, true);
+        window.dispatchEvent(e);
+      });
     },
     juanzeng() {
       this.juanzengFlag = true;

@@ -205,7 +205,7 @@
       },
       formatBankcardNum(num) {
         let reg = /^(\d{4})\d+(\d{4})$/;
-        num = num.replace(reg, '**** **** **** $1');
+        num = num.replace(reg, '$1 **** **** $2');
         return num;
       }
       // ...mapMutations({

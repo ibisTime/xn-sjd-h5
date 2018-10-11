@@ -140,6 +140,7 @@
     bottom: 0.98rem;
     width: 100%;
     background: #fff;
+    z-index: 100;
     .protocol {
       margin: 0 0;
       position: absolute;

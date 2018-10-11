@@ -70,7 +70,8 @@
         GiveTree({
           code: this.adoptTreeCode,
           toMobile: this.mobile
-        }).then(() => {
+        }).then((res) => {
+          this.$refs.toast.show();
           this.go(`/my-tree?aTCode=${this.adoptTreeCode}`);
         }, () => {});
       },

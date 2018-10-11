@@ -238,10 +238,7 @@
               value: item.name
             });
           });
-          console.log(this.categorys);
-          console.log(this.index);
           this.type = this.categorys[this.index].key;
-          console.log(this.type);
           this.getUserTree();
           this.getDynamicsList();
         }).catch(() => { this.loading = false; });
@@ -308,7 +305,7 @@
       getUserTree() {
         this.type = this.categorys[this.index].key;
         this.currentHolder = this.$route.query.currentHolder || getUserId();
-        return getListUserTree({currentHolder: this.currentHolder, parentCategoryCode: this.type}).then((userTree) => {
+        return getListUserTree({currentHolder: this.currentHolder, parentCategoryCode: this.type, statusList: ['1', '2', '3']}).then((userTree) => {
           this.userTree = userTree;
           this.loading = false;
         }, () => {});

@@ -6,12 +6,12 @@
         <Scroll :pullUpLoad="pullUpLoad">
           <div class="in-content">
             <div class="user-info-list">
-              <div>
+              <div class="title">
                 <input type="text" name="title" v-model="title" v-validate="'required'" placeholder="标题">
                 <span v-show="errors.has('title')" class="error-tip">{{errors.first('title')}}</span>
               </div>
               <div class="text">
-                <textarea v-model="text" v-validate="'required'" rows="5" class="item-input" placeholder="发表下你的感想吧"></textarea>
+                <textarea v-model="context" v-validate="'required'" rows="5" class="item-input" placeholder="发表下你的感想吧"></textarea>
               </div>
             </div>
             <div class="avatar">
@@ -79,6 +79,7 @@
         adoptTreeCode: '',
         openLevel: '1',
         title: '',
+        context: '',
         text: '',
         token: '',
         uploadUrl: '',
@@ -97,6 +98,7 @@
       ]).then(([res1, res2]) => {
         this.token = res1.uploadToken;
         this.list = res2;
+        this.adoptTreeCode = res2[0].code;
         this.loading = false;
       }).catch(() => { this.loading = false; });
     },
@@ -120,26 +122,35 @@
           photoArr.push(item.key);
         });
         let photo = photoArr.join('||');
-        addArticle({
-          title: this.title,
-          content: this.text,
-          photo: photo,
-          openLevel: this.openLevel,
-          adoptTreeCode: this.adoptTreeCode,
-          updater: this.userId,
-          publishUserId: this.userId,
-          type: '2',
-          dealType: '1'
-        }).then((res) => {
-          if(res.code) {
-            this.text = '发布成功，待平台审核';
-            this.$refs.toast.show();
-            this.loading = false;
-            setTimeout(() => {
-              this.$router.back();
-            }, 1000);
+        this.$validator.validateAll().then((result) => {
+          if(result) {
+            addArticle({
+              title: this.title,
+              content: this.context,
+              photo: photo,
+              openLevel: this.openLevel,
+              adoptTreeCode: this.adoptTreeCode,
+              updater: this.userId,
+              publishUserId: this.userId,
+              type: '2',
+              dealType: '1'
+            }).then((res) => {
+              if(res.code) {
+                this.text = '发布成功，待平台审核';
+                this.$refs.toast.show();
+                this.loading = false;
+                setTimeout(() => {
+                  this.$router.back();
+                }, 1000);
+              }
+            }).catch(() => { this.loading = false; });
+          } else {
+            if(!this.context) {
+              this.text = '请填写内容';
+              this.$refs.toast.show();
+            }
           }
-        }).catch(() => { this.loading = false; });
+        });
       },
       /**
        * 从相册中选择图片
@@ -246,7 +257,7 @@
           .avatar {
             border-bottom: 1px solid $color-border;
             position: relative;
-            padding: 0 0.3rem;
+            padding: 0.3rem;
             font-size: 0;
             .avatar-photos {
               width: 1.6rem;
@@ -319,13 +330,23 @@
                 background: #fff;
               }
             }
+            .title {
+              text-align: left;
+              input[type="text"] {
+                width: 80%;
+                color: #333;
+              }
+            }
             .text {
-
+              padding-top: 0.3rem;
               border: none;
               .item-input {
                 line-height: 0.5rem;
                 width: 100%;
               }
+            }
+            .error-tip {
+              color: red;
             }
           }
         }

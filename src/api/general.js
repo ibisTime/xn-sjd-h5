@@ -129,6 +129,14 @@ export function sendCaptcha(data) {
   });
 }
 
+// 发送邮箱验证码
+export function sendCaptchaEamil(data) {
+  return fetch(630093, {
+    bizType: data.bizType,
+    email: data.email
+  });
+}
+
 // 系统参数
 export function getConfig(ckey) {
   return fetch(630047, {

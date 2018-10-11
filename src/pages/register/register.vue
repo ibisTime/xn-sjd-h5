@@ -12,20 +12,20 @@
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input captcha" v-model="captcha" name="captcha" placeholder="请输入验证码">
+            <input type="tel" class="item-input captcha" v-model="captcha" v-validate="'required'" name="captcha" placeholder="请输入验证码">
             <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
             <button :disabled="sending" @click="sendCaptcha" class="captBtn">{{captBtnText}}</button>
           </div>
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码（6～16个字符或字母组成）">
+            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码（6～16个字符或字母）">
             <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
           </div>
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="rePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码（6～16个字符或字母组成）">
+            <input type="password" class="item-input" name="rePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码（6～16个字符或字母）">
             <span v-show="errors.has('rePwd')" class="error-tip">{{errors.first('rePwd')}}</span>
           </div>
         </div>
@@ -36,13 +36,14 @@
         <img src="./checkbox.png" alt="" v-show="isChecked">
         <div class="check-border" v-show="!isChecked"></div>
       </div>
-      我已阅读并接受<span @click="go('/protocol?register=1')">《氧林产品服务条款》</span>
+      我已阅读并接受<router-link tag="span" to="/register/protocol?register=1">《氧林产品服务条款》</router-link>
     </div>
     <div class="login-btn">
       <button @click="register">注册</button>
     </div>
     <full-loading v-show="loading" :title="loadText"></full-loading>
     <toast ref="toast" :text="text"></toast>
+    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -89,7 +90,7 @@
               userRefereeType: this.type
             }).then((data) => {
               if(data.code) {
-                this.text = '注册成功，即将跳转到登陆页';
+                this.text = '注册成功，即将跳转到登录页';
                 this.$refs.toast.show();
                 this.loading = false;
                 setTimeout(() => {
@@ -208,7 +209,7 @@
               /*width: 65%;*/
             /*}*/
             input.captcha {
-              width: 65%;
+              width: 45%;
             }
             .captBtn {
               width: 2.1rem;
@@ -220,6 +221,7 @@
               margin-top: 0.16rem;
               position: relative;
               z-index: 99;
+              float: right;
             }
           }
         }

@@ -10,12 +10,11 @@
               name="bk_select"
               id="bk_select"
               class="bk_set"
-              v-model="config.payCardInfo"
+              v-model="config.payCardNo"
             >
               <option
-                :value="item.code"
+                :value="item.bankcardNumber"
                 v-for="(item, index) in bankcardList"
-                :key="index"
               >{{item.bankName}}{{formatBankcardNum(item.bankcardNumber)}}</option>
             </select>
             <img src="./more@2x.png" alt="" class="fr more">
@@ -27,20 +26,20 @@
             <p class="number"><input type="number" v-model="config.amount"></p>
             <div class="have">
               <span class="fl">可用余额 {{formatAmount(userAmount[0].amount)}} 元</span>
-              <span class="fr">全部提取</span>
+              <span class="fr" @click="withdrawAll">全部提取</span>
             </div>
           </div>
           <div class="gray"></div>
           <div class="recharge">
             <p>提现说明</p>
-            <textarea name="" id="" rows="2" v-model="config.applyNote"></textarea>
+            <textarea name="" rows="2" v-model="config.applyNote"></textarea>
           </div>
           <div class="gray"></div>
           <div class="withdraw-rules">
             <p>提取规则：</p>
-            <p>1.每月最大提现次数{{maxQx}}次；</p>
-            <p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>
-            <p>3.T+{{qxDay}}到账</p>
+            <p v-for="(item, index) in sysConfig">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
+            <!--<p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>-->
+            <!--<p>3.T+{{qxDay}}到账</p>-->
           </div>
           <div class="btn"><button @click="userTxMoney">提现</button></div>
         </Scroll>
@@ -54,9 +53,11 @@
 <script>
   import MHeader from 'components/m-header/m-header';
   import {setTitle, formatAmount} from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
   import {paymentType, payApplyFor, userAccount} from 'api/biz';
   import { getBankCardList } from 'api/account';
-  import {getSystemConfigCkey} from 'api/general';
+  import {getSystemConfigPage} from 'api/general';
+  import { getUserDetail } from 'api/user';
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
@@ -86,24 +87,31 @@
           applyNote: '',
           payCardNo: '',
           applyUserType: 'C',
-          amount: 100
+          amount: '',
+          bankName: '',
+          bankcardNumber: ''
         },
-        bankcardList: []
+        bankcardList: [],
+        userDetail: {},
+        sysConfig: []
       };
     },
     mounted() {
       setTitle('提现');
+      let userId = getCookie('userId');
       this.pullUpLoad = null;
-      this.getQxFee('USERQXFL');
-      this.getQxFee('USERMONTIMES');
-      this.getQxFee('USERQXBS');
-      this.getQxFee('QXDBZDJE');
-      this.getQxFee('USERDZTS');
+      // this.getQxFee('USERQXFL');
+      // this.getQxFee('USERMONTIMES');
+      // this.getQxFee('USERQXBS');
+      // this.getQxFee('QXDBZDJE');
+      // this.getQxFee('USERDZTS');
+      this.getConfig();
       Promise.all([
         userAccount(),
         paymentType(),
-        getBankCardList()
-      ]).then(([res1, res2, res3]) => {
+        getBankCardList(),
+        getUserDetail({userId: userId})
+      ]).then(([res1, res2, res3, res4]) => {
         this.userAmount = res1.filter(item => {
           return item.currency === 'CNY';
         });
@@ -112,7 +120,17 @@
         res2.forEach(item => {
           this.payList.push({bankName: item.bankName});
         });
-        this.bankcardList = res3;
+        if(res3.length) {
+          this.bankcardList = res3;
+          this.config.payCardNo = res3[0].bankcardNumber;
+        } else {
+          this.errMsg = '暂无银行卡，即将前往添加...';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/bankcard-addedit');
+          }, 1000);
+        }
+        this.userDetail = res4;
       }).catch(() => {});
     },
     methods: {
@@ -122,19 +140,62 @@
       go(url) {
         this.$router.push(url);
       },
-      getQxFee(cKey) {
-        getSystemConfigCkey(cKey).then(data => {
-          switch(cKey) {
-            case 'USERQXFL': this.qxFee = parseFloat(data.cvalue) * 100; break;
-            case 'USERMONTIMES': this.maxQx = parseFloat(data.cvalue); break;
-            case 'USERQXBS': this.qxBei = parseFloat(data.cvalue); break;
-            case 'QXDBZDJE': this.dbiMax = parseFloat(data.cvalue); break;
-            case 'USERDZTS': this.qxDay = parseFloat(data.cvalue); break;
-          }
+      // getQxFee(cKey) {
+      //   getSystemConfigCkey(cKey).then(data => {
+      //     switch(cKey) {
+      //       case 'USERQXFL': this.qxFee = parseFloat(data.cvalue) * 100; break;
+      //       case 'USERMONTIMES': this.maxQx = parseFloat(data.cvalue); break;
+      //       case 'USERQXBS': this.qxBei = parseFloat(data.cvalue); break;
+      //       case 'QXDBZDJE': this.dbiMax = parseFloat(data.cvalue); break;
+      //       case 'USERDZTS': this.qxDay = parseFloat(data.cvalue); break;
+      //     }
+      //   });
+      // },
+      getConfig() {
+        getSystemConfigPage({
+          start: 1,
+          limit: 10,
+          type: 'WITH'
+        }).then(data => {
+          console.log(data);
+          this.sysConfig = data.list;
+          // switch(cKey) {
+          //   case 'USERQXFL': this.qxFee = parseFloat(data.cvalue) * 100; break;
+          //   case 'USERMONTIMES': this.maxQx = parseFloat(data.cvalue); break;
+          //   case 'USERQXBS': this.qxBei = parseFloat(data.cvalue); break;
+          //   case 'QXDBZDJE': this.dbiMax = parseFloat(data.cvalue); break;
+          //   case 'USERDZTS': this.qxDay = parseFloat(data.cvalue); break;
+          // }
         });
       },
       userTxMoney() {
-        this.$refs.confirmInput.show();
+        if(this.config.payCardNo && this.config.amount && this.config.amount % this.qxBei === 0 && this.userDetail.tradepwdFlag) {
+          this.$refs.confirmInput.show();
+        } else {
+          if(!this.config.payCardNo) {
+            this.errMsg = '请选择银行卡';
+            this.$refs.toast.show();
+            return;
+          }
+          if(!this.config.amount) {
+            this.errMsg = '请填写取现金额';
+            this.$refs.toast.show();
+            return;
+          }
+          if(this.config.amount % this.qxBei !== 0) {
+            this.errMsg = `提现金额必须是${this.qxBei}的倍数`;
+            this.$refs.toast.show();
+            return;
+          }
+          if(!this.userDetail.tradepwdFlag) {
+            this.errMsg = '请先去设置支付密码';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.$router.push('/set-money');
+            }, 1000);
+            return;
+          }
+        }
       },
       handleInputConfirm(data) {
         let amount = (this.config.amount * 1000).toString();
@@ -148,7 +209,7 @@
             this.text = this.errMsg;
             this.$refs.toast.show();
           }else{
-            this.text = '操作成功';
+            this.errMsg = '操作成功,待平台审核';
             this.$refs.toast.show();
             setTimeout(() => {
               this.$router.push('/me');
@@ -158,8 +219,11 @@
       },
       formatBankcardNum(num) {
         let reg = /^(\d{4})\d+(\d{4})$/;
-        num = num.replace(reg, '**** **** **** $1');
+        num = num.replace(reg, '$1 **** **** $2');
         return num;
+      },
+      withdrawAll() {
+        this.config.amount = formatAmount(this.userAmount[0].amount);
       }
     },
     components: {
@@ -174,6 +238,11 @@
   @import "~common/scss/variable";
   .me-wrapper {
     background: #fff;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    top: 0;
+    left: 0;
     .fl {
       float: left;
     }

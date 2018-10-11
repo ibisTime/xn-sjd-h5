@@ -1,14 +1,17 @@
 <template>
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="我的订单"></m-header>
-    <div class="type">
-      <span @click="changeType(0)" :class="type === 0 ? 'active' : ''">全部</span>
-      <span @click="changeType(1)" :class="type === 1 ? 'active' : ''">个人</span>
-      <span @click="changeType(2)" :class="type === 2 ? 'active' : ''">定向</span>
-      <span @click="changeType(3)" :class="type === 3 ? 'active' : ''">集体</span>
-      <span @click="changeType(4)" :class="type === 4 ? 'active' : ''">捐赠</span>
-    </div>
+    <!--<div class="type">-->
+      <!--<span @click="changeType(0)" :class="type === 0 ? 'active' : ''">全部</span>-->
+      <!--<span @click="changeType(1)" :class="type === 1 ? 'active' : ''">个人</span>-->
+      <!--<span @click="changeType(2)" :class="type === 2 ? 'active' : ''">定向</span>-->
+      <!--<span @click="changeType(3)" :class="type === 3 ? 'active' : ''">集体</span>-->
+      <!--<span @click="changeType(4)" :class="type === 4 ? 'active' : ''">捐赠</span>-->
+    <!--</div>-->
     <div class="category-wrapper">
+      <category-scroll :currentIndex="currentIndexSell"
+                       :categorys="categorysSell"
+                       @select="selectCategorySell"></category-scroll>
       <category-scroll :currentIndex="currentIndex"
                        :categorys="categorys"
                        @select="selectCategory"></category-scroll>
@@ -72,7 +75,9 @@
   import {mapGetters, mapMutations, mapActions} from 'vuex';
   import {SET_ORDER_LIST, SET_CURRENT_ORDER} from 'store/mutation-types';
   import {getPageOrders, cancelOrder} from 'api/biz';
+  import { getDictList } from 'api/general';
   import {formatAmount, formatImg, setTitle} from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
   import defaultImg from './tree@3x.png';
 
   export default {
@@ -85,15 +90,29 @@
         fetching: false,
         fetchText: '',
         categorys: CATEGORYS,
+        categorysSell: [{key: 'all', value: '全部'}],
         currentIndex: +this.$route.query.index || 0,
         text: '',
         inputText: '',
-        toastText: ''
+        toastText: '',
+        sellTypeObj: {},
+        currentIndexSell: +this.$route.query.index || 0
       };
     },
-    created() {
+    mounted() {
       this.first = true;
-      this.getInitData();
+      this.userId = getCookie('userId');
+      if(this.userId) {
+        this.getInitData();
+      } else {
+        this.toastText = '您未登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 500);
+      }
+      // this.toastText = this.userId;
+      // this.$refs.toast.show();
     },
     computed: {
       currentList() {
@@ -114,6 +133,7 @@
     },
     methods: {
       getInitData() {
+        this.getCategorysSell();
         if (this.shouldGetData()) {
           this.first = false;
           // 清除缓存的订单列表数据
@@ -127,6 +147,19 @@
           return this.first;
         }
         return false;
+      },
+      // 获取销售分类
+      getCategorysSell() {
+        getDictList('sell_type').then((res) => {
+          res.map((item) => {
+            this.categorysSell.push({
+              key: item.dkey,
+              value: item.dvalue
+            });
+            this.sellTypeObj[item.dkey] = item.dvalue;
+          });
+          console.log(this.sellTypeObj);
+        }).catch(() => {});
       },
       getImgSyl(imgs) {
         let img = imgs ? formatImg(imgs) : defaultImg;
@@ -180,6 +213,17 @@
       selectCategory(index) {
         this.currentIndex = index;
         this.$refs.scroll.scrollTo(0, 0);
+        if (!this.currentList.data.length && this.currentList.hasMore) {
+          this.getPageOrders();
+        }
+      },
+      selectCategorySell(index) {
+        this.currentIndexSell = index;
+        this.$refs.scroll.scrollTo(0, 0);
+        this.type = index;
+        this.first = false;
+        // 清除缓存的订单列表数据
+        this.setOrderList({});
         if (!this.currentList.data.length && this.currentList.hasMore) {
           this.getPageOrders();
         }
@@ -297,10 +341,11 @@
       width: 100%;
       z-index: 100;
       overflow: hidden;
-      height: 0.9rem;
+      height: 1.8em;
       line-height: 0.9rem;
       background: #fff;
       border-bottom: 1px solid $color-border;
+      margin-top: 0.9rem;
     }
     .category-item{
       padding: 0.1rem 0.33rem;

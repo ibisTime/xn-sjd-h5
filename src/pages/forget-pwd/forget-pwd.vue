@@ -68,7 +68,7 @@
               smsCaptcha: this.captcha
             }).then((data) => {
               if(data.isSuccess) {
-                this.text = '重置成功，即将跳转到登陆页';
+                this.text = '重置成功，即将跳转到登录页';
                 this.$refs.toast.show();
                 this.loading = false;
                 setTimeout(() => {

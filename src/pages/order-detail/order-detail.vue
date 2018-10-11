@@ -34,7 +34,7 @@
       <div class="btn cancel" v-show="showCancelBtn(detail.status)" @click="_cancelOrder(detail)">取消订单</div>
       <div class="btn" v-show="showPayBtn(detail.status)" @click="payOrder(detail)">立即支付</div>
     </div>
-    <div class="btns" v-show="detail.status === '3'">
+    <div class="btns" v-show="detail.adoptOrderTreeList.length && detail.adoptOrderTreeList[0].status === '2'">
       <div class="btn" @click="goTree">看看这棵树</div>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>

@@ -6,6 +6,10 @@
         <span>修改手机号</span>
         <img src="./more@2x.png" alt="" class="fr more">
       </div>
+      <div class="item" @click="go('/bind-email')">
+        <span>绑定邮箱</span>
+        <img src="./more@2x.png" alt="" class="fr more">
+      </div>
       <div class="item" @click="go('/bankcard')">
         <span>我的银行卡</span>
         <img src="./more@2x.png" alt="" class="fr more">

@@ -144,7 +144,7 @@
   .prop-wrap {
     .prop-group {
       position: relative;
-      overflow: hidden;
+      /*overflow: hidden;*/
     }
     .prop-item {
       float: left;

@@ -134,24 +134,51 @@
         // this._provinceValid();
       },
       saveAddress() {
-        if (this.errors.items.length === 0 && this.mobile && this.name && this.address) {
-          this.setting = true;
-          let param = {
-            addressee: this.name,
-            mobile: this.mobile,
-            province: this.province,
-            city: this.city,
-            district: this.district,
-            detailAddress: this.address
-          };
-          if (this.code) {
-            param.code = this.code;
-            param.isDefault = this.isDefault;
-            this._editAddress(param);
+        this.$validator.validateAll().then((result) => {
+          if(result && this.province && this.city && this.area) {
+            this.setting = true;
+            let param = {
+              addressee: this.name,
+              mobile: this.mobile,
+              province: this.province,
+              city: this.city,
+              district: this.district,
+              detailAddress: this.address
+            };
+            if (this.code) {
+              param.code = this.code;
+              param.isDefault = this.isDefault;
+              this._editAddress(param);
+            } else {
+              this._addAddress(param);
+            }
           } else {
-            this._addAddress(param);
+            if(this.result && !this.province) {
+              this.toastText = '请选择省市区';
+            } else {
+              this.toastText = '请填写完整信息';
+            }
+            this.$refs.toast.show();
           }
-        }
+        });
+        // if (this.errors.items.length === 0 && this.mobile && this.name && this.address) {
+        //   this.setting = true;
+        //   let param = {
+        //     addressee: this.name,
+        //     mobile: this.mobile,
+        //     province: this.province,
+        //     city: this.city,
+        //     district: this.district,
+        //     detailAddress: this.address
+        //   };
+        //   if (this.code) {
+        //     param.code = this.code;
+        //     param.isDefault = this.isDefault;
+        //     this._editAddress(param);
+        //   } else {
+        //     this._addAddress(param);
+        //   }
+        // }
       },
       _editAddress(param) {
         if(this.errors.items.length === 0) {

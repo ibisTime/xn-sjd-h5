@@ -2,81 +2,13 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="礼物"></m-header>
     <div class="adopt-list">
-      <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
+      <Scroll :data="giftList"
+              :hasMore="hasMore"
+              @pullingUp="getPageOrder">
+        <div class="item" @click="go('/claim-gift?code=' + item.code)" v-for="item in giftList">
+          <img :src="formatImg(item.listPic)">
           <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
-            <p class="date">2018.09.14</p>
-          </div>
-        </div>
-        <div class="item" @click="go('/carbon-bubble')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="top"><span class="name">礼物名称</span><span class="status">待领取</span></p>
+            <p class="top"><span class="name">{{item.name}}</span><span class="status">{{giftObj[item.status]}}</span></p>
             <p class="date">2018.09.14</p>
           </div>
         </div>
@@ -87,19 +19,50 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import { getGiftPage } from 'api/biz';
+  import { getDictList } from 'api/general';
+  import { formatImg } from 'common/js/util';
 
   export default {
     data() {
       return {
-        showBack: false
+        start: 1,
+        limit: 10,
+        hasMore: true,
+        giftList: [],
+        giftObj: {}
       };
     },
-    created() {
+    mounted() {
       this.pullUpLoad = null;
+      this.code = this.$route.query.adoptTreeCode;
+      this.getGiftStatus();
+      this.getPageOrder();
     },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
       go(url) {
         this.$router.push(url);
+      },
+      getGiftStatus() {
+        getDictList('gift_order_status').then((res) => {
+          res.map((item) => {
+            this.giftObj[item.dkey] = item.dvalue;
+          });
+        }).catch(() => {});
+      },
+      getPageOrder() {
+        Promise.all([
+          getGiftPage({
+            adoptTreeCode: this.code,
+            start: this.start,
+            limit: this.limit
+          })
+        ]).then(([res]) => {
+          this.giftList = res.list;
+        }).catch(() => {});
       }
     },
     components: {

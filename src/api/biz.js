@@ -262,6 +262,7 @@ export function paymentType() {
 export function payApplyFor(config) {
   return fetch(802350, {
     applyUser: getUserId(),
+    applyUserType: 'C',
     ...config
   });
 }
@@ -379,6 +380,20 @@ export function getArticlePage(data) {
 // 详情查文章
 export function getArticleDetail(data) {
   return fetch(629346, {
+    ...data
+  });
+}
+
+// 分页查礼物
+export function getGiftPage(data) {
+  return fetch(629325, {
+    ...data
+  });
+}
+
+// 详情查礼物
+export function getGiftDetail(data) {
+  return fetch(629326, {
     ...data
   });
 }

@@ -37,9 +37,9 @@
             <img src="./gift@2x.png" alt="">
             <span>我的礼物</span>
           </div>
-          <div class="item">
+          <div class="item" @click="go('/charts')">
             <img src="./notify@2x.png" alt="">
-            <span>我的通知</span>
+            <span>我的好友</span>
           </div>
         </div>
       </div>

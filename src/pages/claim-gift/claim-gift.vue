@@ -9,22 +9,22 @@
         <!--<a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>-->
         <!--</div>-->
         <!--</slider>-->
-        <img src="./../../common/image/banner-default.png" alt="" class="banner-default">
+        <img :src="formatImg(giftDetail.listPic)" class="banner-default">
         <router-link tag="div" to="/home/sign" class="sign-wrapper">
           <i class="sign-icon"></i>
         </router-link>
       </div>
       <div class="info-wait" v-show="wait">
         <div class="item">
-          <span>樟子松</span><span class="price">¥1245.0</span>
+          <span>{{giftDetail.name}}</span><span class="price">¥{{formatAmount(giftDetail.price)}}</span>
         </div>
       </div>
       <div class="info" v-show="!wait">
         <div class="item">
-          <span>礼物名称</span><span>樟子松</span>
+          <span>礼物名称</span><span>{{giftDetail.name}}</span>
         </div>
         <div class="item">
-          <span>礼物价格</span><span class="price">¥1245.0</span>
+          <span>礼物价格</span><span class="price">¥{{formatAmount(giftDetail.price)}</span>
         </div>
         <div class="item">
           <span>收货人</span><span>张三</span>
@@ -40,7 +40,7 @@
         <div class="description-title">
           <div class="border"></div>
           <span>图文详情</span>
-          <div class="description-detail" v-html="descriptionDetail"></div>
+          <div class="description-detail" v-html="descriptionDetail" ref="description"></div>
         </div>
       </div>
       </Scroll>
@@ -59,7 +59,8 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount } from 'common/js/util';
+import { formatAmount, formatImg } from 'common/js/util';
+import { getGiftDetail } from 'api/biz';
 export default {
   data() {
     return {
@@ -79,12 +80,16 @@ export default {
       flag: false,
       number: 1,
       idCode: '',
-      wait: true  // 是否为待认领，true为待认领，false为已认领
+      wait: false,  // 是否为待认领，true为待认领，false为已认领
+      giftDetail: {}
     };
   },
   methods: {
     formatAmount(amount) {
       return formatAmount(amount);
+    },
+    formatImg(img) {
+      return formatImg(img);
     },
     go(url) {
       this.$router.push(url);
@@ -106,10 +111,43 @@ export default {
     },
     confirm() {
       this.go('/protocol?sign=1');
+    },
+    getGiftDetail() {
+      getGiftDetail({
+        code: this.code
+      }).then((res) => {
+        this.giftDetail = res;
+        this.descriptionDetail = res.description;
+        if(this.giftDetail.status === '0') {
+          this.wait = true;
+        }
+      }).catch(() => {});
+    },
+    _refreshScroll() {
+      setTimeout(() => {
+        this.$refs.scroll.refresh();
+        let imgs = this.$refs.description.getElementsByTagName('img');
+        for (let i = 0; i < imgs.length; i++) {
+          let _img = imgs[i];
+          if (_img.complete) {
+            setTimeout(() => {
+              this.$refs.scroll.refresh();
+            }, 20);
+            continue;
+          }
+          _img.onload = () => {
+            setTimeout(() => {
+              this.$refs.scroll.refresh();
+            }, 20);
+          };
+        }
+      }, 20);
     }
   },
   mounted() {
     this.pullUpLoad = null;
+    this.code = this.$route.query.code;
+    this.getGiftDetail();
     // let userId;
     // if (this.$route.query.userId) {
     //   userId = this.$route.query.userId;
@@ -137,6 +175,11 @@ export default {
     //     }, 2000)
     //   }
     // }).catch(() => { this.loading = false });
+  },
+  watch: {
+    descriptionDetail() {
+      this._refreshScroll();
+    }
   },
   components: {
     FullLoading,

@@ -3,7 +3,7 @@ import Router from 'vue-router';
 
 Vue.use(Router);
 
-// 登陆页
+// 登录页
 const Login = () => import('@/pages/login/login');
 // 注册页
 const Register = () => import('@/pages/register/register');
@@ -49,6 +49,8 @@ const CarbonBubble = () => import('@/pages/carbonBubble/carbonBubble');
 const Settings = () => import('@/pages/settings/settings');
 // 修改手机号
 const ChangeMobile = () => import('@/pages/change-mobile/change-mobile');
+// 修改手机号
+const BindEmail = () => import('@/pages/bind-email/bind-email');
 // 设置支付密码
 const setMoneyPaw = () => import('@/pages/moneyPaw/moneyPaw');
 // 银行卡列表页
@@ -117,7 +119,13 @@ export default new Router({
     },
     {
       path: '/register',
-      component: Register
+      component: Register,
+      children: [
+        {
+          path: 'protocol',
+          component: Protocol
+        }
+      ]
     },
     {
       path: '/forget-pwd',
@@ -174,6 +182,10 @@ export default new Router({
     {
       path: '/change-mobile',
       component: ChangeMobile
+    },
+    {
+      path: '/bind-email',
+      component: BindEmail
     },
     {
       path: '/set-money',
