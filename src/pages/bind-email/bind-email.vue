@@ -5,7 +5,7 @@
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" name="newEmail" v-model="newEmail" v-validate="'required|email'" placeholder="请输入新邮箱地址">
+            <input type="text" class="item-input" name="newEmail" v-model="newEmail" v-validate="'required|email'" placeholder="请输入新邮箱地址">
             <span v-show="errors.has('newEmail')" class="error-tip">{{errors.first('newEmail')}}</span>
           </div>
         </div>
@@ -19,7 +19,7 @@
           </div>
         </div>
         <div class="form-btn">
-          <button :disabled="setting" @click="_changeMobile">确定</button>
+          <button :disabled="setting" @click="bindEmail">确定</button>
         </div>
         <toast ref="toast" text="修改成功"></toast>
       </div>
@@ -29,7 +29,7 @@
 <script>
   import MHeader from 'components/m-header/m-header';
   import {sendCaptchaEamil} from 'api/general';
-  import {changeMobile} from 'api/user';
+  import {bindEmail} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
   import {setTitle} from 'common/js/util';
@@ -58,7 +58,7 @@
             this.sending = true;
             this.loading = true;
             sendCaptchaEamil({
-              bizType: '805043',     // 接口号要换
+              bizType: '805086',     // 接口号要换
               email: this.newEmail
             }).then(() => {
               this.loading = false;
@@ -70,21 +70,23 @@
           }
         });
       },
-      _changeMobile() {
+      bindEmail() {
         this.$validator.validateAll().then((result) => {
           if(result) {
             this.setting = true;
             this.loading = true;
-            changeMobile(this.newMobile, this.newCaptcha)
-              .then((res) => {
-                console.log(res);
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  this.$router.push('/me');
-                }, 1000);
-              }).catch(() => {
-                this.setting = false;
-              });
+            bindEmail({
+              captcha: this.newCaptcha,
+              email: this.newEmail
+            }).then((res) => {
+              console.log(res);
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.$router.back();
+              }, 1000);
+            }).catch(() => {
+              this.setting = false;
+            });
           }
         });
       },

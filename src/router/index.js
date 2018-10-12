@@ -105,8 +105,10 @@ const ArticleDetail = () => import('@/pages/article-detail/article-detail');
 const Mall = () => import('@/pages/mall/mall');
 // 公告
 const Notices = () => import('@/pages/notices/notices');
-// 公告
+// 公告详情
 const NoticeDetail = () => import('@/pages/notice-detail/notice-detail');
+// 地图
+const Map = () => import('@/pages/map/map');
 export default new Router({
   routes: [
     {
@@ -334,6 +336,10 @@ export default new Router({
     {
       path: '/notice-detail',
       component: NoticeDetail
+    },
+    {
+      path: '/map',
+      component: Map
     }
   ]
 });

@@ -31,6 +31,7 @@
   import Scroll from 'base/scroll/scroll';
   import {formatAmount, formatDate, formatImg, setTitle} from 'common/js/util';
   import {getProductTreePage} from 'api/biz';
+  import { getDictList } from 'api/general';
   import defaultImg from './tree@3x.png';
 
   export default {
@@ -50,11 +51,7 @@
         currentIndex: +this.$route.query.index || 0,
         code: '',
         index: 0,
-        statusList: {
-          '0': '待领养',
-          '1': '待支付',
-          '2': '已领养'
-        }
+        statusList: {}
       };
     },
     methods: {
@@ -107,12 +104,20 @@
         return {
           backgroundImage: `url(${img})`
         };
+      },
+      getStatus() {
+        getDictList('tree_status').then((res) => {
+          res.map((item) => {
+            this.statusList[item.dkey] = item.dvalue;
+          });
+        }).catch(() => {});
       }
     },
     mounted() {
       setTitle('树木查看');
       this.pullUpLoad = null;
       this.loading = true;
+      this.getStatus();
       this.getPageOrders();
     },
     components: {

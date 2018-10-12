@@ -10,7 +10,7 @@
         <div class="form-item border-bottom-1px">
           <div class="item-label">省市区</div>
           <div class="item-input-wrapper">
-            <template v-if="code && province || !code">
+            <template v-if="code">
               <city-picker class="item-input"
                            :province="province"
                            :city="city"
@@ -25,7 +25,7 @@
         <div class="form-item is-textarea border-bottom-1px">
           <div class="item-label">详细地址</div>
           <div class="item-input-wrapper">
-            <textarea v-model="address" name="address" v-validate="address" rows="2" class="item-input" placeholder="请输入详细地址信息"></textarea>
+            <textarea v-model="address" name="address" v-validate="'required'" rows="2" class="item-input" placeholder="请输入详细地址信息"></textarea>
             <span v-show="errors.has('address')" class="error-tip">{{errors.first('address')}}</span>
           </div>
         </div>
@@ -44,9 +44,9 @@
           </div>
         </div>
         <div class="form-btn">
-          <button @click="saveAddress">确认认领</button>
+          <button @click="getGift">确认认领</button>
         </div>
-        <!--<full-loading v-show="showLoading"></full-loading>-->
+        <full-loading v-show="loading"></full-loading>
         <toast ref="toast" :text="toastText"></toast>
       </div>
     </div>
@@ -54,6 +54,7 @@
 </template>
 <script>
   import {addAddress, editAddress, getAddressList} from 'api/user';
+  import { getGift } from 'api/biz';
   import CityPicker from 'base/city-picker/city-picker';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
@@ -71,21 +72,16 @@
         address: '',
         addressErr: '',
         isDefault: '0',
-        showLoading: true,
+        loading: false,
         isAlert: true,
         toastText: '',
         headerTitle: '新增收货地址',
-        receiver: ''
+        receiver: '',
+        code: ''
       };
     },
-    created() {
-      this.code = this.$route.params.id || '';
-      if (this.code) {
-        this.headerTitle = '修改收货地址';
-        // this.getAddress();
-      } else {
-        // this._getAddressList();
-      }
+    mounted() {
+      this.code = this.$route.query.code;
     },
     methods: {
       getAddress() {
@@ -132,27 +128,32 @@
         this.province = prov;
         this.city = city;
         this.district = district;
-        this._provinceValid();
+        // this._provinceValid();
       },
-      saveAddress() {
-        if (this._valid()) {
-          this.setting = true;
-          let param = {
-            addressee: this.name,
-            mobile: this.mobile,
-            province: this.province,
-            city: this.city,
-            district: this.district,
-            detailAddress: this.address
-          };
-          if (this.code) {
-            param.code = this.code;
-            param.isDefault = this.isDefault;
-            this._editAddress(param);
-          } else {
-            this._addAddress(param);
+      getGift() {
+        this.$validator.validateAll().then((result) => {
+          if(result) {
+            this.loading = true;
+            getGift({
+              code: this.code,
+              reMobile: this.mobile,
+              reAddress: this.address,
+              receiver: this.receiver,
+              province: this.province,
+              city: this.city,
+              area: this.district
+            }).then((res) => {
+              this.loading = false;
+              if(res.isSuccess) {
+                this.toastText = '认领成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/gift');
+                }, 1000);
+              }
+            }).catch(() => { this.loading = false; });
           }
-        }
+        });
       },
       _editAddress(param) {
         editAddress(param).then(() => {

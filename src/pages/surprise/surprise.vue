@@ -67,13 +67,15 @@
         return formatImg(img);
       },
       give() {
-        GiveTree({
-          code: this.adoptTreeCode,
-          toMobile: this.mobile
-        }).then((res) => {
-          this.$refs.toast.show();
-          this.go(`/my-tree?aTCode=${this.adoptTreeCode}`);
-        }, () => {});
+        if(this.mobile && this.adoptTreeCode) {
+          GiveTree({
+            code: this.adoptTreeCode,
+            toMobile: this.mobile
+          }).then(() => {
+            this.$refs.toast.show();
+            this.go(`/my-tree?aTCode=${this.adoptTreeCode}`);
+          }, () => {});
+        }
       },
       go(url) {
         this.$router.push(url);

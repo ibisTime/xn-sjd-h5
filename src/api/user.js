@@ -412,3 +412,10 @@ export function reSetPwd(data) {
   });
 }
 
+// 绑定邮箱
+export function bindEmail(data) {
+  return fetch(805086, {
+    userId: getUserId(),
+    ...data
+  });
+}

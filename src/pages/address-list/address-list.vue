@@ -8,7 +8,7 @@
             <li v-for="(item, index) in addressList" :key="index" class="border-bottom-1px">
               <div class="content" @click="selectItem(item)">
                 <div class="info"><span class="name">{{item.addressee}}</span><span class="mobile">{{item.mobile}}</span></div>
-                <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
+                <div class="addr">{{item.province}} {{item.city}} {{item.district}} {{item.detailAddress}}</div>
               </div>
               <div class="opeator border-top-1px">
                 <div class="default" @click.stop="setDefault(item, index)">
@@ -86,7 +86,6 @@
         if (this.shouldGetData()) {
           if (!this.addressList.length) {
             getAddressList().then((data) => {
-              console.log(data);
               this.addressList = data;
               this.hasMore = false;
               // this.setAddressList(data);

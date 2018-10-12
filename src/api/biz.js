@@ -281,8 +281,6 @@ export function userAccount() {
  * */
 export function getPageJournal(params) {
   return fetch(629305, {
-    limit: 20,
-    start: 1,
     ...params
   });
 }
@@ -394,6 +392,28 @@ export function getGiftPage(data) {
 // 详情查礼物
 export function getGiftDetail(data) {
   return fetch(629326, {
+    ...data
+  });
+}
+
+// 认领礼物
+export function getGift(data) {
+  return fetch(629323, {
+    claimer: getUserId(),
+    ...data
+  });
+}
+
+// 分页查养护记录
+export function getMaintainRecordsPage(data) {
+  return fetch(629635, {
+    ...data
+  });
+}
+
+// 分页查养护记录
+export function getMaintainRecordsDetail(data) {
+  return fetch(629636, {
     ...data
   });
 }

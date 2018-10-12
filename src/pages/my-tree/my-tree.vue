@@ -36,7 +36,7 @@
           <span>礼物</span>
         </div>
         <div class="icons">
-          <img src="./map@2x.png">
+          <img src="./map@2x.png" @click="go('/map?code=' + adoptTreeCode)">
           <img src="./prop@2x.png" @click="props" v-show="!other">
           <img src="./strategy@2x.png" @click="go('/strategy')" v-show="!other">
           <img src="./give@2x.png" @click="goSurprise" v-show="!other">
@@ -127,10 +127,10 @@
             <span>古树品种</span><span>{{treeDetail.tree ? treeDetail.tree.variety : ''}}</span>
           </div>
           <div class="item">
-            <span>养护单位</span><span>{{treeDetail.maintainer ? treeDetail.maintainer.company : '暂无养护单位'}}</span>
+            <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
           </div>
           <div class="item">
-            <span>养护人</span><span>{{treeDetail.maintainer ? treeDetail.maintainer.name : '暂无养护人'}}</span>
+            <span>养护人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.loginName : '暂无养护人'}}</span>
           </div>
           <!--<div class="item">-->
             <!--<span>当前认养人</span><span>三级</span>-->
@@ -139,7 +139,7 @@
             <span>历史认养人</span>
             <img src="./more@2x.png" class="fr more">
           </div>
-          <div class="item" @click="go('/maintain-records')">
+          <div class="item" @click="go('/maintain-records?treeNumber=' + treeDetail.treeNumber)">
             <span>养护记录</span>
             <img src="./more@2x.png" class="fr more">
           </div>
@@ -161,12 +161,12 @@
               </div>
               <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
               <div class="daily-content-item-info" v-if="item.type === '1'">
-                <img src="./steal@2x.png" alt="">
+                <img src="./zengsong@2x.png" alt="">
                 <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : ''}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="daily-content-item-info" v-if="item.type === '2'">
-                <img src="./steal@2x.png" alt="">
+                <img src="./message@2x.png" alt="">
                 <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : ''}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
@@ -267,6 +267,7 @@
     <certification v-show="certificationFlag" @close="close('certificationFlag')" :certificationArr="certificationArr" :head="getAvatar()" :name="userDetail.nickname"></certification>
     <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="String(presentTppQuantity)"></juanzeng>
     <toast ref="toast" :text="text"></toast>
+    <full-loading v-show="loading"></full-loading>
     <router-view></router-view>
   </div>
 </template>
@@ -294,7 +295,7 @@ export default {
   data() {
     return {
       title: '我的树',
-      loading: true,
+      loading: false,
       toastText: '',
       hasMore: false,
       text: '',
@@ -343,11 +344,11 @@ export default {
       tppList: {}, // 碳泡泡
       dynamics: {
         start: 1,
-        limit: 20,
+        limit: 5,
         hasMore: true
       }, // 动态
       dynamicsList: [], // 动态数据
-      treeDetail: {}, // 树详情
+      treeDetail: {tree: { maintainer: '' }}, // 树详情
       propsData: {
         type: 0,
         buyItem: {} // 购买道具编号
@@ -376,6 +377,7 @@ export default {
   },
   methods: {
     getInitData() {
+      this.loading = true;
       Promise.all([
         this.getTppList({
           adoptTreeCode: this.adoptTreeCode
@@ -390,9 +392,9 @@ export default {
       ]).then(() => {
         this.loading = false;
       }).catch(() => { this.loading = false; });
-
       // 不是当前用户
       if (this.other === '1') {
+        this.loading = true;
         Promise.all([
           this.getComparisonData(this.currentHolder)
         ]).then(() => {
@@ -407,6 +409,11 @@ export default {
         userId: this.getUserId()
       }).then((data) => {
         this.propsList = data;
+        this.propsList.map((item) => {
+          if(item.status === '1') {
+            this.cover = true;
+          }
+        });
         this.loading = false;
         setTimeout(() => {
           this.$refs.propScroll.scroll.refresh();
@@ -420,7 +427,6 @@ export default {
       }).then((res) => {
         this.certificationNum = res.length;
         this.certificationArr = res;
-        console.log(this.certificationArr);
       }).catch(() => {});
     },
     // 查询树详情
@@ -433,8 +439,8 @@ export default {
     getDynamicsList() {
       getPageJournal({
         start: this.dynamics.start,
-        adoptUserId: this.currentHolder,
-        adoptTreeCode: this.adoptTreeCode
+        limit: this.dynamics.limit,
+        adoptUserId: this.currentHolder
       }).then((data) => {
         if (data.list.length < this.dynamics.limit || data.totalCount <= this.dynamics.limit) {
           this.dynamics.hasMore = false;
@@ -478,7 +484,14 @@ export default {
       this.loading = true;
       return GiveTpp({
         toUserId: this.currentHolder
-      }).then(() => {}, () => { this.loading = false; });
+      }).then((res) => {
+        this.loading = false;
+        if(res.code) {
+          this.text = '捐赠成功';
+          this.$refs.toast.show();
+          this.getComparisonData(this.currentHolder);
+        }
+      }, () => { this.loading = false; });
     },
     // 收取碳泡泡
     doCollectionTpp(item) {
@@ -488,6 +501,7 @@ export default {
           code: item.code,
           userId: this.currentHolder
         }).then(() => {
+          this.loading = false;
           this.getTppList({adoptTreeCode: this.adoptTreeCode});
         }, () => { this.loading = false; });
       } else {
@@ -611,6 +625,7 @@ export default {
       buyProps(code).then(() => {
         this.close('convertFlag');
         this.convertSuccessFlag = true;
+        this.loading = false;
       }).catch(() => { this.loading = false; });
     },
     juanzengSuccess() {
@@ -661,10 +676,17 @@ export default {
               useProps({
                 toolOrderCode: item.code,
                 adoptTreeCode: this.adoptTreeCode
-              }).then(() => {
+              }).then((res) => {
+                if(res.isSuccess) {
+                  this.text = '使用成功';
+                  this.$refs.toast.show();
+                }
                 this.loading = false;
                 this.close('convertSuccessFlag');
-                this.convertSuccessFlag = true;
+                // 再重新获取道具
+                this.getPropList();
+                // 重新获取积分
+                this.getJF();
               }).catch(() => { this.loading = false; });
             }
           });

@@ -158,7 +158,6 @@
             });
             this.sellTypeObj[item.dkey] = item.dvalue;
           });
-          console.log(this.sellTypeObj);
         }).catch(() => {});
       },
       getImgSyl(imgs) {

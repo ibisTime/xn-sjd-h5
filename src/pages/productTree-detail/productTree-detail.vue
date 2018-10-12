@@ -22,7 +22,7 @@
         <div class="item">
           <span>古树树龄</span><span>{{detail.age}}</span>
         </div>
-        <div class="item" @click="go('/invitation')">
+        <div class="item" @click="go('/map?treeCode=' + detail.code)">
           <span>古树定位</span>
           <img src="./more@2x.png" alt="" class="fr more">
         </div>

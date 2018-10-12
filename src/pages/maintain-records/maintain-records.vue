@@ -2,101 +2,15 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="养护记录"></m-header>
     <div class="adopt-list">
-      <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/maintain-detail')">
-          <img src="./tree.png" alt="">
+      <Scroll :data="mrList"
+              :hasMore="hasMore"
+              @pullingUp="getPageOrder">
+        <div class="item" @click="go('/maintain-detail?code=' + item.code)" v-for="item in mrList">
+          <img :src="formatImg(item.pics[0])">
           <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/claim-gift')">
-          <img src="./tree.png" alt="">
-          <div class="info">
-            <p class="info-title">在林空间里，我的古树第一次修剪了树干</p>
-            <p class="info-pic">图片：5</p>
-            <p class="bottom"><span class="name">张三</span><span class="datetime">2018-01-11 12:34:00</span></p>
+            <p class="info-title">{{item.projectName}}</p>
+            <p class="info-pic">图片：{{item.pics.length}}</p>
+            <p class="bottom"><span class="name">{{item.maintainerName}}</span><span class="datetime">{{formatDate(item.updateDatetime)}}</span></p>
           </div>
         </div>
       </Scroll>
@@ -106,21 +20,53 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {setTitle} from 'common/js/util';
+  import {setTitle, formatDate, formatImg} from 'common/js/util';
+  import { getMaintainRecordsPage } from 'api/biz';
 
   export default {
     data() {
       return {
-        showBack: false
+        start: 1,
+        limit: 10,
+        hasMore: true,
+        treeNumber: '',
+        mrList: []
       };
     },
-    created() {
-      this.pullUpLoad = null;
-      setTitle('我的');
+    mounted() {
+      setTitle('养护记录');
+      this.treeNumber = this.$route.query.treeNumber;
+      this.getPageOrder();
     },
     methods: {
+      formatDate(date) {
+        return formatDate(date, 'yyyy-MM-dd');
+      },
+      formatImg(img) {
+        return formatImg(img);
+      },
       go(url) {
         this.$router.push(url);
+      },
+      getPageOrder() {
+        Promise.all([
+          getMaintainRecordsPage({
+            treeNumber: this.treeNumber,
+            start: this.start,
+            limit: this.limit
+          })
+        ]).then(([res]) => {
+          console.log(res);
+          if (res.totalPage <= this.start) {
+            this.hasMore = false;
+          }
+          res.list.map((item) => {
+            item.pics = item.pic.split('||');
+          });
+          this.mrList = [...this.mrList, ...res.list];
+          console.log(this.mrList);
+          this.start ++;
+        }).catch(() => {});
       }
     },
     components: {

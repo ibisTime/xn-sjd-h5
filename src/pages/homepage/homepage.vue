@@ -52,7 +52,7 @@
             <p class="tree-name">{{item.tree.scientificName}}</p>
             <p class="tree-about"></p>
           </div>
-          <div class="map">
+          <div class="map" @click="go('/map?code=' + item.code)">
             <img src="./map@2x.png" alt="">
             <p>查看地图</p>
           </div>
@@ -197,7 +197,7 @@
         isFriend: false, // 是否是好友
         dynamics: {
           start: 1,
-          limit: 20,
+          limit: 5,
           hasMore: true
         }, // 动态
         dynamicsList: [] // 动态数据
@@ -219,7 +219,7 @@
       getInitData() {
         this.currentHolder = this.$route.query.currentHolder || getUserId();
         this.other = this.$route.query.other || 0;  // 是否别人的主页
-
+        this.loading = true;
         Promise.all([
           getUser(this.currentHolder),
           getProductType({
@@ -244,6 +244,7 @@
         }).catch(() => { this.loading = false; });
         // 不是当前用户
         if (this.other === '1') {
+          this.loading = true;
           Promise.all([
             this.getComparisonData(this.currentHolder),
             this.getIsFriend(this.currentHolder)
@@ -254,8 +255,10 @@
       },
       // 分页查询动态
       getDynamicsList() {
+        this.loading = true;
         getPageJournal({
           start: this.dynamics.start,
+          limit: this.dynamics.limit,
           adoptUserId: this.currentHolder
         }).then((data) => {
           if (data.list.length < this.dynamics.limit || data.totalCount <= this.dynamics.limit) {
@@ -263,7 +266,9 @@
           }
           this.dynamics.start++;
           this.dynamicsList = this.dynamicsList.concat(data.list);
-        }, () => {});
+          console.log(this.dynamics.hasMore);
+          this.loading = false;
+        }, () => { this.loading = false; });
       },
       // 查询我和他是否建立关联
       getIsFriend(toUserId) {
@@ -305,10 +310,11 @@
       getUserTree() {
         this.type = this.categorys[this.index].key;
         this.currentHolder = this.$route.query.currentHolder || getUserId();
+        this.loading = true;
         return getListUserTree({currentHolder: this.currentHolder, parentCategoryCode: this.type, statusList: ['1', '2', '3']}).then((userTree) => {
           this.userTree = userTree;
           this.loading = false;
-        }, () => {});
+        }, () => { this.loading = true; });
       },
       getImgSyl(imgs) {
         let img = imgs ? formatImg(imgs) : defaltAvatarImg;

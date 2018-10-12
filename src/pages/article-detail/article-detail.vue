@@ -54,8 +54,6 @@
         this.detail = res;
         this.detail.photolist = this.detail.photo.split('||');
         this.contextList = this.detail.content.split(/\n/);
-        console.log(this.contextList);
-        console.log(this.detail);
       });
     },
     methods: {

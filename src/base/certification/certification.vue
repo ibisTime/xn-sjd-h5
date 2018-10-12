@@ -150,8 +150,9 @@
         font-size: 0.23rem;
         line-height: 0.42rem;
         color: #666;
-        margin: 0 0.66rem 1.14rem;
+        padding: 0 0.66rem 1.14rem;
         text-align: left;
+        height: 2rem;
       }
       .code {
         display: inline-block;

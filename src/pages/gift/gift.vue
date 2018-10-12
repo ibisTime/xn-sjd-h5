@@ -9,7 +9,7 @@
           <img :src="formatImg(item.listPic)">
           <div class="info">
             <p class="top"><span class="name">{{item.name}}</span><span class="status">{{giftObj[item.status]}}</span></p>
-            <p class="date">2018.09.14</p>
+            <p class="date">失效时间：{{formatDate(item.invalidDatetime)}}</p>
           </div>
         </div>
       </Scroll>
@@ -21,7 +21,7 @@
   import MHeader from 'components/m-header/m-header';
   import { getGiftPage } from 'api/biz';
   import { getDictList } from 'api/general';
-  import { formatImg } from 'common/js/util';
+  import { formatImg, formatDate } from 'common/js/util';
 
   export default {
     data() {
@@ -34,7 +34,6 @@
       };
     },
     mounted() {
-      this.pullUpLoad = null;
       this.code = this.$route.query.adoptTreeCode;
       this.getGiftStatus();
       this.getPageOrder();
@@ -42,6 +41,9 @@
     methods: {
       formatImg(img) {
         return formatImg(img);
+      },
+      formatDate(date) {
+        return formatDate(date, 'yyyy-MM-dd');
       },
       go(url) {
         this.$router.push(url);
@@ -61,7 +63,11 @@
             limit: this.limit
           })
         ]).then(([res]) => {
-          this.giftList = res.list;
+          if (res.totalPage <= this.start) {
+            this.hasMore = false;
+          }
+          this.giftList = [...this.giftList, ...res.list];
+          this.start ++;
         }).catch(() => {});
       }
     },

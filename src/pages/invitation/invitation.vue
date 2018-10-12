@@ -92,7 +92,7 @@
         width: 4.3rem;
         height: 4.3rem;
         position: fixed;
-        bottom: 2rem;
+        bottom: 1.8rem;
         left: 1.6rem;
       }
       .title {

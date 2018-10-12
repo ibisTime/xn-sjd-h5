@@ -24,16 +24,16 @@
           <span>礼物名称</span><span>{{giftDetail.name}}</span>
         </div>
         <div class="item">
-          <span>礼物价格</span><span class="price">¥{{formatAmount(giftDetail.price)}</span>
+          <span>礼物价格</span><span class="price">¥{{formatAmount(giftDetail.price)}}</span>
         </div>
         <div class="item">
-          <span>收货人</span><span>张三</span>
+          <span>收货人</span><span>{{giftDetail.receiver}}</span>
         </div>
         <div class="item">
-          <span>手机号码</span><span>18899990000</span>
+          <span>手机号码</span><span>{{giftDetail.reMobile}}</span>
         </div>
         <div class="item">
-          <span>认领时间</span><span>2018-08-23</span>
+          <span>认领时间</span><span>{{formatDate(giftDetail.claimDatetime)}}</span>
         </div>
       </div>
       <div class="description">
@@ -46,7 +46,7 @@
       </Scroll>
     </div>
     <div class="footer" v-show="wait">
-      <button @click="go('/gift-address')">认领礼物</button>
+      <button @click="go('/gift-address?code=' + code)">认领礼物</button>
     </div>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
@@ -59,7 +59,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount, formatImg } from 'common/js/util';
+import { formatAmount, formatImg, formatDate } from 'common/js/util';
 import { getGiftDetail } from 'api/biz';
 export default {
   data() {
@@ -90,6 +90,9 @@ export default {
     },
     formatImg(img) {
       return formatImg(img);
+    },
+    formatDate(date) {
+      return formatDate(date, 'yyyy-MM-dd');
     },
     go(url) {
       this.$router.push(url);

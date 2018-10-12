@@ -135,7 +135,7 @@
       },
       saveAddress() {
         this.$validator.validateAll().then((result) => {
-          if(result && this.province && this.city && this.area) {
+          if(result && this.province && this.city && this.district) {
             this.setting = true;
             let param = {
               addressee: this.name,
