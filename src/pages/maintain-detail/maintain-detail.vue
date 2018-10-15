@@ -58,7 +58,7 @@
         }).then((res) => {
           this.detail = res;
           this.detail.photolist = this.detail.pic.split('||');
-          this.contextList = this.detail.content.split(/\n/);
+          this.contextList = this.detail.description.split(/\n/);
         }).catch(() => {});
       }
     },

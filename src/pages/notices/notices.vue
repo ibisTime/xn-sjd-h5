@@ -17,6 +17,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import FullLoading from 'base/full-loading/full-loading';
   import { getMessage } from 'api/biz';
   import { formatDate } from 'common/js/util';
 
@@ -33,7 +34,8 @@
       this.loading = true;
       getMessage({
         status: '1',
-        type: '1'
+        type: '1',
+        object: 'C'
       }).then((res) => {
         this.loading = false;
         this.list = res;
@@ -56,7 +58,8 @@
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      FullLoading
     }
   };
 </script>

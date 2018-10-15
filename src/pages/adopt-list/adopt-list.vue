@@ -9,7 +9,7 @@
         <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
           <div class="userPhoto" :style="getImgSyl(item.user ? item.user.photo : '')"></div>
           <div class="info">
-            <p class="name">{{item.user ? item.user.nickname : item.user.mobile}}</p>
+            <p class="name">{{item.user.nickname ? item.user.nickname : jiami(item.user.mobile)}}</p>
             <p class="date">{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}</p>
           </div>
           <span class="price fr">¥{{formatAmount(item.amount)}}</span>
@@ -28,7 +28,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
   import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
-  import defaltAvatarImg from './avatar@2x.png';
+  import defaltAvatarImg from './../../common/image/avatar@2x.png';
   import { getPageUserTree } from 'api/biz';
 
   export default {
@@ -97,6 +97,9 @@
         return {
           backgroundImage: `url(${img})`
         };
+      },
+      jiami(mobile) {
+        return mobile.substr(0, 3) + '****' + mobile.substr(7);
       }
     },
     components: {

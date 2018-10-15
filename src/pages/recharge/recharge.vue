@@ -12,14 +12,14 @@
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
-            <!-- <div @click="selectPayType(5)">
-              <img src="./wechat@2x.png" alt="">
-              <div class="text">
-                <p>微信</p>
-              </div>
-              <img class="money fr" src="./choosed@2x.png" v-show="wechat">
-              <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
-            </div> -->
+            <!--<div @click="selectPayType(5)">-->
+              <!--<img src="./wechat@2x.png" alt="">-->
+              <!--<div class="text">-->
+                <!--<p>微信</p>-->
+              <!--</div>-->
+              <!--<img class="money fr" src="./choosed@2x.png" v-show="wechat">-->
+              <!--<img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">-->
+            <!--</div>-->
             <div @click="selectPayType(3)">
               <img src="./alipay@2x.png" alt="">
               <div class="text">
@@ -98,7 +98,7 @@
           this.wechat = false;
           this.alipay = true;
           this.balance = false;
-        };
+        }
         this.config.payType = index.toString();
         // else if(index === 3) {
         //   this.wechat = false;
@@ -110,6 +110,7 @@
         this.config.amount = this.amount * 1000;
         // location.href = 'http://www.baidu.com';
         userRecharge(this.config).then(data => {
+          console.log(data);
           this.text = '正在跳转支付宝...';
           this.$refs.toast.show();
           setTimeout(() => {
@@ -255,6 +256,7 @@
           border-radius: 0.08rem;
           background: $primary-color;
           color: $color-highlight-background;
+          font-size: $font-size-medium-xx;
         }
       }
     }

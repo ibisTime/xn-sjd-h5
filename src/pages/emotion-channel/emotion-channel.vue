@@ -25,7 +25,7 @@
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
   import NoResult from 'base/no-result/no-result';
-  import { setTitle, formatDate, formatImg } from 'common/js/util';
+  import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
   import { getArticlePage } from 'api/biz';
 
   export default {
@@ -61,7 +61,9 @@
           start: this.start,
           limit: this.limit,
           status: '5',
-          openLevel: '1'
+          openLevel: '1',
+          statusList: ['1', '2', '3'],
+          queryUserId: getUserId()
         }).then((res) => {
           this.loading = false;
           if (res.list.length < this.limit || res.totalCount <= this.limit) {

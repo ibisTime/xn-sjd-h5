@@ -105,12 +105,71 @@
       bottom: 0;
       margin: auto;
       padding: 0 0.4rem;
-    }
-    .close {
-      width: 0.5rem;
-      position: absolute;
-      right: 0.6rem;
-      top: -1rem;
+      .close {
+        width: 0.5rem;
+        position: absolute;
+        right: 0.6rem;
+        top: -0.5rem;
+      }
+      .full-loading {
+        width: 6rem;
+        height: 9.37rem;
+        float: left;
+        font-size: 0;
+        background: #fff;
+        z-index: 1;
+        text-align: center;
+        margin-right: 25px;
+        background: url("./bg@2x.png") no-repeat;
+        background-size: 100% 100%;
+        &:last-child {
+          margin-right: 0;
+        }
+        .head {
+          width: 0.94rem;
+          height: 0.94rem;
+          border-radius: 50%;
+          margin-top: 2.6rem;
+          margin-bottom: 0.24rem;
+        }
+        .name {
+          font-size: 0.28rem;
+          margin-bottom: 0.3rem;
+        }
+        .description {
+          font-size: 0.23rem;
+          line-height: 0.42rem;
+          color: #666;
+          padding: 0 0.66rem 1.14rem;
+          text-align: left;
+          height: 2rem;
+        }
+        .code {
+          display: inline-block;
+          width: 3rem;
+          height: 1rem;
+          background: url("./code@2x.png") no-repeat;
+          background-size: 100% 100%;
+          font-size: 0.2rem;
+          color: $primary-color;
+          span {
+            line-height: 1rem;
+          }
+        }
+        .buttons {
+          display: flex;
+          justify-content: space-between;
+          button {
+            height: 0.9rem;
+            padding: 0.22rem 0.4rem;
+            background: $primary-color;
+            border-radius: 0.08rem;
+            display: inline-block;
+            color: $color-highlight-background;
+            font-size: $font-size-medium-xx;
+          }
+        }
+      }
     }
     .check-in-wrapper {
       position: absolute;
@@ -120,65 +179,6 @@
       height: 100%;
       background: #000;
       opacity: 0.5;
-    }
-    .full-loading {
-      width: 6rem;
-      height: 9.37rem;
-      float: left;
-      font-size: 0;
-      background: #fff;
-      z-index: 1;
-      text-align: center;
-      margin-right: 25px;
-      background: url("./bg@2x.png") no-repeat;
-      background-size: 100% 100%;
-      &:last-child {
-        margin-right: 0;
-      }
-      .head {
-        width: 0.94rem;
-        height: 0.94rem;
-        border-radius: 50%;
-        margin-top: 2.6rem;
-        margin-bottom: 0.24rem;
-      }
-      .name {
-        font-size: 0.28rem;
-        margin-bottom: 0.3rem;
-      }
-      .description {
-        font-size: 0.23rem;
-        line-height: 0.42rem;
-        color: #666;
-        padding: 0 0.66rem 1.14rem;
-        text-align: left;
-        height: 2rem;
-      }
-      .code {
-        display: inline-block;
-        width: 3rem;
-        height: 1rem;
-        background: url("./code@2x.png") no-repeat;
-        background-size: 100% 100%;
-        font-size: 0.2rem;
-        color: $primary-color;
-        span {
-          line-height: 1rem;
-        }
-      }
-      .buttons {
-        display: flex;
-        justify-content: space-between;
-        button {
-          height: 0.9rem;
-          padding: 0.22rem 0.4rem;
-          background: $primary-color;
-          border-radius: 0.08rem;
-          display: inline-block;
-          color: $color-highlight-background;
-          font-size: $font-size-medium-xx;
-        }
-      }
     }
   }
 </style>

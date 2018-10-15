@@ -24,6 +24,8 @@
   import {setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import { getConfig } from 'api/general';
+  import { getUserDetail } from 'api/user';
+
   export default {
     data() {
       return {
@@ -39,23 +41,28 @@
       setTitle('邀请好友');
       this.userId = getCookie('userId');
       this.loading = true;
-      getConfig('REGISTER_URL').then((res) => {
-        this.url += `${res.cvalue}&type=U&userReferee=${this.userId}`;
-        // 用插件生成二维码
-        const container = document.getElementById('qrcode');
+      getUserDetail({
+        userId: this.userId
+      }).then((data) => {
+        getConfig('REGISTER_URL').then((res) => {
+          this.url += `${res.cvalue}?type=U&userReferee=${data.mobile}`;
+          // 用插件生成二维码
+          const container = document.getElementById('qrcode');
 
-        // 设置转换二维码图片的参数
-        const qr = new QRCode(container, {
-          width: 474,
-          height: 474,
-          typeNumber: -1,
-          correctLevel: 2,
-          background: '#ffffff',
-          foreground: '#000000'
-        });
-        qr.make(this.url);
-        this.loading = false;
-      }).catch(() => { this.loading = false; });
+          // 设置转换二维码图片的参数
+          const qr = new QRCode(container, {
+            width: 474,
+            height: 474,
+            typeNumber: -1,
+            correctLevel: 2,
+            background: '#ffffff',
+            foreground: '#000000'
+          });
+          console.log(this.url);
+          qr.make(this.url);
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
+      });
     },
     methods: {
       go(url) {

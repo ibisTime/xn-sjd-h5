@@ -1,49 +1,55 @@
 <template>
-  <div class="full-screen-wrapper login-content">
+  <div class="login-content">
     <!--<m-header class="cate-header"></m-header>-->
-    <div class="header"><img src="./back.png" @click="back"></div>
-    <div class="title">欢迎回来</div>
-    <div class="content">
-      <div class="form-login">
-        <div class="form-item border-bottom-1px">
-          <div class="item-input-wrapper">
-            <input v-focus type="tel" ref="input" autofocus class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">
-            <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+    <div class="scroll-section">
+      <Scroll :pullUpLoad="pullUpLoad">
+        <div class="header"><img src="./back.png" @click="back"></div>
+        <div class="title">欢迎回来</div>
+        <div class="content">
+          <div class="form-login">
+            <div class="form-item border-bottom-1px">
+              <div class="item-input-wrapper" @click="focus">
+                <input v-focus type="tel" ref="input" autofocus class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">
+                <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+              </div>
+            </div>
+            <div class="form-item">
+              <div class="item-input-wrapper">
+                <input type="password" class="item-input" name="pwd" v-model="pwd" v-validate="'required|min:6|max:16'" placeholder="请输入密码">
+                <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="form-item">
-          <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="pwd" v-model="pwd" v-validate="'required|min:6|max:16'" placeholder="请输入密码">
-            <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
-          </div>
+        <div class="login-btn">
+          <button @click="login">登录</button>
         </div>
-      </div>
+        <div class="register-findpwd">
+          <span class="fl" @click="go('/register')">立即注册</span>
+          <span class="fr" @click="go('/forget-pwd')">忘记密码？</span>
+        </div>
+        <div class="wx-login" @click="AppId">
+          <span class="wing"></span>
+          <img src="./wx-login@2x.png" alt="">
+          <span>微信快速登录</span>
+          <span class="wing"></span>
+        </div>
+      </Scroll>
     </div>
-    <div class="login-btn">
-      <button @click="login">登录</button>
+
+      <full-loading v-show="loading" :title="loadText"></full-loading>
+      <toast ref="toast" :text="text"></toast>
     </div>
-    <div class="register-findpwd">
-      <span class="fl" @click="go('/register')">立即注册</span>
-      <span class="fr" @click="go('/forget-pwd')">忘记密码？</span>
-    </div>
-    <!--<div class="wx-login" @click="AppId">-->
-      <!--<span class="wing"></span>-->
-      <!--<img src="./wx-login@2x.png" alt="">-->
-      <!--<span>微信快速登录</span>-->
-      <!--<span class="wing"></span>-->
-    <!--</div>-->
-    <full-loading v-show="loading" :title="loadText"></full-loading>
-    <toast ref="toast" :text="text"></toast>
-  </div>
 </template>
 <script>
   import {login} from 'api/user';
   import {getConfig} from 'api/general';
-  import {setUser} from 'common/js/util';
+  import {setUser, setTitle} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
+  import Scroll from 'base/scroll/scroll';
 
   export default {
     mixins: [directiveMixin],
@@ -51,16 +57,20 @@
       return {
         loading: false,
         loadText: '',
+        pullUpLoad: null,
         text: '',
         mobile: '',
         pwd: ''
       };
     },
     mounted() {
+      setTitle('登录');
       this.me = this.$route.query.me || '';
-      this.$refs.input.focus();
     },
     methods: {
+      focus() {
+        this.$refs.input.focus();
+      },
       login() {
         this.$validator.validateAll().then((result) => {
           if (result) {
@@ -111,7 +121,8 @@
     components: {
       FullLoading,
       MHeader,
-      Toast
+      Toast,
+      Scroll
     }
   };
 </script>
@@ -120,6 +131,11 @@
   .login-content {
     background: $color-highlight-background;
     padding: 0 0.4rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
     .fl {
       float: left;
     }
@@ -134,80 +150,87 @@
         }
       }
     }
-    .header {
-      margin-bottom: 1.72rem;
-      img  {
-        height: 0.42rem;
+    .scroll-section {
+      position: absolute;
+      top: 0.2rem;
+      bottom: 0.76rem;
+      left: 0.4rem;
+      right: 0.4rem;
+      overflow: auto;
+      .header {
+        img  {
+          height: 0.42rem;
+        }
       }
-    }
-    .title {
-      margin-top: 2rem;
-      font-size: $font-size-large-xx;
-      margin-bottom: 0.76rem;
-      padding: 0 0.2rem;
-    }
-    .content {
-      width: 100%;
-      height: 2.3rem;
-      padding: 0 0.2rem;
-      margin-bottom: 0.8rem;
-      .form-login {
+      .title {
+        margin-top: 0.5rem;
+        font-size: $font-size-large-xx;
+        margin-bottom: 0.76rem;
+        padding: 0 0.2rem;
+      }
+      .content {
         width: 100%;
-        height: 100%;
-        .form-item {
+        height: 2.3rem;
+        padding: 0 0.2rem;
+        margin-bottom: 0.8rem;
+        .form-login {
           width: 100%;
-          height: 1.1rem;
-          font-size: 0.3rem;
-          border-bottom: 1px solid #EBEBEB;
-          .item-input-wrapper {
+          height: 100%;
+          .form-item {
             width: 100%;
-            height: 100%;
-            input {
-              width: 65%;
+            height: 1.1rem;
+            font-size: 0.3rem;
+            border-bottom: 1px solid #EBEBEB;
+            .item-input-wrapper {
+              width: 100%;
               height: 100%;
-            }
-            .error-tip {
-              color: red;
+              input {
+                width: 65%;
+                height: 100%;
+              }
+              .error-tip {
+                color: red;
+              }
             }
           }
         }
       }
-    }
-    .login-btn {
-      margin-bottom: 0.4rem;
-      padding: 0 0.2rem;
-      button {
-        width: 100%;
-        height: 0.9rem;
-        background: $primary-color;
-        color: $color-highlight-background;
-        border-radius: 0.08rem;
-        font-size: 0.32rem;
+      .login-btn {
+        margin-bottom: 0.4rem;
+        padding: 0 0.2rem;
+        button {
+          width: 100%;
+          height: 0.9rem;
+          background: $primary-color;
+          color: $color-highlight-background;
+          border-radius: 0.08rem;
+          font-size: 0.32rem;
+        }
       }
-    }
-    .register-findpwd {
-      font-size: 0.26rem;
-      color: $color-text-l;
-      margin-bottom: 2.3rem;
-      padding: 0 0.2rem;
-    }
-    .wx-login {
-      font-size: 0.26rem;
-      height: 1rem;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      img {
-        width: 0.4rem;
-        height: 0.34rem;
-        margin-right: 0.2rem;
+      .register-findpwd {
+        font-size: 0.26rem;
+        color: $color-text-l;
+        margin-bottom: 1.3rem;
+        padding: 0 0.2rem;
       }
-      .wing {
-        width: 0.3rem;
-        border-top: 1px solid #ebebeb;
-        display: inline-block;
-        margin: 0 0.2rem;
+      .wx-login {
+        font-size: 0.26rem;
+        height: 1rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img {
+          width: 0.4rem;
+          height: 0.34rem;
+          margin-right: 0.2rem;
+        }
+        .wing {
+          width: 0.3rem;
+          border-top: 1px solid #ebebeb;
+          display: inline-block;
+          margin: 0 0.2rem;
+        }
       }
     }
   }

@@ -121,7 +121,8 @@ export default {
       if(userId) {
         this.loading = true;
         signIn({
-          userId: userId
+          userId: userId,
+          client: 'h5'
         }).then((res) => {
           this.signTpp = formatAmount(res.tppAmount);
           this.showCheckIn = true;
@@ -166,11 +167,13 @@ export default {
       }),
       getMessage({
         status: '1',
-        type: '1'
+        type: '1',
+        object: 'C'
       }),
       getMessage({
         status: '1',
-        type: '2'
+        type: '2',
+        object: 'C'
       }),
       getDictList('sell_type')
     ]).then(([res1, res2, res3, res4, res5, res6]) => {

@@ -41,6 +41,7 @@
   import {formatImg} from 'common/js/util';
   import Toast from 'base/toast/toast';
   import { GiveTree } from 'api/biz';
+  import defaultImg from './../../common/image/tree-default.png';
 
   export default {
     mixins: [directiveMixin],
@@ -64,7 +65,8 @@
     },
     methods: {
       formatImg(img) {
-        return formatImg(img);
+        this.img = img ? formatImg(img) : defaultImg;
+        return this.img;
       },
       give() {
         if(this.mobile && this.adoptTreeCode) {
@@ -73,7 +75,9 @@
             toMobile: this.mobile
           }).then(() => {
             this.$refs.toast.show();
-            this.go(`/my-tree?aTCode=${this.adoptTreeCode}`);
+            setTimeout(() => {
+              this.go(`/homepage`);
+            }, 1000);
           }, () => {});
         }
       },

@@ -2,7 +2,6 @@
   <div class="home-wrapper">
     <!--<m-header class="cate-header" :title="title"></m-header>-->
     <div class="content">
-      <Scroll :pullUpLoad="pullUpLoad">
       <div class="tree-panel">
         <div class="cover" v-show="cover"></div>
         <div class="juanzeng" v-show="juanzengShow">
@@ -82,38 +81,46 @@
       <!-- 用户 - 最新动态/认养人/古树详情 -->
       <div class="tab-panel" v-show="!other">
         <!-- 最新动态 -->
-        <div class="dynamic" v-show="tab === 0">
-          <!-- 访客 -->
-          <div class="heads">
-            <div class="head-item">
-              <img :src="getAvatar()">
-              <!--<span class="number">10g</span>-->
+        <Scroll ref="scroll"
+                :data="dynamicsList"
+                :hasMore="dynamics.hasMore"
+                @pullingUp="getDynamicsList">
+          <div class="dynamic" v-show="tab === 0">
+            <!-- 访客 -->
+            <!--<div class="heads">-->
+              <!--<div class="head-item">-->
+                <!--<img :src="getAvatar()">-->
+                <!--&lt;!&ndash;<span class="number">10g</span>&ndash;&gt;-->
+              <!--</div>-->
+            <!--</div>-->
+            <!-- 动态 -->
+            <div class="dynamic-info">
+              <div class="dynamic-info-item" v-for="item in dynamicsList">
+                <div v-show="isShowDate(item)">
+                  <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+                  <div class="border"></div>
+                </div>
+                <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
+                <p v-if="item.type === '1'">
+                  <span class="name">{{getName(item)}}</span>
+                  <span class="activity">赠送{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+                </p>
+                <p v-if="item.type === '2'">
+                  <span class="name">{{getName(item)}}</span>
+                  <span class="activity">留言</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+                </p>
+                <p v-if="item.type === '3'">
+                  <span class="name">{{getName(item)}}</span>
+                  <span class="activity">收取{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+                </p>
+              </div>
+              <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
             </div>
           </div>
-          <!-- 动态 -->
-          <div class="dynamic-info">
-            <div class="dynamic-info-item" v-for="item in dynamicsList">
-              <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
-              <p v-if="item.type === '1'">
-                <span class="name">{{item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname : ''}}</span>
-                <span class="activity">赠送{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
-              </p>
-              <p v-if="item.type === '2'">
-                <span class="name">{{item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname : ''}}</span>
-                <span class="activity">留言</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
-              </p>
-              <p v-if="item.type === '3'">
-                <span class="name">{{item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname : ''}}</span>
-                <span class="activity">收取{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
-              </p>
-            </div>
-            <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
-          </div>
-        </div>
-        <!-- 认养人介绍 -->
-        <!--<div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1"></div>-->
-        <!-- 古树详情 -->
-        <div class="tree-detail" v-show="tab === 2">
+          <!-- 认养人介绍 -->
+          <!--<div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1"></div>-->
+          <!-- 古树详情 -->
+          <div class="tree-detail" v-show="tab === 2">
           <!--<div class="item">-->
             <!--<span>古树昵称</span><span>樟子松鼠</span>-->
           <!--</div>-->
@@ -144,6 +151,7 @@
             <img src="./more@2x.png" class="fr more">
           </div>
         </div>
+        </Scroll>
       </div>
       <div class="gray" v-show="other"></div>
       <!-- TA的动态 -->
@@ -162,17 +170,17 @@
               <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
               <div class="daily-content-item-info" v-if="item.type === '1'">
                 <img src="./zengsong@2x.png" alt="">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : ''}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="daily-content-item-info" v-if="item.type === '2'">
                 <img src="./message@2x.png" alt="">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : ''}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="daily-content-item-info" v-if="item.type === '3'">
                 <img src="./steal@2x.png" alt="">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : ''}}</span>收取{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>收取{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="border"></div>
@@ -181,7 +189,7 @@
           <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
         </div>
       </div>
-      </Scroll>
+      <!--</Scroll>-->
     </div>
     <!-- 道具 -->
     <div :class="['mask',flag ? 'show' : '']" @click="change"></div>
@@ -222,7 +230,7 @@
             <!--</div>-->
           <!--</div>-->
         </div>
-        <div class="score">
+        <div class="score" @click="go('/score')">
           <span>我的积分：{{formatAmount(jf)}} </span><img src="./more@2x.png">
         </div>
       </div>
@@ -289,7 +297,7 @@ import { getSystemConfigCkey } from 'api/general';
 import { getUserDetail } from 'api/user';
 import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
-import defaltAvatarImg from './avatar@2x.png';
+import defaltAvatarImg from './../../common/image/avatar@2x.png';
 
 export default {
   data() {
@@ -338,13 +346,15 @@ export default {
         text: '你怎么每天这么勤快呢'
       }],
       other: 0,
-      comparisonData: {}, // 能量比拼
+      comparisonData: {
+        toUserInfo: {photo: ''},
+        userInfo: {photo: ''}}, // 能量比拼
       presentTppQuantity: 0, // PRESENT_TPP_QUANTITY 赠送碳泡泡的数量
       adoptTreeCode: '', // 认养权编号
       tppList: {}, // 碳泡泡
       dynamics: {
         start: 1,
-        limit: 5,
+        limit: 10,
         hasMore: true
       }, // 动态
       dynamicsList: [], // 动态数据
@@ -376,6 +386,27 @@ export default {
     this.getInitData();
   },
   methods: {
+    getName(item) {
+      if(item.userId !== getUserId()) {
+        if(item.userInfo.nickname) {
+          return item.userInfo.nickname;
+        } else {
+          return this.jiami(item.userInfo.mobile);
+        }
+      } else {
+        return '自己';
+      }
+      // item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile) : '自己'
+    },
+    // 动态 格式化显示日期
+    formatDynamicsDate(item) {
+      let creadDate = formatDate(item.createDatetime, 'MM-dd');
+      let nowDate = formatDate(new Date(), 'MM-dd');
+      if(creadDate === nowDate) {
+        creadDate = '今日';
+      }
+      return creadDate;
+    },
     getInitData() {
       this.loading = true;
       Promise.all([
@@ -437,6 +468,7 @@ export default {
     },
     // 分页查询动态
     getDynamicsList() {
+      console.log(1);
       getPageJournal({
         start: this.dynamics.start,
         limit: this.dynamics.limit,
@@ -499,10 +531,14 @@ export default {
         this.loading = true;
         collectionTpp({
           code: item.code,
-          userId: this.currentHolder
+          userId: this.other ? getUserId() : this.currentHolder
         }).then(() => {
           this.loading = false;
           this.getTppList({adoptTreeCode: this.adoptTreeCode});
+          this.getDynamicsList();
+          if(this.other === '1') {
+            this.getComparisonData(this.currentHolder);
+          }
         }, () => { this.loading = false; });
       } else {
         return;
@@ -537,15 +573,6 @@ export default {
         return true;
       }
     },
-    // 动态 格式化显示日期
-    formatDynamicsDate(item) {
-      let creadDate = formatDate(item.createDatetime, 'MM-dd');
-      let nowDate = formatDate(new Date(), 'MM-dd');
-      if(creadDate === nowDate) {
-        creadDate = '今日';
-      }
-      return creadDate;
-    },
     formatAmount(amount, len) {
       return formatAmount(amount, len);
     },
@@ -562,6 +589,7 @@ export default {
       this.$router.push(url);
     },
     goSurprise() {
+      console.log(this.treeDetail);
       this.go(`/surprise?aTCode=${this.adoptTreeCode}&pic=${this.treeDetail.tree.pic}`);
     },
     getUserId() {
@@ -645,6 +673,7 @@ export default {
         window.dispatchEvent(e);
       });
     },
+    // 点击捐赠触发事件
     juanzeng() {
       this.juanzengFlag = true;
     },
@@ -692,6 +721,9 @@ export default {
           });
         }
       });
+    },
+    jiami(mobile) {
+      return mobile.substr(0, 3) + '****' + mobile.substr(7);
     }
   },
   components: {
@@ -1040,6 +1072,12 @@ export default {
           .dynamic-info-item {
             font-size: $font-size-medium;
             padding: 0.2rem 0;
+            .daily-title {
+              font-size: $font-size-large-ss;
+              line-height: $font-size-large-s;
+              font-family: PingFangSC-Semibold;
+              margin: 0.15rem 0;
+            }
             p {
               display: flex;
               align-items: center;
@@ -1113,6 +1151,12 @@ export default {
           margin-bottom: 0.32rem;
         }
         .daily-content {
+          .daily-title {
+            font-size: $font-size-large-ss;
+            line-height: $font-size-large-s;
+            font-family: 'PingFangSC-Semibold';
+            margin: 0.15rem 0;
+          }
           .daily-content-item {
             .daily-content-item-info {
               display: flex;

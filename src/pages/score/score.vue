@@ -31,6 +31,7 @@
         </div>
       </div>
     </div>
+    <full-loading v-show="loading"></full-loading>
     <router-view></router-view>
   </div>
 </template>
@@ -38,12 +39,16 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import NoResult from 'base/no-result/no-result';
+  import FullLoading from 'base/full-loading/full-loading';
   import {getAccountList} from 'api/account';
+  import { getAccount } from 'api/biz';
   import {formatAmount, formatDate} from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
 
   export default {
     data() {
       return {
+        loading: false,
         amount: 0,
         start: 1,
         limit: 10,
@@ -52,12 +57,14 @@
       };
     },
     mounted() {
-      this.accountNumber = this.$route.query.accountNumber;
-      this.amount = +this.$route.query.amount;
+      // this.accountNumber = this.$route.query.accountNumber;
+      // this.amount = +this.$route.query.amount;
       // 请求流水
-      if(this.accountNumber) {
-        this.getAccountData();
-      }
+      // if(this.accountNumber) {
+      //   this.getAccountData();
+      // }
+      this.userId = getCookie('userId');
+      this.getAccountInfo();
     },
     methods: {
       getInitData() {
@@ -75,8 +82,24 @@
       formatAmount(amount) {
         return formatAmount(amount);
       },
+      getAccountInfo() {
+        this.loading = true;
+        getAccount({
+          userId: this.userId
+        }).then((res) => {
+          this.loading = false;
+          res.list.map((item) => {
+            if(item.currency === 'JF') {
+              this.amount = item.amount;
+              this.accountNumber = item.accountNumber;
+            }
+          });
+          this.getAccountData();
+        }).catch(() => { this.loading = false; });
+      },
       getAccountData() {
         if(this.hasMore) {
+          this.loading = true;
           getAccountList({
             accountNumber: this.accountNumber,
             start: this.start,
@@ -87,14 +110,16 @@
             }
             this.jfAccountList = [...this.jfAccountList, ...res.list];
             this.start ++;
-          });
+            this.loading = false;
+          }).catch(() => { this.loading = true; });
         }
       }
     },
     components: {
       Scroll,
       MHeader,
-      NoResult
+      NoResult,
+      FullLoading
     }
   };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="write-article-wrapper full-screen-wrapper">
+  <div class="write-article-wrapper">
     <div class="bg">
       <m-header class="cate-header" title="发布文章"></m-header>
       <div class="content">
@@ -94,7 +94,9 @@
       this.loading = true;
       Promise.all([
         getQiniuToken(),
-        getListUserTree()
+        getListUserTree({
+          statusList: ['1', '2', '3']
+        })
       ]).then(([res1, res2]) => {
         this.token = res1.uploadToken;
         this.list = res2;
@@ -238,22 +240,17 @@
       float: right;
     }
     .bg {
-      background-size: contain;
-      .title {
-        font-size: 0.36rem;
-        color: #fff;
-        padding-top: 0.19rem;
-        text-align: center;
-      }
       .content {
-        padding: 0.88rem 0 0;
+        /*padding: 0.88rem 0 0;*/
         position: absolute;
-        top: 0;
+        top: 0.88rem;
         bottom: 0;
         left: 0;
         right: 0;
         overflow: auto;
+        background: #fff;
         .in-content {
+          padding-bottom: 0.5rem;
           .avatar {
             border-bottom: 1px solid $color-border;
             position: relative;
@@ -331,7 +328,6 @@
               }
             }
             .title {
-              text-align: left;
               input[type="text"] {
                 width: 80%;
                 color: #333;
@@ -353,7 +349,9 @@
       }
       .button {
         height: 0.84rem;
-        padding: 0 0.3rem;
+        padding: 0 0.3rem 0.5rem;
+        font-size: 0;
+        box-sizing: content-box;
         button {
           background: $primary-color;
           border-radius: 0.08rem;

@@ -2,24 +2,26 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="公告详情"></m-header>
     <div class="content">
-      <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
+      <Scroll ref="scroll">
         <div class="title">{{detail.title}}</div>
         <p class="prop"><span class="date">{{formatDate(detail.createDatetime)}}</span></p>
         <div class="context">{{detail.content}}</div>
       </Scroll>
     </div>
+    <full-loading v-show="loading"></full-loading>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import FullLoading from 'base/full-loading/full-loading';
   import { getMessageDetail } from 'api/biz';
   import { setTitle, formatDate, formatImg } from 'common/js/util';
 
   export default {
     data() {
       return {
-        pullUpLoad: null,
+        loading: false,
         collectFlag: false,
         laudFlag: false,
         detail: {},
@@ -30,11 +32,13 @@
     mounted() {
       setTitle('公告详情');
       let code = this.$route.query.code;
+      this.loading = true;
       getMessageDetail({
         code: code
       }).then((res) => {
         this.detail = res;
-      });
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     methods: {
       formatImg(img) {
@@ -84,7 +88,8 @@
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      FullLoading
     }
   };
 </script>

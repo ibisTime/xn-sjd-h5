@@ -19,7 +19,7 @@
                 <p class="text">余额</p>
               </div>
               <div class="line fl"></div>
-              <div class="score fl" @click.stop="go('/score?accountNumber=' + jfAccountNumber + '&amount=' + jf)">
+              <div class="score fl" @click.stop="go('/score')">
                 <p class="number">{{formatAmount(jf)}}</p>
                 <p class="text">积分</p>
               </div>

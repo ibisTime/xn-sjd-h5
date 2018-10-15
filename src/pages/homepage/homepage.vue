@@ -2,10 +2,6 @@
   <div class="me-wrapper">
     <!--<m-header class="cate-header" :title="title" actText="分享" @action="action"></m-header>-->
     <div class="out-content">
-      <Scroll ref="scroll"
-              :data="dynamicsList"
-              :hasMore="dynamics.hasMore"
-              @pullingUp="getDynamicsList">
       <div class="bg">
         <div class="content">
           <div class="in-content">
@@ -23,6 +19,9 @@
                 <category-scroll :currentIndex="currentIndex"
                                  :categorys="categorys"
                                  @select="selectCategory"></category-scroll>
+                <category-scroll :currentIndex="currentIndexSub"
+                                 :categorys="categorysSub"
+                                 @select="selectCategorySub"></category-scroll>
               </div>
               <!--<div class="type">-->
                 <!--<span @click="changeType(0)">全部</span>-->
@@ -46,104 +45,108 @@
         <!--<span :class="emotion === 1 ? 'active' : ''" @click="changeEmotion(1)">爱情林</span>-->
         <!--<span :class="emotion === 2 ? 'active' : ''" @click="changeEmotion(2)">亲子林</span>-->
       <!--</div>-->
-      <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
-        <div class="item" v-for="item in userTree">
-          <div class="tree-info" @click="goMyTree(item)">
-            <p class="tree-name">{{item.tree.scientificName}}</p>
-            <p class="tree-about"></p>
-          </div>
-          <div class="map" @click="go('/map?code=' + item.code)">
-            <img src="./map@2x.png" alt="">
-            <p>查看地图</p>
-          </div>
-        </div>
-        <no-result v-show="!loading && !(userTree && userTree.length)" title="还没有认养树" class="no-result-wrapper"></no-result>
-      </div>
-      <div class="gray"></div>
-      <div class="battle" v-if="other === '1'" v-show="other === '1'">
-        <div class="battle-bg">
-          <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
-            <div class="battle-item-head">
-              <div class="userPhoto" :style="getImgSyl(comparisonData.toUserInfo.photo)"></div>
-              <img src="./crown@2x.png" class="crown">
+      <Scroll ref="scroll"
+              :data="dynamicsList"
+              :hasMore="dynamics.hasMore"
+              @pullingUp="getDynamicsList">
+        <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
+          <div class="item" v-for="item in userTree">
+            <div class="tree-info" @click="goMyTree(item)">
+              <p class="tree-name">{{item.tree.scientificName}}</p>
+              <p class="tree-about"></p>
             </div>
-            <div>
-              <p class="info">TA收取你</p>
-              <p class="number">{{formatAmount(comparisonData.toUserWeekQuantity)}}g</p>
+            <div class="map" @click="go('/map?code=' + item.code)">
+              <img src="./map@2x.png" alt="">
+              <p>查看地图</p>
             </div>
           </div>
-          <span class="vs">VS</span>
-          <div class="battle-item" :class="comparisonData.userIsWin ? 'win' : ''">
-            <div>
-              <p class="info">你收取TA</p>
-              <p class="number">{{formatAmount(comparisonData.userWeekQuantity)}}g</p>
-            </div>
-            <div class="battle-item-head">
-              <div class="userPhoto" :style="getImgSyl(comparisonData.userInfo.photo)"></div>
-              <img src="./crown@2x.png" class="crown">
-            </div>
-          </div>
+          <no-result v-show="!loading && !(userTree && userTree.length)" title="还没有认养树" class="no-result-wrapper"></no-result>
         </div>
         <div class="gray"></div>
-      </div>
-      <div class="dynamic">
-        <div class="dynamic-title">
-          <div class="border"></div>
-          <span>{{borderTitle}}</span>
+        <div class="battle" v-if="other === '1'" v-show="other === '1'">
+          <div class="battle-bg">
+            <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
+              <div class="battle-item-head">
+                <div class="userPhoto" :style="getImgSyl(comparisonData.toUserInfo.photo)"></div>
+                <img src="./crown@2x.png" class="crown">
+              </div>
+              <div>
+                <p class="info">TA收取你</p>
+                <p class="number">{{formatAmount(comparisonData.toUserWeekQuantity)}}g</p>
+              </div>
+            </div>
+            <span class="vs">VS</span>
+            <div class="battle-item" :class="comparisonData.userIsWin ? 'win' : ''">
+              <div>
+                <p class="info">你收取TA</p>
+                <p class="number">{{formatAmount(comparisonData.userWeekQuantity)}}g</p>
+              </div>
+              <div class="battle-item-head">
+                <div class="userPhoto" :style="getImgSyl(comparisonData.userInfo.photo)"></div>
+                <img src="./crown@2x.png" class="crown">
+              </div>
+            </div>
+          </div>
+          <div class="gray"></div>
         </div>
-        <div class="daily">
-          <div class="daily-content">
-            <div class="daily-content-item" v-for="item in dynamicsList">
-              <div v-show="isShowDate(item)">
-                <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+        <div class="dynamic">
+          <div class="dynamic-title">
+            <div class="border"></div>
+            <span>{{borderTitle}}</span>
+          </div>
+          <div class="daily">
+            <div class="daily-content">
+              <div class="daily-content-item" v-for="item in dynamicsList">
+                <div v-show="isShowDate(item)">
+                  <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+                  <div class="border"></div>
+                </div>
+                <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
+                <div class="daily-content-item-info" v-if="item.type === '1'">
+                  <img src="./steal@2x.png" alt="">
+                  <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>赠送{{formatAmount(item.quantity)}}g</p>
+                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                </div>
+                <div class="daily-content-item-info" v-if="item.type === '2'">
+                  <img src="./steal@2x.png" alt="">
+                  <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>留言{{formatAmount(item.quantity)}}g</p>
+                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                </div>
+                <div class="daily-content-item-info" v-if="item.type === '3'">
+                  <img src="./steal@2x.png" alt="">
+                  <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>收取{{formatAmount(item.quantity)}}g</p>
+                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                </div>
                 <div class="border"></div>
               </div>
-              <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
-              <div class="daily-content-item-info" v-if="item.type === '1'">
-                <img src="./steal@2x.png" alt="">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>赠送{{formatAmount(item.quantity)}}g</p>
-                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-              </div>
-              <div class="daily-content-item-info" v-if="item.type === '2'">
-                <img src="./steal@2x.png" alt="">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>留言{{formatAmount(item.quantity)}}g</p>
-                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-              </div>
-              <div class="daily-content-item-info" v-if="item.type === '3'">
-                <img src="./steal@2x.png" alt="">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>收取{{formatAmount(item.quantity)}}g</p>
-                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-              </div>
-              <div class="border"></div>
-            </div>
-            <!--<div class="daily-content-item">-->
-              <!--<div class="daily-content-item-info">-->
-                <!--<img src="./protect@2x.png" alt="">-->
-                <!--<p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>-->
-                <!--<p class="time">19:00</p>-->
-              <!--</div>-->
-              <!--<div class="border"></div>-->
-            <!--</div>-->
-            <!--<div class="daily-content-item">-->
-              <!--<div class="daily-content-item-message">-->
-                <!--<div class="message-border">-->
-                  <!--<img src="./head.png" alt="" class="head">-->
-                  <!--<div class="message-text">-->
-                    <!--<p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>-->
-                    <!--<p class="activity">来收取能量，被保护罩阻挡了</p>-->
-                  <!--</div>-->
-                  <!--<img src="./cover@2x.png" alt="" class="cover">-->
+              <!--<div class="daily-content-item">-->
+                <!--<div class="daily-content-item-info">-->
+                  <!--<img src="./protect@2x.png" alt="">-->
+                  <!--<p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>-->
+                  <!--<p class="time">19:00</p>-->
                 <!--</div>-->
-                <!--<p class="time">19:00</p>-->
+                <!--<div class="border"></div>-->
               <!--</div>-->
-              <!--<div class="border"></div>-->
-            <!--</div>-->
-            <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
+              <!--<div class="daily-content-item">-->
+                <!--<div class="daily-content-item-message">-->
+                  <!--<div class="message-border">-->
+                    <!--<img src="./head.png" alt="" class="head">-->
+                    <!--<div class="message-text">-->
+                      <!--<p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>-->
+                      <!--<p class="activity">来收取能量，被保护罩阻挡了</p>-->
+                    <!--</div>-->
+                    <!--<img src="./cover@2x.png" alt="" class="cover">-->
+                  <!--</div>-->
+                  <!--<p class="time">19:00</p>-->
+                <!--</div>-->
+                <!--<div class="border"></div>-->
+              <!--</div>-->
+              <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
+            </div>
           </div>
         </div>
-      </div>
-      <toast :text="toastText" ref="toast"></toast>
-      <div class="mask" @click="change" v-show="share"></div>
+        <toast :text="toastText" ref="toast"></toast>
+        <div class="mask" @click="change" v-show="share"></div>
       </Scroll>
     </div>
     <div class="share" v-show="share">
@@ -161,6 +164,7 @@
       <div class="share-cancel" @click="change">取消</div>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
@@ -178,6 +182,7 @@
   export default {
     data() {
       return {
+        text: '',
         type: 0,
         emotion: 1,
         share: false,
@@ -188,12 +193,15 @@
         currentHolder: '', // userId 好友
         title: '我的主页',
         borderTitle: '我的动态',
-        userInfo: {}, // 用户信息
+        userInfo: {photo: ''}, // 用户信息
         userTree: [], // 认养的树
         currentIndex: +this.$route.query.index || 0,
+        currentIndexSub: +this.$route.query.index || 0,
         index: 0,
-        categorys: [{value: '全部', key: ''}],
-        comparisonData: {}, // 能量比拼
+        indexSub: 0,
+        categorys: [],
+        categorysSub: [{value: '全部', key: 'all'}],
+        comparisonData: {toUserInfo: {photo: ''}}, // 能量比拼
         isFriend: false, // 是否是好友
         dynamics: {
           start: 1,
@@ -239,6 +247,7 @@
             });
           });
           this.type = this.categorys[this.index].key;
+          this.getSubType();
           this.getUserTree();
           this.getDynamicsList();
         }).catch(() => { this.loading = false; });
@@ -266,7 +275,6 @@
           }
           this.dynamics.start++;
           this.dynamicsList = this.dynamicsList.concat(data.list);
-          console.log(this.dynamics.hasMore);
           this.loading = false;
         }, () => { this.loading = false; });
       },
@@ -308,10 +316,22 @@
       },
       // 获取用户的树
       getUserTree() {
-        this.type = this.categorys[this.index].key;
+        // 大类
+        // this.type = this.categorys[this.index].key;
+        // 小类
+        // this.categoryCode = this.categorysSub[this.indexSub].key;
         this.currentHolder = this.$route.query.currentHolder || getUserId();
+        this.params = {
+          currentHolder: this.currentHolder,
+          statusList: ['1', '2', '3']
+        };
+        if(this.categorysSub[this.indexSub].key === 'all') {
+          this.params.parentCategoryCode = this.categorys[this.index].key;
+        } else {
+          this.params.categoryCode = this.categorysSub[this.indexSub].key;
+        }
         this.loading = true;
-        return getListUserTree({currentHolder: this.currentHolder, parentCategoryCode: this.type, statusList: ['1', '2', '3']}).then((userTree) => {
+        return getListUserTree(this.params).then((userTree) => {
           this.userTree = userTree;
           this.loading = false;
         }, () => { this.loading = true; });
@@ -363,18 +383,55 @@
         this.share = !this.share;
       },
       goMyTree(item) {
-        if(this.other) {
-          this.go(`/my-tree?other=1&currentHolder=${this.currentHolder}&aTCode=${item.code}`);
+        if(item.tree.status === '4') {
+          this.text = '这棵树已经到期咯';
+          this.$refs.toast.show();
         } else {
-          this.go(`/my-tree?aTCode=${item.code}`);
+          if(this.other) {
+            this.go(`/my-tree?other=1&currentHolder=${this.currentHolder}&aTCode=${item.code}`);
+          } else {
+            this.go(`/my-tree?aTCode=${item.code}`);
+          }
         }
       },
       selectCategory(index) {
         this.index = index;
+        this.indexSub = 0;
+        this.currentIndexSub = 0;
         this.currentIndex = index;
         this.userTree = [];
         this.loading = true;
+        // this.getUserTree();
+        this.getSubType();
+      },
+      selectCategorySub(index) {
+        this.indexSub = index;
+        this.currentIndexSub = index;
+        this.start = 1;
+        this.limit = 10;
+        this.proList = [];
         this.getUserTree();
+      },
+      // 获取下级分类
+      getSubType() {
+        this.loading = true;
+        this.categorysSub = [{value: '全部', key: 'all'}];
+        getProductType({
+          parentCode: this.categorys[this.index].key,
+          status: '1',
+          orderDir: 'asc',
+          orderColumn: 'order_no'
+        }).then((res) => {
+          res.map((item) => {
+            this.categorysSub.push({
+              value: item.name,
+              key: item.code
+            });
+          });
+          this.categoryCode = this.categorysSub[this.indexSub].key;
+          this.getUserTree();
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
       }
     },
     components: {
@@ -410,7 +467,7 @@
     .category-wrapper {
       width: 100%;
       z-index: 100;
-      height: 0.9rem;
+      height: 1.8rem;
       line-height: 0.9rem;
       overflow: hidden;
     }

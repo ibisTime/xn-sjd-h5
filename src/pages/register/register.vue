@@ -49,6 +49,7 @@
 <script>
   import {register} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
+  import { setTitle } from 'common/js/util';
   import {sendCaptcha} from 'api/general';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
@@ -71,6 +72,9 @@
         type: ''
       };
     },
+    mounted() {
+      setTitle('注册');
+    },
     methods: {
       // 注册
       register() {
@@ -81,7 +85,6 @@
             this.loadText = '注册中...';
             this.userReferee = this.$route.query.userReferee;
             this.type = this.$route.query.type;
-            console.log(this.type);
             register({
               mobile: this.mobile,
               loginPwd: this.pwd,

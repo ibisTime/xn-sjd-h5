@@ -4,9 +4,12 @@
     <div class="me">
       <div class="item" @click="goUserHome(userDetail)">
         <div class="order">
-          <img src="./no1@2x.png" alt="">
+          <img v-if="userDetail.rowNo === 1" src="./no1@2x.png">
+          <img v-else-if="userDetail.rowNo === 2" src="./no2@2x.png">
+          <img v-else-if="userDetail.rowNo === 3" src="./no3@2x.png">
+          <samp class="rowNo" v-else>{{userDetail.rowNo}}</samp>
         </div>
-        <div class="userPhoto" :style="getImgSyl(userDetail.toUserInfo.photo)"></div>
+        <div class="userPhoto" :style="getImgSyl(userDetail.toUserInfo.photo ? userDetail.toUserInfo.photo : '')"></div>
         <div class="info">
           <p class="name">{{userDetail.toUserInfo.nickname ? userDetail.toUserInfo.nickname: jiami(userDetail.toUserInfo.mobile)}}</p>
           <p class="date">获得了{{userDetail.certificateCount}}个环保证书</p>
@@ -22,12 +25,12 @@
               @pullingUp="getUserList">
         <div class="item" v-for="item in userList" @click="goUserHome(item)">
           <div class="order">
-            <img v-if="item.rowNo === 1" src="./no1@2x.png" alt="">
-            <img v-else-if="item.rowNo === 2" src="./no2@2x.png" alt="">
-            <img v-else-if="item.rowNo === 3" src="./no3@2x.png" alt="">
+            <img v-if="item.rowNo === 1" src="./no1@2x.png">
+            <img v-else-if="item.rowNo === 2" src="./no2@2x.png">
+            <img v-else-if="item.rowNo === 3" src="./no3@2x.png">
             <samp class="rowNo" v-else>{{item.rowNo}}</samp>
           </div>
-          <div class="userPhoto" :style="getImgSyl(item.toUserInfo.photo)"></div>
+          <div class="userPhoto" :style="getImgSyl(item.toUserInfo.photo ? item.toUserInfo.photo : '')"></div>
           <div class="info">
             <p class="name">{{item.toUserInfo.nickname ? item.toUserInfo.nickname: jiami(item.toUserInfo.mobile)}}</p>
             <p class="date">获得了{{item.certificateCount}}个环保证书</p>
@@ -64,7 +67,7 @@
         start: 1,
         limit: 30,
         hasMore: true,
-        userDetail: {}
+        userDetail: {toUserInfo: {photo: '', mobile: ''}}
       };
     },
     mounted() {
@@ -89,7 +92,6 @@
           }
           this.loading = false;
           this.userList = this.userList.concat(res1.list);
-          console.log(this.userlist);
           this.userList.map((item) => {
             if(item.toUser === this.userId) {
               this.userDetail = item;

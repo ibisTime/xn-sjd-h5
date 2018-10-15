@@ -26,17 +26,20 @@
         <!--<span>120</span>-->
       <!--</div>-->
     <!--</div>-->
+    <full-loading v-show="loading"></full-loading>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import FullLoading from 'base/full-loading/full-loading';
   import { getArticleDetail } from 'api/biz';
   import { setTitle, formatDate, formatImg } from 'common/js/util';
 
   export default {
     data() {
       return {
+        loading: false,
         pullUpLoad: null,
         collectFlag: false,
         laudFlag: false,
@@ -48,13 +51,15 @@
     mounted() {
       setTitle('文章详情');
       let code = this.$route.query.code;
+      this.loading = true;
       getArticleDetail({
         code: code
       }).then((res) => {
         this.detail = res;
         this.detail.photolist = this.detail.photo.split('||');
         this.contextList = this.detail.content.split(/\n/);
-      });
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     methods: {
       formatImg(img) {
@@ -104,7 +109,8 @@
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      FullLoading
     }
   };
 </script>

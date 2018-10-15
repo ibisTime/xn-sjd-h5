@@ -56,7 +56,7 @@
   import { getCookie } from 'common/js/cookie';
   import {paymentType, payApplyFor, userAccount} from 'api/biz';
   import { getBankCardList } from 'api/account';
-  import {getSystemConfigPage} from 'api/general';
+  import {getSystemConfigPage, getSystemConfigCkey} from 'api/general';
   import { getUserDetail } from 'api/user';
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import Toast from 'base/toast/toast';
@@ -100,9 +100,9 @@
       setTitle('提现');
       let userId = getCookie('userId');
       this.pullUpLoad = null;
-      // this.getQxFee('USERQXFL');
+      this.getQxFee('USERQXFL');
       // this.getQxFee('USERMONTIMES');
-      // this.getQxFee('USERQXBS');
+      this.getQxFee('USERQXBS');
       // this.getQxFee('QXDBZDJE');
       // this.getQxFee('USERDZTS');
       this.getConfig();
@@ -140,24 +140,23 @@
       go(url) {
         this.$router.push(url);
       },
-      // getQxFee(cKey) {
-      //   getSystemConfigCkey(cKey).then(data => {
-      //     switch(cKey) {
-      //       case 'USERQXFL': this.qxFee = parseFloat(data.cvalue) * 100; break;
-      //       case 'USERMONTIMES': this.maxQx = parseFloat(data.cvalue); break;
-      //       case 'USERQXBS': this.qxBei = parseFloat(data.cvalue); break;
-      //       case 'QXDBZDJE': this.dbiMax = parseFloat(data.cvalue); break;
-      //       case 'USERDZTS': this.qxDay = parseFloat(data.cvalue); break;
-      //     }
-      //   });
-      // },
+      getQxFee(cKey) {
+        getSystemConfigCkey(cKey).then(data => {
+          switch(cKey) {
+            case 'USERQXFL': this.qxFee = parseFloat(data.cvalue) * 100; break;
+            case 'USERMONTIMES': this.maxQx = parseFloat(data.cvalue); break;
+            case 'USERQXBS': this.qxBei = parseFloat(data.cvalue); break;
+            case 'QXDBZDJE': this.dbiMax = parseFloat(data.cvalue); break;
+            case 'USERDZTS': this.qxDay = parseFloat(data.cvalue); break;
+          }
+        });
+      },
       getConfig() {
         getSystemConfigPage({
           start: 1,
           limit: 10,
           type: 'WITH'
         }).then(data => {
-          console.log(data);
           this.sysConfig = data.list;
           // switch(cKey) {
           //   case 'USERQXFL': this.qxFee = parseFloat(data.cvalue) * 100; break;

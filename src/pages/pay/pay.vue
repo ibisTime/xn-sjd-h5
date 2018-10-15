@@ -41,6 +41,12 @@
             </div>
           </div>
         </div>
+        <div class="score-rules">
+          <p>积分抵扣规则：</p>
+          <p v-for="(item, index) in sysConfig">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
+          <!--<p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>-->
+          <!--<p>3.T+{{qxDay}}到账</p>-->
+        </div>
       </div>
       <div class="footer">
         <span>金额：<span>{{isPublish ? formatAmount(amount-rate.cnyAmount) : formatAmount(amount)}}</span><span>元</span></span>
@@ -61,6 +67,7 @@
   import { formatAmount, setTitle } from 'common/js/util';
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount } from 'api/biz';
   import { getUserDetail } from 'api/user';
+  import { getSystemConfigPage } from 'api/general';
 
   export default {
     data() {
@@ -74,7 +81,8 @@
         jf: 0,
         amount: 0,
         rate: 0,
-        inputText: ''
+        inputText: '',
+        sysConfig: []
       };
     },
     mounted() {
@@ -92,7 +100,8 @@
             userId: userId
           }),
           getDeductibleAmount(this.orderCode),
-          getUserDetail({userId: userId})
+          getUserDetail({userId: userId}),
+          this.getConfig()
         ]).then(([res1, res2, res3, res4]) => {
           this.amount = res1.amount;
           this.rate = res3;
@@ -116,7 +125,8 @@
             userId: userId
           }),
           getDeductibleAmount(this.orderCode),
-          getUserDetail({userId: userId})
+          getUserDetail({userId: userId}),
+          this.getConfig()
         ]).then(([res1, res2, res3, res4]) => {
           this.amount = res1.amount;
           this.rate = res3;
@@ -244,6 +254,15 @@
         } else {
           this.payOrder();
         }
+      },
+      getConfig() {
+        getSystemConfigPage({
+          start: 1,
+          limit: 10,
+          type: 'PAY_RULE'
+        }).then(data => {
+          this.sysConfig = data.list;
+        });
       }
     },
     components: {
@@ -368,6 +387,15 @@
                 color: $color-text;
               }
             }
+          }
+        }
+        .score-rules {
+          padding-top: 0.28rem;
+          font-size: $font-size-small;
+          color: $color-text-l;
+          margin-bottom: .24rem;
+          p {
+            line-height: 0.36rem;
           }
         }
       }
