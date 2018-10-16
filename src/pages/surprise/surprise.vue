@@ -77,7 +77,7 @@
             this.$refs.toast.show();
             setTimeout(() => {
               this.go(`/homepage`);
-            }, 1000);
+            }, 2000);
           }, () => {});
         }
       },

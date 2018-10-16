@@ -2,7 +2,7 @@
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="公告详情"></m-header>
     <div class="content">
-      <Scroll ref="scroll">
+      <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
         <div class="title">{{detail.title}}</div>
         <p class="prop"><span class="date">{{formatDate(detail.createDatetime)}}</span></p>
         <div class="context">{{detail.content}}</div>
@@ -21,6 +21,7 @@
   export default {
     data() {
       return {
+        pullUpLoad: null,
         loading: false,
         collectFlag: false,
         laudFlag: false,
@@ -31,6 +32,7 @@
     },
     mounted() {
       setTitle('公告详情');
+      this.pullUpLoad = null;
       let code = this.$route.query.code;
       this.loading = true;
       getMessageDetail({

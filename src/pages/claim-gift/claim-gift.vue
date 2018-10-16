@@ -40,8 +40,8 @@
         <div class="description-title">
           <div class="border"></div>
           <span>图文详情</span>
-          <div class="description-detail" v-html="descriptionDetail" ref="description"></div>
         </div>
+        <div class="description-detail rich-text-description" v-html="descriptionDetail" ref="description"></div>
       </div>
       </Scroll>
     </div>

@@ -27,7 +27,6 @@
             <div class="item-input-wrapper">
               <span class="mr110">性别</span>
               <select v-validate="'required'" name="sex" v-model="sex">
-                <option value="" style="display: none">请输入用户</option>
                 <option value="男" selected>男</option>
                 <option value="女">女</option>
               </select>
@@ -103,48 +102,76 @@
       },
       // 保存
       action() {
-        // console.log(this.user.photo);
-        // if(!this.photos.length) {
-        //   this.text = '请上传头像';
-        //   this.$refs.toast.show();
-        // } else {
-        //
-        // }
-        this.$validator.validateAll().then((result) => {
-          if (result) {
-            this.loading = true;
-            this.loadText = '修改中...';
-            this.sex = this.sex === '男' ? '1' : '0';
-            // 修改头像
-            // 修改昵称
-            // 完善资料
-            Promise.all([
-              changeAvatar({
-                photo: this.photos.length ? this.photos[0].key : this.user.photo
-              }),
-              changeNickname({
-                nickname: this.nickname
-              }),
-              completeInfo({
-                gender: this.sex,
-                age: this.age,
-                realName: this.realName,
-                nickname: this.nickname,
-                idNo: this.idNo
-              })
-            ]).then(([res1, res2, res3]) => {
-              this.loading = false;
-              this.sex = this.sex === '1' ? '男' : '女';
-              if(res1.isSuccess && res2.isSuccess && res3.isSuccess) {
-                this.text = '修改成功';
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  this.$router.push('/me');
-                }, 1000);
-              }
-            }).catch(() => { this.loading = false; });
-          }
-        });
+        if(this.photos.length) {
+          this.$validator.validateAll().then((result) => {
+            if (result) {
+              this.loading = true;
+              this.loadText = '修改中...';
+              this.sex = this.sex === '男' ? '1' : '0';
+              // 修改头像
+              // 修改昵称
+              // 完善资料
+              Promise.all([
+                changeAvatar({
+                  photo: this.photos.length ? this.photos[0].key : this.user.photo
+                }),
+                changeNickname({
+                  nickname: this.nickname
+                }),
+                completeInfo({
+                  gender: this.sex,
+                  age: this.age,
+                  realName: this.realName,
+                  nickname: this.nickname,
+                  idNo: this.idNo
+                })
+              ]).then(([res1, res2, res3]) => {
+                this.loading = false;
+                this.sex = this.sex === '1' ? '男' : '女';
+                if(res1.isSuccess && res2.isSuccess && res3.isSuccess) {
+                  this.text = '修改成功';
+                  this.$refs.toast.show();
+                  setTimeout(() => {
+                    this.$router.push('/me');
+                  }, 1000);
+                }
+              }).catch(() => { this.loading = false; });
+            }
+          });
+        } else {
+          this.$validator.validateAll().then((result) => {
+            if (result) {
+              this.loading = true;
+              this.loadText = '修改中...';
+              this.sex = this.sex === '男' ? '1' : '0';
+              // 修改头像
+              // 修改昵称
+              // 完善资料
+              Promise.all([
+                changeNickname({
+                  nickname: this.nickname
+                }),
+                completeInfo({
+                  gender: this.sex,
+                  age: this.age,
+                  realName: this.realName,
+                  nickname: this.nickname,
+                  idNo: this.idNo
+                })
+              ]).then(([res2, res3]) => {
+                this.loading = false;
+                this.sex = this.sex === '1' ? '男' : '女';
+                if(res2.isSuccess && res3.isSuccess) {
+                  this.text = '修改成功';
+                  this.$refs.toast.show();
+                  setTimeout(() => {
+                    this.$router.push('/me');
+                  }, 1000);
+                }
+              }).catch(() => { this.loading = false; });
+            }
+          });
+        }
       },
       /**
        * 从相册中选择图片
@@ -224,7 +251,7 @@
         this.token = res1.uploadToken;
         this.user = res2;
         this.nickname = this.user.nickname || '';
-        this.sex = this.user.gender === '1' ? '男' : '女' || '男';
+        this.sex = this.user.gender ? this.user.gender === '1' ? '男' : '女' || '男' : '男';
         this.age = this.user.age || '';
         this.realName = this.user.realName || '';
         this.idNo = this.user.idNo || '';

@@ -18,6 +18,7 @@
       <no-result title="抱歉，暂无内容"></no-result>
     </div>
     <full-loading v-show="loading"></full-loading>
+    <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
@@ -25,12 +26,15 @@
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
   import NoResult from 'base/no-result/no-result';
+  import Toast from 'base/toast/toast';
   import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
   import { getArticlePage } from 'api/biz';
 
   export default {
     data() {
       return {
+        text: '',
         start: 1,
         limit: 10,
         hasMore: true,
@@ -40,6 +44,8 @@
     },
     mounted() {
       setTitle('情感频道');
+      this.treeNo = this.$route.query.treeNo || '';
+      this.userId = getCookie('userId');
       this.getPageOrders();
     },
     methods: {
@@ -53,7 +59,15 @@
         this.$router.push(url);
       },
       action() {
-        this.go('/write-article');
+        if(!this.userId) {
+          this.text = '您未登录';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
+        } else {
+          this.go('/write-article');
+        }
       },
       getPageOrders() {
         this.loading = true;
@@ -63,9 +77,11 @@
           status: '5',
           openLevel: '1',
           statusList: ['1', '2', '3'],
-          queryUserId: getUserId()
+          queryUserId: getUserId(),
+          orderDir: 'asc',
+          orderColumn: 'order_no',
+          treeNo: this.treeNo
         }).then((res) => {
-          this.loading = false;
           if (res.list.length < this.limit || res.totalCount <= this.limit) {
             this.hasMore = false;
           }
@@ -75,14 +91,15 @@
           this.list = this.list.concat(res.list);
           this.start++;
           this.loading = false;
-        }).catch(() => { });
+        }).catch(() => { this.loading = false; });
       }
     },
     components: {
       Scroll,
       MHeader,
       FullLoading,
-      NoResult
+      NoResult,
+      Toast
     }
   };
 </script>

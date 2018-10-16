@@ -2,160 +2,160 @@
   <div class="home-wrapper">
     <!--<m-header class="cate-header" :title="title"></m-header>-->
     <div class="content">
-      <div class="tree-panel">
-        <div class="cover" v-show="cover"></div>
-        <div class="juanzeng" v-show="juanzengShow">
-          <span>+{{presentTppQuantity}}g</span>
-          <img src="./heart@2x.png">
-        </div>
-        <div class="tree-panel-danmu" v-show="danmuShow">
-          <img :src="getAvatar()" class="head">
-          <div class="info">
-            <span class="name">hhh</span>
-            <span class="context">{{emojiText}}</span>
+      <Scroll ref="scroll"
+              :data="dynamicsList"
+              :hasMore="dynamics.hasMore"
+              @pullingUp="getDynamicsList">
+        <div class="tree-panel">
+          <div class="cover" v-show="cover"></div>
+          <div class="juanzeng" v-show="juanzengShow">
+            <span>+{{presentTppQuantity}}g</span>
+            <img src="./heart@2x.png">
           </div>
-          <img :src="emoji" class="emoji">
-        </div>
-        <div class="carbon-bubbles">
-          <div class="bubble-item" v-for="item in tppList" @click="doCollectionTpp(item)">
-            <div class="bubble" :class="'status' + item.status">
-              <img src="./bubble-light@2x.png">
-              <span>{{formatAmount(item.quantity, 1)}}g</span>
+          <div class="tree-panel-danmu" v-show="danmuShow">
+            <img :src="getAvatar()" class="head">
+            <div class="info">
+              <span class="name">hhh</span>
+              <span class="context">{{emojiText}}</span>
             </div>
+            <img :src="emoji" class="emoji">
           </div>
-        </div>
-        <!-- 证书 -->
-        <div class="certification" @click="certification" v-show="!other">
-          <img src="./certification@2x.png" class="certification">
-          <span>x{{certificationNum}}</span>
-        </div>
-        <!-- 礼物 -->
-        <div class="me" @click="go('/gift?code=' + adoptTreeCode)">
-          <img :src="getAvatar()">
-          <span>礼物</span>
-        </div>
-        <div class="icons">
-          <img src="./map@2x.png" @click="go('/map?code=' + adoptTreeCode)">
-          <img src="./prop@2x.png" @click="props" v-show="!other">
-          <img src="./strategy@2x.png" @click="go('/strategy')" v-show="!other">
-          <img src="./give@2x.png" @click="goSurprise" v-show="!other">
-        </div>
-        <div class="icons-other" v-show="other">
-          <img src="./danmu@2x.png" @click="danmu" >
-          <img src="./juanzeng@2x.png" @click="juanzeng">
-        </div>
-        <img src="./romantic-story@2x.png" class="romantic-story" v-show="!other" @click="go('/emotion-channel')">
-      </div>
-      <!-- 能量比拼 -->
-      <div class="battle" v-if="other === '1'" v-show="other === '1'">
-        <div class="battle-bg">
-          <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
-            <div class="battle-item-head">
-              <div class="userPhoto" :style="getImgSyl(comparisonData.toUserInfo.photo)"></div>
-              <img src="./crown@2x.png" class="crown">
-            </div>
-            <div>
-              <p class="info">TA收取你</p>
-              <p class="number">{{formatAmount(comparisonData.toUserWeekQuantity)}}g</p>
-            </div>
-          </div>
-          <span class="vs">VS</span>
-          <div class="battle-item" :class="comparisonData.userIsWin ? 'win' : ''">
-            <div>
-              <p class="info">你收取TA</p>
-              <p class="number">{{formatAmount(comparisonData.userWeekQuantity)}}g</p>
-            </div>
-            <div class="battle-item-head">
-              <div class="userPhoto" :style="getImgSyl(comparisonData.userInfo.photo)"></div>
-              <img src="./crown@2x.png" class="crown">
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 用户 -->
-      <div class="tab" v-show="!other">
-        <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">最新动态</span>
-        <!--<span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>-->
-        <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
-      </div>
-      <!-- 用户 - 最新动态/认养人/古树详情 -->
-      <div class="tab-panel" v-show="!other">
-        <!-- 最新动态 -->
-        <Scroll ref="scroll"
-                :data="dynamicsList"
-                :hasMore="dynamics.hasMore"
-                @pullingUp="getDynamicsList">
-          <div class="dynamic" v-show="tab === 0">
-            <!-- 访客 -->
-            <!--<div class="heads">-->
-              <!--<div class="head-item">-->
-                <!--<img :src="getAvatar()">-->
-                <!--&lt;!&ndash;<span class="number">10g</span>&ndash;&gt;-->
-              <!--</div>-->
-            <!--</div>-->
-            <!-- 动态 -->
-            <div class="dynamic-info">
-              <div class="dynamic-info-item" v-for="item in dynamicsList">
-                <div v-show="isShowDate(item)">
-                  <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
-                  <div class="border"></div>
-                </div>
-                <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
-                <p v-if="item.type === '1'">
-                  <span class="name">{{getName(item)}}</span>
-                  <span class="activity">赠送{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
-                </p>
-                <p v-if="item.type === '2'">
-                  <span class="name">{{getName(item)}}</span>
-                  <span class="activity">留言</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
-                </p>
-                <p v-if="item.type === '3'">
-                  <span class="name">{{getName(item)}}</span>
-                  <span class="activity">收取{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
-                </p>
+          <div class="carbon-bubbles">
+            <div class="bubble-item" v-for="item in tppList" @click="doCollectionTpp(item)">
+              <div class="bubble" :class="'status' + item.status">
+                <img src="./bubble-light@2x.png">
+                <span>{{formatAmount(item.quantity, 1)}}g</span>
               </div>
-              <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
             </div>
           </div>
-          <!-- 认养人介绍 -->
-          <!--<div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1"></div>-->
-          <!-- 古树详情 -->
-          <div class="tree-detail" v-show="tab === 2">
-          <!--<div class="item">-->
-            <!--<span>古树昵称</span><span>樟子松鼠</span>-->
-          <!--</div>-->
-          <div class="item">
-            <span>古树学名</span><span>{{treeDetail.tree ? treeDetail.tree.scientificName : ''}}</span>
+          <!-- 证书 -->
+          <div class="certification" @click="certification" v-show="!other">
+            <img src="./certification@2x.png" class="certification">
+            <span>x{{certificationNum}}</span>
           </div>
-          <div class="item">
-            <span>古树编码</span><span>{{treeDetail.treeNumber}}</span>
+          <!-- 礼物 -->
+          <div class="me" @click="go('/gift?code=' + adoptTreeCode)">
+            <img :src="getAvatar()">
+            <span>礼物</span>
           </div>
-          <div class="item">
-            <span>古树品种</span><span>{{treeDetail.tree ? treeDetail.tree.variety : ''}}</span>
+          <div class="icons">
+            <img src="./map@2x.png" @click="go('/map?code=' + adoptTreeCode)">
+            <img src="./prop@2x.png" @click="props" v-show="!other">
+            <img src="./strategy@2x.png" @click="go('/strategy')" v-show="!other">
+            <img src="./give@2x.png" @click="goSurprise" v-show="!other">
           </div>
-          <div class="item">
-            <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
+          <div class="icons-other" v-show="other">
+            <img src="./danmu@2x.png" @click="danmu" >
+            <img src="./juanzeng@2x.png" @click="juanzeng">
           </div>
-          <div class="item">
-            <span>养护人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.loginName : '暂无养护人'}}</span>
-          </div>
-          <!--<div class="item">-->
-            <!--<span>当前认养人</span><span>三级</span>-->
-          <!--</div>-->
-          <div class="item" @click="go('/adopt-list?history=1&code=' + treeDetail.productCode)">
-            <span>历史认养人</span>
-            <img src="./more@2x.png" class="fr more">
-          </div>
-          <div class="item" @click="go('/maintain-records?treeNumber=' + treeDetail.treeNumber)">
-            <span>养护记录</span>
-            <img src="./more@2x.png" class="fr more">
+          <img src="./romantic-story@2x.png" class="romantic-story" v-show="!other" @click="go('/emotion-channel?treeNo=' + treeDetail.tree.treeNumber)">
+        </div>
+        <!-- 能量比拼 -->
+        <div class="battle" v-if="other === '1'" v-show="other === '1'">
+          <div class="battle-bg">
+            <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
+              <div class="battle-item-head">
+                <div class="userPhoto" :style="getImgSyl(comparisonData.toUserInfo.photo)"></div>
+                <img src="./crown@2x.png" class="crown">
+              </div>
+              <div>
+                <p class="info">TA收取你</p>
+                <p class="number">{{formatAmount(comparisonData.toUserWeekQuantity)}}g</p>
+              </div>
+            </div>
+            <span class="vs">VS</span>
+            <div class="battle-item" :class="comparisonData.userIsWin ? 'win' : ''">
+              <div>
+                <p class="info">你收取TA</p>
+                <p class="number">{{formatAmount(comparisonData.userWeekQuantity)}}g</p>
+              </div>
+              <div class="battle-item-head">
+                <div class="userPhoto" :style="getImgSyl(comparisonData.userInfo.photo)"></div>
+                <img src="./crown@2x.png" class="crown">
+              </div>
+            </div>
           </div>
         </div>
-        </Scroll>
-      </div>
-      <div class="gray" v-show="other"></div>
-      <!-- TA的动态 -->
-      <div class="dynamic-other" v-show="other">
+        <!-- 用户 -->
+        <div class="tab" v-show="!other">
+          <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">最新动态</span>
+          <!--<span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>-->
+          <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
+        </div>
+        <!-- 用户 - 最新动态/认养人/古树详情 -->
+        <div class="tab-panel" v-show="!other">
+          <!-- 最新动态 -->
+            <div class="dynamic" v-show="tab === 0">
+              <!-- 访客 -->
+              <!--<div class="heads">-->
+                <!--<div class="head-item">-->
+                  <!--<img :src="getAvatar()">-->
+                  <!--&lt;!&ndash;<span class="number">10g</span>&ndash;&gt;-->
+                <!--</div>-->
+              <!--</div>-->
+              <!-- 动态 -->
+              <div class="dynamic-info">
+                <div class="dynamic-info-item" v-for="item in dynamicsList">
+                  <div v-show="isShowDate(item)">
+                    <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+                    <div class="border"></div>
+                  </div>
+                  <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
+                  <p v-if="item.type === '1'">
+                    <span class="name">{{getName(item)}}</span>
+                    <span class="activity">赠送{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+                  </p>
+                  <p v-if="item.type === '2'">
+                    <span class="name">{{getName(item)}}</span>
+                    <span class="activity">留言</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+                  </p>
+                  <p v-if="item.type === '3'">
+                    <span class="name">{{getName(item)}}</span>
+                    <span class="activity">收取{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+                  </p>
+                </div>
+                <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
+              </div>
+            </div>
+            <!-- 认养人介绍 -->
+            <!--<div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1"></div>-->
+            <!-- 古树详情 -->
+            <div class="tree-detail" v-show="tab === 2">
+            <!--<div class="item">-->
+              <!--<span>古树昵称</span><span>樟子松鼠</span>-->
+            <!--</div>-->
+            <div class="item">
+              <span>古树学名</span><span>{{treeDetail.tree ? treeDetail.tree.scientificName : ''}}</span>
+            </div>
+            <div class="item">
+              <span>古树编码</span><span>{{treeDetail.treeNumber}}</span>
+            </div>
+            <div class="item">
+              <span>古树品种</span><span>{{treeDetail.tree ? treeDetail.tree.variety : ''}}</span>
+            </div>
+            <div class="item">
+              <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
+            </div>
+            <div class="item">
+              <span>养护人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.loginName : '暂无养护人'}}</span>
+            </div>
+            <!--<div class="item">-->
+              <!--<span>当前认养人</span><span>三级</span>-->
+            <!--</div>-->
+            <div class="item" @click="go('/adopt-list?history=1&code=' + treeDetail.productCode)">
+              <span>历史认养人</span>
+              <img src="./more@2x.png" class="fr more">
+            </div>
+            <div class="item" @click="go('/maintain-records?treeNumber=' + treeDetail.treeNumber)">
+              <span>养护记录</span>
+              <img src="./more@2x.png" class="fr more">
+            </div>
+          </div>
+          <!--</Scroll>-->
+        </div>
+        <div class="gray" v-show="other"></div>
+        <!-- TA的动态 -->
+        <div class="dynamic-other" v-show="other">
         <div class="dynamic-title">
           <div class="border"></div>
           <span>TA的动态</span>
@@ -189,7 +189,7 @@
           <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
         </div>
       </div>
-      <!--</Scroll>-->
+      </Scroll>
     </div>
     <!-- 道具 -->
     <div :class="['mask',flag ? 'show' : '']" @click="change"></div>
@@ -468,7 +468,6 @@ export default {
     },
     // 分页查询动态
     getDynamicsList() {
-      console.log(1);
       getPageJournal({
         start: this.dynamics.start,
         limit: this.dynamics.limit,

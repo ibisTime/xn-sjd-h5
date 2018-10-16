@@ -5,6 +5,11 @@
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
+            <span>已绑定邮箱</span><span>{{userDetail.email}}</span>
+          </div>
+        </div>
+        <div class="form-item border-bottom-1px">
+          <div class="item-input-wrapper">
             <input type="text" class="item-input" name="newEmail" v-model="newEmail" v-validate="'required|email'" placeholder="请输入新邮箱地址">
             <span v-show="errors.has('newEmail')" class="error-tip">{{errors.first('newEmail')}}</span>
           </div>
@@ -29,10 +34,11 @@
 <script>
   import MHeader from 'components/m-header/m-header';
   import {sendCaptchaEamil} from 'api/general';
-  import {bindEmail} from 'api/user';
+  import {bindEmail, getUserDetail} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
   import {setTitle} from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
 
   export default {
     mixins: [directiveMixin],
@@ -44,11 +50,22 @@
         captBtnText: '获取验证码',
         mobile: '',
         newEmail: '',
-        newCaptcha: ''
+        newCaptcha: '',
+        userDetail: {email: ''}
       };
     },
-    created() {
+    mounted() {
       setTitle('绑定邮箱');
+      let userId = getCookie('userId');
+      if(userId) {
+        this.loading = true;
+        Promise.all([
+          getUserDetail({userId: userId})
+        ]).then(([res1]) => {
+          this.userDetail = res1;
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
+      }
     },
     methods: {
       // 发送验证码
@@ -147,6 +164,9 @@
       .item-input-wrapper {
         padding: 0;
         height: 1.1rem;
+        span {
+          padding-right: 0.2rem;
+        }
         .error-tip {
           right: 0;
         }

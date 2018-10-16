@@ -10,6 +10,7 @@
               <div class="text">
                 <p><span>{{userDetail.nickname || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
                 <p class="mobile">{{userDetail.mobile}}</p>
+                <!--<p class="mobile" v-show="userDetail.email">{{userDetail.email}}</p>-->
               </div>
               <img src="./more@2x.png" class="me-more fr">
             </div>

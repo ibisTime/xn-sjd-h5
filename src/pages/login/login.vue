@@ -100,6 +100,7 @@
         getConfig('wx_h5_access_key').then(res => {
           var appId = res.cvalue;
           let redirectUri = `${location.origin}/${location.hash}`;
+          // let redirectUri = 'front.miss.hichengdai.com';
           if (this.userReferee && !/userReferee=([^&$]+)/.exec(location.href)) {
             redirectUri += `?userReferee=${this.userReferee}`;
           }
@@ -108,6 +109,7 @@
           let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
           let suffix =
             '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
+          alert(`${redirectUri}${suffix}`);
           /* alert(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`); */
           // 发送微信网页授权地址，由此获取code
           setTimeout(() => {

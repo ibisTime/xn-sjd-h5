@@ -52,7 +52,7 @@
         <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
           <div class="item" v-for="item in userTree">
             <div class="tree-info" @click="goMyTree(item)">
-              <p class="tree-name">{{item.tree.scientificName}}</p>
+              <p class="tree-name">{{item.tree.scientificName}}-{{item.treeNumber}}</p>
               <p class="tree-about"></p>
             </div>
             <div class="map" @click="go('/map?code=' + item.code)">
@@ -103,12 +103,12 @@
                 </div>
                 <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
                 <div class="daily-content-item-info" v-if="item.type === '1'">
-                  <img src="./steal@2x.png" alt="">
+                  <img src="./zengsong@2x.png" alt="">
                   <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>赠送{{formatAmount(item.quantity)}}g</p>
                   <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                 </div>
                 <div class="daily-content-item-info" v-if="item.type === '2'">
-                  <img src="./steal@2x.png" alt="">
+                  <img src="./message@2x.png" alt="">
                   <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>留言{{formatAmount(item.quantity)}}g</p>
                   <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                 </div>

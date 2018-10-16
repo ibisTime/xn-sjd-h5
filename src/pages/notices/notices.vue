@@ -9,6 +9,7 @@
             <p class="date">{{cut(item.content, 14)}}</p>
           </div>
         </div>
+        <no-result v-show="!hasMore && !(list && list.length)" title="暂无公告" class="no-result-wrapper"></no-result>
       </Scroll>
     </div>
     <full-loading v-show="loading"></full-loading>
@@ -18,6 +19,7 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
+  import NoResult from 'base/no-result/no-result';
   import { getMessage } from 'api/biz';
   import { formatDate } from 'common/js/util';
 
@@ -59,7 +61,8 @@
     components: {
       Scroll,
       MHeader,
-      FullLoading
+      FullLoading,
+      NoResult
     }
   };
 </script>
@@ -128,6 +131,13 @@
           }
         }
       }
+    }
+    .no-result-wrapper {
+      position: absolute;
+      width: 100%;
+      top: 1.9rem;
+      left: 0;
+      transform: translateY(-50%);
     }
   }
 </style>

@@ -15,7 +15,8 @@
         <img class="tit" src="./notice@2x.png">
         <div class="notice-wrap">
           <div class="border"></div>
-          <div class="title notice" v-for="item in noticeList">{{item.title}}</div>
+          <div class="title notice" v-for="item in noticeList" v-show="noticeList.length">{{item.title}}</div>
+          <div class="title notice" v-show="!noticeList.length">暂无公告</div>
         </div>
         <div class="more" @click="go('/notices')">更多</div>
       </div>
@@ -267,9 +268,9 @@ export default {
       position: relative;
       width: 100%;
       height: 0.7rem;
-      display: -webkit-box;
-      overflow-x: scroll;
-      -webkit-overflow-scrolling:touch;
+      /*display: -webkit-box;*/
+      /*overflow-x: scroll;*/
+      /*-webkit-overflow-scrolling:touch;*/
       .tit {
         width: 0.6rem;
         height: 0.25rem;
@@ -313,20 +314,21 @@ export default {
       .notice {
         align-items: center;
         font-size: 0.24rem;
-        padding: 0.24rem 0.3rem;
+        /*padding: 0.24rem 0.3rem;*/
+        padding: 0.24rem 0;
         background: $color-highlight-background;
-        position: absolute;
-        left: 1.24rem;
-        width: calc(100% - 2.5rem);
-        overflow: scroll;
+        /*position: absolute;*/
+        /*left: 1.24rem;*/
+        /*width: calc(100% - 2.5rem);*/
+        /*overflow: scroll;*/
         .title {
           line-height: 0.33rem;
           flex: 1;
         }
       }
-      .notice:nth-child(1){
-        -webkit-animation: anim1 3s linear infinite;
-      }
+      /*.notice:nth-child(1){*/
+        /*-webkit-animation: anim1 3s linear infinite;*/
+      /*}*/
 
       /*.notice:nth-child(2){*/
         /*-webkit-animation: anim2 3s linear infinite;*/

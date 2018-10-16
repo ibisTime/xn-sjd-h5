@@ -33,19 +33,21 @@
             </div>
             <div class="gray"></div>
             <div class="user-info-list">
-              <div>
+              <div class="select-item">
+                <span>关联古树</span>
                 <select v-validate="'required'" name="adoptTreeCode" v-model="adoptTreeCode">
-                  <option :value="item.code" v-for="item in list">{{item.tree.scientificName}}</option>
+                  <option :value="item" v-for="item in list">{{item.tree.scientificName}}-{{item.tree.treeNumber}}</option>
                 </select>
-                <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+                <img src="./more@2x.png"/>
               </div>
-              <div>
+              <div class="select-item">
+                <span>谁可以看</span>
                 <select v-validate="'required'" name="openLevel" v-model="openLevel">
                   <option value="1">公开</option>
                   <option value="2">私密</option>
                   <option value="3">仅好友可见</option>
                 </select>
-                <span v-show="errors.has('type')" class="error-tip">{{errors.first('type')}}</span>
+                <img src="./more@2x.png"/>
               </div>
             </div>
             <div class="button">
@@ -98,10 +100,18 @@
           statusList: ['1', '2', '3']
         })
       ]).then(([res1, res2]) => {
-        this.token = res1.uploadToken;
-        this.list = res2;
-        this.adoptTreeCode = res2[0].code;
-        this.loading = false;
+        if(!res2.length) {
+          this.text = '您没有古树，暂时无法发布文章哦';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.back();
+          }, 1000);
+        } else {
+          this.token = res1.uploadToken;
+          this.list = res2;
+          this.adoptTreeCode = res2[0];
+          this.loading = false;
+        }
       }).catch(() => { this.loading = false; });
     },
     methods: {
@@ -123,15 +133,22 @@
         this.photos.map((item) => {
           photoArr.push(item.key);
         });
+        if(!photoArr.length) {
+          this.text = '文章必须包含至少一张图片';
+          this.$refs.toast.show();
+          return;
+        }
         let photo = photoArr.join('||');
         this.$validator.validateAll().then((result) => {
           if(result) {
+            this.loading = true;
             addArticle({
               title: this.title,
               content: this.context,
               photo: photo,
               openLevel: this.openLevel,
-              adoptTreeCode: this.adoptTreeCode,
+              adoptTreeCode: this.adoptTreeCode.code,
+              treeNo: this.adoptTreeCode.tree.treeNumber,
               updater: this.userId,
               publishUserId: this.userId,
               type: '2',
@@ -307,6 +324,16 @@
             }
             .mr110 {
               margin-right: 1.1rem;
+            }
+            .select-item {
+              display: flex;
+              align-items: center;
+              span {
+                padding-right: 0.2rem;
+              }
+              select {
+                flex: 1;
+              }
             }
             select {
               font-size: $font-size-medium-s;

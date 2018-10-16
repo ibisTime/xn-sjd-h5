@@ -25,9 +25,6 @@
       this.code = this.$route.query.code;
       this.treeCode = this.$route.query.treeCode;
       this.getUserTreeDetail();
-      // this.latitude = this.$route.query.latitude;
-      // this.longitude = this.$route.query.longitude;
-      // this.initMap();
     },
     methods: {
       initMap() {

@@ -60,7 +60,15 @@
         this.$router.push(url);
       },
       action() {
-        this.go('/write-article');
+        if(!this.userId) {
+          this.text = '您未登录';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
+        } else {
+          this.go('/write-article');
+        }
       },
       getPageOrders() {
         this.loading = true;

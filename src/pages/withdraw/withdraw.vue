@@ -30,7 +30,7 @@
             </div>
           </div>
           <div class="gray"></div>
-          <div class="recharge">
+          <div class="recharge note">
             <p>提现说明</p>
             <textarea name="" rows="2" v-model="config.applyNote"></textarea>
           </div>
@@ -334,6 +334,9 @@
           height: 0.2rem;
           padding: 0;
           background: transparent;
+        }
+        .note {
+          border-bottom: 1px solid $color-border;
         }
         .withdraw-rules {
           padding-top: 0.28rem;
