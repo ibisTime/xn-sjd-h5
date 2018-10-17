@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="showFlag">
     <div class="check-in-wrapper"></div>
     <div class="full-loading">
       <img src="./close@2x.png" class="close" @click="close">

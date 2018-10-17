@@ -14,7 +14,7 @@
           <p class="name">{{userDetail.toUserInfo.nickname ? userDetail.toUserInfo.nickname: jiami(userDetail.toUserInfo.mobile)}}</p>
           <p class="date">获得了{{userDetail.certificateCount}}个环保证书</p>
         </div>
-        <span class="price fr">{{userDetail.certificateCount}}kg</span>
+        <span class="price fr">{{formatAmount(userDetail.tppAmount)}}碳泡泡</span>
       </div>
     </div>
     <div class="gray"></div>
@@ -35,7 +35,7 @@
             <p class="name">{{item.toUserInfo.nickname ? item.toUserInfo.nickname: jiami(item.toUserInfo.mobile)}}</p>
             <p class="date">获得了{{item.certificateCount}}个环保证书</p>
           </div>
-          <span class="price fr">{{item.certificateCount}}kg</span>
+          <span class="price fr">{{formatAmount(item.tppAmount)}}碳泡泡</span>
         </div>
         <no-result v-show="!hasMore && !(userList && userList.length)" title="暂无好友" class="no-result-wrapper"></no-result>
       </Scroll>
@@ -84,7 +84,9 @@
         Promise.all([
           getPageUserRelationship({
             start: this.start,
-            limit: this.limit
+            limit: this.limit,
+            orderDir: 'asc',
+            orderColumn: 'row_no'
           })
         ]).then(([res1]) => {
           if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -103,7 +105,11 @@
         });
       },
       formatAmount(amount) {
-        return formatAmount(amount);
+        if(formatAmount(amount) >= 1000) {
+          return formatAmount(formatAmount(amount)) + 'k';
+        } else {
+          return formatAmount(amount);
+        }
       },
       formatDate(date, format) {
         return formatDate(date, format);

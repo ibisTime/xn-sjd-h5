@@ -31,7 +31,6 @@
           <!-- 证书 -->
           <div class="certification" @click="certification" v-show="!other">
             <img src="./certification@2x.png" class="certification">
-            <span>x{{certificationNum}}</span>
           </div>
           <!-- 礼物 -->
           <div class="me" @click="go('/gift?code=' + adoptTreeCode)">
@@ -274,7 +273,7 @@
     <convert-success v-show="convertSuccessFlag" :propsDetail="propsData.buyItem" @close="close('convertSuccessFlag')" @useProps="useProps"></convert-success>
     <certification v-show="certificationFlag" @close="close('certificationFlag')" :certificationArr="certificationArr" :head="getAvatar()" :name="userDetail.nickname"></certification>
     <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="String(presentTppQuantity)"></juanzeng>
-    <toast ref="toast" :text="text"></toast>
+    <toast ref="toast" :text="text" :delay="3000"></toast>
     <full-loading v-show="loading"></full-loading>
     <router-view></router-view>
   </div>
@@ -292,7 +291,7 @@ import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
-        getListProps, buyProps, getPropsOrder, useProps, getAccount, getListUserTree } from 'api/biz';
+        getListProps, buyProps, getPropsOrder, useProps, getAccount, getPropsUsedRecordList } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import { getUserDetail } from 'api/user';
 import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
@@ -367,7 +366,6 @@ export default {
       propsList: [], // 道具数据,
       jf: 0,  // 我有多少积分
       userDetail: {},
-      certificationNum: 0,   // 我有多少证书
       certificationArr: []  // 证书列表
     };
   },
@@ -435,16 +433,31 @@ export default {
     },
     // 查询道具列表
     getPropList() {
-      getListProps({
-        type: this.propsData.type,
-        userId: this.getUserId()
-      }).then((data) => {
-        this.propsList = data;
-        this.propsList.map((item) => {
-          if(item.status === '1') {
-            this.cover = true;
-          }
+      Promise.all([
+        getListProps({
+          type: this.propsData.type,
+          userId: this.getUserId()
+        }),
+        getPropsUsedRecordList({
+          adoptTreeCode: this.adoptTreeCode,
+          status: '1'
+        })
+      ]).then(([res1, res2]) => {
+        this.propsList = res1;
+        console.log(res1);
+        console.log(res2);
+        res2.map((item2) => {
+          res1.map((item1) => {
+            if(item2.toolOrderInfo.toolCode === item1.code) {
+              this.cover = true;
+            }
+          });
         });
+        // this.propsList.map((item) => {
+        //   if(item.status === '1') {
+        //     this.cover = true;
+        //   }
+        // });
         this.loading = false;
         setTimeout(() => {
           this.$refs.propScroll.scroll.refresh();
@@ -453,11 +466,14 @@ export default {
     },
     // 查认养权(也就是证书）
     getListUserTree() {
-      getListUserTree({
-        currentHolder: this.userId
-      }).then((res) => {
-        this.certificationNum = res.length;
-        this.certificationArr = res;
+      // getListUserTree({
+      //   currentHolder: this.userId
+      // }).then((res) => {
+      //   this.certificationNum = res.length;
+      //   this.certificationArr = res;
+      // }).catch(() => {});
+      getUserTreeDetail(this.adoptTreeCode).then((res) => {
+        this.certificationArr.push(res);
       }).catch(() => {});
     },
     // 查询树详情
@@ -471,7 +487,8 @@ export default {
       getPageJournal({
         start: this.dynamics.start,
         limit: this.dynamics.limit,
-        adoptUserId: this.currentHolder
+        adoptUserId: this.currentHolder,
+        adoptTreeCode: this.adoptTreeCode
       }).then((data) => {
         if (data.list.length < this.dynamics.limit || data.totalCount <= this.dynamics.limit) {
           this.dynamics.hasMore = false;
@@ -514,7 +531,8 @@ export default {
     doGiveTpp() {
       this.loading = true;
       return GiveTpp({
-        toUserId: this.currentHolder
+        toUserId: this.currentHolder,
+        adoptTreeCode: this.adoptTreeCode
       }).then((res) => {
         this.loading = false;
         if(res.code) {
@@ -530,10 +548,13 @@ export default {
         this.loading = true;
         collectionTpp({
           code: item.code,
-          userId: this.other ? getUserId() : this.currentHolder
+          userId: getUserId()   // 我收取别人的，收取人是我，我收取我自己的，收取人也是我
         }).then(() => {
           this.loading = false;
           this.getTppList({adoptTreeCode: this.adoptTreeCode});
+          this.dynamics.start = 1;
+          this.dynamics.limit = 10;
+          this.dynamicsList = [];
           this.getDynamicsList();
           if(this.other === '1') {
             this.getComparisonData(this.currentHolder);
@@ -652,16 +673,23 @@ export default {
       buyProps(code).then(() => {
         this.close('convertFlag');
         this.convertSuccessFlag = true;
+        this.getPropList();
+        this.getJF();
         this.loading = false;
       }).catch(() => { this.loading = false; });
     },
+    // 捐赠
     juanzengSuccess() {
       this.doGiveTpp().then(() => {
         this.close('juanzengFlag');
         this.juanzengShow = true;
+        this.dynamics.start = 1;
+        this.dynamics.limit = 10;
+        this.dynamicsList = [];
+        this.getDynamicsList();
         setTimeout(() => {
           this.juanzengShow = false;
-        }, 1000);
+        }, 3000);
       }, () => {});
     },
     certification() {

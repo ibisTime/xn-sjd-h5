@@ -45,109 +45,111 @@
         <!--<span :class="emotion === 1 ? 'active' : ''" @click="changeEmotion(1)">爱情林</span>-->
         <!--<span :class="emotion === 2 ? 'active' : ''" @click="changeEmotion(2)">亲子林</span>-->
       <!--</div>-->
-      <Scroll ref="scroll"
-              :data="dynamicsList"
-              :hasMore="dynamics.hasMore"
-              @pullingUp="getDynamicsList">
-        <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
-          <div class="item" v-for="item in userTree">
-            <div class="tree-info" @click="goMyTree(item)">
-              <p class="tree-name">{{item.tree.scientificName}}-{{item.treeNumber}}</p>
-              <p class="tree-about"></p>
-            </div>
-            <div class="map" @click="go('/map?code=' + item.code)">
-              <img src="./map@2x.png" alt="">
-              <p>查看地图</p>
-            </div>
-          </div>
-          <no-result v-show="!loading && !(userTree && userTree.length)" title="还没有认养树" class="no-result-wrapper"></no-result>
-        </div>
-        <div class="gray"></div>
-        <div class="battle" v-if="other === '1'" v-show="other === '1'">
-          <div class="battle-bg">
-            <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
-              <div class="battle-item-head">
-                <div class="userPhoto" :style="getImgSyl(comparisonData.toUserInfo.photo)"></div>
-                <img src="./crown@2x.png" class="crown">
+      <div class="scroll-section">
+        <Scroll ref="scroll"
+                :data="dynamicsList"
+                :hasMore="dynamics.hasMore"
+                @pullingUp="getDynamicsList">
+          <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
+            <div class="item" v-for="item in userTree">
+              <div class="tree-info" @click="goMyTree(item)">
+                <p class="tree-name">{{item.tree.scientificName}}-{{item.treeNumber}}</p>
+                <p class="tree-about"></p>
               </div>
-              <div>
-                <p class="info">TA收取你</p>
-                <p class="number">{{formatAmount(comparisonData.toUserWeekQuantity)}}g</p>
+              <div class="map" @click="go('/map?code=' + item.code)">
+                <img src="./map@2x.png" alt="">
+                <p>查看地图</p>
               </div>
             </div>
-            <span class="vs">VS</span>
-            <div class="battle-item" :class="comparisonData.userIsWin ? 'win' : ''">
-              <div>
-                <p class="info">你收取TA</p>
-                <p class="number">{{formatAmount(comparisonData.userWeekQuantity)}}g</p>
-              </div>
-              <div class="battle-item-head">
-                <div class="userPhoto" :style="getImgSyl(comparisonData.userInfo.photo)"></div>
-                <img src="./crown@2x.png" class="crown">
-              </div>
-            </div>
+            <no-result v-show="!loading && !(userTree && userTree.length)" title="还没有认养树" class="no-result-wrapper"></no-result>
           </div>
           <div class="gray"></div>
-        </div>
-        <div class="dynamic">
-          <div class="dynamic-title">
-            <div class="border"></div>
-            <span>{{borderTitle}}</span>
+          <div class="battle" v-if="other === '1'" v-show="other === '1'">
+            <div class="battle-bg">
+              <div class="battle-item" :class="comparisonData.toUserIsWin ? 'win' : ''">
+                <div class="battle-item-head">
+                  <div class="userPhoto" :style="getImgSyl(comparisonData.toUserInfo.photo)"></div>
+                  <img src="./crown@2x.png" class="crown">
+                </div>
+                <div>
+                  <p class="info">TA收取你</p>
+                  <p class="number">{{formatAmount(comparisonData.toUserWeekQuantity)}}g</p>
+                </div>
+              </div>
+              <span class="vs">VS</span>
+              <div class="battle-item" :class="comparisonData.userIsWin ? 'win' : ''">
+                <div>
+                  <p class="info">你收取TA</p>
+                  <p class="number">{{formatAmount(comparisonData.userWeekQuantity)}}g</p>
+                </div>
+                <div class="battle-item-head">
+                  <div class="userPhoto" :style="getImgSyl(comparisonData.userInfo.photo)"></div>
+                  <img src="./crown@2x.png" class="crown">
+                </div>
+              </div>
+            </div>
+            <div class="gray"></div>
           </div>
-          <div class="daily">
-            <div class="daily-content">
-              <div class="daily-content-item" v-for="item in dynamicsList">
-                <div v-show="isShowDate(item)">
-                  <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+          <div class="dynamic">
+            <div class="dynamic-title">
+              <div class="border"></div>
+              <span>{{borderTitle}}</span>
+            </div>
+            <div class="daily">
+              <div class="daily-content">
+                <div class="daily-content-item" v-for="item in dynamicsList">
+                  <div v-show="isShowDate(item)">
+                    <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+                    <div class="border"></div>
+                  </div>
+                  <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
+                  <div class="daily-content-item-info" v-if="item.type === '1'">
+                    <img src="./zengsong@2x.png" alt="">
+                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>赠送{{formatAmount(item.quantity)}}g</p>
+                    <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                  </div>
+                  <div class="daily-content-item-info" v-if="item.type === '2'">
+                    <img src="./message@2x.png" alt="">
+                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>留言{{formatAmount(item.quantity)}}g</p>
+                    <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                  </div>
+                  <div class="daily-content-item-info" v-if="item.type === '3'">
+                    <img src="./steal@2x.png" alt="">
+                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>收取{{formatAmount(item.quantity)}}g</p>
+                    <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                  </div>
                   <div class="border"></div>
                 </div>
-                <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
-                <div class="daily-content-item-info" v-if="item.type === '1'">
-                  <img src="./zengsong@2x.png" alt="">
-                  <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>赠送{{formatAmount(item.quantity)}}g</p>
-                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-                </div>
-                <div class="daily-content-item-info" v-if="item.type === '2'">
-                  <img src="./message@2x.png" alt="">
-                  <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>留言{{formatAmount(item.quantity)}}g</p>
-                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-                </div>
-                <div class="daily-content-item-info" v-if="item.type === '3'">
-                  <img src="./steal@2x.png" alt="">
-                  <p class="activity"><span>{{other === '1' ? 'TA的好友' : ''}}</span>收取{{formatAmount(item.quantity)}}g</p>
-                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-                </div>
-                <div class="border"></div>
-              </div>
-              <!--<div class="daily-content-item">-->
+                <!--<div class="daily-content-item">-->
                 <!--<div class="daily-content-item-info">-->
-                  <!--<img src="./protect@2x.png" alt="">-->
-                  <!--<p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>-->
-                  <!--<p class="time">19:00</p>-->
+                <!--<img src="./protect@2x.png" alt="">-->
+                <!--<p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>-->
+                <!--<p class="time">19:00</p>-->
                 <!--</div>-->
                 <!--<div class="border"></div>-->
-              <!--</div>-->
-              <!--<div class="daily-content-item">-->
+                <!--</div>-->
+                <!--<div class="daily-content-item">-->
                 <!--<div class="daily-content-item-message">-->
-                  <!--<div class="message-border">-->
-                    <!--<img src="./head.png" alt="" class="head">-->
-                    <!--<div class="message-text">-->
-                      <!--<p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>-->
-                      <!--<p class="activity">来收取能量，被保护罩阻挡了</p>-->
-                    <!--</div>-->
-                    <!--<img src="./cover@2x.png" alt="" class="cover">-->
-                  <!--</div>-->
-                  <!--<p class="time">19:00</p>-->
+                <!--<div class="message-border">-->
+                <!--<img src="./head.png" alt="" class="head">-->
+                <!--<div class="message-text">-->
+                <!--<p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>-->
+                <!--<p class="activity">来收取能量，被保护罩阻挡了</p>-->
+                <!--</div>-->
+                <!--<img src="./cover@2x.png" alt="" class="cover">-->
+                <!--</div>-->
+                <!--<p class="time">19:00</p>-->
                 <!--</div>-->
                 <!--<div class="border"></div>-->
-              <!--</div>-->
-              <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
+                <!--</div>-->
+                <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
+              </div>
             </div>
           </div>
-        </div>
-        <toast :text="toastText" ref="toast"></toast>
-        <div class="mask" @click="change" v-show="share"></div>
-      </Scroll>
+          <toast :text="toastText" ref="toast"></toast>
+          <div class="mask" @click="change" v-show="share"></div>
+        </Scroll>
+      </div>
     </div>
     <div class="share" v-show="share">
       <div class="share-text"><span>- </span><span>分享到</span><span> -</span></div>
@@ -224,6 +226,18 @@
       this.getInitData();
     },
     methods: {
+      getName(item) {
+        if(item.userId !== getUserId()) {
+          if(item.userInfo.nickname) {
+            return item.userInfo.nickname;
+          } else {
+            return this.jiami(item.userInfo.mobile);
+          }
+        } else {
+          return '自己';
+        }
+        // item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile) : '自己'
+      },
       getInitData() {
         this.currentHolder = this.$route.query.currentHolder || getUserId();
         this.other = this.$route.query.other || 0;  // 是否别人的主页
@@ -432,6 +446,9 @@
           this.getUserTree();
           this.loading = false;
         }).catch(() => { this.loading = false; });
+      },
+      jiami(mobile) {
+        return mobile.substr(0, 3) + '****' + mobile.substr(7);
       }
     },
     components: {
@@ -478,12 +495,6 @@
       line-height: 0.33rem;
     }
     .out-content {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      overflow: auto;
       .bg {
         background: url("./bg@2x.png") no-repeat;
         background-size: 100% 100%;
@@ -564,6 +575,170 @@
           }
         }
       }
+      .scroll-section {
+        position: absolute;
+        top: 5.3rem;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: auto;
+        .tree-list {
+          background: $color-highlight-background;
+          padding: 0 0.3rem;
+          /*position: absolute;*/
+          /*top: 5.66rem;*/
+          /*bottom: 0;*/
+          /*left: 0.3rem;*/
+          /*right: 0.3rem;*/
+          .item {
+            width: 100%;
+            height: 1.6rem;
+            font-size: $font-size-medium-x;
+            line-height: 1.6rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            padding: 0.3rem 0;
+            .tree-info {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              .tree-name {
+                font-size: $font-size-medium-x;
+                line-height: $font-size-medium-x;
+                margin-bottom: 0.21rem;
+                font-family: PingFangSC-Semibold;
+              }
+              .tree-about {
+                color: #666;
+                font-size: $font-size-small;
+                line-height: $font-size-small;
+              }
+            }
+            .map {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              img {
+                width: 0.57rem;
+                height: 0.57rem;
+                margin-bottom: 0.2rem;
+              }
+              p {
+                color: $primary-color;
+                font-size: $font-size-small;
+                line-height: $font-size-small;
+              }
+            }
+          }
+        }
+        .gray {
+          width: 100%;
+          height: 0.2rem;
+          padding: 0;
+          background: #f5f5f5;
+        }
+        .dynamic {
+          background: #fff;
+          padding: 0.3rem;
+          .dynamic-title {
+            font-size: 0;
+            margin-bottom: 0.54rem;
+            .border {
+              border: 2px solid $primary-color;
+              height: 0.26rem;
+              width: 0;
+              display: inline-block;
+              margin-right: 0.08rem;
+            }
+            span {
+              font-size: $font-size-large-ss;
+              line-height: 0.42rem;
+            }
+          }
+          .daily {
+            .daily-title {
+              font-size: $font-size-large-ss;
+              line-height: $font-size-large-s;
+              font-family: PingFangSC-Semibold;
+              margin: 0.15rem 0;
+            }
+            .daily-content {
+              .daily-content-item {
+                .daily-content-item-info {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-left: 0.2rem;
+                  img {
+                    width: 0.36rem;
+                    margin-right: 0.24rem;
+                  }
+                  .activity {
+                    font-size: $font-size-medium;
+                    flex: 1;
+                    span {
+                      font-family: PingFangSC-Semibold;
+                      margin-right: 0.2rem;
+                    }
+                  }
+                  .time {
+                    font-size: $font-size-small;
+                    line-height: 0.33rem;
+                    color: #999;
+                  }
+                }
+                .daily-content-item-message {
+                  display: flex;
+                  justify-content: space-between;
+                  .message-border {
+                    border: 1px solid #eee;
+                    border-radius: 0.5rem;
+                    display: flex;
+                    align-items: center;
+                    .head {
+                      width: 0.64rem;
+                      height: 0.64rem;
+                      border-radius: 50%;
+                      margin-left: 0.08rem;
+                    }
+                    .name {
+                      color: #999;
+                      font-size: 0.22rem;
+                    }
+                    .activity {
+                      font-size: 0.28rem;
+                    }
+                    .cover {
+                      width: 0.84rem;
+                      height: 0.84rem;
+                    }
+                  }
+                  .time {
+                    font-size: $font-size-small;
+                    line-height: 0.33rem;
+                    color: #999;
+                  }
+                }
+                .border {
+                  width: 0;
+                  border-right: 1px solid #eee;
+                  height: 0.5rem;
+                  margin-left: 0.35rem;
+                }
+              }
+            }
+          }
+        }
+        .mask {
+          width: 100%;
+          height: 100%;
+          background-color: rgba($color: #000000, $alpha: 0.7);
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
       .emotion-forest-type {
         height: 0.8rem;
         font-size: 0.28rem;
@@ -580,162 +755,6 @@
           color: $primary-color;
           border-bottom: 1px solid $primary-color;
         }
-      }
-      .tree-list {
-        background: $color-highlight-background;
-        padding: 0 0.3rem;
-        /*position: absolute;*/
-        /*top: 5.66rem;*/
-        /*bottom: 0;*/
-        /*left: 0.3rem;*/
-        /*right: 0.3rem;*/
-        .item {
-          width: 100%;
-          height: 1.6rem;
-          font-size: $font-size-medium-x;
-          line-height: 1.6rem;
-          border-bottom: 1px solid #eee;
-          display: flex;
-          padding: 0.3rem 0;
-          .tree-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            .tree-name {
-              font-size: $font-size-medium-x;
-              line-height: $font-size-medium-x;
-              margin-bottom: 0.21rem;
-              font-family: PingFangSC-Semibold;
-            }
-            .tree-about {
-              color: #666;
-              font-size: $font-size-small;
-              line-height: $font-size-small;
-            }
-          }
-          .map {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            img {
-              width: 0.57rem;
-              height: 0.57rem;
-              margin-bottom: 0.2rem;
-            }
-            p {
-              color: $primary-color;
-              font-size: $font-size-small;
-              line-height: $font-size-small;
-            }
-          }
-        }
-      }
-      .gray {
-        width: 100%;
-        height: 0.2rem;
-        padding: 0;
-        background: #f5f5f5;
-      }
-      .dynamic {
-        background: #fff;
-        padding: 0.3rem;
-        .dynamic-title {
-          font-size: 0;
-          margin-bottom: 0.54rem;
-          .border {
-            border: 2px solid $primary-color;
-            height: 0.26rem;
-            width: 0;
-            display: inline-block;
-            margin-right: 0.08rem;
-          }
-          span {
-            font-size: $font-size-large-ss;
-            line-height: 0.42rem;
-          }
-        }
-        .daily {
-          .daily-title {
-            font-size: $font-size-large-ss;
-            line-height: $font-size-large-s;
-            font-family: PingFangSC-Semibold;
-            margin: 0.15rem 0;
-          }
-          .daily-content {
-            .daily-content-item {
-              .daily-content-item-info {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-left: 0.2rem;
-                img {
-                  width: 0.36rem;
-                  margin-right: 0.24rem;
-                }
-                .activity {
-                  font-size: $font-size-medium;
-                  flex: 1;
-                  span {
-                    font-family: PingFangSC-Semibold;
-                    margin-right: 0.2rem;
-                  }
-                }
-                .time {
-                  font-size: $font-size-small;
-                  line-height: 0.33rem;
-                  color: #999;
-                }
-              }
-              .daily-content-item-message {
-                display: flex;
-                justify-content: space-between;
-                .message-border {
-                  border: 1px solid #eee;
-                  border-radius: 0.5rem;
-                  display: flex;
-                  align-items: center;
-                  .head {
-                    width: 0.64rem;
-                    height: 0.64rem;
-                    border-radius: 50%;
-                    margin-left: 0.08rem;
-                  }
-                  .name {
-                    color: #999;
-                    font-size: 0.22rem;
-                  }
-                  .activity {
-                    font-size: 0.28rem;
-                  }
-                  .cover {
-                    width: 0.84rem;
-                    height: 0.84rem;
-                  }
-                }
-                .time {
-                  font-size: $font-size-small;
-                  line-height: 0.33rem;
-                  color: #999;
-                }
-              }
-              .border {
-                width: 0;
-                border-right: 1px solid #eee;
-                height: 0.5rem;
-                margin-left: 0.35rem;
-              }
-            }
-          }
-        }
-      }
-      .mask {
-        width: 100%;
-        height: 100%;
-        background-color: rgba($color: #000000, $alpha: 0.7);
-        position: absolute;
-        top: 0;
-        left: 0;
       }
 
     }

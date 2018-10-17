@@ -14,14 +14,16 @@
         </div>
       </Scroll>
     </div>
+    <no-result v-show="!hasMore && !(list && list.length)" title="暂无礼物" class="no-result-wrapper"></no-result>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import NoResult from 'base/no-result/no-result';
   import { getGiftPage } from 'api/biz';
   import { getDictList } from 'api/general';
-  import { formatImg, formatDate } from 'common/js/util';
+  import { formatImg, formatDate, getUserId } from 'common/js/util';
 
   export default {
     data() {
@@ -34,7 +36,7 @@
       };
     },
     mounted() {
-      this.code = this.$route.query.adoptTreeCode;
+      this.code = this.$route.query.code || '';
       this.getGiftStatus();
       this.getPageOrder();
     },
@@ -60,7 +62,8 @@
           getGiftPage({
             adoptTreeCode: this.code,
             start: this.start,
-            limit: this.limit
+            limit: this.limit,
+            toUser: getUserId()
           })
         ]).then(([res]) => {
           if (res.totalPage <= this.start) {
@@ -73,7 +76,8 @@
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      NoResult
     }
   };
 </script>
@@ -138,6 +142,13 @@
           }
         }
       }
+    }
+    .no-result-wrapper {
+      position: absolute;
+      width: 100%;
+      top: 2.9rem;
+      left: 0;
+      transform: translateY(-50%);
     }
   }
 </style>

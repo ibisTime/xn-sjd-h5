@@ -8,23 +8,23 @@ import {getUserId} from 'common/js/util';
  * @param {string} mobile
  * @param {string} smsCaptcha
  */
-export function wxLogin(code, userReferee, activityCode, mobile, smsCaptcha) {
+export function wxLogin(data) {
+  // code, userReferee, mobile, smsCaptcha, isNeedMobile
+  alert(data.isNeedMobile);
   let params = {
-    code,
+    code: data.code,
     kind: 'C',
     type: 'wx_h5',
-    isNeedMobile: '1',
-    mobile,
-    smsCaptcha
+    mobile: data.mobile || '',
+    smsCaptcha: data.smsCaptcha || '',
+    isNeedMobile: data.isNeedMobile
   };
-  if (userReferee) {
-    params.userReferee = userReferee;
+  if (data.userReferee) {
+    params.userReferee = data.userReferee;
     params.userRefereeKind = 'C';
   }
-  if (activityCode) {
-    params.activityCode = activityCode;
-  }
-  return fetch(805170, params);
+  alert(JSON.stringify(params));
+  return fetch(805051, params);
 }
 
 /**

@@ -32,7 +32,7 @@
             <div class="imgWrap" :style="getImgSyl(item.pic)"></div>
             <div class="text">
               <p class="title"><span class="title-title">{{item.treeNumber}}</span><span class="title-number">x1</span></p>
-              <div class="props"><span class="duration">年限：{{item.age}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
+              <div class="props"><span class="duration">树龄：{{item.age}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
             </div>
           </div>
         </div>

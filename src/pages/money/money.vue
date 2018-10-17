@@ -19,7 +19,7 @@
               @pullingUp="getUserAccount">
               <div class="money-item" v-for="(item, index) in accountList" :key="index">
                 <div class="img-cont">
-                  <img src="./in@2x.png" alt="">
+                  <img :src="getIcon(item)" alt="">
                 </div>
                 <div class="text">
                   <div class="text-top">
@@ -92,6 +92,9 @@
             this.start++;
           });
         }
+      },
+      getIcon(item) {
+        return parseInt(item.transAmountString) > 0 ? require('./../../common/image/in@2x.png') : require('./../../common/image/out@2x.png');
       }
     },
     components: {

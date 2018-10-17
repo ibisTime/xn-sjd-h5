@@ -147,54 +147,57 @@ export default {
       return {
         backgroundImage: `url(${formatImg(imgs)})`
       };
+    },
+    getInitData() {
+      Promise.all([
+        getBanner(),
+        getProductPage({
+          location: '1',
+          orderDir: 'asc',
+          orderColumn: 'order_no',
+          status: '4'
+        }),
+        getProductType({
+          orderDir: 'asc',
+          orderColumn: 'order_no',
+          status: '1'
+        }),
+        getMessage({
+          status: '1',
+          type: '1',
+          object: 'C'
+        }),
+        getMessage({
+          status: '1',
+          type: '2',
+          object: 'C'
+        }),
+        getDictList('sell_type')
+      ]).then(([res1, res2, res3, res4, res5, res6]) => {
+        this.banners = res1;
+        if(this.banners.length > 1) {
+          this.loop = true;
+        }
+        this.proList = res2.list;
+        res3.map((item) => {
+          if(!item.parentCode) {
+            this.proType.push(item);
+          }
+        });
+        this.noticeList = res4.slice(0, 1);
+        this.bulletinList = res5.slice(0, 1);
+        this.loading = false;
+        res6.map((item) => {
+          this.sellTypeObj[item.dkey] = item.dvalue;
+        });
+      }).catch(() => { this.loading = false; });
     }
   },
   mounted() {
     setTitle('氧林');
     this.pullUpLoad = null;
     this.loading = true;
-    Promise.all([
-      getBanner(),
-      getProductPage({
-        location: '1',
-        orderDir: 'asc',
-        orderColumn: 'order_no',
-        status: '4'
-      }),
-      getProductType({
-        orderDir: 'asc',
-        orderColumn: 'order_no',
-        status: '1'
-      }),
-      getMessage({
-        status: '1',
-        type: '1',
-        object: 'C'
-      }),
-      getMessage({
-        status: '1',
-        type: '2',
-        object: 'C'
-      }),
-      getDictList('sell_type')
-    ]).then(([res1, res2, res3, res4, res5, res6]) => {
-      this.banners = res1;
-      if(this.banners.length > 1) {
-        this.loop = true;
-      }
-      this.proList = res2.list;
-      res3.map((item) => {
-        if(!item.parentCode) {
-          this.proType.push(item);
-        }
-      });
-      this.noticeList = res4.slice(0, 1);
-      this.bulletinList = res5.slice(0, 1);
-      this.loading = false;
-      res6.map((item) => {
-        this.sellTypeObj[item.dkey] = item.dvalue;
-      });
-    }).catch(() => { this.loading = false; });
+    this.getInitData();
   },
   components: {
     FullLoading,

@@ -16,8 +16,9 @@
 <script type="text/ecmascript-6">
   import Loading from 'base/loading/loading';
   import Toast from 'base/toast/toast';
-  // import {isLogin, setUser, getWxMobAndCapt} from 'common/js/util';
   import {setUser, getWxMobAndCapt} from 'common/js/util';
+  // import { getCookie } from 'common/js/cookie';
+  // import {setUser, getWxMobAndCapt} from 'common/js/util';
   import {getAppId} from 'api/general';
   // import {wxLogin, saveLoginLog} from 'api/user';
   import {wxLogin} from 'api/user';
@@ -84,6 +85,7 @@
           smsCaptcha = mobAndCapt.captcha;
         }
         wxLogin(code, userReferee, mobile, smsCaptcha).then((data) => {
+          alert('wxlogin-data-' + JSON.stringify(data));
           if (data.isNeedMobile === '1') {
             this.text = '微信登录需要先绑定手机号';
             this.$refs.toast.show();

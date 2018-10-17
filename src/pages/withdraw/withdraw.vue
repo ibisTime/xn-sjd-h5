@@ -22,7 +22,7 @@
           <div class="gray"></div>
 
           <div class="recharge">
-            <p>提现金额（收取 {{qxFee}}%服务费）</p>
+            <p>提现金额（收取 {{qxFee * config.amount / 100 }}元手续费）</p>
             <p class="number"><input type="number" v-model="config.amount"></p>
             <div class="have">
               <span class="fl">可用余额 {{formatAmount(userAmount[0].amount)}} 元</span>
@@ -45,7 +45,7 @@
         </Scroll>
       </div>
       <confirm-input ref="confirmInput" :text="inputText" :inpType="inpType" @confirm="handleInputConfirm"></confirm-input>
-        <toast ref="toast" :text="errMsg"></toast>
+      <toast ref="toast" :text="errMsg"></toast>
     </div>
     <router-view></router-view>
   </div>
@@ -197,24 +197,30 @@
         }
       },
       handleInputConfirm(data) {
-        let amount = (this.config.amount * 1000).toString();
-        this.config.tradePwd = data;
-        payApplyFor({
-          ...this.config,
-          amount
-        }).then(data => {
-          this.errMsg = data.errorInfo;
-          if(this.errMsg) {
-            this.text = this.errMsg;
-            this.$refs.toast.show();
-          }else{
-            this.errMsg = '操作成功,待平台审核';
-            this.$refs.toast.show();
-            setTimeout(() => {
-              this.$router.push('/me');
-            }, 1000);
-          }
-        });
+        if(!data) {
+          this.errMsg = '请填写支付密码';
+          this.$refs.toast.show();
+          this.$refs.confirmInput.show();
+        } else {
+          let amount = (this.config.amount * 1000).toString();
+          this.config.tradePwd = data;
+          payApplyFor({
+            ...this.config,
+            amount
+          }).then(data => {
+            this.errMsg = data.errorInfo;
+            if(this.errMsg) {
+              this.text = this.errMsg;
+              this.$refs.toast.show();
+            }else{
+              this.errMsg = '操作成功,待平台审核';
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.$router.push('/me');
+              }, 1000);
+            }
+          });
+        }
       },
       formatBankcardNum(num) {
         let reg = /^(\d{4})\d+(\d{4})$/;

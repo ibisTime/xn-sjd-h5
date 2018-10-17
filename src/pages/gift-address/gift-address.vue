@@ -134,17 +134,27 @@
         this.$validator.validateAll().then((result) => {
           if(result) {
             this.loading = true;
-            getGift({
-              code: this.code,
-              reMobile: this.mobile,
-              reAddress: this.address,
-              receiver: this.receiver,
-              province: this.province,
-              city: this.city,
-              area: this.district
-            }).then((res) => {
+            Promise.all([
+              getGift({
+                code: this.code,
+                reMobile: this.mobile,
+                reAddress: this.address,
+                receiver: this.receiver,
+                province: this.province,
+                city: this.city,
+                area: this.district
+              }),
+              addAddress({
+                addressee: this.receiver,
+                mobile: this.mobile,
+                province: this.province,
+                city: this.city,
+                district: this.district,
+                detailAddress: this.address
+              })
+            ]).then(([res1, res2]) => {
               this.loading = false;
-              if(res.isSuccess) {
+              if(res1.isSuccess && res2.code) {
                 this.toastText = '认领成功';
                 this.$refs.toast.show();
                 setTimeout(() => {

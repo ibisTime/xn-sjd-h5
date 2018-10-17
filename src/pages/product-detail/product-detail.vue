@@ -14,7 +14,7 @@
         <div class="item">
           <span>产品名称</span><span>{{detail.name}}</span>
         </div>
-        <div class="item" v-show="detail.sellType !== '0' && detail.sellType !== '1'">
+        <div class="item" v-show="detail.sellType === '3'">
           <span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>
         </div>
         <div class="item" v-show="detail.sellType !== '0' && detail.sellType !== '1'">

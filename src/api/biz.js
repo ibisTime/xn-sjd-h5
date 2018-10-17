@@ -235,9 +235,10 @@ export function getPageTpp(params) {
  * 赠送碳泡泡
  * @params {string} toUserId
  * */
-export function GiveTpp({toUserId, userId}) {
+export function GiveTpp({toUserId, adoptTreeCode, userId}) {
   return fetch(629360, {
     toUserId,
+    adoptTreeCode,
     userId: userId || getUserId()
   });
 }
@@ -414,6 +415,13 @@ export function getMaintainRecordsPage(data) {
 // 分页查养护记录
 export function getMaintainRecordsDetail(data) {
   return fetch(629636, {
+    ...data
+  });
+}
+
+// 列表查询道具使用记录
+export function getPropsUsedRecordList(data) {
+  return fetch(629527, {
     ...data
   });
 }

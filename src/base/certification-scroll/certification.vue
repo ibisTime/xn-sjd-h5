@@ -22,6 +22,7 @@
 </template>
 <script type="text/ecmascript-6">
   import {formatDate} from 'common/js/util';
+  import BScroll from 'better-scroll';
   export default {
     props: {
       certificationArr: {
@@ -37,13 +38,57 @@
         default: ''
       }
     },
-    mounted() {},
+    mounted() {
+      this.getInit();
+    },
     methods: {
+      getInit() {
+        setTimeout(() => {
+          this._setSliderWidth();
+          this._initSlider();
+          let ele = this.$refs.propItem && this.$refs.propItem[this.currentIndex];
+          ele && this.scroll.scrollToElement(ele, 200, true);
+        }, 20);
+
+        window.addEventListener('resize', () => {
+          if (!this.scroll) {
+            return;
+          }
+          this._setSliderWidth();
+        });
+      },
+      _setSliderWidth() {
+        let width = 0;
+        let len = this.certificationArr.length;
+        for (let i = 0; i < len; i++) {
+          width += Number(window.getComputedStyle(this.$refs.propItem[i]).width.split('px')[0]);
+        }
+        this.$refs.propGroup.style.width = width + 25 * (len - 1) + 1 + 'px';
+        if (this.scroll) {
+          setTimeout(() => {
+            this.scroll.refresh();
+          }, 20);
+        }
+      },
+      _initSlider() {
+        this.scroll = new BScroll(this.$refs.prop, {
+          scrollX: true,
+          scrollY: false,
+          click: true
+        });
+      },
       formatDate(date) {
         return formatDate(date, 'yyyy-MM-dd');
       },
       close() {
         this.$emit('close');
+      }
+    },
+    watch: {
+      prop() {
+        setTimeout(() => {
+          this._setSliderWidth();
+        }, 20);
       }
     }
   };
@@ -67,18 +112,14 @@
         top: -0.5rem;
       }
       .full-loading {
-        position: absolute;
-        top: 50%;
-        left: 50%;
         width: 6rem;
         height: 9.37rem;
-        transform: translate(-50%, -50%);
-        /*float: left;*/
+        float: left;
         font-size: 0;
         background: #fff;
-        /*z-index: 1;*/
+        z-index: 1;
         text-align: center;
-        /*margin-right: 25px;*/
+        margin-right: 25px;
         background: url("./bg@2x.png") no-repeat;
         background-size: 100% 100%;
         &:last-child {
