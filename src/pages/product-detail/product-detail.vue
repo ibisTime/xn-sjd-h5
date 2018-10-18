@@ -58,8 +58,8 @@
     <div class="footer">
       <!--<button @click="showPopUp">集体下单</button>-->
       <!--<button @click="showPopUp">捐赠下单</button>-->
-      <button @click="showPopUp" v-show="detail.raiseCount !== detail.nowCount">申请认养</button>
-      <button class="disabled" v-show="detail.raiseCount === detail.nowCount">已被认养</button>
+      <button @click="showPopUp" v-show="canAdopt()">申请认养</button>
+      <button class="disabled" v-show="!canAdopt()">{{noAdoptReason}}</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
@@ -114,6 +114,7 @@ import MHeader from 'components/m-header/m-header';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getProductDetail } from 'api/biz';
+import { getUserDetail } from 'api/user';
 export default {
   data() {
     return {
@@ -138,7 +139,9 @@ export default {
       code: '',   // 产品code
       identifyCode: '', // 下单识别码
       banners: [],
-      loop: false
+      loop: false,
+      userDetail: {},
+      noAdoptReason: ''
     };
   },
   methods: {
@@ -167,6 +170,25 @@ export default {
       if (this.number >= 2) {
         this.number--;
       }
+    },
+    // 是否可被认养
+    canAdopt() {
+      if(this.detail.sellType === '1' && this.detail.raiseCount === this.detail.nowCount) {
+        // 销售类型为专属且未到认养量
+        this.noAdoptReason = '已被认养';
+        return false;
+      }
+      if(this.detail.directType && this.detail.directType === '1' && this.detail.directObject !== this.userDetail.level) {
+        // 等级定向且用户为该等级
+        this.noAdoptReason = '您不属于该产品定向的等级';
+        return false;
+      }
+      if(this.detail.directType && this.detail.directType === '2' && this.detail.directObject !== this.userId) {
+        // 用户定向且是定向用户
+        this.noAdoptReason = '您不是该产品定向的用户';
+        return false;
+      }
+      return true;
     },
     confirm() {
       let userId = getCookie('userId');
@@ -222,13 +244,17 @@ export default {
   mounted() {
     setTitle('产品详情');
     this.pullUpLoad = null;
+    this.userId = getCookie('userId');
     this.code = this.$route.query.code;
     this.loading = true;
     Promise.all([
       getProductDetail({
         code: this.code
+      }),
+      getUserDetail({
+        userId: this.userId
       })
-    ]).then(([res1]) => {
+    ]).then(([res1, res2]) => {
       this.loading = false;
       this.detail = res1;
       this.detailDescription = res1.description;
@@ -236,6 +262,7 @@ export default {
       if(this.banners.length >= 2) {
         this.loop = true;
       }
+      this.userDetail = res2;
     }).catch(() => { this.loading = false; });
   },
   watch: {

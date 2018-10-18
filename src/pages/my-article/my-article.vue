@@ -18,20 +18,24 @@
       <no-result title="抱歉，暂无内容"></no-result>
     </div>
     <full-loading v-show="loading"></full-loading>
+    <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
+  import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
   import NoResult from 'base/no-result/no-result';
   import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
   import { getArticlePage } from 'api/biz';
   import { getDictList } from 'api/general';
 
   export default {
     data() {
       return {
+        text: '',
         start: 1,
         limit: 10,
         hasMore: true,
@@ -42,6 +46,7 @@
     },
     mounted() {
       setTitle('我的文章');
+      this.userId = getCookie('userId');
       getDictList('article_status').then((res) => {
         res.map((item) => {
           this.statusObj[item.dkey] = item.dvalue;
@@ -94,7 +99,8 @@
       Scroll,
       MHeader,
       FullLoading,
-      NoResult
+      NoResult,
+      Toast
     }
   };
 </script>

@@ -23,7 +23,6 @@ export function wxLogin(data) {
     params.userReferee = data.userReferee;
     params.userRefereeKind = 'C';
   }
-  alert(JSON.stringify(params));
   return fetch(805051, params);
 }
 
@@ -63,14 +62,14 @@ export function getPageChildren(start, limit) {
  * @param {string} smsCaptcha
  * @param {string} isSendSms
  */
-export function bindMobile(mobile, smsCaptcha, isSendSms = '0') {
-  return fetch(805060, {
-    mobile,
-    smsCaptcha,
-    isSendSms,
-    userId: getUserId()
-  });
-}
+// export function bindMobile(mobile, smsCaptcha, isSendSms = '0') {
+//   return fetch(805060, {
+//     mobile,
+//     smsCaptcha,
+//     isSendSms,
+//     userId: getUserId()
+//   });
+// }
 
 /**
  * 设置支付密码
@@ -415,6 +414,14 @@ export function reSetPwd(data) {
 // 绑定邮箱
 export function bindEmail(data) {
   return fetch(805086, {
+    userId: getUserId(),
+    ...data
+  });
+}
+
+// 绑定手机号
+export function bindMobile(data) {
+  return fetch(805060, {
     userId: getUserId(),
     ...data
   });

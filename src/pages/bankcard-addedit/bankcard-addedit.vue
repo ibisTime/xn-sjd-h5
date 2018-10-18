@@ -62,7 +62,7 @@
       <div class="buttons">
         <button :disabled="setting" @click="saveBankCard" class="btn">确定</button>
       </div>
-      <full-loading v-show="showLoading()"></full-loading>
+      <full-loading v-show="showLoading() || loading"></full-loading>
       <toast ref="toast" :text="text"></toast>
     </div>
   </div>
@@ -79,6 +79,7 @@
   export default {
     data() {
       return {
+        loading: false,
         bankcodeList: [],
         bankTitle: '添加银行卡',
         setting: false,
@@ -102,19 +103,6 @@
       };
     },
     created() {
-      // if (this.$route.params.id) {
-      //   Promise.all([
-      //     this._getBankCardList(),
-      //     this._getBankCodeList()
-      //   ]).then(([bankCard, bankCode]) => {
-      //     this._initPageData(bankCard, bankCode);
-      //   }).catch(() => {});
-      // } else {
-      //   Promise.all([
-      //     this._getBankCardList(),
-      //     this._getBankCodeList()
-      //   ]).then(() => {}).catch(() => {});
-      // }
       if(this.$route.query.code) {
         this.code = this.$route.query.code;
         // 有银行卡code，则进行修改银行卡
@@ -242,7 +230,6 @@
         let setBackCode = this.backCodeName.filter(item => {
           return item.bankName === this.bankName;
         });
-        console.log(this.backCodeName);
         this.$validator.validateAll().then((result) => {
           if (result) {
             let param = {
@@ -263,6 +250,8 @@
         });
       },
       _addBankCard(param) {
+        this.loading = true;
+        this.setting = true;
         addBankCard(param).then((code) => {
           this.setting = false;
           this.$refs.toast.show();
@@ -272,11 +261,13 @@
               bankcard: param
             });
           }
+          this.loading = false;
           setTimeout(() => {
             this.$router.back();
           }, 1000);
         }).catch(() => {
           this.setting = false;
+          this.loading = false;
         });
       },
       _editBankCard(param) {

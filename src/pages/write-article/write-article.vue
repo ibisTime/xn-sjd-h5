@@ -51,7 +51,7 @@
               </div>
             </div>
             <div class="button">
-              <button @click="fabu">发布</button>
+              <button @click="fabu" :disabled="setting">发布</button>
             </div>
         </div>
         </Scroll>
@@ -76,6 +76,7 @@
   export default {
     data() {
       return {
+        setting: false,
         pullUpLoad: null,
         loading: false,
         adoptTreeCode: '',
@@ -129,6 +130,7 @@
       },
       // 发布文章
       fabu() {
+        this.setting = true;
         let photoArr = [];
         this.photos.map((item) => {
           photoArr.push(item.key);
@@ -162,7 +164,10 @@
                   this.$router.back();
                 }, 1000);
               }
-            }).catch(() => { this.loading = false; });
+            }).catch(() => {
+              this.loading = false;
+              this.setting = false;
+            });
           } else {
             if(!this.context) {
               this.text = '请填写内容';

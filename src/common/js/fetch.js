@@ -11,7 +11,6 @@ const message = new Message();
 
 export default function fetch(code, param) {
   const url = '/api';
-
   const data = {
     systemCode: SYSTEM_CODE,
     companyCode: SYSTEM_CODE,

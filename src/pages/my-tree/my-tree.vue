@@ -20,7 +20,7 @@
             </div>
             <img :src="emoji" class="emoji">
           </div>
-          <div class="carbon-bubbles">
+          <div class="carbon-bubbles" v-show="tppList.length">
             <div class="bubble-item" v-for="item in tppList" @click="doCollectionTpp(item)">
               <div class="bubble" :class="'status' + item.status">
                 <img src="./bubble-light@2x.png">
@@ -350,7 +350,7 @@ export default {
         userInfo: {photo: ''}}, // 能量比拼
       presentTppQuantity: 0, // PRESENT_TPP_QUANTITY 赠送碳泡泡的数量
       adoptTreeCode: '', // 认养权编号
-      tppList: {}, // 碳泡泡
+      tppList: [], // 碳泡泡
       dynamics: {
         start: 1,
         limit: 10,
@@ -444,8 +444,6 @@ export default {
         })
       ]).then(([res1, res2]) => {
         this.propsList = res1;
-        console.log(res1);
-        console.log(res2);
         res2.map((item2) => {
           res1.map((item1) => {
             if(item2.toolOrderInfo.toolCode === item1.code) {
@@ -460,7 +458,10 @@ export default {
         // });
         this.loading = false;
         setTimeout(() => {
-          this.$refs.propScroll.scroll.refresh();
+          // this.$refs.propScroll.scroll.refresh();
+          let e = document.createEvent('HTMLEvents');
+          e.initEvent('resize', true, true);
+          window.dispatchEvent(e);
         }, 1000);
       }).catch(() => { this.loading = false; });
     },
@@ -538,6 +539,7 @@ export default {
         if(res.code) {
           this.text = '捐赠成功';
           this.$refs.toast.show();
+          this.juanzengShow = true;
           this.getComparisonData(this.currentHolder);
         }
       }, () => { this.loading = false; });
@@ -585,6 +587,7 @@ export default {
     },
     // 动态 是否显示日期
     isShowDate(item) {
+      // console.log(this.dynamics.tmplDate);
       let creadDate = formatDate(item.createDatetime, 'MM-dd');
       if (creadDate === this.dynamics.tmplDate) {
         return false;
@@ -625,18 +628,27 @@ export default {
       this.tab = index;
     },
     changeProps(index) {
+      // debugger;
       this.propsData.type = index;
       this.getPropList();
-    },
-    props() {
-      this.flag = true;
-      this.propFlag = true;
       setTimeout(() => {
         // this.$refs.propScroll.scroll.refresh();
         let e = document.createEvent('HTMLEvents');
         e.initEvent('resize', true, true);
         window.dispatchEvent(e);
-      }, 20);
+      }, 10);
+    },
+    // 点击道具小图标
+    props() {
+      this.flag = true;
+      this.propFlag = true;
+      this.getPropList();
+      setTimeout(() => {
+        // this.$refs.propScroll.scroll.refresh();
+        let e = document.createEvent('HTMLEvents');
+        e.initEvent('resize', true, true);
+        window.dispatchEvent(e);
+      }, 10);
     },
     danmu() {
       this.flag = true;
@@ -650,6 +662,7 @@ export default {
       this.flag = false;
       if(closeWho === 'propFlag') {
         this.propFlag = false;
+        // this.propsData.type = 0;
       }
       if(closeWho === 'convertFlag') {
         this.convertFlag = false;
@@ -682,7 +695,6 @@ export default {
     juanzengSuccess() {
       this.doGiveTpp().then(() => {
         this.close('juanzengFlag');
-        this.juanzengShow = true;
         this.dynamics.start = 1;
         this.dynamics.limit = 10;
         this.dynamicsList = [];

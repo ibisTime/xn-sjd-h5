@@ -105,7 +105,7 @@
                   <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
                   <div class="daily-content-item-info" v-if="item.type === '1'">
                     <img src="./zengsong@2x.png" alt="">
-                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>赠送{{formatAmount(item.quantity)}}g</p>
+                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>赠送<span>{{get2Name(item)}}</span>{{formatAmount(item.quantity)}}g</p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
                   <div class="daily-content-item-info" v-if="item.type === '2'">
@@ -115,7 +115,7 @@
                   </div>
                   <div class="daily-content-item-info" v-if="item.type === '3'">
                     <img src="./steal@2x.png" alt="">
-                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>收取{{formatAmount(item.quantity)}}g</p>
+                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>收取<span>{{get2Name(item)}}</span>{{formatAmount(item.quantity)}}g</p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
                   <div class="border"></div>
@@ -227,16 +227,36 @@
     },
     methods: {
       getName(item) {
-        if(item.userId !== getUserId()) {
+        if(item.userInfo.userId === getUserId()) {
+          return '我';
+        } else {
           if(item.userInfo.nickname) {
             return item.userInfo.nickname;
           } else {
             return this.jiami(item.userInfo.mobile);
           }
-        } else {
-          return '自己';
         }
+        // if(item.userId !== getUserId()) {
+        //   if(item.userInfo.nickname) {
+        //     return item.userInfo.nickname;
+        //   } else {
+        //     return this.jiami(item.userInfo.mobile);
+        //   }
+        // } else {
+        //   return '我';
+        // }
         // item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile) : '自己'
+      },
+      get2Name(item) {
+        if(item.adoptUserInfo.userId === getUserId()) {
+          return '我';
+        } else {
+          if(item.adoptUserInfo.nickname) {
+            return item.adoptUserInfo.nickname;
+          } else {
+            return this.jiami(item.adoptUserInfo.mobile);
+          }
+        }
       },
       getInitData() {
         this.currentHolder = this.$route.query.currentHolder || getUserId();
@@ -282,7 +302,7 @@
         getPageJournal({
           start: this.dynamics.start,
           limit: this.dynamics.limit,
-          adoptUserId: this.currentHolder
+          queryUserId: this.currentHolder
         }).then((data) => {
           if (data.list.length < this.dynamics.limit || data.totalCount <= this.dynamics.limit) {
             this.dynamics.hasMore = false;
@@ -366,9 +386,12 @@
       isShowDate(item) {
         let creadDate = formatDate(item.createDatetime, 'MM-dd');
         if (creadDate === this.dynamics.tmplDate) {
+          // console.log(1);
           return false;
         } else {
+          // console.log(2);
           this.dynamics.tmplDate = creadDate;
+          // console.log(this.dynamics.tmplDate);
           return true;
         }
       },
@@ -379,6 +402,7 @@
         if(creadDate === nowDate) {
           creadDate = '今日';
         }
+        // console.log(creadDate);
         return creadDate;
       },
       go(url) {

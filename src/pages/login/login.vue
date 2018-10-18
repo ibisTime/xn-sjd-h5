@@ -36,21 +36,23 @@
         </div>
       </Scroll>
     </div>
-
-      <full-loading v-show="loading" :title="loadText"></full-loading>
-      <toast ref="toast" :text="text"></toast>
-    </div>
+    <full-loading v-show="loading" :title="loadText"></full-loading>
+    <toast ref="toast" :text="text"></toast>
+    <wx-bind-mobile ref="bindMobile"></wx-bind-mobile>
+  </div>
 </template>
 <script>
   import {login, wxLogin} from 'api/user';
   import {getConfig} from 'api/general';
-  import {setUser, setTitle, getWxMobAndCapt} from 'common/js/util';
-  // import {setUser, setTitle, isLogin, getWxMobAndCapt} from 'common/js/util';
+  // import {setUser, setTitle, getWxMobAndCapt} from 'common/js/util';
+  import {setUser, setTitle, isLogin, getWxMobAndCapt} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
+  // import { setCookie } from 'common/js/cookie';
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
   import Scroll from 'base/scroll/scroll';
+  import WxBindMobile from 'components/wx-bind-mobile/wx-bind-mobile';
 
   export default {
     mixins: [directiveMixin],
@@ -67,26 +69,24 @@
     mounted() {
       setTitle('登录');
       this.me = this.$route.query.me || '';
-    //   if (!isLogin()) {
-    //     if (/code=([^&]+)&state=/.exec(location.href)) {
-    //       this.code = RegExp.$1;
-    //       alert(1);
-    //       alert(this.code);
-    //       if (/userReferee=([^&$]+)/.exec(location.href)) {
-    //         this.userReferee = RegExp.$1;
-    //       }
-    //       this.wxLogin(this.code, this.userReferee);
-    //     } else if (/userReferee=([^&$]+)/.exec(location.href)) {
-    //       alert(2);
-    //       this.userReferee = RegExp.$1;
-    //       this.AppId();
-    //     } else {
-    //       alert(3);
-    //       this.AppId();
-    //     }
-    //   }else{
-    //     // this.checkUser(getUserId());
-    //   }
+      if (!isLogin()) {
+        if (/code=([^&]+)&state=/.exec(location.href)) {
+          this.code = RegExp.$1;
+          alert(1);
+          alert(this.code);
+          if (/userReferee=([^&$]+)/.exec(location.href)) {
+            this.userReferee = RegExp.$1;
+          }
+          this.wxLogin(this.code, this.userReferee);
+        } else if (/userReferee=([^&$]+)/.exec(location.href)) {
+          alert(2);
+          this.userReferee = RegExp.$1;
+          this.AppId();
+        }
+      } else {
+        // this.checkUser(getUserId());
+        this.$router.push('/home');
+      }
     },
     methods: {
       focus() {
@@ -102,6 +102,7 @@
           mobile = mobAndCapt.mobile || '';
           smsCaptcha = mobAndCapt.captcha || '';
         }
+        this.loading = true;
         wxLogin({
           code,
           userReferee,
@@ -109,19 +110,21 @@
           smsCaptcha,
           isNeedMobile: '0'
         }).then((data) => {
+          this.loading = false;
           // code, , , , '0'
-          alert('data-' + data);
+          alert('data-' + JSON.stringify(data));
+          setUser(data);
           if (data.isNeedMobile === '1') {
             this.text = '微信登录需要先绑定手机号';
             this.$refs.toast.show();
             this.$refs.bindMobile.show();
           } else {
-            setUser(data);
-            if (this.$route.path === '/home/recommend') {
-              location.replace(`${location.origin}/?#/home`);
-            } else {
-              location.replace(`${location.origin}/?#${this.$route.fullPath}`);
-            }
+            this.$router.push('/home');
+            // if (this.$route.path === '/home/recommend') {
+            //   location.replace(`${location.origin}/?#/home`);
+            // } else {
+            //   location.replace(`${location.origin}/?#${this.$route.fullPath}`);
+            // }
           }
         }).catch(() => {});
       },
@@ -163,7 +166,7 @@
           let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
           let suffix =
             '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
-          // alert(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
+          alert(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
           // 发送微信网页授权地址，由此获取code
           setTimeout(() => {
             location.replace(
@@ -177,7 +180,8 @@
       FullLoading,
       MHeader,
       Toast,
-      Scroll
+      Scroll,
+      WxBindMobile
     }
   };
 </script>

@@ -67,7 +67,7 @@
           this._initSlider();
           let ele = this.$refs.propItem && this.$refs.propItem[this.currentIndex];
           ele && this.scroll.scrollToElement(ele, 200, true);
-        }, 20);
+        }, 20000);
 
         window.addEventListener('resize', () => {
           if (!this.scroll) {

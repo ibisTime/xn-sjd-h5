@@ -57,7 +57,7 @@ import MFooter from 'components/m-footer/m-footer';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount, formatImg, setTitle, getUserId } from 'common/js/util';
+import { formatImg, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getUserDetail } from 'api/user';
 export default {
@@ -84,9 +84,6 @@ export default {
   methods: {
     getUserId() {
       return getUserId();
-    },
-    formatAmount(amount) {
-      return formatAmount(amount);
     },
     formatImg(img) {
       return formatImg(img);
