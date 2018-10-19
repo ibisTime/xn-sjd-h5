@@ -1,12 +1,10 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="订单详情"></m-header>
-    <div class="header-height"></div>
     <div class="status" v-show="detail.status === '4'">
       <img src="./overdue@1.5x.png" class="icon">
       <p class="status-text">订单已过期</p>
     </div>
-    <div class="gray"></div>
+    <div class="gray" v-show="detail.status === '4'"></div>
     <div class="order-list">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="item" @click="go('/product-detail?code='+detail.productCode)">
@@ -36,7 +34,7 @@
             </div>
           </div>
         </div>
-        <div class="gray"></div>
+        <div class="gray" v-show="detail.status === '3'"></div>
         <div class="duration">
           <div class="duration-item"><span class="name">起始时间</span><span>{{formatDate(detail.startDatetime, 'yyyy-MM-dd')}}</span></div>
           <div class="duration-item"><span class="name">终止时间</span><span>{{formatDate(detail.endDatetime, 'yyyy-MM-dd')}}</span></div>
@@ -64,7 +62,7 @@
   import Slider from 'base/slider/slider';
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
-  import { formatAmount, formatImg, formatDate } from 'common/js/util';
+  import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
   import { getOrderDetail, getOrganizeOrderDetail, cancelOrder } from 'api/biz';
   import defaultImg from './tree@3x.png';
 
@@ -157,6 +155,7 @@
       }
     },
     mounted() {
+      setTitle('订单详情');
       this.pullUpLoad = null;
       this.code = this.$route.query.code;
       this.type = this.$route.query.type;// 订单类型（1个人/2定向/3捐赠/4集体）

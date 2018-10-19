@@ -5,7 +5,7 @@
       <Scroll :data="list"
               :hasMore="hasMore"
               @pullingUp="getPageOrders">
-        <div class="item" @click="go('/article-detail?code=' + item.code)" v-for="item in list">
+        <div class="item" @click="go('/my-article/article-detail?code=' + item.code)" v-for="item in list">
           <img :src="formatImg(item.photolist[0])">
           <div class="info">
             <p class="title"><span class="title-title">{{item.title}}</span><span class="title-status">{{statusObj[item.status]}}</span></p>
@@ -19,6 +19,7 @@
     </div>
     <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
+    <router-view></router-view>
   </div>
 </template>
 <script>

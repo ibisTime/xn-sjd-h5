@@ -1,9 +1,8 @@
 <template>
   <transition name="slide">
     <div class="change-mobile-wrapper">
-      <!-- <m-header class="cate-header" title="修改手机号"></m-header> -->
       <div class="form-wrapper">
-        <div class="form-item border-bottom-1px">
+        <div class="form-item border-bottom-1px" v-show="userDetail.email">
           <div class="item-input-wrapper">
             <span>已绑定邮箱</span><span>{{userDetail.email}}</span>
           </div>
@@ -96,7 +95,6 @@
               captcha: this.newCaptcha,
               email: this.newEmail
             }).then((res) => {
-              console.log(res);
               this.$refs.toast.show();
               setTimeout(() => {
                 this.$router.back();

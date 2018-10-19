@@ -124,7 +124,7 @@
       },
       getAvatar() {
         if (!this.user) {
-          return require('./avatar@2x.png');
+          return require('./../../common/image/avatar@2x.png');
         }
         return formatImg(this.preview || this.user.photo);
       },

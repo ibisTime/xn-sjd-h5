@@ -42,7 +42,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import {getAccountList} from 'api/account';
   import { getAccount } from 'api/biz';
-  import {formatAmount, formatDate} from 'common/js/util';
+  import {formatAmount, formatDate, setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
 
   export default {
@@ -57,12 +57,7 @@
       };
     },
     mounted() {
-      // this.accountNumber = this.$route.query.accountNumber;
-      // this.amount = +this.$route.query.amount;
-      // 请求流水
-      // if(this.accountNumber) {
-      //   this.getAccountData();
-      // }
+      setTitle('积分');
       this.userId = getCookie('userId');
       this.getAccountInfo();
     },

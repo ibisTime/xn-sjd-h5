@@ -33,8 +33,8 @@
         </div>
       </div>
     </div>
-    <div class="me-list">
-      <Scroll :pullUpLoad="pullUpLoad">
+    <div class="me-list" ref="description">
+      <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
         <div class="item" @click="go('/carbon-bubble?accountNumber=' + tppAccountNumber + '&amount=' + tpp)">
           <img src="./carbon-bubble@2x.png">
           <span>我的碳泡泡</span>
@@ -106,6 +106,7 @@
     },
     created() {
       this.pullUpLoad = null;
+      this._refreshScroll();
     },
     methods: {
       getUserId() {
@@ -121,6 +122,26 @@
           this.text = '您未登录！';
           this.$refs.toast.show();
         }
+      },
+      _refreshScroll() {
+        setTimeout(() => {
+          this.$refs.scroll.refresh();
+          let imgs = this.$refs.description.getElementsByTagName('img');
+          for (let i = 0; i < imgs.length; i++) {
+            let _img = imgs[i];
+            if (_img.complete) {
+              setTimeout(() => {
+                this.$refs.scroll.refresh();
+              }, 20);
+              continue;
+            }
+            _img.onload = () => {
+              setTimeout(() => {
+                this.$refs.scroll.refresh();
+              }, 20);
+            };
+          }
+        }, 20);
       }
     },
     mounted() {
@@ -310,6 +331,7 @@
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;
+      overflow: auto;
       .item {
         width: 100%;
         height: 1.1rem;

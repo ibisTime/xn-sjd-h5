@@ -1,7 +1,6 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="养护记录"></m-header>
-    <div class="adopt-list">
+    <div class="adopt-list" v-show="mrList.length">
       <Scroll :data="mrList"
               :hasMore="hasMore"
               @pullingUp="getPageOrder">
@@ -15,11 +14,13 @@
         </div>
       </Scroll>
     </div>
+    <no-result v-show="!hasMore && !(mrList && mrList.length)" title="暂无养护记录" class="no-result-wrapper"></no-result>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import NoResult from 'base/no-result/no-result';
   import {setTitle, formatDate, formatImg} from 'common/js/util';
   import { getMaintainRecordsPage } from 'api/biz';
 
@@ -56,7 +57,6 @@
             limit: this.limit
           })
         ]).then(([res]) => {
-          console.log(res);
           if (res.totalPage <= this.start) {
             this.hasMore = false;
           }
@@ -64,14 +64,14 @@
             item.pics = item.pic.split('||');
           });
           this.mrList = [...this.mrList, ...res.list];
-          console.log(this.mrList);
           this.start ++;
         }).catch(() => {});
       }
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      NoResult
     }
   };
 </script>
@@ -93,7 +93,7 @@
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 0.88rem;
+      top: 0;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;
@@ -140,6 +140,13 @@
           }
         }
       }
+    }
+    .no-result-wrapper {
+      position: absolute;
+      width: 100%;
+      top: 1.9rem;
+      left: 0;
+      transform: translateY(-50%);
     }
   }
 </style>

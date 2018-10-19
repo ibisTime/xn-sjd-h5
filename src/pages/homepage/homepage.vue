@@ -217,6 +217,8 @@
       setTitle('我的主页');
       // this.index = +this.$route.query.type || 0;  // 树的类型
       this.other = this.$route.query.other || 0;  // 是否别人的主页
+      // 路由带了currentHolder， 是从好友排行榜跳过来的，currentHolder是主页的主人
+      // 也就是说，路由带了，就是别人，没带就是自己
       this.currentHolder = this.$route.query.currentHolder || getUserId();
       if(this.other) {
         this.title = 'TA的主页';
@@ -236,16 +238,6 @@
             return this.jiami(item.userInfo.mobile);
           }
         }
-        // if(item.userId !== getUserId()) {
-        //   if(item.userInfo.nickname) {
-        //     return item.userInfo.nickname;
-        //   } else {
-        //     return this.jiami(item.userInfo.mobile);
-        //   }
-        // } else {
-        //   return '我';
-        // }
-        // item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile) : '自己'
       },
       get2Name(item) {
         if(item.adoptUserInfo.userId === getUserId()) {
@@ -386,12 +378,9 @@
       isShowDate(item) {
         let creadDate = formatDate(item.createDatetime, 'MM-dd');
         if (creadDate === this.dynamics.tmplDate) {
-          // console.log(1);
           return false;
         } else {
-          // console.log(2);
           this.dynamics.tmplDate = creadDate;
-          // console.log(this.dynamics.tmplDate);
           return true;
         }
       },
@@ -402,7 +391,6 @@
         if(creadDate === nowDate) {
           creadDate = '今日';
         }
-        // console.log(creadDate);
         return creadDate;
       },
       go(url) {
@@ -439,15 +427,11 @@
         this.currentIndex = index;
         this.userTree = [];
         this.loading = true;
-        // this.getUserTree();
         this.getSubType();
       },
       selectCategorySub(index) {
         this.indexSub = index;
         this.currentIndexSub = index;
-        this.start = 1;
-        this.limit = 10;
-        this.proList = [];
         this.getUserTree();
       },
       // 获取下级分类

@@ -90,27 +90,9 @@
       _getBankCardList() {
         getBankCardList().then((data) => {
           this.bankcardList = data;
-          // let bankcardNumber = data[0].bankcardNumber;
-          // this.bankcardList.map((item) => {
-          //   let reg = /^(\d{4})\d+(\d{4})$/;
-          //   item.bankcardNumber = item.bankcardNumber.replace(reg, '$1****$2');
-          //   let account = '';
-          //   for (let i = 0; i < item.bankcardNumber.length; i++) {    /* 可将以下空格改为-,效果也不错 */
-          //     if (i === 4) account = account + ' '; /* 帐号第四位数后加空格 */
-          //     if (i === 8) account = account + ' '; /* 帐号第八位数后加空格 */
-          //     if (i === 12) account = account + ' ';/* 帐号第十二位后数后加空格 */
-          //     account = account + item.bankcardNumber.substr(i, 1);
-          //   }
-          //   // item.bankcardNumber = item.bankcardNumber.substring(bankcardNumber.length - 4);
-          // });
-          // this.bankCode = bankcardNumber.substring(bankcardNumber.length - 4);
-          // if(data.length > 0) {
-          //   this.actText = '修改';
-          // }
         }).catch(() => {});
       },
       deleteItem(item) {
-        console.log(item);
         this.currentItem = item;
         this.$refs.confirm.show();
       },

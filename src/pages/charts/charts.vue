@@ -1,6 +1,5 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="好友排行榜"></m-header>
     <div class="me">
       <div class="item" @click="goUserHome(userDetail)">
         <div class="order">
@@ -51,7 +50,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
   import { getPageUserRelationship } from 'api/user';
-  import {formatAmount, formatDate, formatImg} from 'common/js/util';
+  import {formatAmount, formatDate, formatImg, setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
 
@@ -71,6 +70,7 @@
       };
     },
     mounted() {
+      setTitle('好友排行榜');
       this.userId = getCookie('userId');
       this.getInitData();
     },
@@ -161,7 +161,6 @@
     }
     .me {
       background: $color-highlight-background;
-      margin-top: 0.88rem;
       padding: 0 0.3rem;
       .item {
         width: 100%;
@@ -220,7 +219,7 @@
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 2.48rem;
+      top: 1.48rem;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;

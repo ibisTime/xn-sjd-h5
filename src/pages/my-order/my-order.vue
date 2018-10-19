@@ -1,6 +1,5 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="我的订单"></m-header>
     <!--<div class="type">-->
       <!--<span @click="changeType(0)" :class="type === 0 ? 'active' : ''">全部</span>-->
       <!--<span @click="changeType(1)" :class="type === 1 ? 'active' : ''">个人</span>-->
@@ -13,7 +12,7 @@
                        :categorys="categorysSell"
                        @select="selectCategorySell"></category-scroll>
       <category-scroll :currentIndex="currentIndex"
-                       :categorys="categorys"
+                       :categorys="categorysStatus"
                        @select="selectCategory"></category-scroll>
     </div>
     <!-- 状态(0待支付1已取消2待认养3认养中4已到期) -->
@@ -58,12 +57,12 @@
     </div>
     <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast :text="toastText" ref="toast"></toast>
-    <router-view @updateNum="handleUpdateNum"></router-view>
+    <!--<router-view @updateNum="handleUpdateNum"></router-view>-->
     <full-loading v-show="fetching" :title="fetchText"></full-loading>
+    <router-view></router-view>
   </div>
 </template>
 <script>
-  import {CATEGORYS} from './config';
   import {ORDER_STATUS} from 'common/js/dict';
   import CategoryScroll from 'base/category-scroll/category-scroll';
   import Scroll from 'base/scroll/scroll';
@@ -89,7 +88,7 @@
         currentGoodsCode: '',
         fetching: false,
         fetchText: '',
-        categorys: CATEGORYS,
+        categorysStatus: [{key: 'all', value: '全部'}],
         categorysSell: [{key: 'all', value: '全部'}],
         currentIndex: +this.$route.query.index || 0,
         text: '',
@@ -100,6 +99,7 @@
       };
     },
     mounted() {
+      setTitle('我的订单');
       this.first = true;
       this.userId = getCookie('userId');
       if(this.userId) {
@@ -116,14 +116,14 @@
     },
     computed: {
       currentList() {
-        let _curListObj = this.orderList[this.categorys[this.currentIndex].key];
+        let _curListObj = this.orderList[this.categorysStatus[this.currentIndex].key];
         if (!_curListObj) {
           _curListObj = {
             start: 1,
             limit: 10,
             hasMore: true,
             data: [],
-            key: this.categorys[this.currentIndex].key,
+            key: this.categorysStatus[this.currentIndex].key,
             type: this.type
           };
         }
@@ -134,6 +134,7 @@
     methods: {
       getInitData() {
         this.getCategorysSell();
+        this.getCategorysStatus();
         if (this.shouldGetData()) {
           this.first = false;
           // 清除缓存的订单列表数据
@@ -157,6 +158,17 @@
               value: item.dvalue
             });
             this.sellTypeObj[item.dkey] = item.dvalue;
+          });
+        }).catch(() => {});
+      },
+      // 获取状态分类
+      getCategorysStatus() {
+        getDictList('adopt_order_status').then((res) => {
+          res.map((item) => {
+            this.categorysStatus.push({
+              key: item.dkey,
+              value: item.dvalue
+            });
           });
         }).catch(() => {});
       },
@@ -187,7 +199,7 @@
       },
       goDetail(item) {
         this.setCurrentOrder(item);
-        this.$router.push(`/order-detail?code=${item.code}`);
+        this.$router.push(`/my-order/order-detail?code=${item.code}`);
       },
       payOrder(item) {
         this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
@@ -233,9 +245,9 @@
           this.cancelOrder(text);
         }
       },
-      handleUpdateNum(type) {
-        this.$emit('updateNum', type);
-      },
+      // handleUpdateNum(type) {
+      //   this.$emit('updateNum', type);
+      // },
       cancelOrder(text) {
         this.fetchText = '取消中...';
         cancelOrder(this.curItem.code, text).then(() => {
@@ -248,7 +260,7 @@
         });
       },
       getPageOrders() {
-        let key = this.categorys[this.currentIndex].key;
+        let key = this.categorysStatus[this.currentIndex].key;
         let status = key === 'all' ? '' : key;
         if (this.currentList.hasMore) {
           getPageOrders(this.currentList.start, this.currentList.limit, status, this.type).then((data) => {
@@ -344,7 +356,6 @@
       line-height: 0.9rem;
       background: #fff;
       border-bottom: 1px solid $color-border;
-      margin-top: 0.9rem;
     }
     .category-item{
       padding: 0.1rem 0.33rem;
@@ -396,7 +407,7 @@
     .order-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 2.88rem;
+      top: 1.98rem;
       bottom: 0;
       left: 0;
       right: 0;

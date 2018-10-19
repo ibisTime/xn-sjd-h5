@@ -124,17 +124,17 @@ export default {
       currentList: [],
       hasMore: false,
       text: '',
-      showBack: false,
-      proList: [{
-
-      }],
-      showCheckIn: false,
       pullUpLoad: null,
       detailDescription: '',
       flag: false,
       number: 1,
       idCode: '',
-      detail: {productSpecsList: [{price: 0}]},
+      detail: {
+        productSpecsList: [{price: 0}],
+        province: '',
+        city: '',
+        area: ''
+      },
       choosedIndex: 0,
       code: '',   // 产品code
       identifyCode: '', // 下单识别码
@@ -220,6 +220,7 @@ export default {
         backgroundImage: `url(${formatImg(imgs)})`
       };
     },
+    // 富文本滚动
     _refreshScroll() {
       setTimeout(() => {
         this.$refs.scroll.refresh();
@@ -289,6 +290,7 @@ export default {
   left: 0;
   bottom: 0.98rem;
   width: 100%;
+  z-index: 101;
   .fl {
     float: left;
   }

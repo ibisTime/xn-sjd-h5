@@ -1,5 +1,5 @@
 <template>
-  <div class="adopt-list-wrapper">
+  <div class="article-detail-wrapper">
     <m-header class="cate-header" title="文章详情"></m-header>
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
@@ -116,7 +116,7 @@
 </script>
 <style lang="scss" scoped>
   @import "~common/scss/variable";
-  .adopt-list-wrapper {
+  .article-detail-wrapper {
     background: #fff;
     position: fixed;
     width: 100%;

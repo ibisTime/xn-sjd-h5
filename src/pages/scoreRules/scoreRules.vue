@@ -26,8 +26,9 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {getSystemConfigPage} from 'api/general';
   import NoResult from 'base/no-result/no-result';
+  import {getSystemConfigPage} from 'api/general';
+  import { setTitle } from 'common/js/util';
   export default {
     data() {
       return {
@@ -38,6 +39,7 @@
       };
     },
     mounted() {
+      setTitle('积分规则');
       this.getConfigData();
     },
     methods: {

@@ -147,7 +147,13 @@ export default new Router({
     },
     {
       path: '/my-article',
-      component: MyArticle
+      component: MyArticle,
+      children: [
+        {
+          path: 'article-detail',
+          component: ArticleDetail
+        }
+      ]
     },
     {
       path: '/write-article',
@@ -159,7 +165,13 @@ export default new Router({
     },
     {
       path: '/my-order',
-      component: MyOrder
+      component: MyOrder,
+      children: [
+        {
+          path: 'order-detail',
+          component: OrderDetail
+        }
+      ]
     },
     {
       path: '/order-detail',
@@ -211,15 +223,27 @@ export default new Router({
     },
     {
       path: '/product-list',
-      component: ProductList
-    },
-    {
-      path: '/hot-product-list',
-      component: HotProductList
+      component: ProductList,
+      children: [
+        {
+          path: 'product-detail',
+          component: ProductDetail
+        }
+      ]
     },
     {
       path: '/product-detail',
       component: ProductDetail
+    },
+    {
+      path: '/hot-product-list',
+      component: HotProductList,
+      children: [
+        {
+          path: 'product-detail',
+          component: ProductDetail
+        }
+      ]
     },
     {
       path: '/productTree-list',
@@ -283,11 +307,13 @@ export default new Router({
     },
     {
       path: '/emotion-channel',
-      component: EmotionChannel
-    },
-    {
-      path: '/article-detail',
-      component: ArticleDetail
+      component: EmotionChannel,
+      children: [
+        {
+          path: 'article-detail',
+          component: ArticleDetail
+        }
+      ]
     },
     {
       path: '/mall',

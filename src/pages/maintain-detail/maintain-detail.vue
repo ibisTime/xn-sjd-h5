@@ -1,8 +1,7 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="养护详情"></m-header>
     <div class="content">
-      <Scroll>
+      <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
         <div class="title">{{detail.projectName}}</div>
         <div class="info">
           <div class="author">
@@ -11,13 +10,14 @@
           </div>
           <span class="datetime">{{formatDate(detail.updateDatetime)}}</span>
         </div>
-        <!--<div class="context" v-html="context"></div>-->
-        <div class="context" ref="description">
-          <div class="context-content">
-            <p v-for="item in contextList">{{item}}</p>
-          </div>
-          <img :src="formatImg(item)" v-for="item in detail.photolist">
-        </div>
+        <div class="context rich-text-description" v-html="context" ref="description"></div>
+        <img :src="formatImg(item)" v-for="item in detail.photolist" class="mr-img">
+        <!--<div class="context" ref="description">-->
+          <!--<div class="context-content">-->
+            <!--<p v-for="item in contextList">{{item}}</p>-->
+          <!--</div>-->
+          <!--<img :src="formatImg(item)" v-for="item in detail.photolist">-->
+        <!--</div>-->
       </Scroll>
     </div>
   </div>
@@ -31,10 +31,11 @@
   export default {
     data() {
       return {
+        pullUpLoad: null,
         code: '',
         detail: {},
         contextList: [],
-        context: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
+        context: ''
       };
     },
     mounted() {
@@ -56,10 +57,36 @@
         getMaintainRecordsDetail({
           code: this.code
         }).then((res) => {
+          this.context = res.description;
           this.detail = res;
           this.detail.photolist = this.detail.pic.split('||');
-          this.contextList = this.detail.description.split(/\n/);
+          // this.contextList = this.detail.description.split(/\n/);
         }).catch(() => {});
+      },
+      _refreshScroll() {
+        setTimeout(() => {
+          this.$refs.scroll.refresh();
+          let imgs = this.$refs.description.getElementsByTagName('img');
+          for (let i = 0; i < imgs.length; i++) {
+            let _img = imgs[i];
+            if (_img.complete) {
+              setTimeout(() => {
+                this.$refs.scroll.refresh();
+              }, 20);
+              continue;
+            }
+            _img.onload = () => {
+              setTimeout(() => {
+                this.$refs.scroll.refresh();
+              }, 20);
+            };
+          }
+        }, 20);
+      }
+    },
+    watch: {
+      context() {
+        this._refreshScroll();
       }
     },
     components: {
@@ -86,13 +113,13 @@
     .content {
       background: $color-highlight-background;
       position: absolute;
-      top: 0.88rem;
+      top: 0;
       bottom: 0;
       left: 0;
       right: 0;
       padding: 0.3rem;
+      overflow: auto;
       .context {
-        padding-top: 0.3rem;
         font-size: $font-size-medium-s;
         line-height: 0.37rem;
         .context-content {
@@ -131,6 +158,10 @@
         font-size: $font-size-small;
         line-height: $font-size-medium;
       }
+
+    }
+    .mr-img {
+      max-width: 100%;
     }
   }
 </style>

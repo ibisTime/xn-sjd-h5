@@ -3,44 +3,44 @@
     <!--<m-header class="cate-header" title="首页" :showBack="showBack" actText="签到" @action="action"></m-header>-->
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
-      <div class="slider-wrapper">
-        <slider :loop="loop">
-          <div class="home-slider" v-for="item in banners" :key="item.code">
-            <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
+        <div class="slider-wrapper">
+          <slider :loop="loop">
+            <div class="home-slider" v-for="item in banners" :key="item.code">
+              <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
+            </div>
+          </slider>
+          <!--<img src="./../../common/image/banner-default.png" class="banner-default">-->
+        </div>
+        <div class="notices">
+          <img class="tit" src="./notice@2x.png">
+          <div class="notice-wrap">
+            <div class="border"></div>
+            <div class="title notice" v-for="item in noticeList" v-show="noticeList.length">{{item.title}}</div>
+            <div class="title notice" v-show="!noticeList.length">暂无公告</div>
           </div>
-        </slider>
-        <!--<img src="./../../common/image/banner-default.png" class="banner-default">-->
-      </div>
-      <div class="notices">
-        <img class="tit" src="./notice@2x.png">
-        <div class="notice-wrap">
+          <div class="more" @click="go('/notices')">更多</div>
+        </div>
+        <div class="icons">
+          <div class="icon-item" @click="go('/product-list?typeCode=' + item.code)" v-for="item in proType">
+            <img :src="formatImg(item.pic)">
+            <p>{{item.name}}</p>
+          </div>
+        </div>
+        <div class="emotion-article" @click="go('/emotion-channel')">
+          <div class="text">
+            <p class="Chinese">优选推文，情感频道</p>
+            <p class="English">Preferred tweets, emotional channels</p>
+          </div>
+          <img src="./emotion@2x.png" class="emotion">
+          <img src="./more@2x.png" class="more">
+        </div>
+        <div class="bulletin" v-for="item in bulletinList">
+          <img src="./bulletin@2x.png">
           <div class="border"></div>
-          <div class="title notice" v-for="item in noticeList" v-show="noticeList.length">{{item.title}}</div>
-          <div class="title notice" v-show="!noticeList.length">暂无公告</div>
+          <div class="title">{{item.title}}</div>
+          <div class="more">更多</div>
         </div>
-        <div class="more" @click="go('/notices')">更多</div>
-      </div>
-      <div class="icons">
-        <div class="icon-item" @click="go('/product-list?typeCode=' + item.code)" v-for="item in proType">
-          <img :src="formatImg(item.pic)">
-          <p>{{item.name}}</p>
-        </div>
-      </div>
-      <div class="emotion-article" @click="go('/emotion-channel')">
-        <div class="text">
-          <p class="Chinese">优选推文，情感频道</p>
-          <p class="English">Preferred tweets, emotional channels</p>
-        </div>
-        <img src="./emotion@2x.png" class="emotion">
-        <img src="./more@2x.png" class="more">
-      </div>
-      <div class="bulletin" v-for="item in bulletinList">
-        <img src="./bulletin@2x.png">
-        <div class="border"></div>
-        <div class="title">{{item.title}}</div>
-        <div class="more">更多</div>
-      </div>
-      <div class="hot" v-show="proList.length">
+        <div class="hot" v-show="proList.length">
         <div class="title">
           <span class="fl hot-title">热门推荐</span>
           <span class="fr more" @click="go('/hot-product-list')">更多</span>

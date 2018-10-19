@@ -16,7 +16,7 @@
       <div class="hot" v-show="proList.length">
         <Scroll :pullUpLoad="pullUpLoad">
         <div class="proList">
-          <div class="item" @click="go('/product-detail?code='+item.code)" v-for="item in proList">
+          <div class="item" @click="go('/hot-product-list/product-detail?code='+item.code)" v-for="item in proList">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
             <div class="sell-type-right">{{item.raiseCount === item.nowCount ? '已被认养' : '认养中'}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">

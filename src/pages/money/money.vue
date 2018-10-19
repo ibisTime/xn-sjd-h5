@@ -41,7 +41,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import { formatAmount, formatDate } from 'common/js/util';
+  import { formatAmount, formatDate, setTitle } from 'common/js/util';
   import { getAccountList } from 'api/account';
   import NoResult from 'base/no-result/no-result';
 
@@ -60,6 +60,7 @@
       };
     },
     mounted() {
+      setTitle('余额');
       this.getUserAccount();
     },
     methods: {

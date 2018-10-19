@@ -3,40 +3,40 @@
     <m-header class="cate-header" title="认领礼物"></m-header>
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
-      <div class="slider-wrapper">
-        <!--<slider v-if="!banners.length" :loop="loop">-->
-        <!--<div class="home-slider" v-for="item in banners" :key="item.code">-->
-        <!--<a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>-->
-        <!--</div>-->
-        <!--</slider>-->
-        <img :src="formatImg(giftDetail.listPic)" class="banner-default">
-        <router-link tag="div" to="/home/sign" class="sign-wrapper">
-          <i class="sign-icon"></i>
-        </router-link>
-      </div>
-      <div class="info-wait" v-show="wait">
-        <div class="item">
-          <span>{{giftDetail.name}}</span><span class="price">¥{{formatAmount(giftDetail.price)}}</span>
+        <div class="slider-wrapper">
+          <!--<slider v-if="!banners.length" :loop="loop">-->
+          <!--<div class="home-slider" v-for="item in banners" :key="item.code">-->
+          <!--<a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>-->
+          <!--</div>-->
+          <!--</slider>-->
+          <img :src="formatImg(giftDetail.listPic)" class="banner-default">
+          <router-link tag="div" to="/home/sign" class="sign-wrapper">
+            <i class="sign-icon"></i>
+          </router-link>
         </div>
-      </div>
-      <div class="info" v-show="!wait">
-        <div class="item">
-          <span>礼物名称</span><span>{{giftDetail.name}}</span>
+        <div class="info-wait" v-show="wait">
+          <div class="item">
+            <span>{{giftDetail.name}}</span><span class="price">¥{{formatAmount(giftDetail.price)}}</span>
+          </div>
         </div>
-        <div class="item">
-          <span>礼物价格</span><span class="price">¥{{formatAmount(giftDetail.price)}}</span>
+        <div class="info" v-show="!wait">
+          <div class="item">
+            <span>礼物名称</span><span>{{giftDetail.name}}</span>
+          </div>
+          <div class="item">
+            <span>礼物价格</span><span class="price">¥{{formatAmount(giftDetail.price)}}</span>
+          </div>
+          <div class="item">
+            <span>收货人</span><span>{{giftDetail.receiver}}</span>
+          </div>
+          <div class="item">
+            <span>手机号码</span><span>{{giftDetail.reMobile}}</span>
+          </div>
+          <div class="item">
+            <span>认领时间</span><span>{{formatDate(giftDetail.claimDatetime)}}</span>
+          </div>
         </div>
-        <div class="item">
-          <span>收货人</span><span>{{giftDetail.receiver}}</span>
-        </div>
-        <div class="item">
-          <span>手机号码</span><span>{{giftDetail.reMobile}}</span>
-        </div>
-        <div class="item">
-          <span>认领时间</span><span>{{formatDate(giftDetail.claimDatetime)}}</span>
-        </div>
-      </div>
-      <div class="description">
+        <div class="description">
         <div class="description-title">
           <div class="border"></div>
           <span>图文详情</span>
@@ -99,7 +99,6 @@ export default {
     },
     showPopUp() {
       this.flag = true;
-      console.log(this.flag);
     },
     genghuan() {
       this.flag = !this.flag;
@@ -151,33 +150,6 @@ export default {
     this.pullUpLoad = null;
     this.code = this.$route.query.code;
     this.getGiftDetail();
-    // let userId;
-    // if (this.$route.query.userId) {
-    //   userId = this.$route.query.userId;
-    //   setCookie("userId", userId);
-    // } else {
-    //   userId = getCookie("userId");
-    // }
-    // Promise.all([
-    //   getUser1(userId),
-    //   checkRed(userId)
-    // ]).then(([res1, res2]) => {
-    //   this.userinfo = res1;
-    //   this.balance = res1.wareAmount;
-    //   setCookie("level", res1.level);
-    //   getLevel(res1.level).then(item => {
-    //     this.loading = false;
-    //     res1.level = item[0].name;
-    //   });
-    //   setCookie('isWare', res2.isWare);
-    //   if(this.balance < res2.redAmount) {
-    //     this.toastText = '您云仓余额低于红线，请购买';
-    //     this.$refs.toast.show();
-    //     setTimeout(() => {
-    //       this.$router.push('/threshold');
-    //     }, 2000)
-    //   }
-    // }).catch(() => { this.loading = false });
   },
   watch: {
     descriptionDetail() {

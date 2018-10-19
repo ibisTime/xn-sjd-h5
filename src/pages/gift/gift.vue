@@ -1,6 +1,5 @@
 <template>
-  <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="礼物"></m-header>
+  <div class="gift-list-wrapper">
     <div class="adopt-list">
       <Scroll :data="giftList"
               :hasMore="hasMore"
@@ -14,7 +13,7 @@
         </div>
       </Scroll>
     </div>
-    <no-result v-show="!hasMore && !(list && list.length)" title="暂无礼物" class="no-result-wrapper"></no-result>
+    <no-result v-show="!hasMore && !(giftList && giftList.length)" title="暂无礼物" class="no-result-wrapper"></no-result>
   </div>
 </template>
 <script>
@@ -23,7 +22,7 @@
   import NoResult from 'base/no-result/no-result';
   import { getGiftPage } from 'api/biz';
   import { getDictList } from 'api/general';
-  import { formatImg, formatDate, getUserId } from 'common/js/util';
+  import { formatImg, formatDate, getUserId, setTitle } from 'common/js/util';
 
   export default {
     data() {
@@ -36,6 +35,7 @@
       };
     },
     mounted() {
+      setTitle('礼物');
       this.code = this.$route.query.code || '';
       this.getGiftStatus();
       this.getPageOrder();
@@ -83,7 +83,7 @@
 </script>
 <style lang="scss" scoped>
   @import "~common/scss/variable";
-  .adopt-list-wrapper {
+  .gift-list-wrapper {
     background: #fff;
     position: fixed;
     width: 100%;
@@ -99,7 +99,7 @@
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 0.88rem;
+      top: 0;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;

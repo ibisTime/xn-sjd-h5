@@ -1,6 +1,5 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="公告"></m-header>
     <div class="adopt-list">
       <Scroll :pullUpLoad="pullUpLoad" :data="list">
         <div class="item" @click="go('/notice-detail?code=' + item.code)" v-for="item in list">
@@ -21,7 +20,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import NoResult from 'base/no-result/no-result';
   import { getMessage } from 'api/biz';
-  import { formatDate } from 'common/js/util';
+  import { formatDate, setTitle } from 'common/js/util';
 
   export default {
     data() {
@@ -32,6 +31,7 @@
       };
     },
     mounted() {
+      setTitle('公告');
       this.pullUpLoad = null;
       this.loading = true;
       getMessage({
@@ -84,7 +84,7 @@
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 0.88rem;
+      top: 0;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;

@@ -6,7 +6,7 @@
         <scroll :data="addressList" :hasMore="hasMore">
           <ul>
             <li v-for="(item, index) in addressList" :key="index" class="border-bottom-1px">
-              <div class="content" @click="selectItem(item)">
+              <div class="content">
                 <div class="info"><span class="name">{{item.addressee}}</span><span class="mobile">{{item.mobile}}</span></div>
                 <div class="addr">{{item.province}} {{item.city}} {{item.district}} {{item.detailAddress}}</div>
               </div>
@@ -131,18 +131,9 @@
         sessionStorage.setItem('ressCode', item.code);
         this.$router.push(`/address-addedit`);
       },
-      selectItem(item) {
-        this.setCurAddr(item);
-        if (this.$route.path === '/category/confirm/address') {
-          this.$router.back();
-        }
-      },
       goAdd() {
         this.$router.push(this.$route.path + '/add');
       },
-      // choseCls(item) {
-      //   return item.isDefault === '1' ? 'active' : '';
-      // },
       deleteItem(item, index) {
         this.currentItem = item;
         this.deleteIndex = index;
@@ -163,14 +154,6 @@
           });
         }
       }
-      // ...mapMutations({
-      //   setAddressList: SET_ADDRESS_LIST,
-      //   setCurAddr: SET_CURRENT_ADDR
-      // }),
-      // ...mapActions([
-      //   'deleteAddress',
-      //   'setDefaultAddress'
-      // ])
     },
     components: {
       Scroll,

@@ -77,7 +77,6 @@
             this.loading = true;
             changeMobile(this.newMobile, this.newCaptcha)
               .then((res) => {
-                console.log(res);
                 this.$refs.toast.show();
                 setTimeout(() => {
                   this.$router.push('/me');

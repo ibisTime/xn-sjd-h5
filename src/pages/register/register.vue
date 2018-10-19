@@ -1,6 +1,5 @@
 <template>
   <div class="full-screen-wrapper content">
-    <!--<div class="header"><img src="./back.png" @click="back"></div>-->
     <div class="title">注册</div>
     <div class="content">
       <div class="form-login">

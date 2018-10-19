@@ -16,7 +16,7 @@
       <div class="hot" v-show="proList.length">
         <Scroll :pullUpLoad="pullUpLoad">
         <div class="proList">
-          <div class="item" @click="go('/product-detail?code='+item.code)" v-for="item in proList">
+          <div class="item" @click="go('/product-list/product-detail?code='+item.code)" v-for="item in proList">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
             <div class="sell-type-right">{{item.raiseCount === item.nowCount ? '已被认养' : '认养中'}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
@@ -33,7 +33,7 @@
         <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
       </div>
     </div>
-    <full-loading v-show="loading"></full-loading>
+    <full-loading v-show="loading" :title="title"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
   </div>
@@ -103,9 +103,8 @@ export default {
       this.start = 1;
       this.limit = 10;
       this.proList = [];
-      this.categorysSub = [{value: '全部', key: 'all'}];
+      this.loading = true;
       this.getSubType();
-      // this.getPageOrders();
     },
     selectCategorySub(index) {
       this.indexSub = index;
@@ -118,13 +117,13 @@ export default {
     // 获取下级分类
     getSubType() {
       this.loading = true;
-      this.categorysSub = [{value: '全部', key: 'all'}];
       getProductType({
         parentCode: this.categorys[this.index].key,
         status: '1',
         orderDir: 'asc',
         orderColumn: 'order_no'
       }).then((res) => {
+        this.categorysSub = [{value: '全部', key: 'all'}];
         res.map((item) => {
           this.categorysSub.push({
             value: item.name,
@@ -234,6 +233,7 @@ export default {
     top: 0;
     left: 0;
     width: 100%;
+    height: 1.6rem;
     z-index: 100;
     overflow: hidden;
     line-height: 0.8rem;

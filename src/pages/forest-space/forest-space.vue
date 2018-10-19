@@ -1,15 +1,15 @@
 <template>
   <div class="home-wrapper">
     <!--<m-header class="cate-header" title="我的林空间" :showBack="showBack"></m-header>-->
-    <div class="content">
-      <div class="me" @click="change">
+    <div class="content" @click="go('/homepage?type=1')">
+      <div class="me" @click.stop.prevent="change">
         <img :src="src">
       </div>
-      <img src="./charts@2x.png" alt="" class="charts" @click="go('/charts')">
-      <div @click="go('/homepage?type=1')" class="block t1"></div>
-      <div @click="go('/homepage?type=2')" class="block t2"></div>
-      <div @click="go('/homepage?type=3')" class="block t3"></div>
-      <div @click="go('/homepage?type=4')" class="block t4"></div>
+      <img src="./charts@2x.png" alt="" class="charts" @click.stop.prevent="go('/charts')">
+      <!--<div @click="go('/homepage?type=1')" class="block t1"></div>-->
+      <!--<div @click="go('/homepage?type=2')" class="block t2"></div>-->
+      <!--<div @click="go('/homepage?type=3')" class="block t3"></div>-->
+      <!--<div @click="go('/homepage?type=4')" class="block t4"></div>-->
     </div>
     <div class="side" v-show="flag">
       <div class="mask" @click="change"></div>
@@ -175,6 +175,7 @@ export default {
       margin-top: 0.28rem;
       opacity: 0.8;
       position: relative;
+      z-index: 999;
       img {
         width: 0.6rem;
         height: 0.6rem;
@@ -190,30 +191,31 @@ export default {
       top: 0.3rem;
       right: 0.3rem;
       width: 0.72rem;
+      z-index: 999;
     }
     .block {
       display: inline-block;
-      width: 1.4rem;
-      height: 1.5rem;
+      width: 3.4rem;
+      height: 3.5rem;
       /*border: 1px solid black;*/
       position: absolute;
       z-index: 999;
     }
     .t1 {
-      top: 0.8rem;
-      left: 3rem;
+      top: 0rem;
+      left: 2rem;
     }
     .t2 {
-      left: 0.5rem;
+      left: 0;
       top: 4.5rem;
     }
     .t3 {
-      top: 4rem;
-      right: 1.5rem;
+      top: 3rem;
+      right: 0.5rem;
     }
     .t4 {
-      right: 1.5rem;
-      top: 8rem;
+      right: 0.5rem;
+      top: 7rem;
     }
   }
   .side {

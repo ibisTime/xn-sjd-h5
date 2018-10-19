@@ -1,6 +1,5 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="公告详情"></m-header>
     <div class="content">
       <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
         <div class="title">{{detail.title}}</div>
@@ -113,7 +112,7 @@
     .content {
       background: $color-highlight-background;
       position: absolute;
-      top: 0.88rem;
+      top: 0;
       bottom: 0;
       left: 0;
       right: 0;

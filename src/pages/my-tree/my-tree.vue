@@ -100,15 +100,15 @@
                     <div class="border"></div>
                   </div>
                   <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
-                  <p v-if="item.type === '1'">
+                  <p v-show="item.type === '1'">
                     <span class="name">{{getName(item)}}</span>
                     <span class="activity">赠送{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </p>
-                  <p v-if="item.type === '2'">
+                  <p v-show="item.type === '2'">
                     <span class="name">{{getName(item)}}</span>
                     <span class="activity">留言</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </p>
-                  <p v-if="item.type === '3'">
+                  <p v-show="item.type === '3'">
                     <span class="name">{{getName(item)}}</span>
                     <span class="activity">收取{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </p>
@@ -392,9 +392,8 @@ export default {
           return this.jiami(item.userInfo.mobile);
         }
       } else {
-        return '自己';
+        return '我';
       }
-      // item.userInfo.nickname && item.userId != getUserId() ? item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile) : '自己'
     },
     // 动态 格式化显示日期
     formatDynamicsDate(item) {
@@ -406,7 +405,6 @@ export default {
       return creadDate;
     },
     getInitData() {
-      this.loading = true;
       Promise.all([
         this.getTppList({
           adoptTreeCode: this.adoptTreeCode
@@ -418,21 +416,17 @@ export default {
         this.getJF(),
         this.getUserDetail(),
         this.getListUserTree()
-      ]).then(() => {
-        this.loading = false;
-      }).catch(() => { this.loading = false; });
+      ]).then(() => {}).catch(() => {});
       // 不是当前用户
       if (this.other === '1') {
-        this.loading = true;
         Promise.all([
           this.getComparisonData(this.currentHolder)
-        ]).then(() => {
-          this.loading = false;
-        }).catch(() => { this.loading = false; });
+        ]).then(() => {}).catch(() => {});
       }
     },
     // 查询道具列表
     getPropList() {
+      this.loading = true;
       Promise.all([
         getListProps({
           type: this.propsData.type,
@@ -451,11 +445,6 @@ export default {
             }
           });
         });
-        // this.propsList.map((item) => {
-        //   if(item.status === '1') {
-        //     this.cover = true;
-        //   }
-        // });
         this.loading = false;
         setTimeout(() => {
           // this.$refs.propScroll.scroll.refresh();
@@ -467,24 +456,23 @@ export default {
     },
     // 查认养权(也就是证书）
     getListUserTree() {
-      // getListUserTree({
-      //   currentHolder: this.userId
-      // }).then((res) => {
-      //   this.certificationNum = res.length;
-      //   this.certificationArr = res;
-      // }).catch(() => {});
+      this.loading = true;
       getUserTreeDetail(this.adoptTreeCode).then((res) => {
         this.certificationArr.push(res);
-      }).catch(() => {});
+        this.loading = false;
+      }).catch(() => { this.loading = true; });
     },
     // 查询树详情
     getTreeDetail() {
+      this.loading = true;
       return getUserTreeDetail(this.adoptTreeCode).then((data) => {
         this.treeDetail = data;
-      }, () => {});
+        this.loading = false;
+      }, () => { this.loading = false; });
     },
     // 分页查询动态
     getDynamicsList() {
+      this.loading = true;
       getPageJournal({
         start: this.dynamics.start,
         limit: this.dynamics.limit,
@@ -496,16 +484,20 @@ export default {
         }
         this.dynamics.start++;
         this.dynamicsList = this.dynamicsList.concat(data.list);
-      }, () => {});
+        this.loading = false;
+      }, () => { this.loading = false; });
     },
     // 获取碳泡泡
     getTppList(params) {
+      this.loading = true;
       return getPageTpp(params).then((res) => {
         this.tppList = res.list;
-      }, () => {});
+        this.loading = false;
+      }, () => { this.loading = false; });
     },
     // 获取我的积分
     getJF() {
+      this.loading = true;
       getAccount({ userId: this.userId }).then((res) => {
         res.list.map((item) => {
           if(item.currency === 'JF') {
@@ -513,13 +505,16 @@ export default {
             this.jfAccountNumber = item.accountNumber;
           }
         });
-      });
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     // 获取用户详情
     getUserDetail() {
+      this.loading = true;
       getUserDetail({userId: this.userId}).then((res) => {
         this.userDetail = res;
-      }).catch(() => {});
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     getAvatar() {
       if (!this.userDetail.photo) {
@@ -568,12 +563,15 @@ export default {
     },
     // 获取赠送碳泡泡数量
     getPresentTppQuantity() {
+      this.loading = true;
       return getSystemConfigCkey('PRESENT_TPP_QUANTITY').then((data) => {
         this.presentTppQuantity = data.cvalue;
-      }, () => {});
+        this.loading = false;
+      }, () => { this.loading = false; });
     },
     // 本周能量比拼
     getComparisonData(toUserId) {
+      this.loading = true;
       return getComparison(toUserId).then((data) => {
         data.toUserIsWin = false; // 好友赢
         data.userIsWin = false; // 自己赢
@@ -583,11 +581,11 @@ export default {
           data.userIsWin = true;
         }
         this.comparisonData = data;
-      }, () => {});
+        this.loading = false;
+      }, () => { this.loading = false; });
     },
     // 动态 是否显示日期
     isShowDate(item) {
-      // console.log(this.dynamics.tmplDate);
       let creadDate = formatDate(item.createDatetime, 'MM-dd');
       if (creadDate === this.dynamics.tmplDate) {
         return false;
@@ -612,7 +610,6 @@ export default {
       this.$router.push(url);
     },
     goSurprise() {
-      console.log(this.treeDetail);
       this.go(`/surprise?aTCode=${this.adoptTreeCode}&pic=${this.treeDetail.tree.pic}`);
     },
     getUserId() {
@@ -628,7 +625,6 @@ export default {
       this.tab = index;
     },
     changeProps(index) {
-      // debugger;
       this.propsData.type = index;
       this.getPropList();
       setTimeout(() => {
@@ -759,7 +755,8 @@ export default {
             }
           });
         }
-      });
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     jiami(mobile) {
       return mobile.substr(0, 3) + '****' + mobile.substr(7);
