@@ -67,7 +67,7 @@
     <full-loading v-show="loading"></full-loading>
     <m-footer></m-footer>
     <toast ref="toast" :text="text"></toast>
-    <check-in v-show="showCheckIn" @close="close" :signTpp="signTpp"></check-in>
+    <check-in v-show="showCheckIn" @close="close" :signTpp="signTpp" :signDays="signDays"></check-in>
   </div>
 </template>
 <script>
@@ -103,7 +103,8 @@ export default {
       noticeList: [],
       bulletinList: [],
       sellTypeObj: {},
-      signTpp: '0'
+      signTpp: '0',
+      signDays: '0'
     };
   },
   methods: {
@@ -126,6 +127,7 @@ export default {
           client: 'h5'
         }).then((res) => {
           this.signTpp = formatAmount(res.tppAmount);
+          this.signDays = res.signDays;
           this.showCheckIn = true;
           this.loading = false;
         }).catch(() => { this.loading = false; });

@@ -173,6 +173,10 @@ export default {
     },
     // 是否可被认养
     canAdopt() {
+      if(!this.userId) {
+        this.noAdoptReason = '您未登录';
+        return false;
+      }
       if(this.detail.sellType === '1' && this.detail.raiseCount === this.detail.nowCount) {
         // 销售类型为专属且未到认养量
         this.noAdoptReason = '已被认养';
@@ -191,8 +195,7 @@ export default {
       return true;
     },
     confirm() {
-      let userId = getCookie('userId');
-      if(userId) {
+      if(this.userId) {
         let proCode = this.detail.code;
         let specsCode = this.detail.productSpecsList[this.choosedIndex].code;
         let quantity = this.number;
@@ -248,23 +251,39 @@ export default {
     this.userId = getCookie('userId');
     this.code = this.$route.query.code;
     this.loading = true;
-    Promise.all([
-      getProductDetail({
-        code: this.code
-      }),
-      getUserDetail({
-        userId: this.userId
-      })
-    ]).then(([res1, res2]) => {
-      this.loading = false;
-      this.detail = res1;
-      this.detailDescription = res1.description;
-      this.banners = this.detail.bannerPic.split('||');
-      if(this.banners.length >= 2) {
-        this.loop = true;
-      }
-      this.userDetail = res2;
-    }).catch(() => { this.loading = false; });
+    if(this.userId) {
+      Promise.all([
+        getProductDetail({
+          code: this.code
+        }),
+        getUserDetail({
+          userId: this.userId
+        })
+      ]).then(([res1, res2]) => {
+        this.loading = false;
+        this.detail = res1;
+        this.detailDescription = res1.description;
+        this.banners = this.detail.bannerPic.split('||');
+        if(this.banners.length >= 2) {
+          this.loop = true;
+        }
+        this.userDetail = res2;
+      }).catch(() => { this.loading = false; });
+    } else {
+      Promise.all([
+        getProductDetail({
+          code: this.code
+        })
+      ]).then(([res1]) => {
+        this.loading = false;
+        this.detail = res1;
+        this.detailDescription = res1.description;
+        this.banners = this.detail.bannerPic.split('||');
+        if(this.banners.length >= 2) {
+          this.loop = true;
+        }
+      }).catch(() => { this.loading = false; });
+    }
   },
   watch: {
     detailDescription() {

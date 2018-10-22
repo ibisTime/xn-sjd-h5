@@ -2,7 +2,10 @@
   <div class="me-wrapper">
     <div class="bg">
       <m-header class="cate-header" title="邀请好友" actText="分享" @action="action"></m-header>
-      <div class="erweimaPic" id="qrcode"></div>
+      <div class="content">
+        <img :src="bgUrl">
+        <div class="erweimaPic" id="qrcode"></div>
+      </div>
       <!--<div class="content">-->
         <!--<div class="border">-->
           <!--<div class="erweimaPic" id="qrcode"></div>-->
@@ -21,7 +24,7 @@
   const QRCode = require('js-qrcode');
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
-  import {setTitle} from 'common/js/util';
+  import {setTitle, formatImg} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import { getConfig } from 'api/general';
   import { getUserDetail } from 'api/user';
@@ -34,21 +37,24 @@
         alipay: false,
         balance: false,
         amount: 0,
-        url: ''
+        url: '',
+        bgUrl: ''
       };
     },
     mounted() {
       setTitle('邀请好友');
       this.userId = getCookie('userId');
       this.loading = true;
-      getUserDetail({
-        userId: this.userId
-      }).then((data) => {
-        getConfig('REGISTER_URL').then((res) => {
-          this.url += `${res.cvalue}?type=U&userReferee=${data.mobile}`;
+      Promise.all([
+        getUserDetail({
+          userId: this.userId
+        }),
+        getConfig('INVITATION')
+      ]).then(([res1, res2]) => {
+        getConfig('REGISTER_URL').then((url) => {
+          this.url += `${url.cvalue}?type=U&userReferee=${res1.mobile}`;
           // 用插件生成二维码
           const container = document.getElementById('qrcode');
-
           // 设置转换二维码图片的参数
           const qr = new QRCode(container, {
             width: 474,
@@ -60,9 +66,13 @@
           });
           console.log(this.url);
           qr.make(this.url);
+          this.bgUrl = formatImg(res2.cvalue);
           this.loading = false;
         }).catch(() => { this.loading = false; });
       });
+      // getUserDetail({
+      //   userId: this.userId
+      // })
     },
     methods: {
       go(url) {
@@ -87,65 +97,34 @@
       float: right;
     }
     .bg {
-      background: url("invitation@2x.png") no-repeat;
-      background-size: 100% 100%;
+      /*background: url("invitation@2x.png") no-repeat;*/
+      /*background-size: 100% 100%;*/
       text-align: center;
       position: fixed;
       top: 0.88rem;
       left: 0;
       bottom: 0;
       width: 100%;
-      .erweimaPic {
-        width: 4.3rem;
-        height: 4.3rem;
-        position: fixed;
-        bottom: 1.8rem;
-        left: 1.6rem;
-      }
-      .title {
-        font-size: 0.36rem;
-        color: #fff;
-        padding-top: 0.19rem;
-        text-align: center;
-      }
       .content {
-        background: #fff;
-        width: 6.54rem;
-        margin: 2.92rem auto auto;
-        border-radius: 0.3rem;
-        text-align: center;
-        position: fixed;
-        top: 0.88rem;
-        left: 0;
-        right: 0;
-        .border {
-          background: url("./border@2x.png") no-repeat;
-          width: 5.34rem;
-          height: 5.34rem;
-          background-size: 100% 100%;
-          margin: 0.6rem auto 0;
-          img {
-            width: 4.74rem;
-            height: 4.74rem;
-            margin-top: 0.3rem;
-          }
+        img {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          left: 0;
         }
-        .text {
-          padding-top: 0.8rem;
-          padding-bottom: 0.74rem;
-          font-size: 0.24rem;
+        .erweimaPic {
+          width: 4.3rem;
+          height: 4.3rem;
+          position: fixed;
+          top: 48%;
+          left: 1.6rem;
+          z-index: 2;
+        }
+        .title {
+          font-size: 0.36rem;
+          color: #fff;
+          padding-top: 0.19rem;
           text-align: center;
-          color: #999;
-          img {
-            width: 0.4rem;
-            height: 0.34rem;
-          }
-          .wing {
-            width: 0.3rem;
-            border-top: 1px solid #ebebeb;
-            height: 43%;
-            display: inline-block;
-          }
         }
       }
     }

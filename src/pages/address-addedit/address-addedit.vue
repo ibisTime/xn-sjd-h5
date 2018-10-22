@@ -34,7 +34,7 @@
         <div class="form-item is-textarea border-bottom-1px">
           <div class="item-label">门牌号</div>
           <div class="item-input-wrapper">
-            <textarea v-model="address" v-validate="'required'" name="address" rows="2" class="item-input" placeholder="请输入详细地址"></textarea>
+            <input v-model="address" v-validate="'required'" name="address" class="item-input" placeholder="请输入详细地址">
             <span v-show="errors.has('address')" class="error-tip">{{errors.first('address')}}</span>
           </div>
         </div>

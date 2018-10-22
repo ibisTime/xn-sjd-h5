@@ -1,8 +1,7 @@
 <template>
   <div class="home-wrapper" :style="{ bottom: wait ? '0.98rem' : '0' }">
-    <m-header class="cate-header" title="认领礼物"></m-header>
     <div class="content">
-      <Scroll :pullUpLoad="pullUpLoad">
+      <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
         <div class="slider-wrapper">
           <!--<slider v-if="!banners.length" :loop="loop">-->
           <!--<div class="home-slider" v-for="item in banners" :key="item.code">-->
@@ -46,7 +45,7 @@
       </Scroll>
     </div>
     <div class="footer" v-show="wait">
-      <button @click="go('/gift-address?code=' + code)">认领礼物</button>
+      <button @click="go('/gift-address2?code=' + code)">认领礼物</button>
     </div>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
@@ -59,7 +58,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount, formatImg, formatDate } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getGiftDetail } from 'api/biz';
 export default {
   data() {
@@ -122,6 +121,9 @@ export default {
         this.descriptionDetail = res.description;
         if(this.giftDetail.status === '0') {
           this.wait = true;
+          setTitle('认领礼物');
+        } else {
+          setTitle('礼物详情');
         }
       }).catch(() => {});
     },
@@ -188,7 +190,7 @@ export default {
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
-    top: 0.88rem;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;

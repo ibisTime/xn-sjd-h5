@@ -46,7 +46,8 @@
         captcha: '',
         captErr: '',
         captBtnText: '获取验证码',
-        disabled: false
+        disabled: false,
+        text: ''
       };
     },
     methods: {

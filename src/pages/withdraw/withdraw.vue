@@ -278,10 +278,12 @@
           font-size: $font-size-medium-x;
           color: #333;
           border-bottom: 1px solid $color-border;
+          display: flex;
+          align-items: center;
           img {
             height: 0.36rem;
-            margin-right: 0.12rem;
             vertical-align: middle;
+            margin-right: 0.15rem;
           }
           span {
             font-size: $font-size-medium-x;
@@ -290,11 +292,9 @@
           }
           .bk_set{
             width: 66%;
-            padding-left: 0.2rem;
             background-color: #fff;
-          }
-          .more {
-            margin-top: 0.35rem;
+            font-size: 0.3rem;
+            flex: 1;
           }
         }
         .recharge {
@@ -310,6 +310,9 @@
             border-bottom: 1px solid $color-border;
             input {
               font-size: 0.64rem;
+              font-family: 'DIN-Bold';
+              margin-top: 0.15rem;
+              margin-bottom: 0.34rem;
             }
           }
           p.card_no{
@@ -350,7 +353,7 @@
           color: $color-text-l;
           margin-bottom: .24rem;
           p {
-            line-height: 0.36rem;
+            line-height: 0.4rem;
           }
         }
       }

@@ -62,7 +62,7 @@
       <div class="buttons">
         <button :disabled="setting" @click="saveBankCard" class="btn">确定</button>
       </div>
-      <full-loading v-show="showLoading() || loading"></full-loading>
+      <full-loading v-show="loading"></full-loading>
       <toast ref="toast" :text="text"></toast>
     </div>
   </div>
@@ -218,14 +218,14 @@
           this.bindMobile = bankCard.bindMobile;
         }, 100);
       },
-      showLoading() {
-        // return false;
-        if (!this.$route.params.id) {   // 新增
-          return !this.bankcodeList.length;
-        } else {   // 修改
-          return !this.bankcodeList.length || !this.bankNameList;
-        }
-      },
+      // showLoading() {
+      //   // return false;
+      //   if (!this.$route.params.id) {   // 新增
+      //     return !this.bankcodeList.length;
+      //   } else {   // 修改
+      //     return !this.bankcodeList.length || !this.bankNameList;
+      //   }
+      // },
       saveBankCard() {
         let setBackCode = this.backCodeName.filter(item => {
           return item.bankName === this.bankName;
@@ -238,7 +238,8 @@
               bankName: this.bankcardDetail.bankName,
               subbranch: this.subbranch,
               bindMobile: this.bindMobile,
-              realName: this.bankcardDetail.realName
+              realName: this.bankcardDetail.realName,
+              smsCaptcha: this.captcha
             };
             if (this.isEdit) {
               param.code = this.code;
@@ -262,9 +263,7 @@
             });
           }
           this.loading = false;
-          setTimeout(() => {
-            this.$router.back();
-          }, 1000);
+          this.$router.back();
         }).catch(() => {
           this.setting = false;
           this.loading = false;

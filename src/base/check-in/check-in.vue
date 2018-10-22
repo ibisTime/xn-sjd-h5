@@ -5,7 +5,7 @@
       <img src="./check-in-success@2x.png" alt="">
       <p class="success">签到成功</p>
       <!--<p class="info">获得<span>10</span>积分，已连续签到<span>2</span>天</p>-->
-      <p class="info">获得<span>{{signTpp}}</span>碳泡泡</p>
+      <p class="info">获得<span>{{signTpp}}</span>碳泡泡，已连续签到<span>{{signDays}}</span>天</p>
       <button @click="close">知道了</button>
     </div>
   </div>
@@ -14,6 +14,10 @@
   export default {
     props: {
       signTpp: {
+        type: String,
+        default: '0'
+      },
+      signDays: {
         type: String,
         default: '0'
       }

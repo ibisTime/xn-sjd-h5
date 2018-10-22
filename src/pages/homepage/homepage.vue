@@ -105,18 +105,27 @@
                   <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
                   <div class="daily-content-item-info" v-if="item.type === '1'">
                     <img src="./zengsong@2x.png" alt="">
-                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>赠送<span>{{get2Name(item)}}</span>{{formatAmount(item.quantity)}}g</p>
+                    <p class="activity"><span>{{getName(item)}}</span>赠送<span>{{get2Name(item)}}</span>{{formatAmount(item.quantity)}}g</p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
                   <div class="daily-content-item-info" v-if="item.type === '2'">
                     <img src="./message@2x.png" alt="">
-                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>留言{{formatAmount(item.quantity)}}g</p>
+                    <p class="activity"><span>{{getName(item)}}</span>留言{{formatAmount(item.quantity)}}g</p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
                   <div class="daily-content-item-info" v-if="item.type === '3'">
                     <img src="./steal@2x.png" alt="">
-                    <p class="activity"><span>{{other === '1' ? 'TA的好友' : getName(item)}}</span>收取<span>{{get2Name(item)}}</span>{{formatAmount(item.quantity)}}g</p>
+                    <p class="activity"><span>{{getName(item)}}</span>收取<span>{{get2Name(item)}}</span>{{formatAmount(item.quantity)}}g</p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                  </div>
+                  <div class="daily-content-item-info" v-if="item.type === '4'">
+                    <div class="message-border">
+                      <img :src="formatImg(item.userInfo.photo)"class="head">
+                      <div class="message-text">
+                        <p class="name">{{getName(item)}}</p>
+                        <p class="activity">来收取能量，被保护罩阻挡了</p>
+                      </div>
+                    </div>
                   </div>
                   <div class="border"></div>
                 </div>
@@ -203,7 +212,10 @@
         indexSub: 0,
         categorys: [],
         categorysSub: [{value: '全部', key: 'all'}],
-        comparisonData: {toUserInfo: {photo: ''}}, // 能量比拼
+        comparisonData: {
+          toUserInfo: {photo: ''},
+          userInfo: {photo: ''}
+        }, // 能量比拼
         isFriend: false, // 是否是好友
         dynamics: {
           start: 1,
@@ -228,27 +240,74 @@
       this.getInitData();
     },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
       getName(item) {
-        if(item.userInfo.userId === getUserId()) {
-          return '我';
-        } else {
-          if(item.userInfo.nickname) {
-            return item.userInfo.nickname;
+        // {{other === '1' && currentHolder === item.userInfo.userId ? 'TA的好友' : getName(item)}}
+        // if(item.userInfo.userId === getUserId()) {
+        //   return '我';
+        // } else {
+        //   if(item.userInfo.nickname) {
+        //     return item.userInfo.nickname;
+        //   } else {
+        //     return this.jiami(item.userInfo.mobile);
+        //   }
+        // }
+        // {{other === '1' && currentHolder === item.userInfo.userId ? 'TA的好友' : getName(item)}}
+        if(item.userInfo.userId === this.currentHolder) {
+          if(this.other === '1') {
+            return 'TA';
           } else {
-            return this.jiami(item.userInfo.mobile);
+            return '我';
+          }
+        } else {
+          if(item.userInfo.userId === getUserId()) {
+            return '我';
+          } else {
+            if(this.other === '1') {
+              return 'TA的好友';
+            } else {
+              if(item.userInfo.nickname) {
+                return item.userInfo.nickname;
+              } else {
+                return this.jiami(item.userInfo.mobile);
+              }
+            }
           }
         }
       },
       get2Name(item) {
-        if(item.adoptUserInfo.userId === getUserId()) {
-          return '我';
-        } else {
-          if(item.adoptUserInfo.nickname) {
-            return item.adoptUserInfo.nickname;
+        if(item.adoptUserInfo.userId === this.currentHolder) {
+          if(this.other === '1') {
+            return 'TA';
           } else {
-            return this.jiami(item.adoptUserInfo.mobile);
+            return '我';
+          }
+        } else {
+          if(item.adoptUserInfo.userId === getUserId()) {
+            return '我';
+          } else {
+            if(this.other === '1') {
+              return 'TA的好友';
+            } else {
+              if(item.adoptUserInfo.nickname) {
+                return item.adoptUserInfo.nickname;
+              } else {
+                return this.jiami(item.adoptUserInfo.mobile);
+              }
+            }
           }
         }
+        // if(item.adoptUserInfo.userId === getUserId()) {
+        //   return '我';
+        // } else {
+        //   if(item.adoptUserInfo.nickname) {
+        //     return item.adoptUserInfo.nickname;
+        //   } else {
+        //     return this.jiami(item.adoptUserInfo.mobile);
+        //   }
+        // }
       },
       getInitData() {
         this.currentHolder = this.$route.query.currentHolder || getUserId();
@@ -678,6 +737,30 @@
                   align-items: center;
                   justify-content: space-between;
                   margin-left: 0.2rem;
+                  .message-border {
+                    border: 1px solid #eee;
+                    border-radius: 0.5rem;
+                    display: flex;
+                    align-items: center;
+                    padding: 0.1rem;
+                    .head {
+                      width: 0.64rem;
+                      height: 0.64rem;
+                      border-radius: 50%;
+                      margin-left: 0.08rem;
+                    }
+                    .name {
+                      color: #999;
+                      font-size: 0.22rem;
+                    }
+                    .activity {
+                      font-size: 0.28rem;
+                    }
+                    .cover {
+                      width: 0.84rem;
+                      height: 0.84rem;
+                    }
+                  }
                   img {
                     width: 0.36rem;
                     margin-right: 0.24rem;

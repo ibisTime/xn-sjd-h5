@@ -5,15 +5,15 @@
       <div class="addr-scroll-wrapper">
         <scroll :data="addressList" :hasMore="hasMore">
           <ul>
-            <li v-for="(item, index) in addressList" :key="index" class="border-bottom-1px">
+            <li v-for="(item, index) in addressList" :key="index" class="border-bottom-1px" @click="selectAddress(index, item)">
               <div class="content">
                 <div class="info"><span class="name">{{item.addressee}}</span><span class="mobile">{{item.mobile}}</span></div>
                 <div class="addr">{{item.province}} {{item.city}} {{item.district}} {{item.detailAddress}}</div>
+                <img src="./ok.png" v-show="currIndex === index">
               </div>
               <div class="opeator border-top-1px">
                 <div class="default" @click.stop="setDefault(item, index)">
-                  <!--<i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>-->
-                  <!--<span>设为默认地址</span>-->
+
                 </div>
                 <button class="edit" @click.stop="goEdit(item)">编辑</button>
                 <button class="delete" @click.stop="deleteItem(item, index)">删除</button>
@@ -27,7 +27,8 @@
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
       <confirm ref="confirm" text="确定删除地址吗" @confirm="_deleteAddress"></confirm>
-      <toast ref="toast" text="删除成功"></toast>
+      <confirm ref="getGiftConfirm" text="确定使用该地址领取礼物吗" @confirm="getGift" @cancel="cancelAddress"></confirm>
+      <toast ref="toast" :text="text"></toast>
       <router-view></router-view>
     </div>
   </transition>
@@ -40,6 +41,7 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import {setTitle} from 'common/js/util';
+  import { getGift } from 'api/biz';
   // import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
   import {deleteAddress, getAddressList, setDefaultAddress} from 'api/user';
   // import {mapGetters, mapMutations, mapActions} from 'vuex';
@@ -51,10 +53,13 @@
         loadingFlag: false,
         loadingText: '',
         addressList: [],
-        deleteIndex: 0
+        deleteIndex: 0,
+        currIndex: null,
+        text: ''
       };
     },
-    created() {
+    mounted() {
+      this.code = this.$route.query.code;
       this.currentItem = null;
       this.getAddress();
     },
@@ -98,12 +103,8 @@
         }
       },
       shouldGetData() {
-        if (/\/address/.test(this.$route.path) || this.$route.path === '/category/confirm/address') {
-          setTitle('地址列表');
-          return this.hasMore;
-        }else{
-          return !this.hasMore;
-        }
+        setTitle('地址列表');
+        return this.hasMore;
       },
       setDefault(item, index) {
         if (item.isDefault !== '1') {
@@ -153,6 +154,45 @@
             this.loadingFlag = false;
           });
         }
+      },
+      selectAddress(index, item) {
+        this.currIndex = index;
+        this.currentItem = item;
+        this.$refs.getGiftConfirm.show();
+      },
+      cancelAddress() {
+        this.currIndex = null;
+      },
+      getGift() {
+        this.$validator.validateAll().then((result) => {
+          if(result) {
+            this.loading = true;
+            console.log(this.currentItem);
+            Promise.all([
+              getGift({
+                code: this.code,
+                addressCode: this.currentItem.code
+              })
+              // addAddress({
+              //   addressee: this.receiver,
+              //   mobile: this.mobile,
+              //   province: this.province,
+              //   city: this.city,
+              //   district: this.district,
+              //   detailAddress: this.address
+              // })
+            ]).then(([res1]) => {
+              this.loading = false;
+              if(res1.isSuccess) {
+                this.text = '认领成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/gift');
+                }, 1000);
+              }
+            }).catch(() => { this.loading = false; });
+          }
+        });
       }
     },
     components: {
@@ -225,6 +265,11 @@
             overflow: hidden;
             font-size: $font-size-medium-x;
             color: #666;
+          }
+          img {
+            position: absolute;
+            right: 0.5rem;
+            opacity: 0.7;
           }
         }
 

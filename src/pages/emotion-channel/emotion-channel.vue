@@ -77,7 +77,6 @@
           limit: this.limit,
           status: '5',
           openLevel: '1',
-          statusList: ['1', '2', '3'],
           queryUserId: getUserId(),
           orderDir: 'asc',
           orderColumn: 'order_no',

@@ -6,7 +6,7 @@
         <div class="have">当前余额：{{formatAmount(userAmount[0].amount)}}元</div>
         <div class="recharge">
           <p>充值金额</p>
-          <p class="number">¥<input type="number" v-model="amount"></p>
+          <p class="number"><span>¥</span><input type="number" v-model="amount"></p>
         </div>
         <div class="gray"></div>
         <div class="pay-type">
@@ -33,7 +33,7 @@
       </div>
       <div class="footer">
         <span>金额：<span>{{amount}}</span><span>元</span></span>
-        <button class="fr" @click="toRecharge">充值</button>
+        <button class="fr" @click="toRecharge">支付</button>
       </div>
     </div>
     <router-view></router-view>
@@ -146,22 +146,23 @@
       .content {
         padding: 0.88rem 0 0 0;
         margin-bottom: 0.98rem;
-        background: #f5f5f5;
+        background: #fff;
         div {
           padding: 0 0.3rem;
           background: #ffffff;
         }
         .have {
-          width: 100%;
           height: 1.1rem;
           line-height: 1.1rem;
           font-size: $font-size-medium-x;
           color: #333;
           border-bottom: 1px solid $color-border;
+          margin: 0 0.3rem;
+          padding: 0;
         }
         .recharge {
           padding-top: 0.34rem;
-          padding-bottom: 0.53rem;
+          padding-bottom: 0.34rem;
           p {
             font-size: $font-size-medium-s;
             color: #666;
@@ -170,6 +171,11 @@
           p.number {
             font-weight: bold;
             color: #141414;
+            font-size: 0;
+            margin-bottom: 0;
+            span {
+              font-size: 0.3rem;
+            }
             input {
               font-size: 0.64rem;
             }
@@ -179,7 +185,7 @@
           width: 100%;
           height: 0.2rem;
           padding: 0;
-          background: transparent;
+          background: #f5f5f5;
         }
         .pay-type {
           padding-top: 0.5rem;
@@ -194,9 +200,9 @@
             background: $color-highlight-background;
             div {
               width: 100%;
-              height: 1.5rem;
+              height: 1.1rem;
               font-size: $font-size-medium-x;
-              line-height: 1.5rem;
+              line-height: 1.1rem;
               border-bottom: 1px solid #eee;
               img {
                 height: 0.36rem;
@@ -239,7 +245,10 @@
         font-size: $font-size-medium-x;
         line-height: 0.7rem;
         background: #fff;
+        display: flex;
+        align-items: center;
         span {
+          flex: 1;
           span:first-child {
             color: $primary-color;
             font-size: $font-size-medium-x;

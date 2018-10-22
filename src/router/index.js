@@ -85,6 +85,7 @@ const Gift = () => import('@/pages/gift/gift');
 const ClaimGift = () => import('@/pages/claim-gift/claim-gift');
 // 认领礼物-地址
 const GiftAddress = () => import('@/pages/gift-address/gift-address');
+const GiftAddress2 = () => import('@/pages/gift-address2/gift-address2');
 // 我的主页
 const HomePage = () => import('@/pages/homepage/homepage');
 // 我的树
@@ -280,6 +281,10 @@ export default new Router({
     {
       path: '/gift-address',
       component: GiftAddress
+    },
+    {
+      path: '/gift-address2',
+      component: GiftAddress2
     },
     {
       path: '/homepage',

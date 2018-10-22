@@ -1,44 +1,48 @@
 <template>
-  <div class="full-screen-wrapper content">
-    <div class="title">注册</div>
-    <div class="content">
-      <div class="form-login">
-        <div class="form-item">
-          <div class="item-input-wrapper">
-            <input v-focus type="tel" class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">
-            <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+  <div class="content">
+    <div class="scroll-section">
+      <Scroll :pullUpLoad="pullUpLoad">
+        <div class="title">注册</div>
+        <div class="in-content">
+          <div class="form-login">
+            <div class="form-item">
+              <div class="item-input-wrapper">
+                <input v-focus type="tel" class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">
+                <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+              </div>
+            </div>
+            <div class="form-item">
+              <div class="item-input-wrapper">
+                <input type="tel" class="item-input captcha" v-model="captcha" v-validate="'required'" name="captcha" placeholder="请输入验证码">
+                <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
+                <button :disabled="sending" @click="sendCaptcha" class="captBtn">{{captBtnText}}</button>
+              </div>
+            </div>
+            <div class="form-item">
+              <div class="item-input-wrapper">
+                <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码（6～16个字符或字母）">
+                <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
+              </div>
+            </div>
+            <div class="form-item">
+              <div class="item-input-wrapper">
+                <input type="password" class="item-input" name="rePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码（6～16个字符或字母）">
+                <span v-show="errors.has('rePwd')" class="error-tip">{{errors.first('rePwd')}}</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="form-item">
-          <div class="item-input-wrapper">
-            <input type="tel" class="item-input captcha" v-model="captcha" v-validate="'required'" name="captcha" placeholder="请输入验证码">
-            <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
-            <button :disabled="sending" @click="sendCaptcha" class="captBtn">{{captBtnText}}</button>
+        <div class="sure">
+          <div class="ck" @click="checked">
+            <img src="./checkbox.png" alt="" v-show="isChecked">
+            <div class="check-border" v-show="!isChecked"></div>
           </div>
+          我已阅读并接受<router-link tag="span" to="/register/protocol?register=1">《氧林产品服务条款》</router-link>
         </div>
-        <div class="form-item">
-          <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入密码（6～16个字符或字母）">
-            <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
-          </div>
+        <div class="login-btn">
+          <button @click="register">注册</button>
         </div>
-        <div class="form-item">
-          <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="rePwd" v-validate="'required'" v-model="rePwd" placeholder="请确认密码（6～16个字符或字母）">
-            <span v-show="errors.has('rePwd')" class="error-tip">{{errors.first('rePwd')}}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="sure">
-      <div class="ck" @click="checked">
-        <img src="./checkbox.png" alt="" v-show="isChecked">
-        <div class="check-border" v-show="!isChecked"></div>
-      </div>
-      我已阅读并接受<router-link tag="span" to="/register/protocol?register=1">《氧林产品服务条款》</router-link>
-    </div>
-    <div class="login-btn">
-      <button @click="register">注册</button>
+      </Scroll>
     </div>
     <full-loading v-show="loading" :title="loadText"></full-loading>
     <toast ref="toast" :text="text"></toast>
@@ -168,107 +172,120 @@
   .content {
     background: $color-highlight-background;
     padding: 0 0.4rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
     .fl {
       float: left;
     }
     .fr {
       float: right;
     }
-    .header {
-      margin-bottom: 1.72rem;
-      img  {
-        height: 0.42rem;
+    .scroll-section {
+      position: absolute;
+      top: 0.2rem;
+      bottom: 0.76rem;
+      left: 0.4rem;
+      right: 0.4rem;
+      overflow: auto;
+      .header {
+        margin-bottom: 1.72rem;
+        img  {
+          height: 0.42rem;
+        }
       }
-    }
-    .title {
-      font-size: $font-size-large-xx;
-      padding: 0.3rem 0.2rem 0.76rem;
-    }
-    .content {
-      width: 100%;
-      height: 4.7rem;
-      padding: 0 0.2rem;
-      margin-bottom: 0.3rem;
-      .form-login {
+      .title {
+        font-size: $font-size-large-xx;
+        padding: 0.3rem 0.2rem 0.76rem;
+      }
+      .in-content {
         width: 100%;
-        height: 100%;
-        .form-item {
+        height: 4.7rem;
+        padding: 0 0.2rem;
+        margin-bottom: 0.3rem;
+        .form-login {
           width: 100%;
-          height: 1.1rem;
-          font-size: 0.3rem;
-          border-bottom: 1px solid #EBEBEB;
-          .item-input-wrapper {
+          height: 100%;
+          .form-item {
             width: 100%;
-            height: 100%;
-            .error-tip {
-              color: red;
-            }
-            input {
-              width: 79%;
+            height: 1.1rem;
+            font-size: 0.3rem;
+            border-bottom: 1px solid #EBEBEB;
+            .item-input-wrapper {
+              width: 100%;
               height: 100%;
-            }
-            /*input[type="tel"] {*/
+              .error-tip {
+                color: red;
+              }
+              input {
+                width: 79%;
+                height: 100%;
+              }
+              /*input[type="tel"] {*/
               /*width: 65%;*/
-            /*}*/
-            input.captcha {
-              width: 45%;
-            }
-            .captBtn {
-              width: 2.1rem;
-              height: 0.68rem;
-              border: 1px solid $primary-color;
-              color: $primary-color;
-              background: $color-highlight-background;
-              border-radius: 0.04rem;
-              margin-top: 0.16rem;
-              position: relative;
-              z-index: 99;
-              float: right;
+              /*}*/
+              input.captcha {
+                width: 45%;
+              }
+              .captBtn {
+                width: 2.1rem;
+                height: 0.68rem;
+                border: 1px solid $primary-color;
+                color: $primary-color;
+                background: $color-highlight-background;
+                border-radius: 0.04rem;
+                margin-top: 0.16rem;
+                position: relative;
+                z-index: 99;
+                float: right;
+              }
             }
           }
         }
       }
-    }
-    .sure {
-      color: $color-text-l;
-      font-size: $font-size-medium-s;
-      margin-bottom: 1.2rem;
-      padding: 0 0.2rem;
-      .ck {
-        width: 0.24rem;
-        height: 0.24rem;
-        display: inline-block;
-        img {
-          width: 100%;
-          height: 100%;
+      .sure {
+        color: $color-text-l;
+        font-size: $font-size-medium-s;
+        margin-bottom: 1.2rem;
+        padding: 0 0.2rem;
+        .ck {
+          width: 0.24rem;
+          height: 0.24rem;
+          display: inline-block;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        input[type="checkbox"] {
+          width: 0.24rem;
+          height: 0.24rem;
+          border: 1px solid #979797;
+          border-radius: 0.04rem;
+        }
+        span {
+          color: $primary-color;
+        }
+        .check-border {
+          width: 0.24rem;
+          height: 0.24rem;
+          border: 1px solid #979797;
+          border-radius: 0.04rem;
         }
       }
-      input[type="checkbox"] {
-        width: 0.24rem;
-        height: 0.24rem;
-        border: 1px solid #979797;
-        border-radius: 0.04rem;
-      }
-      span {
-        color: $primary-color;
-      }
-      .check-border {
-        width: 0.24rem;
-        height: 0.24rem;
-        border: 1px solid #979797;
-        border-radius: 0.04rem;
-      }
-    }
-    .login-btn {
-      margin-bottom: 0.4rem;
-      padding: 0 0.2rem;
-      button {
-        width: 100%;
-        height: 0.9rem;
-        background: $primary-color;
-        color: $color-highlight-background;
-        border-radius: 0.08rem;
-        font-size: 0.32rem;
+      .login-btn {
+        margin-bottom: 0.4rem;
+        padding: 0 0.2rem;
+        button {
+          width: 100%;
+          height: 0.9rem;
+          background: $primary-color;
+          color: $color-highlight-background;
+          border-radius: 0.08rem;
+          font-size: 0.32rem;
+        }
       }
     }
   }

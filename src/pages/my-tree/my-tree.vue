@@ -168,19 +168,28 @@
               </div>
               <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
               <div class="daily-content-item-info" v-if="item.type === '1'">
-                <img src="./zengsong@2x.png" alt="">
+                <img src="./zengsong@2x.png" class="dynamic-type">
                 <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="daily-content-item-info" v-if="item.type === '2'">
-                <img src="./message@2x.png" alt="">
+                <img src="./message@2x.png" class="dynamic-type">
                 <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="daily-content-item-info" v-if="item.type === '3'">
-                <img src="./steal@2x.png" alt="">
+                <img src="./steal@2x.png" class="dynamic-type">
                 <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>收取{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+              </div>
+              <div class="daily-content-item-info" v-if="item.type === '4'">
+                <div class="message-border">
+                  <img :src="formatImg(item.userInfo.photo)"class="head">
+                  <div class="message-text">
+                    <p class="name">{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</p>
+                    <p class="activity">来收取能量，被保护罩阻挡了</p>
+                  </div>
+                </div>
               </div>
               <div class="border"></div>
             </div>
@@ -384,6 +393,9 @@ export default {
     this.getInitData();
   },
   methods: {
+    formatImg(img) {
+      return formatImg(img);
+    },
     getName(item) {
       if(item.userId !== getUserId()) {
         if(item.userInfo.nickname) {
@@ -546,7 +558,11 @@ export default {
         collectionTpp({
           code: item.code,
           userId: getUserId()   // 我收取别人的，收取人是我，我收取我自己的，收取人也是我
-        }).then(() => {
+        }).then((res) => {
+          if(res.resCode === '1') {
+            this.text = '正在使用保护罩，碳泡泡不能收取';
+            this.$refs.toast.show();
+          }
           this.loading = false;
           this.getTppList({adoptTreeCode: this.adoptTreeCode});
           this.dynamics.start = 1;
@@ -1199,8 +1215,10 @@ export default {
               align-items: center;
               justify-content: space-between;
               margin-left: 0.2rem;
-              img {
+              .dynamic-type {
                 width: 0.36rem;
+              }
+              img {
                 margin-right: 0.24rem;
               }
               .activity {
@@ -1225,6 +1243,7 @@ export default {
                 border-radius: 0.5rem;
                 display: flex;
                 align-items: center;
+                padding: 0.1rem;
                 .head {
                   width: 0.64rem;
                   height: 0.64rem;
@@ -1535,6 +1554,29 @@ export default {
   }
   .show {
     display: block;
+  }
+  .message-border {
+    border: 1px solid #eee;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    .head {
+      width: 0.64rem;
+      height: 0.64rem;
+      border-radius: 50%;
+      margin-left: 0.08rem;
+    }
+    .name {
+      color: #999;
+      font-size: 0.22rem;
+    }
+    .activity {
+      font-size: 0.28rem;
+    }
+    .cover {
+      width: 0.84rem;
+      height: 0.84rem;
+    }
   }
 }
 </style>
