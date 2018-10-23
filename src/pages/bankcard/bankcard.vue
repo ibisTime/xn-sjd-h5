@@ -1,6 +1,6 @@
 <template>
   <div class="bankcard-wrapper">
-    <m-header class="cate-header" title="我的银行卡" :actText="actText" @action="action"></m-header>
+    <m-header class="cate-header" title="我的银行卡" :actImg="actImg" @action="action"></m-header>
     <div class="content">
       <scroll class="bankcard-content" :hasMore="!bankcardList">
         <div class="bankcard-item" :key="item.code" v-for="(item, index) in bankcardList">
@@ -53,10 +53,12 @@
         bankcardList: [{
           bankName: ''
         }],
-        bankCode: ''
+        bankCode: '',
+        actImg: ''
       };
     },
-    created() {
+    mounted() {
+      this.actImg = require('./add.png');
       this.touch = {};
       this.currentItem = null;
       // axios.post(`https://openapi.alipay.com/gateway.do?charset=UTF-8&method=alipay.trade.wap.pay&sign=B79r2fV8vB4fJPuECXS8YBFI6M5Vr5lmg4xLKFQ3Ad%2BHRjcvYPW3obks3GedHi1Ld08VQ0czmAFqIpLf%2Fvy8cBWfc4GgVuGZk5NiYz1xxMJtXiIy6LSx0QogNzpSOgr31SRt9mZtTkAk%2B0ZIboGT88WO%2BaLmf%2BC2kuNF3DIJ2xz73QZ5g%2FPQp1eoia%2BV9IyH47g7oKjzEDbtFpE20zjdVvmIBeGJ3ItWj7mgFiulpvAcZwtEijxjpkEm1esgL738Trtaz26xqM8ZZawr4rpx7byYdyMzxVKdSc8VFz%2FepGQSKFAp4Wb9%2FGZ42Rfo6GSPA0x1zk6IQMfKqoTEmeZ9lQ%3D%3D&return_url=http%3A%2F%2Fsjd.h5.hichengdai.com%2Fa.jspx&notify_url=http%3A%2F%2Fsjd.h5.hichengdai.com%2Falipay%2Fh5%2Fcallback&version=1.0&app_id=2018080260825970&sign_type=RSA2&timestamp=2018-10-06+19%3A35%3A43&alipay_sdk=alipay-sdk-java-3.3.0&format=json`).then(data => {

@@ -4,6 +4,7 @@
       <i v-if="showBack" class="icon-back" @click="back"></i>
       <h2>{{title}}</h2>
       <div v-if="actText" @click="handleAction" class="action">{{actText}}</div>
+      <img :src="actImg" v-if="actImg" @click="handleAction" class="icon-img">
     </div>
   </div>
 </template>
@@ -23,6 +24,10 @@
         default: ''
       },
       actText: {
+        type: String,
+        default: ''
+      },
+      actImg: {
         type: String,
         default: ''
       }
@@ -67,6 +72,12 @@
         background-position: 0.3rem 50%;
         background-repeat: no-repeat;
         @include bg-image('back');
+      }
+      .icon-img {
+        position: absolute;
+        right: 0.19rem;
+        top: .19rem;
+        width: 0.5rem;
       }
 
       h2 {

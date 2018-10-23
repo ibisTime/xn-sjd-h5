@@ -154,7 +154,7 @@
             justify-content: space-between;
             flex: 1;
             .title-status {
-              font-size: 0.2rem;
+              font-size: 0.25rem;
               color: red;
             }
           }

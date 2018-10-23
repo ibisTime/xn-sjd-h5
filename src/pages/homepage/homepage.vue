@@ -244,17 +244,6 @@
         return formatImg(img);
       },
       getName(item) {
-        // {{other === '1' && currentHolder === item.userInfo.userId ? 'TA的好友' : getName(item)}}
-        // if(item.userInfo.userId === getUserId()) {
-        //   return '我';
-        // } else {
-        //   if(item.userInfo.nickname) {
-        //     return item.userInfo.nickname;
-        //   } else {
-        //     return this.jiami(item.userInfo.mobile);
-        //   }
-        // }
-        // {{other === '1' && currentHolder === item.userInfo.userId ? 'TA的好友' : getName(item)}}
         if(item.userInfo.userId === this.currentHolder) {
           if(this.other === '1') {
             return 'TA';

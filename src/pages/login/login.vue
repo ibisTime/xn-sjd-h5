@@ -28,12 +28,12 @@
           <span class="fl" @click="go('/register')">立即注册</span>
           <span class="fr" @click="go('/forget-pwd')">忘记密码？</span>
         </div>
-        <div class="wx-login" @click="AppId">
-          <span class="wing"></span>
-          <img src="./wx-login@2x.png" alt="">
-          <span>微信快速登录</span>
-          <span class="wing"></span>
-        </div>
+        <!--<div class="wx-login" @click="AppId">-->
+          <!--<span class="wing"></span>-->
+          <!--<img src="./wx-login@2x.png" alt="">-->
+          <!--<span>微信快速登录</span>-->
+          <!--<span class="wing"></span>-->
+        <!--</div>-->
       </Scroll>
     </div>
     <full-loading v-show="loading" :title="loadText"></full-loading>

@@ -256,6 +256,9 @@ export default {
           p:first-child{
             margin-bottom: 0.06rem;
             font-size: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             span:first-child {
               font-size: $font-size-medium-xx;
               color: #333;

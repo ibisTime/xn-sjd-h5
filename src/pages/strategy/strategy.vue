@@ -1,6 +1,5 @@
 <template>
   <div class="home-wrapper">
-    <m-header class="cate-header" title="攻略"></m-header>
     <div class="content">
       <div class="content-wrap" v-html="detail"></div>
     </div>
@@ -72,7 +71,7 @@ export default {
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
-    top: 0.88rem;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;

@@ -1,7 +1,6 @@
 <template>
   <transition name="slide">
     <div class="surprise-wrapper">
-      <m-header class="cate-header" title="赠送"></m-header>
       <div class=pic>
         <img :src="formatImg(this.pic)">
       </div>
@@ -36,9 +35,8 @@
   </transition>
 </template>
 <script>
-  import MHeader from 'components/m-header/m-header';
   import {directiveMixin} from 'common/js/mixin';
-  import {formatImg} from 'common/js/util';
+  import {formatImg, setTitle} from 'common/js/util';
   import Toast from 'base/toast/toast';
   import { GiveTree } from 'api/biz';
   import defaultImg from './../../common/image/tree-default.png';
@@ -58,6 +56,7 @@
       };
     },
     mounted() {
+      setTitle('赠送');
       this.other = this.$route.query.other;
       this.currentHolder = this.$route.query.currentHolder;
       this.adoptTreeCode = this.$route.query.aTCode;
@@ -86,8 +85,7 @@
       }
     },
     components: {
-      Toast,
-      MHeader
+      Toast
     }
   };
 </script>
@@ -104,7 +102,6 @@
     .pic {
       width: 100%;
       height: 4rem;
-      margin-top: 0.88rem;
       img {
         width: 100%;
         height: 100%;

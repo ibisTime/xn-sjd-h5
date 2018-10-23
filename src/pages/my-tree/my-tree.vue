@@ -112,6 +112,15 @@
                     <span class="name">{{getName(item)}}</span>
                     <span class="activity">收取{{formatAmount(item.quantity)}}g</span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </p>
+                  <div class="daily-content-item-info" v-if="item.type === '4'">
+                    <div class="message-border">
+                      <img :src="formatImg(item.userInfo.photo)" class="head">
+                      <div class="message-text">
+                        <p class="name">{{getName(item)}}</p>
+                        <p class="activity">来收取能量，被保护罩阻挡了</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
               </div>
@@ -169,24 +178,24 @@
               <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
               <div class="daily-content-item-info" v-if="item.type === '1'">
                 <img src="./zengsong@2x.png" class="dynamic-type">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="activity"><span>{{getName(item)}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="daily-content-item-info" v-if="item.type === '2'">
                 <img src="./message@2x.png" class="dynamic-type">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="activity"><span>{{getName(item)}}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="daily-content-item-info" v-if="item.type === '3'">
                 <img src="./steal@2x.png" class="dynamic-type">
-                <p class="activity"><span>{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</span>收取{{formatAmount(Number(item.quantity))}}g</p>
+                <p class="activity"><span>{{getName(item)}}</span>收取{{formatAmount(Number(item.quantity))}}g</p>
                 <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
               </div>
               <div class="daily-content-item-info" v-if="item.type === '4'">
                 <div class="message-border">
-                  <img :src="formatImg(item.userInfo.photo)"class="head">
+                  <img :src="formatImg(item.userInfo.photo)" class="head">
                   <div class="message-text">
-                    <p class="name">{{other === '1' ? 'TA的好友' : item.userInfo.nickname ? item.userInfo.nickname : jiami(item.userInfo.mobile)}}</p>
+                    <p class="name">{{getName(item)}}</p>
                     <p class="activity">来收取能量，被保护罩阻挡了</p>
                   </div>
                 </div>
@@ -397,14 +406,26 @@ export default {
       return formatImg(img);
     },
     getName(item) {
-      if(item.userId !== getUserId()) {
-        if(item.userInfo.nickname) {
-          return item.userInfo.nickname;
+      if(item.userInfo.userId === this.currentHolder) {
+        if(this.other === '1') {
+          return 'TA';
         } else {
-          return this.jiami(item.userInfo.mobile);
+          return '我';
         }
       } else {
-        return '我';
+        if(item.userInfo.userId === getUserId()) {
+          return '我';
+        } else {
+          if(this.other === '1') {
+            return 'TA的好友';
+          } else {
+            if(item.userInfo.nickname) {
+              return item.userInfo.nickname;
+            } else {
+              return this.jiami(item.userInfo.mobile);
+            }
+          }
+        }
       }
     },
     // 动态 格式化显示日期
@@ -1124,6 +1145,53 @@ export default {
           .dynamic-info-item {
             font-size: $font-size-medium;
             padding: 0.2rem 0;
+            .daily-content-item-info {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-left: 0.2rem;
+              .message-border {
+                border: 1px solid #eee;
+                border-radius: 0.5rem;
+                display: flex;
+                align-items: center;
+                padding: 0.1rem;
+                .head {
+                  width: 0.64rem;
+                  height: 0.64rem;
+                  border-radius: 50%;
+                  margin-left: 0.08rem;
+                }
+                .name {
+                  color: #999;
+                  font-size: 0.22rem;
+                }
+                .activity {
+                  font-size: 0.28rem;
+                }
+                .cover {
+                  width: 0.84rem;
+                  height: 0.84rem;
+                }
+              }
+              img {
+                width: 0.36rem;
+                margin-right: 0.24rem;
+              }
+              .activity {
+                font-size: $font-size-medium;
+                flex: 1;
+                span {
+                  font-family: PingFangSC-Semibold;
+                  margin-right: 0.2rem;
+                }
+              }
+              .time {
+                font-size: $font-size-small;
+                line-height: 0.33rem;
+                color: #999;
+              }
+            }
             .daily-title {
               font-size: $font-size-large-ss;
               line-height: $font-size-large-s;

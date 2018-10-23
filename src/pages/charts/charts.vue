@@ -10,7 +10,10 @@
         </div>
         <div class="userPhoto" :style="getImgSyl(userDetail.toUserInfo.photo ? userDetail.toUserInfo.photo : '')"></div>
         <div class="info">
-          <p class="name">{{userDetail.toUserInfo.nickname ? userDetail.toUserInfo.nickname: jiami(userDetail.toUserInfo.mobile)}}</p>
+          <p class="name">
+            <span>{{userDetail.toUserInfo.nickname ? userDetail.toUserInfo.nickname: jiami(userDetail.toUserInfo.mobile)}}</span>
+            <img src="./steal@2x.png" v-show="userDetail.takeableTppAmount">
+          </p>
           <p class="date">获得了{{userDetail.certificateCount}}个环保证书</p>
         </div>
         <span class="price fr">{{formatAmount(userDetail.tppAmount)}}碳泡泡</span>
@@ -31,7 +34,10 @@
           </div>
           <div class="userPhoto" :style="getImgSyl(item.toUserInfo.photo ? item.toUserInfo.photo : '')"></div>
           <div class="info">
-            <p class="name">{{item.toUserInfo.nickname ? item.toUserInfo.nickname: jiami(item.toUserInfo.mobile)}}</p>
+            <p class="name">
+              <span>{{item.toUserInfo.nickname ? item.toUserInfo.nickname: jiami(item.toUserInfo.mobile)}}</span>
+              <img src="./steal@2x.png" v-show="item.takeableTppAmount">
+            </p>
             <p class="date">获得了{{item.certificateCount}}个环保证书</p>
           </div>
           <span class="price fr">{{formatAmount(item.tppAmount)}}碳泡泡</span>
@@ -253,6 +259,15 @@
             font-size: 0.3rem;
             line-height: 0.42rem;
             margin-bottom: 0.14rem;
+            display: flex;
+            align-items: center;
+            span {
+              margin-right: 0.15rem;
+            }
+            img {
+              width: 0.36rem;
+              height: 0.36rem;
+            }
           }
           .date {
             font-size: 0.24rem;

@@ -1,5 +1,5 @@
 <template>
-  <div class="home-wrapper">
+  <div class="product-detail-wrapper">
     <!--<m-header class="cate-header" title="产品详情"></m-header>-->
     <div class="content">
       <Scroll ref='scroll' :pullUpLoad="pullUpLoad">
@@ -29,10 +29,6 @@
         <div class="item">
           <span>古树品种</span><span>{{detail.variety}}</span>
         </div>
-        <!--<div class="item" @click="go('/invitation')">-->
-          <!--<span>古树定位</span>-->
-          <!--<img src="./more@2x.png" alt="" class="fr more">-->
-        <!--</div>-->
         <div class="item" @click="go('/adopt-list?code=' + code)">
           <span>已认养名单</span>
           <img src="./more@2x.png" alt="" class="fr more">
@@ -303,7 +299,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../common/scss/mixin.scss";
 @import "../../common/scss/variable.scss";
-.home-wrapper {
+.product-detail-wrapper {
   position: fixed;
   top: 0;
   left: 0;

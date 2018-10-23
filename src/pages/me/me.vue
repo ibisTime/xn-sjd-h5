@@ -36,22 +36,22 @@
     <div class="me-list" ref="description">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
         <div class="item" @click="go('/carbon-bubble?accountNumber=' + tppAccountNumber + '&amount=' + tpp)">
-          <img src="./carbon-bubble@2x.png">
+          <img src="./carbon-bubble@2x.png"  class="me-list-icon">
           <span>我的碳泡泡</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item" @click="go('/homepage')">
-          <img src="./adopt@2x.png">
+          <img src="./adopt@2x.png" class="me-list-icon">
           <span>我的认养</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item" @click="go('/my-order')">
-          <img src="./order@2x.png">
+          <img src="./order@2x.png" class="me-list-icon">
           <span>我的订单</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item" @click="go('/my-article')">
-          <img src="./article@2x.png">
+          <img src="./article@2x.png" class="me-list-icon">
           <span>我的文章</span>
           <img src="./more@2x.png" class="fr more">
         </div>
@@ -61,12 +61,12 @@
           <!--<img src="./more@2x.png" class="fr more">-->
         <!--</div>-->
         <div class="item" @click="go('/invitation')">
-          <img src="./invitation@2x.png">
+          <img src="./invitation@2x.png" class="me-list-icon">
           <span>邀请有礼</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item" @click="go('/settings')">
-          <img src="./setting@2x.png">
+          <img src="./setting@2x.png" class="me-list-icon">
           <span>设置</span>
           <img src="./more@2x.png" class="fr more">
         </div>
@@ -236,6 +236,8 @@
                 p:first-child{
                   margin-bottom: 0.06rem;
                   font-size: 0;
+                  display: flex;
+                  align-items: center;
                   span:first-child {
                     font-size: $font-size-medium-xx;
                     color: #333;
@@ -338,11 +340,16 @@
         font-size: $font-size-medium-x;
         line-height: 1.1rem;
         border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        .me-list-icon {
+          margin-right: 0.1rem;
+        }
         img {
           height: 0.34rem;
         }
-        .more {
-          margin-top: 0.3rem;
+        span {
+          flex: 1;
         }
       }
     }
