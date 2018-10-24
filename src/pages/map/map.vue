@@ -15,9 +15,11 @@
       <!--</div>-->
     <!--</div>-->
     <full-loading v-show="loading" :title="loadText"></full-loading>
+    <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
+  import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
@@ -30,6 +32,7 @@
       return {
         loading: false,
         loadText: '',
+        text: '',
         detail: {tree: {province: '', city: '', area: ''}},
         goUrl: ''
       };
@@ -66,9 +69,6 @@
         this.map.addControl(new AMap.ToolBar());
         // -------------------------------------important----------------------------------
         // -------------------------------------important----------------------------------
-        // this.info.push("<div class='input-card content-window-card'><div><img style=\"float:left;\" src=\" https://webapi.amap.com/images/autonavi.png \"/></div> ");
-        // this.info.push("<p class='input-item'>电话 : 010-84107000   邮编 : 100102</p>");
-        // this.info.push("<p class='input-item'>地址 :北京市朝阳区望京阜荣街10号首开广场4层</p></div></div>");
         this.infoWindow = new AMap.InfoWindow({
           content: `<div class="info" style="border-radius: 0.08rem;">
             <div style="padding: 0.18rem; color: #fff; display: flex; align-items: center;">
@@ -77,7 +77,6 @@
                 <p style="font-size: 0.24rem">${this.detail.tree.province} ${this.detail.tree.city} ${this.detail.tree.area}</p>
               </div>
               <div style="background: #23AD8C; border-radius: 0.06rem; display: flex; align-items: center; padding: 0.2rem;margin-left: 0.2rem;">
-                <!--<img :src=${this.goUrl} style="width: 0.36rem;height: 0.36rem ">-->
                 <i style="background: url(${this.goUrl});
                 display: inline-block;
                 width: 0.24rem;
@@ -106,15 +105,30 @@
             this.detail.tree = res;
             this.initMap();
             this.loading = false;
-          }).catch((msg) => { console.log(msg); this.loading = false; });
+          }).catch((msg) => {
+            console.log(msg);
+            this.text = msg;
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.$router.back();
+            }, 1000);
+            this.loading = false;
+          });
         } else {
           // 主页
           getUserTreeDetail(this.code).then((res) => {
             this.detail = res;
-            console.log(this.detail);
             this.initMap();
             this.loading = false;
-          }).catch((msg) => { console.log(msg); this.loading = false; });
+          }).catch((msg) => {
+            console.log(msg);
+            this.text = msg;
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.$router.back();
+            }, 1000);
+            this.loading = false;
+          });
         }
       },
       go(url) {
@@ -127,6 +141,7 @@
       }
     },
     components: {
+      Toast,
       Scroll,
       MHeader,
       FullLoading

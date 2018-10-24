@@ -112,7 +112,7 @@
           font-size: 0.2rem;
           color: $primary-color;
           span {
-            line-height: 1rem;
+            line-height: 1.1rem;
           }
         }
         .buttons {

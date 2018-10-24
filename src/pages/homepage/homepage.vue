@@ -582,6 +582,9 @@
                   p {
                     margin-bottom: 0.69rem;
                     font-size: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     span:first-child {
                       font-size: $font-size-medium-xx;
                       color: $color-highlight-background;
@@ -653,6 +656,7 @@
             line-height: 1.6rem;
             border-bottom: 1px solid #eee;
             display: flex;
+            align-items: center;
             padding: 0.3rem 0;
             .tree-info {
               flex: 1;

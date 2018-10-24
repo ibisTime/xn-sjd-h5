@@ -13,12 +13,12 @@
             <i class="sign-icon"></i>
           </router-link>
         </div>
-        <div class="info-wait" v-show="wait">
+        <div class="info-wait" v-show="!already">
           <div class="item">
             <span>{{giftDetail.name}}</span><span class="price">¥{{formatAmount(giftDetail.price)}}</span>
           </div>
         </div>
-        <div class="info" v-show="!wait">
+        <div class="info" v-show="already">
           <div class="item">
             <span>礼物名称</span><span>{{giftDetail.name}}</span>
           </div>
@@ -79,7 +79,7 @@ export default {
       flag: false,
       number: 1,
       idCode: '',
-      wait: false,  // 是否为待认领，true为待认领，false为已认领
+      already: false,  // 是否已认领，true为已认领，false为未认领
       giftDetail: {}
     };
   },
@@ -119,8 +119,8 @@ export default {
       }).then((res) => {
         this.giftDetail = res;
         this.descriptionDetail = res.description;
-        if(this.giftDetail.status === '0') {
-          this.wait = true;
+        if(this.giftDetail.status === '1') {
+          this.already = true;
           setTitle('认领礼物');
         } else {
           setTitle('礼物详情');

@@ -40,7 +40,7 @@
             <div class="info">
               <div class="imgWrap" :style="getImgSyl(item.product.listPic)"></div>
               <div class="text">
-                <p class="title"><span class="title-title">{{item.product.name}}</span><span class="title-number" v-show="item.status === '3' || item.status === '4'">x{{item.treeList.length}}</span></p>
+                <p class="title"><span class="title-title">{{item.product.name}}</span><span class="title-number" v-show="item.status === '3' || item.status === '4'">x{{item.quantity}}</span></p>
                 <p class="position">{{item.product.province}} {{item.product.city}} {{item.product.area}}</p>
                 <div class="props"><span class="duration">年限：{{item.adoptYear}}</span><span class="price" v-show="!item.jfDeductAmount">¥{{formatAmount(item.price)}}</span><span class="price" v-show="item.jfDeductAmount">¥{{formatAmount(item.payAmount)}}+{{formatAmount(item.jfDeductAmount)}}积分</span></div>
               </div>

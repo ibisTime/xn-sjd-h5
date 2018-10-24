@@ -210,6 +210,10 @@
             line-height: 0.33rem;
             color: #999
           }
+          img {
+            width: 0.36rem;
+            height: 0.36rem;
+          }
         }
         .price {
 

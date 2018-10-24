@@ -292,19 +292,27 @@ export default new Router({
     },
     {
       path: '/my-tree',
-      component: MyTree
+      component: MyTree,
+      children: [
+        {
+          path: 'adopt-list',
+          component: AdoptList
+        },
+        {
+          path: 'maintain-records',
+          component: MaintainRecords,
+          children: [
+            {
+              path: 'maintain-detail',
+              component: MaintainDetail
+            }
+          ]
+        }
+      ]
     },
     {
       path: '/strategy',
       component: Strategy
-    },
-    {
-      path: '/maintain-records',
-      component: MaintainRecords
-    },
-    {
-      path: '/maintain-detail',
-      component: MaintainDetail
     },
     {
       path: '/surprise',

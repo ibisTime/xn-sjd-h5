@@ -18,7 +18,7 @@
         <div class="proList">
           <div class="item" @click="go('/hot-product-list/product-detail?code='+item.code)" v-for="item in proList">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-            <div class="sell-type-right">{{item.raiseCount === item.nowCount ? '已被认养' : '认养中'}}</div>
+            <div class="sell-type-right">{{canAdopt(item)}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
@@ -47,8 +47,10 @@ import MHeader from 'components/m-header/m-header';
 import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
+import { getCookie } from 'common/js/cookie';
 import { getDictList } from 'api/general';
 import { getProductPage, getProductType } from 'api/biz';
+import { getUserDetail } from 'api/user';
 export default {
   data() {
     return {
@@ -68,6 +70,7 @@ export default {
         // {value: '定向', key: '1'},
         // {value: '集体', key: '2'},
         // {value: '捐赠', key: '3'}],
+      userDetail: {},
       showCheckIn: false,
       pullUpLoad: null,
       currentIndex: +this.$route.query.index || 0,
@@ -94,6 +97,50 @@ export default {
     },
     go(url) {
       this.$router.push(url);
+    },
+    canAdopt(item) {
+      // 专属产品
+      if(item.sellType === '1') {
+        // 销售类型为专属且未到认养量
+        if(item.raiseCount === item.nowCount) {
+          return '已被认养';
+        } else {
+          return '可认养';
+        }
+      }
+      // 定向产品
+      if(item.directType && item.directType === '1') {
+        // 等级定向且用户为该等级
+        if(item.directObject !== this.userDetail.level) {
+          return '不可认养';
+        } else {
+          return '可认养';
+        }
+      }
+      if(item.directType && item.directType === '2') {
+        // 用户定向且是定向用户
+        if(item.directObject !== this.userId) {
+          return '不可认养';
+        } else {
+          return '可认养';
+        }
+      }
+      // 捐赠产品
+      if(item.sellType === '3') {
+        let curTime = new Date();
+        // 2把字符串格式转换为日期类
+        let startTime = new Date(Date.parse(item.raiseStartDatetime));
+        let endTime = new Date(Date.parse(item.raiseEndDatetime));
+        // console.log(startTime);
+        // console.log(endTime);
+        // 3进行比较
+        // console.log(curTime >= startTime && curTime <= endTime);
+        if(curTime <= startTime || curTime >= endTime) {
+          return '不可认养';
+        } else {
+          return '可认养';
+        }
+      }
     },
     selectCategory(index) {
       this.index = index;
@@ -166,11 +213,19 @@ export default {
         this.start++;
         this.loading = false;
       }).catch(() => { this.loading = false; });
+    },
+    getUserDetail() {
+      getUserDetail({
+        userId: this.userId
+      }).then((res) => {
+        this.userDetail = res;
+      });
     }
   },
   mounted() {
     this.pullUpLoad = null;
     this.loading = true;
+    this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
     setTitle('认养列表');
     Promise.all([
@@ -200,6 +255,9 @@ export default {
       });
       this.loading = false;
       this.getSubType();
+      if(this.userId) {
+        this.getUserDetail();
+      }
     }).catch(() => { this.loading = false; });
   },
   components: {

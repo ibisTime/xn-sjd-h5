@@ -150,11 +150,11 @@
             <!--<div class="item">-->
               <!--<span>当前认养人</span><span>三级</span>-->
             <!--</div>-->
-            <div class="item" @click="go('/adopt-list?history=1&code=' + treeDetail.productCode)">
+            <div class="item" @click="go('/my-tree/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
               <span>历史认养人</span>
               <img src="./more@2x.png" class="fr more">
             </div>
-            <div class="item" @click="go('/maintain-records?treeNumber=' + treeDetail.treeNumber)">
+            <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber)">
               <span>养护记录</span>
               <img src="./more@2x.png" class="fr more">
             </div>
@@ -463,7 +463,8 @@ export default {
       Promise.all([
         getListProps({
           type: this.propsData.type,
-          userId: this.getUserId()
+          userId: this.getUserId(),
+          status: '1'
         }),
         getPropsUsedRecordList({
           adoptTreeCode: this.adoptTreeCode,
@@ -510,7 +511,8 @@ export default {
         start: this.dynamics.start,
         limit: this.dynamics.limit,
         adoptUserId: this.currentHolder,
-        adoptTreeCode: this.adoptTreeCode
+        adoptTreeCode: this.adoptTreeCode,
+        queryUserId: getUserId()
       }).then((data) => {
         if (data.list.length < this.dynamics.limit || data.totalCount <= this.dynamics.limit) {
           this.dynamics.hasMore = false;

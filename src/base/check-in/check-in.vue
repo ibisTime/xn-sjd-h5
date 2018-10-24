@@ -18,8 +18,8 @@
         default: '0'
       },
       signDays: {
-        type: String,
-        default: '0'
+        type: Number,
+        default: 0
       }
     },
     methods: {

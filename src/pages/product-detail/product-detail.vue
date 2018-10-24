@@ -17,7 +17,7 @@
         <div class="item" v-show="detail.sellType === '3'">
           <span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>
         </div>
-        <div class="item" v-show="detail.sellType !== '0' && detail.sellType !== '1'">
+        <div class="item" v-show="detail.sellType === '4'">
           <span>已募集数量</span><span>{{detail.nowCount}}/{{detail.raiseCount}}</span>
         </div>
         <div class="item">
@@ -87,7 +87,7 @@
           <img class="diamonds right-item" @click="sub" src="./sub@2x.png">
         </div>
       </div>
-      <div class="other" v-show="detail.sellType === '3'">
+      <div class="other" v-show="detail.sellType === '4'">
         <span>下单识别码</span>
         <input type="text" v-model="identifyCode">
       </div>
@@ -178,6 +178,20 @@ export default {
         this.noAdoptReason = '已被认养';
         return false;
       }
+      if(this.detail.sellType === '3') {
+        let curTime = new Date();
+        // 2把字符串格式转换为日期类
+        let startTime = new Date(Date.parse(this.detail.raiseStartDatetime));
+        let endTime = new Date(Date.parse(this.detail.raiseEndDatetime));
+        // console.log(startTime);
+        // console.log(endTime);
+        // 3进行比较
+        // console.log(curTime >= startTime && curTime <= endTime);
+        if(curTime <= startTime || curTime >= endTime) {
+          this.noAdoptReason = '当前不在募集期内';
+          return false;
+        }
+      }
       if(this.detail.directType && this.detail.directType === '1' && this.detail.directObject !== this.userDetail.level) {
         // 等级定向且用户为该等级
         this.noAdoptReason = '您不属于该产品定向的等级';
@@ -195,7 +209,7 @@ export default {
         let proCode = this.detail.code;
         let specsCode = this.detail.productSpecsList[this.choosedIndex].code;
         let quantity = this.number;
-        if(this.detail.sellType !== '3') {
+        if(this.detail.sellType !== '4') {
           let type = this.detail.sellType;
           this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
         } else {
@@ -561,7 +575,9 @@ export default {
       }
       .right {
         flex: 1;
-        display: inline-block;
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
         .right-item {
           float: right;
           text-align: center;

@@ -204,6 +204,7 @@
               type: file.type,
               key: _url.split('/').pop() + '.' + file.name.split('.').pop()
             };
+            self.loading = true;
             self.uploadPhoto(data, item.key).then(() => {
               item = {
                 ...item,
@@ -231,6 +232,7 @@
             break;
           }
         }
+        this.loading = false;
       },
       uploadPhoto(base64, key) {
         return this.$refs.qiniu.uploadByBase64(base64, key);

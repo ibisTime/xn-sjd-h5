@@ -2,13 +2,13 @@
   <div class="adopt-list-wrapper">
     <div class="adopt-list">
       <Scroll :pullUpLoad="pullUpLoad" :data="list">
-        <div class="item" @click="go('/notice-detail?code=' + item.code)" v-for="item in list">
+        <div class="item" @click="go('/notice-detail?code=' + item.code)" v-for="item in list" v-show="list.length">
           <div class="info">
             <p class="top"><span class="name">{{cut(item.title,6)}}</span><span class="status">{{formatDate(item.createDatetime)}}</span></p>
             <p class="date">{{cut(item.content, 14)}}</p>
           </div>
         </div>
-        <no-result v-show="!hasMore && !(list && list.length)" title="暂无公告" class="no-result-wrapper"></no-result>
+        <no-result v-show="!list.length" title="暂无公告" class="no-result-wrapper"></no-result>
       </Scroll>
     </div>
     <full-loading v-show="loading"></full-loading>
@@ -25,7 +25,7 @@
   export default {
     data() {
       return {
-        showBack: false,
+        pullUpLoad: null,
         loading: false,
         list: []
       };

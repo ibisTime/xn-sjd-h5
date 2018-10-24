@@ -1,0 +1,77 @@
+<template>
+  <div class="rollScreen_container" id ="rollScreen_container">
+    <ul class="rollScreen_list" :style = {transform:transform} :class="{rollScreen_list_unanim:num===0}">
+      <li class="rollScreen_once" v-for="(item,index) in contentArr" :key=index>
+        <span>{{item.content}}</span>
+      </li>
+      <li class="rollScreen_once" v-for="(item,index) in contentArr" :key=index+contentArr.length>
+        <span>{{item.content}}</span>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: {
+      height: {
+        default: 0.7,
+        type: Number
+      },
+      lineNum: {
+        default: 1,
+        type: Number
+      },
+      contentArr: {
+        type: Array,
+        default: function () {
+          return [];
+        }
+      }
+    },
+    data: function () {
+      return {
+        // contentArr: ['内容1', '内容2', '内容3', '内容4', '内容5', '内容6', '内容7'],
+        num: 0
+      };
+    },
+    computed: {
+      transform: function () {
+        return 'translateY(-' + this.num * this.height + 'rem)';
+      }
+    },
+    created() {
+      let _this = this;
+      setInterval(function () {
+        if (_this.num !== _this.contentArr.length) {
+          _this.num++;
+        } else {
+          _this.num = 0;
+        }
+      }, 3000);
+    }
+  };
+</script>
+
+<style>
+  .rollScreen_container{
+    display: inline-block;
+    position:relative;
+    overflow: hidden;
+    height: 0.7rem;
+    width: 100%;
+  }
+  .rollScreen_list{
+    transition: 1s linear;
+  }
+  .rollScreen_list_unanim{
+    transition: none
+  }
+  .rollScreen_once {
+    height: 0.7rem;
+    font-size: 0.24rem;
+    background: #f0f9f6;
+    padding: 0.24rem 0.3rem;
+    line-height: 0.33rem;
+  }
+</style>

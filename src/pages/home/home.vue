@@ -34,12 +34,14 @@
           <img src="./emotion@2x.png" class="emotion">
           <img src="./more@2x.png" class="more">
         </div>
-        <div class="bulletin" v-for="item in bulletinList">
-          <img src="./bulletin@2x.png">
-          <div class="border"></div>
-          <div class="title">{{item.title}}</div>
-          <div class="more">更多</div>
-        </div>
+        <!--<div class="bulletin" v-for="item in bulletinList">-->
+          <!--<img src="./bulletin@2x.png">-->
+          <!--<div class="border"></div>-->
+          <!--<div class="title">{{item.title}}</div>-->
+          <!--<div class="more">更多</div>-->
+        <!--</div>-->
+        <scroll-y :contentArr="bulletinList" v-show="bulletinList.length"></scroll-y>
+        <div class="gray" v-show="!bulletinList.length"></div>
         <div class="hot" v-show="proList.length">
         <div class="title">
           <span class="fl hot-title">热门推荐</span>
@@ -79,10 +81,12 @@ import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import CheckIn from 'base/check-in/check-in';
+import ScrollY from 'base/scroll-y/scroll-y';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getBanner, getDictList } from 'api/general';
-import { getProductPage, getProductType, signIn, getMessage } from 'api/biz';
+import { getProductPage, getProductType, signIn, getMessage, getMessagePage } from 'api/biz';
+// import ScrollY from "../../base/scroll-y/scroll-y";
 export default {
   // name: "home",
   data() {
@@ -104,7 +108,7 @@ export default {
       bulletinList: [],
       sellTypeObj: {},
       signTpp: '0',
-      signDays: '0'
+      signDays: 0
     };
   },
   methods: {
@@ -169,11 +173,13 @@ export default {
           type: '1',
           object: 'C'
         }),
-        getMessage({
-          status: '1',
-          type: '2',
-          object: 'C'
+        getMessagePage({
+          status: '0',
+          type: '3',
+          orderColumn: 'create_datetime',
+          orderDir: 'desc'
         }),
+        // getBulletinList(),
         getDictList('sell_type')
       ]).then(([res1, res2, res3, res4, res5, res6]) => {
         this.banners = res1;
@@ -187,7 +193,7 @@ export default {
           }
         });
         this.noticeList = res4.slice(0, 1);
-        this.bulletinList = res5.slice(0, 1);
+        this.bulletinList = res5.list;
         this.loading = false;
         res6.map((item) => {
           this.sellTypeObj[item.dkey] = item.dvalue;
@@ -199,9 +205,13 @@ export default {
     setTitle('氧林');
     this.pullUpLoad = null;
     this.loading = true;
+    // setInterval(() => {
+    //   console.log('Hello');
+    // }, 1000);
     this.getInitData();
   },
   components: {
+    ScrollY,
     FullLoading,
     Toast,
     MFooter,
@@ -369,7 +379,6 @@ export default {
       align-items: center;
       background: $color-highlight-background;
       justify-content: space-between;
-      margin-bottom: 0.2rem;
       .text {
         .Chinese {
           font-size: $font-size-medium-xx;
@@ -534,6 +543,12 @@ export default {
       background: url('./sign@2x.png') no-repeat;
       background-size: 100% 100%;
     }
+  }
+  .gray {
+    width: 100%;
+    height: 0.2rem;
+    padding: 0;
+    background: #f5f5f5;
   }
 }
 </style>

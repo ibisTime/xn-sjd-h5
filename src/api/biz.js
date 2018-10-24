@@ -88,7 +88,16 @@ export function recognizeOrder (data) {
   });
 }
 
-// 获取消息
+// 获取消息(分页查）
+export function getMessagePage (data) {
+  return fetch(805305, {
+    start: 1,
+    limit: 20,
+    ...data
+  });
+}
+
+// 获取消息（列表查）
 export function getMessage (data) {
   return fetch(805306, {
     ...data
@@ -422,6 +431,13 @@ export function getMaintainRecordsDetail(data) {
 // 列表查询道具使用记录
 export function getPropsUsedRecordList(data) {
   return fetch(629527, {
+    ...data
+  });
+}
+
+// 列表查询快报
+export function getBulletinList(data) {
+  return fetch(805308, {
     ...data
   });
 }

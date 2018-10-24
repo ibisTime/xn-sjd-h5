@@ -78,6 +78,7 @@
         let userId = getCookie('userId');
         this.loading = true;
         if(this.type) {
+          // 非集体下单
           placeOrder({
             productCode: this.proCode,
             specsCode: this.specsCode,
