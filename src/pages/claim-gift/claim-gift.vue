@@ -1,5 +1,5 @@
 <template>
-  <div class="home-wrapper" :style="{ bottom: wait ? '0.98rem' : '0' }">
+  <div class="home-wrapper" :style="{ bottom: giftDetail.status === '0' ? '0.98rem' : '0' }">
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
         <div class="slider-wrapper">
@@ -44,7 +44,7 @@
       </div>
       </Scroll>
     </div>
-    <div class="footer" v-show="wait">
+    <div class="footer" v-show="giftDetail.status === '0'">
       <button @click="go('/gift-address2?code=' + code)">认领礼物</button>
     </div>
     <toast ref="toast" :text="text"></toast>
@@ -119,11 +119,13 @@ export default {
       }).then((res) => {
         this.giftDetail = res;
         this.descriptionDetail = res.description;
-        if(this.giftDetail.status === '1') {
-          this.already = true;
+        if(this.giftDetail.status === '0') {
           setTitle('认领礼物');
         } else {
           setTitle('礼物详情');
+        }
+        if(this.giftDetail.status === '1') {
+          this.already = true;
         }
       }).catch(() => {});
     },
@@ -195,6 +197,7 @@ export default {
     left: 0;
     right: 0;
     overflow: auto;
+    background: #fff;
     .slider-wrapper {
       background: $color-highlight-background;
     }

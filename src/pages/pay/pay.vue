@@ -3,6 +3,10 @@
     <div class="bg">
       <!--<m-header class="cate-header" title="支付订单"></m-header>-->
       <div class="content">
+        <div class="identifyCode" v-show="identifyCode">
+          下单识别码：{{identifyCode}}
+          <span>(可在订单页面查看)</span>
+        </div>
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
@@ -65,7 +69,7 @@
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import { getCookie } from 'common/js/cookie';
   import { formatAmount, setTitle } from 'common/js/util';
-  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount } from 'api/biz';
+  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore } from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { getSystemConfigPage } from 'api/general';
 
@@ -82,7 +86,8 @@
         amount: 0,
         rate: 0,
         inputText: '',
-        sysConfig: []
+        sysConfig: [],
+        identifyCode: ''
       };
     },
     mounted() {
@@ -99,10 +104,11 @@
           getAccount({
             userId: userId
           }),
-          getDeductibleAmount(this.orderCode),
+          getOrganizeOrderScore(this.orderCode),
           getUserDetail({userId: userId}),
           this.getConfig()
         ]).then(([res1, res2, res3, res4]) => {
+          this.identifyCode = res1.identifyCode;
           this.amount = res1.amount;
           this.rate = res3;
           res2.list.map((item) => {
@@ -299,8 +305,14 @@
           padding: 0 0.3rem;
           background: #ffffff;
         }
+        .identifyCode {
+          font-size: 0.3rem;
+          line-height: 1.1rem;
+          border-bottom: 1px solid $color-border;
+          /*padding-bottom: 0.2rem;*/
+        }
         .pay-type {
-          padding-top: 0.5rem;
+          padding-top: 0.2rem;
           p {
             font-size: 0.3rem;
             margin-bottom: 0.2rem;

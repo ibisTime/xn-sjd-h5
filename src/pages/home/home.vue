@@ -161,7 +161,7 @@ export default {
           location: '1',
           orderDir: 'asc',
           orderColumn: 'order_no',
-          status: '4'
+          statusList: [4, 5]
         }),
         getProductType({
           orderDir: 'asc',

@@ -89,7 +89,7 @@
         fetching: false,
         fetchText: '',
         categorysStatus: [{key: 'all', value: '全部'}],
-        categorysSell: [{key: 'all', value: '全部'}],
+        categorysSell: [],
         currentIndex: +this.$route.query.index || 0,
         text: '',
         inputText: '',
@@ -102,6 +102,7 @@
       setTitle('我的订单');
       this.first = true;
       this.userId = getCookie('userId');
+      this.type = 1;
       if(this.userId) {
         this.getInitData();
       } else {
@@ -199,7 +200,7 @@
       },
       goDetail(item) {
         this.setCurrentOrder(item);
-        this.$router.push(`/my-order/order-detail?code=${item.code}`);
+        this.$router.push(`/my-order/order-detail?code=${item.code}&type=${item.product.sellType}`);
       },
       payOrder(item) {
         this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
@@ -231,7 +232,7 @@
       selectCategorySell(index) {
         this.currentIndexSell = index;
         this.$refs.scroll.scrollTo(0, 0);
-        this.type = index;
+        this.type = this.categorysSell[index].key;
         this.first = false;
         // 清除缓存的订单列表数据
         this.setOrderList({});

@@ -87,7 +87,7 @@
           <img class="diamonds right-item" @click="sub" src="./sub@2x.png">
         </div>
       </div>
-      <div class="other" v-show="detail.sellType === '4'">
+      <div class="other" v-show="showIdentifyCode()">
         <span>下单识别码</span>
         <input type="text" v-model="identifyCode">
       </div>
@@ -202,7 +202,17 @@ export default {
         this.noAdoptReason = '您不是该产品定向的用户';
         return false;
       }
+      if(this.detail.sellType === '4' && this.detail.raiseCount === this.detail.nowCount) {
+        // 销售类型为集体且未到认养量
+        this.noAdoptReason = '已被认养';
+        return false;
+      }
       return true;
+    },
+    // 是否展示识别码
+    showIdentifyCode() {
+      // 集体捐赠且非第一人下单
+      return this.detail.sellType === '4' && this.detail.nowCount !== 0;
     },
     confirm() {
       if(this.userId) {
@@ -215,7 +225,13 @@ export default {
         } else {
           // 集体认养
           let identifyCode = this.identifyCode || '';
-          this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&identifyCode=' + identifyCode);
+          if(this.detail.identifyCode && identifyCode !== this.detail.identifyCode) {
+            // 非第一人下单，识别码错误
+            this.text = '识别码错误';
+            this.$refs.toast.show();
+          } else {
+            this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&identifyCode=' + identifyCode);
+          }
         }
       } else {
         this.text = '您未登录';

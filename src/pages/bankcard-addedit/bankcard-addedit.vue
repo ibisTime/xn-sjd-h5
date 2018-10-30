@@ -37,18 +37,18 @@
           <span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>
         </div>
       </div>
-      <div class="form-item border-bottom-1px">
-        <div class="item-label">身份证</div>
-        <div class="item-input-wrapper">
-          <input type="text" class="item-input" v-model="idCard" v-validate="'required|idCard'" name="idCard" placeholder="持卡人身份证号">
-          <span v-show="errors.has('idCard')" class="error-tip">{{errors.first('idCard')}}</span>
-        </div>
-      </div>
+      <!--<div class="form-item border-bottom-1px">-->
+        <!--<div class="item-label">身份证</div>-->
+        <!--<div class="item-input-wrapper">-->
+          <!--<input type="text" class="item-input" v-model="idCard" v-validate="'required|idCard'" name="idCard" placeholder="持卡人身份证号">-->
+          <!--<span v-show="errors.has('idCard')" class="error-tip">{{errors.first('idCard')}}</span>-->
+        <!--</div>-->
+      <!--</div>-->
       <div class="form-item border-bottom-1px">
         <div class="item-label">手机号</div>
         <div class="item-input-wrapper">
-          <input type="tel" class="item-input" v-model="mobile" v-validate="'required|mobile'" name="mobile" placeholder="银行预留手机号">
-          <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+          <input type="tel" class="item-input" v-model="bankcardDetail.bindMobile" v-validate="'required|mobile'" name="bindMobile" placeholder="银行预留手机号">
+          <span v-show="errors.has('bindMobile')" class="error-tip">{{errors.first('bindMobile')}}</span>
         </div>
       </div>
       <div class="form-item border-bottom-1px">
@@ -74,7 +74,9 @@
   import Toast from 'base/toast/toast';
   import MHeader from 'components/m-header/m-header';
   import {sendCaptcha} from 'api/general';
+  import { getUserDetail } from 'api/user';
   import { setTitle } from 'common/js/util';
+  import { getCookie } from 'common/js/cookie';
 
   export default {
     data() {
@@ -91,15 +93,19 @@
         bindMobile: '',
         text: '新增成功',
         captBtnText: '获取验证码',
-        idCard: '',
-        mobile: '',
+        // idCard: '',
         captcha: '',
         sending: false,
         userBackCode: '802020',
         backCodeName: [],
         isEdit: false,
         code: '',
-        bankcardDetail: {bankcardNumber: '', bankName: '', realName: ''}
+        bankcardDetail: {bankcardNumber: '', bankName: '', realName: '', bindMobile: ''},
+        userDetail: {
+          realName: '',
+          // idCard: '',
+          mobile: ''
+        }
       };
     },
     created() {
@@ -113,19 +119,28 @@
       } else {
         // 新增银行卡
         setTitle('添加银行卡');
+        let userId = getCookie('userId');
+        getUserDetail({userId: userId}).then((res) => {
+          this.userDetail = res;
+          this.bankcardDetail.realName = this.userDetail.realName;
+          // this.idCard = this.userDetail.idNo;
+          this.bankcardDetail.bindMobile = this.userDetail.mobile;
+        });
       }
       this._getBankCodeList();
+    },
+    mounted() {
     },
     methods: {
       // 发送验证码
       sendCaptcha() {
-        this.$validator.validate('mobile').then((res) => {
+        this.$validator.validate('bindMobile').then((res) => {
           if(res) {
             this.sending = true;
             this.loading = true;
             sendCaptcha({
               bizType: this.userBackCode,     // 接口号要换
-              mobile: this.mobile
+              mobile: this.bankcardDetail.bindMobile
             }).then(() => {
               this.loading = false;
               this._setInterval();
@@ -237,7 +252,7 @@
               bankCode: setBackCode[0].bankCode,
               bankName: this.bankcardDetail.bankName,
               subbranch: this.subbranch,
-              bindMobile: this.bindMobile,
+              bindMobile: this.bankcardDetail.bindMobile,
               realName: this.bankcardDetail.realName,
               smsCaptcha: this.captcha
             };

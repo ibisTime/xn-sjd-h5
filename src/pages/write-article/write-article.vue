@@ -15,7 +15,7 @@
               </div>
             </div>
             <div class="avatar">
-              <img :src="formatImg(item.key)" v-for="item in photos" class="avatar-photos"/>
+              <img :src="formatImg(item.key)" v-for="(item, index) in photos" class="avatar-photos" ref="myImg" @click="choseItem(index)"/>
               <qiniu
                 ref="qiniu"
                 style="visibility: hidden;position: absolute;"
@@ -59,6 +59,13 @@
     </div>
     <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
+    <photo-edit ref="photoEdit"
+                :url="curUrl"
+                :imgKey="curKey"
+                :type="curType"
+                @beMain="beMainPhoto"
+                @updateImg="updateImg"
+                @deleteImg="deleteImg"></photo-edit>
   </div>
 </template>
 <script>
@@ -72,6 +79,7 @@
   import {formatImg, getImgData} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import { getListUserTree, addArticle } from 'api/biz';
+  import PhotoEdit from 'components/photo-edit/photo-edit';
 
   export default {
     data() {
@@ -88,7 +96,8 @@
         uploadUrl: '',
         multiple: false,
         photos: [],
-        list: [] // 认养权列表
+        list: [], // 认养权列表
+        currentItem: null
       };
     },
     mounted() {
@@ -177,6 +186,64 @@
         });
       },
       /**
+       * 选中要操作的图片
+       * */
+      choseItem(index) {
+        let item = this.photos[index];
+        console.log(item);
+        if (!item.ok) {
+          this.text = '图片还未上传完成';
+          this.$refs.toast.show();
+          return;
+        }
+        this.currentItem = item;
+        console.log(this.currentItem);
+        this.$refs.photoEdit.show();
+      },
+      /**
+       * 设置为封面
+       * */
+      beMainPhoto(key) {
+        let index = this.photos.findIndex(photo => {
+          return photo.key === key;
+        });
+        let item = this.photos[index];
+        this.photos.splice(index, 1);
+        this.photos.unshift(item);
+      },
+      /**
+       * 更新裁剪后的图片
+       * */
+      updateImg(base64, key) {
+        let index = this.photos.findIndex(photo => {
+          return photo.key === key;
+        });
+        let item = this.photos[index];
+        item.ok = false;
+        item.preview = base64;
+        this.photos.splice(index, 1, item);
+        this.currentItem = item;
+        this.uploadPhoto(base64, key).then(() => {
+          // 再次获取当前图片的位置，防止在上传过程中有其它图片被删除，导致下标改变
+          index = this.photos.findIndex(photo => {
+            return photo.key === key;
+          });
+          item = this.photos[index];
+          item.ok = true;
+          this.photos.splice(index, 1, item);
+          this.currentItem = item;
+        });
+      },
+      /**
+       * 在弹出的图片操作页面中删除图片
+       * */
+      deleteImg(key) {
+        let index = this.photos.findIndex(photo => {
+          return photo.key === key;
+        });
+        this.deletePhoto(index);
+      },
+      /**
        * 从相册中选择图片
        * */
       fileChange(e) {
@@ -230,6 +297,9 @@
           }
         }
       },
+      deletePhoto(index) {
+        this.photos.splice(index, 1);
+      },
       uploadPhoto(base64, key) {
         return this.$refs.qiniu.uploadByBase64(base64, key);
       },
@@ -242,12 +312,30 @@
         this.$refs.toast.show();
       }
     },
+    computed: {
+      photoCls() {
+        return this.photos.length ? '' : 'no-photo';
+      },
+      curUrl() {
+        // return this.currentItem ? this.currentItem.preview : '';
+        console.log(this.currentItem);
+        console.log(this.currentItem ? formatImg(this.currentItem.key) : '');
+        return this.currentItem ? formatImg(this.currentItem.key) : '';
+      },
+      curKey() {
+        return this.currentItem ? this.currentItem.key : '';
+      },
+      curType() {
+        return this.currentItem ? this.currentItem.type : '';
+      }
+    },
     components: {
       Scroll,
       MHeader,
       Qiniu,
       FullLoading,
-      Toast
+      Toast,
+      PhotoEdit
     }
   };
 </script>

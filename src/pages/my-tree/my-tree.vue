@@ -403,7 +403,8 @@ export default {
   },
   methods: {
     formatImg(img) {
-      return formatImg(img);
+      // return formatImg(img);
+      return img ? formatImg(img) : defaltAvatarImg;
     },
     getName(item) {
       if(item.userInfo.userId === this.currentHolder) {

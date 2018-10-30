@@ -5,8 +5,8 @@
       <img :src="url"/>
       <div class="bottom">
         <span class="delete" @click="del">删除</span>
-        <span class="edit" @click="edit">编辑</span>
-        <span class="chose" @click="chose">设为封面</span>
+        <!--<span class="edit" @click="edit">编辑</span>-->
+        <!--<span class="chose" @click="chose">设为封面</span>-->
       </div>
       <clip-img @choseImage="updateImg"
                 ref="clipImg"

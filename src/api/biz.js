@@ -5,7 +5,7 @@ import {getUserId} from 'common/js/util';
 export function getProductPage (data) {
   return fetch(629025, {
     start: 1,
-    limit: 5,
+    limit: 4,
     ...data
   });
 }
@@ -119,6 +119,7 @@ export function getMessageDetail (data) {
  * @param {string} type 订单类型（1个人/2定向/3捐赠/4集体）
  * */
 export function getPageOrders(start, limit, status, type) {
+  console.log(type === 4);
   let params = {
     start,
     limit,
@@ -132,10 +133,10 @@ export function getPageOrders(start, limit, status, type) {
     params.status = status;
   }
   // 集体订单
-  if (type === 4) {
+  if (type === '4') {
     bizCode = '629055';
   } else {
-    if (type !== 0) {
+    if (type !== '0') {
       params.type = type;
     }
     bizCode = '629045';
@@ -157,6 +158,15 @@ export function getOrganizeOrderDetail (data) {
   });
 }
 
+/**
+ * 获取当前集体订单积分抵扣金额
+ * @param {string} code 订单编号
+ * */
+export function getOrganizeOrderScore(code) {
+  return fetch(629058, {
+    code
+  });
+}
 /**
  * 列表查询认养权/列表查询用户的树
  * @params {string} status 状态(1待认养2认养中3已到期)

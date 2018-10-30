@@ -1,49 +1,54 @@
 <template>
   <div class="adopt-list-wrapper">
-    <div class="status" v-show="detail.status === '4'">
-      <img src="./overdue@1.5x.png" class="icon">
-      <p class="status-text">订单已过期</p>
-    </div>
-    <div class="gray" v-show="detail.status === '4'"></div>
-    <div class="order-list">
+    <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/product-detail?code='+detail.productCode)">
-          <div class="top">
-            <span class="item-code">{{detail.code}}</span>
-            <span class="item-status">{{formatStatus(detail.status)}}</span>
-          </div>
-          <div class="info">
-            <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
-            <div class="text">
-              <p class="title"><span class="title-title">{{detail.product.name}}</span><span class="title-number" v-show="detail.status === '3' || detail.status === '4'">x{{detail.adoptOrderTreeList.length}}</span></p>
-              <p class="position">{{detail.product.province}} {{detail.product.city}} {{detail.product.area}}</p>
-              <div class="props"><span class="duration">年限：{{detail.adoptYear}}</span><span class="price" v-show="!detail.jfDeductAmount">¥{{formatAmount(detail.price)}}</span><span class="price" v-show="detail.jfDeductAmount">¥{{formatAmount(detail.payAmount)}}+{{formatAmount(detail.jfDeductAmount)}}积分</span></div>
-            </div>
-          </div>
-          <div class="gray"></div>
+        <div class="status" v-show="detail.status === '4'">
+          <img src="./overdue@1.5x.png" class="icon">
+          <p class="status-text">订单已过期</p>
         </div>
-        <div class="treeList" v-show="detail.status === '3'">
-          <div class="top">
-            <span class="item-code">树木列表</span>
-          </div>
-          <div class="info" v-for="(item, index) in detail.treeList" @click="goTree(index)">
-            <div class="imgWrap" :style="getImgSyl(item.pic)"></div>
-            <div class="text">
-              <p class="title"><span class="title-title">{{item.treeNumber}}</span><span class="title-number">x1</span></p>
-              <div class="props"><span class="duration">树龄：{{item.age}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
+        <div class="gray" v-show="detail.status === '4'"></div>
+        <div class="order-list">
+          <!--<Scroll :pullUpLoad="pullUpLoad">-->
+            <div class="item" @click="go('/product-detail?code='+detail.productCode)">
+              <div class="top">
+                <span class="item-code">{{detail.code}}</span>
+                <span class="item-status">{{formatStatus(detail.status)}}</span>
+              </div>
+              <div class="info">
+                <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
+                <div class="text">
+                  <p class="title"><span class="title-title">{{detail.product.name}}</span><span class="title-number" v-show="detail.status === '3' || detail.status === '4'">x{{detail.adoptOrderTreeList.length}}</span></p>
+                  <p class="position">{{detail.product.province}} {{detail.product.city}} {{detail.product.area}}</p>
+                  <div class="props"><span class="duration">年限：{{detail.adoptYear}}</span><span class="price" v-show="!detail.jfDeductAmount">¥{{formatAmount(detail.price)}}</span><span class="price" v-show="detail.jfDeductAmount">¥{{formatAmount(detail.payAmount)}}+{{formatAmount(detail.jfDeductAmount)}}积分</span></div>
+                </div>
+              </div>
+              <div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}}</div>
+              <div class="gray"></div>
             </div>
-          </div>
-        </div>
-        <div class="gray" v-show="detail.status === '3'"></div>
-        <div class="duration">
-          <div class="duration-item"><span class="name">起始时间</span><span>{{formatDate(detail.startDatetime, 'yyyy-MM-dd')}}</span></div>
-          <div class="duration-item"><span class="name">终止时间</span><span>{{formatDate(detail.endDatetime, 'yyyy-MM-dd')}}</span></div>
+            <div class="treeList" v-show="detail.status === '3'">
+              <div class="top">
+                <span class="item-code">树木列表</span>
+              </div>
+              <div class="info" v-for="(item, index) in detail.treeList" @click="goTree(index)">
+                <div class="imgWrap" :style="getImgSyl(item.pic)"></div>
+                <div class="text">
+                  <p class="title"><span class="title-title">{{item.treeNumber}}</span><span class="title-number">x1</span></p>
+                  <div class="props"><span class="duration">树龄：{{item.age}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="gray" v-show="detail.status === '3'"></div>
+            <div class="duration">
+              <div class="duration-item"><span class="name">起始时间</span><span>{{formatDate(detail.startDatetime, 'yyyy-MM-dd')}}</span></div>
+              <div class="duration-item"><span class="name">终止时间</span><span>{{formatDate(detail.endDatetime, 'yyyy-MM-dd')}}</span></div>
+            </div>
+          <!--</Scroll>-->
         </div>
       </Scroll>
-    </div>
-    <div class="btns" v-show="showBtns(detail.status)">
-      <div class="btn cancel" v-show="showCancelBtn(detail.status)" @click="_cancelOrder(detail)">取消订单</div>
-      <div class="btn" v-show="showPayBtn(detail.status)" @click="payOrder(detail)">立即支付</div>
+      <div class="btns" v-show="showBtns(detail.status)">
+        <div class="btn cancel" v-show="showCancelBtn(detail.status)" @click="_cancelOrder(detail)">取消订单</div>
+        <div class="btn" v-show="showPayBtn(detail.status)" @click="payOrder(detail)">立即支付</div>
+      </div>
     </div>
     <!--<div class="btns" v-show="detail.adoptOrderTreeList.length && detail.adoptOrderTreeList[0].status === '2'">-->
       <!--<div class="btn" @click="goTree">看看这棵树</div>-->
@@ -210,140 +215,152 @@
     .fr {
       float: right;
     }
-    .status {
-      padding: 0.56rem;
-      text-align: center;
-      left: 0;
-      .icon {
-        width: 0.96rem;
-        height: 0.96rem;
-        margin-bottom: 0.2rem;
-      }
-      .status-text {
-        font-family: 'PingFangSC-Semibold';
-        color: #2D2D2D;
-        font-size: $font-size-medium-x;
-        line-height: 0.42rem;
-      }
-    }
-    .gray {
-      width: 100%;
-      height: 0.2rem;
-      padding: 0;
-      background: #f5f5f5;
-    }
-    .top {
-      padding: 0.17rem 0.3rem;
-      font-size: $font-size-small;
-      line-height: 0.33rem;
-      color: #666;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid $color-border;
-      .item-status {
-        color: #FE5656;
-        line-height: 0.33rem;
-        display: inline;
-      }
-    }
-    .info {
-      display: flex;
-      font-size: 0;
-      padding: 0.3rem;
-      .imgWrap {
-        width: 1.5rem;
-        height: 1.5rem;
-        flex: 0 0 1.5rem;
-        margin-right: 0.2rem;
-        border-radius: 0.08rem;
-        position: relative;
-        overflow: hidden;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-      }
-      .text {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        .title {
-          font-size: 0.3rem;
-          line-height: 0.42rem;
-          margin-bottom: 0.17rem;
-          display: flex;
-          justify-content: space-between;
-          flex: 1;
-        }
-        .position {
-          font-size: 0.24rem;
-          line-height: 0.33rem;
-          color: #999;
-          margin-bottom: 0.25rem;
-        }
-        .props {
-          font-size: $font-size-small;
-          line-height: 0.33rem;
-          color: #999;
-          display: flex;
-          justify-content: space-between;
-          .duration {
-
-          }
-          .price {
-            font-family: DIN-Bold;
-            font-size: $font-size-medium-x;
-            color: #151515;
-          }
-        }
-      }
-    }
-    .order-list {
-      background: $color-highlight-background;
-      .item {
-        width: 100%;
-        font-size: $font-size-medium-x;
-        line-height: 1.1rem;
-        border-bottom: 1px solid #eee;
-      }
-      .treeList {
-        .info {
-          border-bottom: 1px solid $color-border;
-        }
-      }
-    }
-    .btns {
-      display: flex;
+    .content {
       position: absolute;
+      top: 0;
       bottom: 0;
       left: 0;
-      width: 100%;
-      height: 0.98rem;
-      line-height: 0.98rem;
-      font-size: $font-size-large-s;
-      color: #fff;
-      border-top: 1px solid $color-border;
-
-      .btn {
-        flex: 1;
+      right: 0;
+      overflow: auto;
+      .status {
+        padding: 0.56rem;
         text-align: center;
-        background-color: $primary-color;
-
-        &.cancel {
-          color: $color-text;
-          background: #fff;
+        left: 0;
+        .icon {
+          width: 0.96rem;
+          height: 0.96rem;
+          margin-bottom: 0.2rem;
+        }
+        .status-text {
+          font-family: 'PingFangSC-Semibold';
+          color: #2D2D2D;
+          font-size: $font-size-medium-x;
+          line-height: 0.42rem;
         }
       }
-    }
-    .duration {
-      font-size: $font-size-medium-s;
-      line-height: 0.37rem;
-      font-family: 'PingFangSC-Medium';
-      .duration-item {
-        padding: 0.37rem 0.3rem;
+      .gray {
+        width: 100%;
+        height: 0.2rem;
+        padding: 0;
+        background: #f5f5f5;
+      }
+      .top {
+        padding: 0.17rem 0.3rem;
+        font-size: $font-size-small;
+        line-height: 0.33rem;
+        color: #666;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         border-bottom: 1px solid $color-border;
-        .name {
-          margin-right: 0.76rem;
+        .item-status {
+          color: #FE5656;
+          line-height: 0.33rem;
+          display: inline;
+        }
+      }
+      .info {
+        display: flex;
+        font-size: 0;
+        padding: 0.3rem;
+        .imgWrap {
+          width: 1.5rem;
+          height: 1.5rem;
+          flex: 0 0 1.5rem;
+          margin-right: 0.2rem;
+          border-radius: 0.08rem;
+          position: relative;
+          overflow: hidden;
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: cover;
+        }
+        .text {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          .title {
+            font-size: 0.3rem;
+            line-height: 0.42rem;
+            margin-bottom: 0.17rem;
+            display: flex;
+            justify-content: space-between;
+            flex: 1;
+          }
+          .position {
+            font-size: 0.24rem;
+            line-height: 0.33rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+          }
+          .props {
+            font-size: $font-size-small;
+            line-height: 0.33rem;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+            .duration {
+
+            }
+            .price {
+              font-family: DIN-Bold;
+              font-size: $font-size-medium-x;
+              color: #151515;
+            }
+          }
+        }
+      }
+      .identifyCode {
+        border-top: 1px solid $color-border;
+        padding: 0 0.3rem;
+      }
+      .order-list {
+        background: $color-highlight-background;
+        .item {
+          width: 100%;
+          font-size: $font-size-medium-x;
+          line-height: 1.1rem;
+          border-bottom: 1px solid #eee;
+        }
+        .treeList {
+          .info {
+            border-bottom: 1px solid $color-border;
+          }
+        }
+      }
+      .btns {
+        display: flex;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0.98rem;
+        line-height: 0.98rem;
+        font-size: $font-size-large-s;
+        color: #fff;
+        border-top: 1px solid $color-border;
+
+        .btn {
+          flex: 1;
+          text-align: center;
+          background-color: $primary-color;
+
+          &.cancel {
+            color: $color-text;
+            background: #fff;
+          }
+        }
+      }
+      .duration {
+        font-size: $font-size-medium-s;
+        line-height: 0.37rem;
+        font-family: 'PingFangSC-Medium';
+        .duration-item {
+          padding: 0.37rem 0.3rem;
+          border-bottom: 1px solid $color-border;
+          .name {
+            margin-right: 0.76rem;
+          }
         }
       }
     }

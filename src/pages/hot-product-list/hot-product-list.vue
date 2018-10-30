@@ -14,7 +14,9 @@
         <!--<div class="title">恭喜Bluce，成功参加See的传承认养</div>-->
       <!--</div>-->
       <div class="hot" v-show="proList.length">
-        <Scroll :pullUpLoad="pullUpLoad">
+        <Scroll :data="proList"
+                :hasMore="hasMore"
+                @pullingUp="getPageOrders">
         <div class="proList">
           <div class="item" @click="go('/hot-product-list/product-detail?code='+item.code)" v-for="item in proList">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
@@ -100,7 +102,7 @@ export default {
     },
     canAdopt(item) {
       // 专属产品
-      if(item.sellType === '1') {
+      if(item.sellType === '1' || item.sellType === '4') {
         // 销售类型为专属且未到认养量
         if(item.raiseCount === item.nowCount) {
           return '已被认养';
@@ -199,8 +201,10 @@ export default {
           // sellType: sellType,
           parentCategoryCode: this.parentCategoryCode,
           categoryCode: this.selectdType,
-          status: '4',
-          location: '1'
+          statusList: [4, 5],
+          location: '1',
+          orderDir: 'asc',
+          orderColumn: 'order_no'
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {

@@ -241,7 +241,8 @@
     },
     methods: {
       formatImg(img) {
-        return formatImg(img);
+        // return formatImg(img);
+        return img ? formatImg(img) : defaltAvatarImg;
       },
       getName(item) {
         if(item.userInfo.userId === this.currentHolder) {
@@ -288,15 +289,6 @@
             }
           }
         }
-        // if(item.adoptUserInfo.userId === getUserId()) {
-        //   return '我';
-        // } else {
-        //   if(item.adoptUserInfo.nickname) {
-        //     return item.adoptUserInfo.nickname;
-        //   } else {
-        //     return this.jiami(item.adoptUserInfo.mobile);
-        //   }
-        // }
       },
       getInitData() {
         this.currentHolder = this.$route.query.currentHolder || getUserId();
@@ -408,7 +400,7 @@
         return getListUserTree(this.params).then((userTree) => {
           this.userTree = userTree;
           this.loading = false;
-        }, () => { this.loading = true; });
+        }, () => { this.loading = false; });
       },
       getImgSyl(imgs) {
         let img = imgs ? formatImg(imgs) : defaltAvatarImg;

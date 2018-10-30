@@ -150,7 +150,7 @@
       }
     },
     beforeDestroy() {
-      this.slider.disable();
+      // this.$refs.slider.disable();
       clearTimeout(this.timer);
     },
     deactivated() {

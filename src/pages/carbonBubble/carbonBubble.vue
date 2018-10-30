@@ -1,5 +1,5 @@
 <template>
-  <div class="me-wrapper full-screen-wrapper">
+  <div class="me-wrapper">
     <div class="bg">
       <m-header class="cate-header" title="我的碳泡泡" actText="碳泡泡规则" @action="action"></m-header>
       <div class="content">
@@ -143,9 +143,10 @@
           background: #fff;
           position: fixed;
           top: 0.88rem;
-          left: 0.3rem;
-          right: 0.3rem;
+          left: 0;
+          right: 0;
           bottom: 0;
+          padding: 0 0.3rem;
           .card {
             height: 2.8rem;
             border-radius: 0.12rem;
@@ -171,8 +172,8 @@
             position: absolute;
             top: 3.05rem;
             bottom: 0;
-            left: 0;
-            right: 0;
+            left: 0.3rem;
+            right: 0.3rem;
             overflow: auto;
             .money-item {
               display: flex;
