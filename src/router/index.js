@@ -1,6 +1,20 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
+// const router = new Router({});
+//
+// router.beforeEach(function (to, from, next) {
+//   const agent = navigator.userAgent;
+//   const isiOS = !!agent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);// ios终端
+//   // console.log(to.path + ' == ' + location.pathname)
+//   if (isiOS && ('/product-detail' + to.path !== location.pathname) && location.pathname.length < 50) {
+//     location.assign('/product-detail' + to.fullPath);
+//   } else {
+//     next();
+//   }
+// });
+
+// /
 Vue.use(Router);
 
 // 登录页
@@ -309,6 +323,10 @@ export default new Router({
           ]
         }
       ]
+    },
+    {
+      path: '/maintain-detail',
+      component: MaintainDetail
     },
     {
       path: '/strategy',

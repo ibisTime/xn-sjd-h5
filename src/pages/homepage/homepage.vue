@@ -53,7 +53,8 @@
           <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
             <div class="item" v-for="item in userTree">
               <div class="tree-info" @click="goMyTree(item)">
-                <p class="tree-name">{{item.tree.scientificName}}-{{item.treeNumber}}</p>
+                <p class="tree-name" v-show="item.tree.sellType !== '3'">{{item.tree.scientificName}}-{{item.treeNumber}}</p>
+                <p class="tree-name" v-show="item.tree.sellType === '3'">{{item.tree.scientificName}}-{{item.treeNumber}}-{{item.specsName}}</p>
                 <p class="tree-about"></p>
               </div>
               <div class="map" @click="go('/map?code=' + item.code)">

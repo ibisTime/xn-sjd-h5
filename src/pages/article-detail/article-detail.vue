@@ -4,6 +4,10 @@
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
         <div class="title">{{detail.title}}</div>
+        <div class="author-connect">
+          <span class="author">作者：{{detail.publishUserName}}</span>
+          <span class="connect"><span @click="goTree()">关联古树：{{detail.treeName}}</span><img src="./more.png" v-show="detail.adoptTreeCode"></span>
+        </div>
         <p class="prop"><span class="date">{{formatDate(detail.publishDatetime)}}</span></p>
         <div class="context" ref="description">
           <div class="context-content">
@@ -27,18 +31,23 @@
       <!--</div>-->
     <!--</div>-->
     <full-loading v-show="loading"></full-loading>
+    <toast ref="toast" :text="text"></toast>
   </div>
 </template>
 <script>
+  import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
   import { getArticleDetail } from 'api/biz';
-  import { setTitle, formatDate, formatImg } from 'common/js/util';
+  import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
+  import {initShare} from 'common/js/weixin';
+  // import Logo from './logo-64.png';
 
   export default {
     data() {
       return {
+        text: '',
         loading: false,
         pullUpLoad: null,
         collectFlag: false,
@@ -50,14 +59,19 @@
     },
     mounted() {
       setTitle('文章详情');
-      let code = this.$route.query.code;
+      this.isWxConfiging = false;
+      this.wxData = null;
+      this.code = this.$route.query.code;
       this.loading = true;
       getArticleDetail({
-        code: code
+        code: this.code
       }).then((res) => {
         this.detail = res;
         this.detail.photolist = this.detail.photo.split('||');
         this.contextList = this.detail.content.split(/\n/);
+        if(!this.isWxConfiging && !this.wxData) {
+          this.getInitWXSDKConfig();
+        }
         this.loading = false;
       }).catch(() => { this.loading = false; });
     },
@@ -70,6 +84,18 @@
       },
       go(url) {
         this.$router.push(url);
+      },
+      goTree() {
+        if(this.detail.adoptOrderTree.status === '2') {
+          if(this.detail.adoptOrderTree.currentHolder === getUserId()) {
+            this.go(`/my-tree?aTCode=${this.detail.adoptTreeCode}`);
+          } else {
+            this.go(`/my-tree?other=1&currentHolder=${this.detail.adoptOrderTree.currentHolder}&aTCode=${this.detail.adoptTreeCode}`);
+          }
+        } else {
+          this.text = '该认养已过期';
+          this.$refs.toast.show();
+        }
       },
       collect() {
         // 调接口收藏
@@ -100,6 +126,28 @@
             };
           }
         }, 20);
+      },
+      getInitWXSDKConfig() {
+        this.loading = true;
+        console.log(formatImg(this.detail.photo.split('||')[0]));
+        initShare({
+          title: '氧林',
+          desc: this.detail.title,
+          // link: location.href.split('#')[0],
+          // link: location.origin + '/#' + location.href.split('#')[1],
+          // link: location.origin + '/#/product-detail?code=' + this.code,
+          link: location.href.split('#')[0] + '/#/emotion-channel/article-detail?code=' + this.code,
+          imgUrl: formatImg(this.detail.photo.split('||')[0])
+        }, (data) => {
+          this.isWxConfiging = false;
+          this.wxData = data;
+          this.loading = false;
+        }, (msg) => {
+          alert(msg);
+          this.isWxConfiging = false;
+          this.wxData = null;
+          this.loading = false;
+        });
       }
     },
     watch: {
@@ -108,6 +156,7 @@
       }
     },
     components: {
+      Toast,
       Scroll,
       MHeader,
       FullLoading
@@ -141,6 +190,27 @@
         font-size: 0.4rem;
         line-height: 0.56rem;
         margin-bottom: 0.4rem;
+      }
+      .author-connect {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.22rem;
+        span {
+          font-size: 0.26rem;
+        }
+        .author {
+          color: #666;
+        }
+        .connect {
+          color: $primary-color;
+          display: flex;
+          align-items: center;
+          img {
+            height: 0.24rem;
+            margin-left: 0.05rem;
+          }
+        }
       }
       .prop {
         font-size: $font-size-small;

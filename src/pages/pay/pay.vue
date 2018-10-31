@@ -46,7 +46,7 @@
           </div>
         </div>
         <div class="score-rules">
-          <p>积分抵扣规则：</p>
+          <p>规则：</p>
           <p v-for="(item, index) in sysConfig">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
           <!--<p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>-->
           <!--<p>3.T+{{qxDay}}到账</p>-->
@@ -93,6 +93,7 @@
     mounted() {
       setTitle('支付订单');
       this.orderCode = this.$route.query.orderCode || '';
+      this.type = this.$route.query.type;
       let userId = getCookie('userId');
       this.loading = true;
       if(this.orderCode[0] === 'G') {
@@ -246,7 +247,7 @@
         this.text = '支付成功';
         this.$refs.toast.show();
         setTimeout(() => {
-          this.$router.push('/my-order');
+          this.$router.push(`/my-order?type=${this.type}`);
         }, 1000);
       },
       // 输入支付密码后点击确定执行的方法

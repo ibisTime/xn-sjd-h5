@@ -5,7 +5,8 @@
       <img src="./close@2x.png" class="close" @click="close">
       <p class="title">{{propsDetail.name}}</p>
       <p class="tradition">{{propsDetail.description}}</p>
-      <p class="description">使用后保护碳泡泡<span>{{propsDetail.validityTerm}}</span>小时内不被收取</p>
+      <!--<p class="description">使用后保护碳泡泡<span>{{propsDetail.validityTerm}}</span>小时内不被收取</p>-->
+      <p class="description">{{propsDetail.description}}</p>
       <!--<p class="know-more">了解详情<img src="./more-green@2x.png"></p>-->
       <button class="convertBtn" @click="convertSuccess(propsDetail.code)">{{formatAmount(propsDetail.price)}}积分兑换</button>
     </div>

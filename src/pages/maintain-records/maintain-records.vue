@@ -4,7 +4,7 @@
       <Scroll :data="mrList"
               :hasMore="hasMore"
               @pullingUp="getPageOrder">
-        <div class="item" @click="go('/maintain-detail?code=' + item.code)" v-for="item in mrList">
+        <div class="item" @click="go('/maintain-detail?code=' + item.code + '&aTCode=' + adoptTreeCode)" v-for="item in mrList">
           <img :src="formatImg(item.pics[0])">
           <div class="info">
             <p class="info-title">{{item.projectName}}</p>
@@ -31,12 +31,14 @@
         limit: 10,
         hasMore: true,
         treeNumber: '',
-        mrList: []
+        mrList: [],
+        adoptTreeCode: ''
       };
     },
     mounted() {
       setTitle('养护记录');
       this.treeNumber = this.$route.query.treeNumber;
+      this.adoptTreeCode = this.$route.query.aTCode; // 认养权编号
       this.getPageOrder();
     },
     methods: {

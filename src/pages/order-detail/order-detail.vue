@@ -12,7 +12,7 @@
             <div class="item" @click="go('/product-detail?code='+detail.productCode)">
               <div class="top">
                 <span class="item-code">{{detail.code}}</span>
-                <span class="item-status">{{formatStatus(detail.status)}}</span>
+                <span class="item-status">{{statusObj[detail.status]}}</span>
               </div>
               <div class="info">
                 <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
@@ -69,6 +69,7 @@
   import MHeader from 'components/m-header/m-header';
   import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
   import { getOrderDetail, getOrganizeOrderDetail, cancelOrder } from 'api/biz';
+  import { getDictList } from 'api/general';
   import defaultImg from './tree@3x.png';
 
   export default {
@@ -84,7 +85,8 @@
         pullUpLoad: null,
         detail: {product: {}, adoptOrderTreeList: {}},
         choosedIndex: 0,
-        code: ''   // 产品code
+        code: '',   // 产品code,
+        statusObj: {}
       };
     },
     methods: {
@@ -169,19 +171,27 @@
         Promise.all([
           getOrganizeOrderDetail({
             code: this.code
-          })
-        ]).then(([res1]) => {
+          }),
+          getDictList('group_adopt_order_status')
+        ]).then(([res1, res2]) => {
           this.loading = false;
           this.detail = res1;
+          res2.map((item) => {
+            this.statusObj[item.dkey] = item.dvalue;
+          });
         }).catch(() => { this.loading = false; });
       } else {
         Promise.all([
           getOrderDetail({
             code: this.code
-          })
-        ]).then(([res1]) => {
+          }),
+          getDictList('adopt_order_status')
+        ]).then(([res1, res2]) => {
           this.loading = false;
           this.detail = res1;
+          res2.map((item) => {
+            this.statusObj[item.dkey] = item.dvalue;
+          });
         }).catch(() => { this.loading = false; });
       }
     },

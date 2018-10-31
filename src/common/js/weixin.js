@@ -22,12 +22,12 @@ export function initShare(config, suc, err, isInitImage) {
       let result = /\?([^#]*)$/.exec(config.link);
       if (result) {
         if (result[1]) {
-          config.link = config.link + '&userReferee=' + getUserId();
+          config.link = config.link;
         } else {
-          config.link = config.link + 'userReferee=' + getUserId();
+          config.link = config.link;
         }
       } else {
-        config.link = config.link + '?userReferee=' + getUserId();
+        config.link = config.link;
       }
     } else {
       config.link.replace(/((?:\?|&)userReferee=)[^&$]+/, '$1' + getUserId());

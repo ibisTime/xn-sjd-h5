@@ -119,7 +119,6 @@ export function getMessageDetail (data) {
  * @param {string} type 订单类型（1个人/2定向/3捐赠/4集体）
  * */
 export function getPageOrders(start, limit, status, type) {
-  console.log(type === 4);
   let params = {
     start,
     limit,
@@ -210,6 +209,19 @@ export function getUserTreeDetail(code) {
  * */
 export function cancelOrder(code, remark) {
   return fetch(629041, {
+    code,
+    remark,
+    userId: getUserId()
+  });
+}
+
+/**
+ * 取消集体订单
+ * @param {string} code
+ * @param {string} remark
+ * */
+export function cancelGroupOrder(code, remark) {
+  return fetch(629052, {
     code,
     remark,
     userId: getUserId()

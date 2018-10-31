@@ -27,11 +27,12 @@
           </div>
         </div>
         <div class="emotion-article" @click="go('/emotion-channel')">
+          <img src="./emotion@2x.png">
           <div class="text">
             <p class="Chinese">优选推文，情感频道</p>
             <p class="English">Preferred tweets, emotional channels</p>
           </div>
-          <img src="./emotion@2x.png" class="emotion">
+          <!--<img src="./emotion@2x.png" class="emotion">-->
           <img src="./more@2x.png" class="more">
         </div>
         <!--<div class="bulletin" v-for="item in bulletinList">-->
@@ -50,7 +51,7 @@
         <div class="proList">
           <div class="item"  v-for="item in proList" @click="go('/product-detail?code='+item.code)">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-            <div class="sell-type-right">{{item.raiseCount === item.nowCount ? '已被认养' : '认养中'}}</div>
+            <div class="sell-type-right">{{canAdopt(item)}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
@@ -199,9 +200,56 @@ export default {
           this.sellTypeObj[item.dkey] = item.dvalue;
         });
       }).catch(() => { this.loading = false; });
+    },
+    canAdopt(item) {
+      // 专属产品
+      if(item.sellType === '1' || item.sellType === '4') {
+        // 销售类型为专属且未到认养量
+        if(item.raiseCount === item.nowCount) {
+          return '已被认养';
+        } else {
+          return '可认养';
+        }
+      }
+      // 定向产品
+      if(item.directType && item.directType === '1') {
+        // 等级定向且用户为该等级
+        if(item.directObject !== this.userDetail.level) {
+          return '不可认养';
+        } else {
+          return '可认养';
+        }
+      }
+      if(item.directType && item.directType === '2') {
+        // 用户定向且是定向用户
+        if(item.directObject !== this.userId) {
+          return '不可认养';
+        } else {
+          return '可认养';
+        }
+      }
+      // 捐赠产品
+      if(item.sellType === '3') {
+        let curTime = new Date();
+        // 2把字符串格式转换为日期类
+        let startTime = new Date(Date.parse(item.raiseStartDatetime));
+        let endTime = new Date(Date.parse(item.raiseEndDatetime));
+        // console.log(startTime);
+        // console.log(endTime);
+        // 3进行比较
+        // console.log(curTime >= startTime && curTime <= endTime);
+        if(curTime <= startTime || curTime >= endTime) {
+          return '不可认养';
+        } else {
+          return '可认养';
+        }
+      }
     }
   },
   mounted() {
+    if (this.$route.path === '/product-detail') {
+      return;
+    }
     setTitle('氧林');
     this.pullUpLoad = null;
     this.loading = true;
@@ -390,9 +438,8 @@ export default {
           line-height: $font-size-medium-x;
         }
       }
-      .emotion{
-        height: 100%;
-        margin-right: 0.3rem;
+      img {
+        width: 1.06rem;
       }
       .more{
         width: 0.3rem;

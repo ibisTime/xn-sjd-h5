@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="邀请好友" actText="分享" @action="action"></m-header>
+      <!--<m-header class="cate-header" title="邀请好友" actText="分享" @action="action"></m-header>-->
       <div class="content">
         <img :src="bgUrl">
         <div class="erweimaPic" id="qrcode"></div>
@@ -24,10 +24,12 @@
   const QRCode = require('js-qrcode');
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
-  import {setTitle, formatImg} from 'common/js/util';
+  import {setTitle, formatImg, getUserId} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
+  import {initShare} from 'common/js/weixin';
   import { getConfig } from 'api/general';
   import { getUserDetail } from 'api/user';
+  // import Logo from './logo-64.png';
 
   export default {
     data() {
@@ -43,7 +45,9 @@
     },
     mounted() {
       setTitle('邀请好友');
-      this.userId = getCookie('userId');
+      this.isWxConfiging = false;
+      this.wxData = null;
+      this.userId = getCookie('userId') || this.$route.query.userId;
       this.loading = true;
       Promise.all([
         getUserDetail({
@@ -67,6 +71,9 @@
           console.log(this.url);
           qr.make(this.url);
           this.bgUrl = formatImg(res2.cvalue);
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
           this.loading = false;
         }).catch(() => { this.loading = false; });
       });
@@ -78,7 +85,27 @@
       go(url) {
         this.$router.push(url);
       },
-      action() {}
+      getInitWXSDKConfig() {
+        this.loading = true;
+        initShare({
+          title: '氧林',
+          desc: '邀请好友',
+          // link: location.href.split('#')[0],
+          // link: location.origin + '/#' + location.href.split('#')[1],
+          // link: location.origin + '/#/product-detail?code=' + this.code,
+          link: location.href.split('#')[0] + '/#/invitation?userId=' + getUserId(),
+          imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300'
+        }, (data) => {
+          this.isWxConfiging = false;
+          this.wxData = data;
+          this.loading = false;
+        }, (msg) => {
+          alert(msg);
+          this.isWxConfiging = false;
+          this.wxData = null;
+          this.loading = false;
+        });
+      }
     },
     components: {
       MHeader,
@@ -101,7 +128,7 @@
       /*background-size: 100% 100%;*/
       text-align: center;
       position: fixed;
-      top: 0.88rem;
+      top: 0;
       left: 0;
       bottom: 0;
       width: 100%;

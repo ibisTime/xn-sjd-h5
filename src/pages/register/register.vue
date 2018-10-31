@@ -68,7 +68,7 @@
         pwd: '',
         rePwd: '',
         captBtnText: '获取验证码',
-        isChecked: false,
+        isChecked: true,
         captcha: '',
         sending: false,
         userReferee: '',

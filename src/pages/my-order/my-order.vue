@@ -42,7 +42,7 @@
               <div class="text">
                 <p class="title"><span class="title-title">{{item.product.name}}</span><span class="title-number" v-show="item.status === '3' || item.status === '4'">x{{item.quantity}}</span></p>
                 <p class="position">{{item.product.province}} {{item.product.city}} {{item.product.area}}</p>
-                <div class="props"><span class="duration">年限：{{item.adoptYear}}</span><span class="price" v-show="!item.jfDeductAmount">¥{{formatAmount(item.price)}}</span><span class="price" v-show="item.jfDeductAmount">¥{{formatAmount(item.payAmount)}}+{{formatAmount(item.jfDeductAmount)}}积分</span></div>
+                <div class="props"><span class="duration">规格：{{item.productSpecsName}}</span><span class="price" v-show="!item.jfDeductAmount">¥{{formatAmount(item.price)}}</span><span class="price" v-show="item.jfDeductAmount">¥{{formatAmount(item.payAmount)}}+{{formatAmount(item.jfDeductAmount)}}积分</span></div>
               </div>
             </div>
             <div class="clearfix btns" v-show="showBtns(item.status)">
@@ -63,7 +63,7 @@
   </div>
 </template>
 <script>
-  import {ORDER_STATUS} from 'common/js/dict';
+  // import {ORDER_STATUS} from 'common/js/dict';
   import CategoryScroll from 'base/category-scroll/category-scroll';
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
@@ -73,7 +73,7 @@
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import {mapGetters, mapMutations, mapActions} from 'vuex';
   import {SET_ORDER_LIST, SET_CURRENT_ORDER} from 'store/mutation-types';
-  import {getPageOrders, cancelOrder} from 'api/biz';
+  import {getPageOrders, cancelOrder, cancelGroupOrder} from 'api/biz';
   import { getDictList } from 'api/general';
   import {formatAmount, formatImg, setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
@@ -95,11 +95,15 @@
         inputText: '',
         toastText: '',
         sellTypeObj: {},
-        currentIndexSell: +this.$route.query.index || 0
+        currentIndexSell: +this.$route.query.index || 0,
+        statusObj: {},
+        groupStatusObj: {}
       };
     },
     mounted() {
       setTitle('我的订单');
+      // this.currentIndexSell = +this.$route.query.type;
+      // this.type = +this.$route.query.type;
       this.first = true;
       this.userId = getCookie('userId');
       this.type = 1;
@@ -117,31 +121,49 @@
     },
     computed: {
       currentList() {
-        let _curListObj = this.orderList[this.categorysStatus[this.currentIndex].key];
-        if (!_curListObj) {
-          _curListObj = {
-            start: 1,
-            limit: 10,
-            hasMore: true,
-            data: [],
-            key: this.categorysStatus[this.currentIndex].key,
-            type: this.type
-          };
+        if(this.categorysStatus[this.currentIndex]) {
+          let _curListObj = this.orderList[this.categorysStatus[this.currentIndex].key];
+          if (!_curListObj) {
+            _curListObj = {
+              start: 1,
+              limit: 10,
+              hasMore: true,
+              data: [],
+              key: this.categorysStatus[this.currentIndex].key,
+              type: this.type
+            };
+          }
+          return _curListObj;
         }
-        return _curListObj;
       },
       ...mapGetters(['orderList'])
     },
     methods: {
       getInitData() {
         this.getCategorysSell();
-        this.getCategorysStatus();
+        this.getCategorysStatus(0);
+        this.getStatus();
+        this.getGroupStatus();
         if (this.shouldGetData()) {
           this.first = false;
           // 清除缓存的订单列表数据
           this.setOrderList({});
           this.getPageOrders();
         }
+      },
+      getStatus() {
+        getDictList('adopt_order_status').then((res) => {
+          res.map((item) => {
+            this.statusObj[item.dkey] = item.dvalue;
+          });
+        });
+      },
+      getGroupStatus() {
+        getDictList('group_adopt_order_status').then((res) => {
+          res.map((item) => {
+            this.groupStatusObj[item.dkey] = item.dvalue;
+          });
+        });
       },
       shouldGetData() {
         if (this.$route.path === '/my-order') {
@@ -163,8 +185,14 @@
         }).catch(() => {});
       },
       // 获取状态分类
-      getCategorysStatus() {
-        getDictList('adopt_order_status').then((res) => {
+      getCategorysStatus(index) {
+        if(index === '4') {
+          this.dkey = 'group_adopt_order_status';
+        } else {
+          this.dkey = 'adopt_order_status';
+        }
+        this.categorysStatus = [{key: 'all', value: '全部'}];
+        getDictList(this.dkey).then((res) => {
           res.map((item) => {
             this.categorysStatus.push({
               key: item.dkey,
@@ -196,7 +224,12 @@
         return formatAmount(amount);
       },
       formatStatus(status) {
-        return ORDER_STATUS[status];
+        if(this.type === '4') {
+          return this.groupStatusObj[status];
+        } else {
+          return this.statusObj[status];
+        }
+        // return ORDER_STATUS[status];
       },
       goDetail(item) {
         this.setCurrentOrder(item);
@@ -236,6 +269,9 @@
         this.first = false;
         // 清除缓存的订单列表数据
         this.setOrderList({});
+        if(this.type === '4') {
+          this.getCategorysStatus(this.type);
+        }
         if (!this.currentList.data.length && this.currentList.hasMore) {
           this.getPageOrders();
         }
@@ -251,14 +287,25 @@
       // },
       cancelOrder(text) {
         this.fetchText = '取消中...';
-        cancelOrder(this.curItem.code, text).then(() => {
-          this.fetching = false;
-          this.editOrderListByCancel({
-            code: this.curItem.code
+        if(this.curItem.product.sellType === '4') {
+          cancelGroupOrder(this.curItem.code, text).then(() => {
+            this.fetching = false;
+            this.editOrderListByCancel({
+              code: this.curItem.code
+            });
+          }).catch(() => {
+            this.fetching = false;
           });
-        }).catch(() => {
-          this.fetching = false;
-        });
+        } else {
+          cancelOrder(this.curItem.code, text).then(() => {
+            this.fetching = false;
+            this.editOrderListByCancel({
+              code: this.curItem.code
+            });
+          }).catch(() => {
+            this.fetching = false;
+          });
+        }
       },
       getPageOrders() {
         let key = this.categorysStatus[this.currentIndex].key;

@@ -9,6 +9,7 @@
           <img :src="formatImg(item.photolist[0])">
           <div class="info">
             <p class="title"><span class="title-title">{{item.title}}</span><span class="title-status">{{statusObj[item.status]}}</span></p>
+            <div class="info-middle"><span v-show="item.treeName">关联古树：{{item.treeName}}</span></div>
             <p class="prop"><span class="date">{{formatDate(item.publishDatetime)}}</span></p>
           </div>
         </div>
@@ -131,7 +132,6 @@
         width: 100%;
         /*height: 2.3rem;*/
         font-size: $font-size-medium-x;
-        line-height: 1.1rem;
         border-bottom: 1px solid #eee;
         padding: 0.3rem 0;
         display: flex;
@@ -149,13 +149,26 @@
           .title {
             font-size: 0.3rem;
             line-height: 0.42rem;
-            margin-bottom: 0.95rem;
+            margin-bottom: 0.19rem;
             display: flex;
             justify-content: space-between;
             flex: 1;
             .title-status {
               font-size: 0.25rem;
               color: red;
+            }
+          }
+          .info-middle {
+            font-size: 0.24rem;
+            color: #666666;
+            margin-bottom: 0.28rem;
+            span {
+              display: inline-block;
+              background: #F0F0F0;
+              padding: 0.08rem 0.12rem;
+              margin-right: 0.2rem;
+              line-height: 0.33rem;
+              margin-bottom: 0.1rem;
             }
           }
           .prop {

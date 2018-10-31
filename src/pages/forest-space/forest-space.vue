@@ -145,6 +145,7 @@ export default {
   left: 0;
   bottom: 0.98rem;
   width: 100%;
+  overflow-x: scroll;
   .fl {
     float: left;
   }
@@ -162,6 +163,8 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
+    /*width: 15rem;*/
+    /*height: 100%;*/
     overflow: auto;
     background: url("./bg@2x.png") no-repeat;
     background-size: 100% 100%;
@@ -174,7 +177,7 @@ export default {
       border-bottom-right-radius: 50%;
       margin-top: 0.28rem;
       opacity: 0.8;
-      position: relative;
+      position: fixed;
       z-index: 999;
       img {
         width: 0.6rem;

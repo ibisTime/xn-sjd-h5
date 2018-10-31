@@ -33,7 +33,7 @@
             <img src="./certification@2x.png" class="certification">
           </div>
           <!-- 礼物 -->
-          <div class="me" @click="go('/gift?code=' + adoptTreeCode)">
+          <div class="me" @click="go('/gift?code=' + adoptTreeCode)" v-show="!other">
             <img :src="getAvatar()">
             <span>礼物</span>
           </div>
@@ -154,7 +154,7 @@
               <span>历史认养人</span>
               <img src="./more@2x.png" class="fr more">
             </div>
-            <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber)">
+            <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
               <span>养护记录</span>
               <img src="./more@2x.png" class="fr more">
             </div>
@@ -475,7 +475,7 @@ export default {
         this.propsList = res1;
         res2.map((item2) => {
           res1.map((item1) => {
-            if(item2.toolOrderInfo.toolCode === item1.code) {
+            if(item2.toolOrderInfo.toolCode === item1.code && item1.type === '0') {
               this.cover = true;
             }
           });
@@ -788,9 +788,13 @@ export default {
                 this.loading = false;
                 this.close('convertSuccessFlag');
                 // 再重新获取道具
-                this.getPropList();
+                this.getPropList({
+                  adoptTreeCode: this.adoptTreeCode
+                });
                 // 重新获取积分
                 this.getJF();
+                // 有可能是一键收取的道具，所以要再次获取碳泡泡
+                this.getTppList({adoptTreeCode: this.adoptTreeCode});
               }).catch(() => { this.loading = false; });
             }
           });

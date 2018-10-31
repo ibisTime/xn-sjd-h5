@@ -17,8 +17,11 @@
         <div class="item" v-show="detail.sellType === '3'">
           <span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>
         </div>
+        <div class="item" v-show="detail.sellType === '3'">
+          <span>认养时间</span><span>{{formatDate(detail.productSpecsList[0].startDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.productSpecsList[0].endDatetime, 'yyyy-MM-dd')}}</span>
+        </div>
         <div class="item" v-show="detail.sellType === '4'">
-          <span>已募集数量</span><span>{{detail.nowCount}}/{{detail.raiseCount}}</span>
+          <span>已募集份数</span><span>{{detail.nowCount}}份/{{detail.raiseCount}}份</span>
         </div>
         <div class="item">
           <span>古树产地</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
@@ -30,12 +33,13 @@
           <span>古树品种</span><span>{{detail.variety}}</span>
         </div>
         <div class="item" @click="go('/adopt-list?code=' + code)">
-          <span>已认养名单</span>
+          <span v-show="detail.sellType !== '3'">已认养名单</span>
+          <span v-show="detail.sellType === '3'">已捐赠名单</span>
           <img src="./more@2x.png" alt="" class="fr more">
         </div>
-        <div class="item" @click="go('/productTree-list?code=' + code)">
+        <div class="item" @click="goTreeList()">
           <span>树木查看</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <img src="./more@2x.png" class="fr more">
         </div>
       </div>
       <div class="gray"></div>
@@ -55,7 +59,7 @@
       <!--<button @click="showPopUp">集体下单</button>-->
       <!--<button @click="showPopUp">捐赠下单</button>-->
       <button @click="showPopUp" v-show="canAdopt()">申请认养</button>
-      <button class="disabled" v-show="!canAdopt()">{{noAdoptReason}}</button>
+      <button class="disabled" v-show="!canAdopt()" @click="goLogin()">{{noAdoptReason}}</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
@@ -70,10 +74,11 @@
         </div>
       </div>
       <div class="packaging">
-        <p class="packaging-title">认养年限(年)</p>
+        <p class="packaging-title">认养规格</p>
         <div class="select">
           <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">
-            <span>{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>
+            <span v-show="detail.sellType !== '3'">{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>
+            <span v-show="detail.sellType === '3'">{{item.name}}：价格：¥{{formatAmount(item.price)}}</span>
             <img src="./choosed@2x.png" v-show="choosedIndex === index">
             <img src="./unchoosed@2x.png" v-show="choosedIndex !== index">
           </div>
@@ -89,7 +94,7 @@
       </div>
       <div class="other" v-show="showIdentifyCode()">
         <span>下单识别码</span>
-        <input type="text" v-model="identifyCode">
+        <input type="text" v-model="identifyCode" placeholder="请输入正确的下单识别码">
       </div>
       <div class="buypart-bottom">
         <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
@@ -109,13 +114,16 @@ import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
+import {initShare} from 'common/js/weixin';
 import { getProductDetail } from 'api/biz';
 import { getUserDetail } from 'api/user';
+// import Logo from './../../../static/sjdicon.ico';
+// import Logo from './tree-default.png';
 export default {
   data() {
     return {
       title: '正在加载...',
-      loading: true,
+      loading: false,
       toastText: '',
       currentList: [],
       hasMore: false,
@@ -165,6 +173,18 @@ export default {
     sub() {
       if (this.number >= 2) {
         this.number--;
+      }
+    },
+    goLogin() {
+      if(this.noAdoptReason === '您未登录') {
+        this.go('/login');
+      }
+    },
+    goTreeList() {
+      if(this.detail.sellType === '3' || this.detail.sellType === '4') {
+        this.go(`/productTree-detail?code=${this.detail.treeList[0].code}`);
+      } else {
+        this.go(`/productTree-list?code=${this.code}`);
       }
     },
     // 是否可被认养
@@ -269,10 +289,35 @@ export default {
           };
         }
       }, 20);
+    },
+    getInitWXSDKConfig() {
+      this.loading = true;
+      initShare({
+        title: '氧林',
+        desc: this.detail.name,
+        // link: location.href.split('#')[0],
+        // link: location.origin + '/#' + location.href.split('#')[1],
+        // link: location.origin + '/#/product-detail?code=' + this.code,
+        link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code,
+        // imgUrl: Logo
+        // imgUrl: 'http://image.tree.hichengdai.com/ForDa3S7_OY8tk81eGFag6PEchBF?imageMogr2/auto-orient/thumbnail/!300x300'
+        imgUrl: formatImg(this.detail.listPic)
+      }, (data) => {
+        this.isWxConfiging = false;
+        this.wxData = data;
+        this.loading = false;
+      }, (msg) => {
+        alert(msg);
+        this.isWxConfiging = false;
+        this.wxData = null;
+        this.loading = false;
+      });
     }
   },
   mounted() {
     setTitle('产品详情');
+    this.isWxConfiging = false;
+    this.wxData = null;
     this.pullUpLoad = null;
     this.userId = getCookie('userId');
     this.code = this.$route.query.code;
@@ -294,6 +339,9 @@ export default {
           this.loop = true;
         }
         this.userDetail = res2;
+        if(!this.isWxConfiging && !this.wxData) {
+          this.getInitWXSDKConfig();
+        }
       }).catch(() => { this.loading = false; });
     } else {
       Promise.all([
@@ -307,6 +355,9 @@ export default {
         this.banners = this.detail.bannerPic.split('||');
         if(this.banners.length >= 2) {
           this.loop = true;
+        }
+        if(!this.isWxConfiging && !this.wxData) {
+          this.getInitWXSDKConfig();
         }
       }).catch(() => { this.loading = false; });
     }
@@ -620,6 +671,10 @@ export default {
       font-size: 0.3rem;
       span {
         margin-right: 0.2rem;
+      }
+      input {
+        height: 70%;
+        border: 1px solid $color-border;
       }
     }
     .buypart-bottom {
