@@ -138,6 +138,10 @@
   padding: 15px;
   padding-top: 10px;
   font-size: 12px;
+  // 后加
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow: hidden;
 
   h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-family: inherit;

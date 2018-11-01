@@ -145,7 +145,7 @@ export default {
   left: 0;
   bottom: 0.98rem;
   width: 100%;
-  overflow-x: scroll;
+  /*overflow-x: scroll;*/
   .fl {
     float: left;
   }
@@ -177,7 +177,7 @@ export default {
       border-bottom-right-radius: 50%;
       margin-top: 0.28rem;
       opacity: 0.8;
-      position: fixed;
+      position: relative;
       z-index: 999;
       img {
         width: 0.6rem;

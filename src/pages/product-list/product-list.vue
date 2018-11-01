@@ -101,6 +101,9 @@ export default {
       this.$router.push(url);
     },
     canAdopt(item) {
+      if(!this.userDetail.level) {
+        return '您未登录';
+      }
       // 专属产品
       if(item.sellType === '1' || item.sellType === '4') {
         // 销售类型为专属且未到认养量
@@ -331,7 +334,7 @@ export default {
         font-size: 0;
         .item {
           width: 3.3rem;
-          height: 5.17rem;
+          /*height: 5.17rem;*/
           margin-top: 0.3rem;
           border: 1px solid #e6e6e6;
           border-radius: 0.04rem;
@@ -371,7 +374,7 @@ export default {
             margin-bottom: 0.2rem;
           }
           .hot-pro-text {
-            padding: 0 0.2rem;
+            padding: 0 0.2rem 0.2rem;
             p {
               font-size: 0;
             }

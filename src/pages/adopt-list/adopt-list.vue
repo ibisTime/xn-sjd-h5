@@ -45,10 +45,15 @@
     },
     mounted() {
       let history = this.$route.query.history || false;
+      let type = this.$route.query.type || '';
       if(history) {
         setTitle('历史认养人');
       } else {
-        setTitle('已认养名单');
+        if(type && type === '3') {
+          setTitle('已捐赠名单');
+        } else {
+          setTitle('已认养名单');
+        }
       }
       this.getInitData();
     },
@@ -80,10 +85,18 @@
         this.$router.push(url);
       },
       goUserHome(item) {
-        if(item.currentHolder === getUserId()) {
-          this.go(`/homepage`);
+        if(getUserId()) {
+          if(item.currentHolder === getUserId()) {
+            this.go(`/homepage`);
+          } else {
+            this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
+          }
         } else {
-          this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
+          this.toastText = '您未登录';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
         }
       },
       formatAmount(amount) {
@@ -155,14 +168,17 @@
             font-size: 0.3rem;
             line-height: 0.42rem;
             margin-bottom: 0.25rem;
+            font-weight: 500;
           }
           .date {
             font-size: 0.24rem;
             line-height: 0.33rem;
+            color: #999;
           }
         }
         .price {
-
+          color: $primary-color;
+          font-size: 0.32rem;
         }
       }
     }

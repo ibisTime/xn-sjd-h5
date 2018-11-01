@@ -86,15 +86,23 @@
         this.$router.push(url);
       },
       goTree() {
-        if(this.detail.adoptOrderTree.status === '2') {
-          if(this.detail.adoptOrderTree.currentHolder === getUserId()) {
-            this.go(`/my-tree?aTCode=${this.detail.adoptTreeCode}`);
-          } else {
-            this.go(`/my-tree?other=1&currentHolder=${this.detail.adoptOrderTree.currentHolder}&aTCode=${this.detail.adoptTreeCode}`);
-          }
-        } else {
-          this.text = '该认养已过期';
+        if(!getUserId()) {
+          this.text = '您未登录';
           this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
+        } else {
+          if (this.detail.adoptOrderTree.status === '2') {
+            if (this.detail.adoptOrderTree.currentHolder === getUserId()) {
+              this.go(`/my-tree?aTCode=${this.detail.adoptTreeCode}`);
+            } else {
+              this.go(`/my-tree?other=1&currentHolder=${this.detail.adoptOrderTree.currentHolder}&aTCode=${this.detail.adoptTreeCode}`);
+            }
+          } else {
+            this.text = '该认养已过期';
+            this.$refs.toast.show();
+          }
         }
       },
       collect() {
@@ -129,7 +137,6 @@
       },
       getInitWXSDKConfig() {
         this.loading = true;
-        console.log(formatImg(this.detail.photo.split('||')[0]));
         initShare({
           title: '氧林',
           desc: this.detail.title,

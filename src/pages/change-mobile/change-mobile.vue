@@ -3,6 +3,11 @@
     <div class="change-mobile-wrapper">
       <!-- <m-header class="cate-header" title="修改手机号"></m-header> -->
       <div class="form-wrapper">
+        <div class="form-item border-bottom-1px" v-show="userDetail.mobile">
+          <div class="item-input-wrapper">
+            <span>原手机号：</span><span>{{userDetail.mobile}}</span>
+          </div>
+        </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
             <input type="tel" class="item-input" name="newMobile" v-model="newMobile" v-validate="'required|mobile'" placeholder="请输入新手机号">
@@ -29,10 +34,10 @@
 <script>
   import MHeader from 'components/m-header/m-header';
   import {sendCaptcha} from 'api/general';
-  import {changeMobile} from 'api/user';
+  import {changeMobile, getUserDetail} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
   import Toast from 'base/toast/toast';
-  import {setTitle} from 'common/js/util';
+  import {setTitle, getUserId} from 'common/js/util';
 
   export default {
     mixins: [directiveMixin],
@@ -44,11 +49,17 @@
         captBtnText: '获取验证码',
         mobile: '',
         newMobile: '',
-        newCaptcha: ''
+        newCaptcha: '',
+        userDetail: {}
       };
     },
     created() {
       setTitle('修改手机号');
+      if(getUserId()) {
+        getUserDetail({userId: getUserId()}).then((res) => {
+          this.userDetail = res;
+        }).catch(() => { });
+      }
     },
     methods: {
       // 发送验证码

@@ -1,7 +1,9 @@
 <template>
   <div class="home-wrapper">
-    <div class="content">
-      <div class="content-wrap" v-html="detail"></div>
+    <div class="content" >
+      <Scroll :pullUpLoad="pullUpLoad" ref='scroll'>
+        <div class="content-wrap rich-text-description" v-html="detail" ref="description"></div>
+      </Scroll>
     </div>
   </div>
 </template>
@@ -38,6 +40,32 @@ export default {
         this.loading = false;
         this.detail = data.cvalue;
       }).catch(() => { this.loading = false; });
+    },
+    // 富文本滚动
+    _refreshScroll() {
+      setTimeout(() => {
+        this.$refs.scroll.refresh();
+        let imgs = this.$refs.description.getElementsByTagName('img');
+        for (let i = 0; i < imgs.length; i++) {
+          let _img = imgs[i];
+          if (_img.complete) {
+            setTimeout(() => {
+              this.$refs.scroll.refresh();
+            }, 20);
+            continue;
+          }
+          _img.onload = () => {
+            setTimeout(() => {
+              this.$refs.scroll.refresh();
+            }, 20);
+          };
+        }
+      }, 20);
+    }
+  },
+  watch: {
+    detail() {
+      this._refreshScroll();
     }
   },
   components: {
@@ -80,119 +108,17 @@ export default {
     padding: 0.3rem;
 
     .content-wrap {
-      width: 100%;
-      height: 100%;
-      overflow-x: hidden;
-      overflow-y: auto;
+      /*width: 100%;*/
+      /*height: 100%;*/
+      /*overflow-x: hidden;*/
+      /*overflow-y: auto;*/
       background-color: #fff;
       border-radius: 0.2rem;
-      font-size: 0.26rem;
-      line-height: 1.8;
-      padding: 0.3rem;
+      /*font-size: 0.26rem;*/
+      /*line-height: 1.8;*/
+      /*padding: 0.3rem;*/
     }
 
-    .in {
-      background: $color-highlight-background;
-      border-radius: 0.15rem;
-      padding: 0.3rem 0.3rem 0.78rem 0.3rem;
-      margin-bottom: 0.3rem;
-      .in-title {
-        text-align: center;
-        img {
-          width: 3.72rem;
-          height: 0.84rem;
-          margin-bottom: 0.54rem;
-        }
-      }
-      .p1 {
-        font-size: $font-size-medium-xx;
-        line-height: $font-size-large-xx;
-        margin-bottom: 0.14rem;
-      }
-      .p2 {
-        color: $color-text-l;
-        font-size: $font-size-small;
-        line-height: 0.33rem;
-        margin-bottom: 0.5rem;
-      }
-      .icons {
-        font-size: 0;
-        .icon-item {
-          display: inline-block;
-          width: 50%;
-          margin-bottom: 0.4rem;
-          /*display: flex;*/
-          /*align-items: center;*/
-          img {
-            width: 1.06rem;
-            height: 1.06rem;
-            margin-right: 0.2rem;
-          }
-          .icon-item-info {
-            display: inline-block;
-            .icon-item-title {
-              font-size: $font-size-medium;
-              margin-bottom: 0.2rem;
-            }
-            .icon-item-text {
-              font-size: $font-size-medium-s;
-              color: #999;
-            }
-          }
-        }
-      }
-      .tip {
-        height: 2.71rem;
-        background: url("./tip-bg@2x.png") no-repeat;
-        background-size: 100% 100%;
-        padding: 0.3rem;
-        .tip-title {
-          font-size: 0;
-          display: flex;
-          align-items: center;
-          margin-bottom: 0.33rem;
-          img {
-            width: 0.34rem;
-            height: 0.34rem;
-            margin-right: 0.12rem;
-          }
-          span {
-            color: #666;
-            font-size: $font-size-medium-xx;
-          }
-        }
-        .tip-content {
-          font-size: $font-size-medium;
-          line-height: 0.4rem;
-          color: #666;
-        }
-      }
-    }
-    .out {
-      background: $color-highlight-background;
-      border-radius: 0.15rem;
-      padding: 0.3rem;
-      .out-title {
-        text-align: center;
-        img {
-          width: 3.72rem;
-          height: 0.84rem;
-          margin-bottom: 0.54rem;
-        }
-      }
-      .p1 {
-        font-size: $font-size-medium-xx;
-        line-height: $font-size-large-xx;
-        margin-bottom: 0.81rem;
-      }
-      .tree {
-        text-align: center;
-        img {
-          width: 3.8rem;
-
-        }
-      }
-    }
   }
 }
 </style>

@@ -56,7 +56,7 @@
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
               <p class="hot-pro-introduction">{{formatDate(item.updateDatetime, 'yyyy-MM-dd')}}</p>
-              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price fr">¥{{formatAmount(item.minPrice)}}</span></p>
+              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}</span></p>
             </div>
           </div>
         </div>
@@ -83,10 +83,11 @@ import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import CheckIn from 'base/check-in/check-in';
 import ScrollY from 'base/scroll-y/scroll-y';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getBanner, getDictList } from 'api/general';
 import { getProductPage, getProductType, signIn, getMessage, getMessagePage } from 'api/biz';
+import { getUserDetail } from 'api/user';
 // import ScrollY from "../../base/scroll-y/scroll-y";
 export default {
   // name: "home",
@@ -109,7 +110,8 @@ export default {
       bulletinList: [],
       sellTypeObj: {},
       signTpp: '0',
-      signDays: 0
+      signDays: 0,
+      userDetail: {}
     };
   },
   methods: {
@@ -202,6 +204,9 @@ export default {
       }).catch(() => { this.loading = false; });
     },
     canAdopt(item) {
+      if(!this.userDetail.level) {
+        return '您未登录';
+      }
       // 专属产品
       if(item.sellType === '1' || item.sellType === '4') {
         // 销售类型为专属且未到认养量
@@ -244,6 +249,13 @@ export default {
           return '可认养';
         }
       }
+    },
+    getUserDetail() {
+      getUserDetail({
+        userId: getUserId()
+      }).then((res) => {
+        this.userDetail = res;
+      });
     }
   },
   mounted() {
@@ -257,6 +269,9 @@ export default {
     //   console.log('Hello');
     // }, 1000);
     this.getInitData();
+    if(getUserId()) {
+      this.getUserDetail();
+    }
   },
   components: {
     ScrollY,
@@ -515,7 +530,7 @@ export default {
         font-size: 0;
         .item {
           width: 3.3rem;
-          height: 4.98rem;
+          /*height: 4.98rem;*/
           margin-top: 0.24rem;
           border: 1px solid #e6e6e6;
           border-radius: 0.04rem;
@@ -557,6 +572,9 @@ export default {
             padding: 0 0.2rem;
             p {
               font-size: 0;
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
             }
             .hot-pro-title {
               font-size: $font-size-medium-x;

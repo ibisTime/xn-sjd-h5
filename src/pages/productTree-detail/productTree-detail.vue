@@ -8,7 +8,7 @@
           <span>古树编码</span><span>{{detail.treeNumber}}</span>
         </div>
         <div class="item">
-          <span>古树产地</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
+          <span>古树产地</span><span>{{detail.originPlace}}</span>
         </div>
         <div class="item">
           <span>古树学名</span><span>{{detail.scientificName}}</span>

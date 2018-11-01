@@ -18,7 +18,7 @@
         </div>
         <div class="form-item">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="pwd" v-validate="'required'" v-model="pwd" placeholder="请输入新密码（6～16个字符或字母）">
+            <input type="password" class="item-input" name="pwd" v-validate="'required|min:6|max:16'" v-model="pwd" placeholder="请输入新密码（6～16个字符）">
             <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
           </div>
         </div>
@@ -170,7 +170,7 @@
               color: red;
             }
             input {
-              width: 79%;
+              width: 65%;
               height: 100%;
             }
             /*input[type="tel"] {*/

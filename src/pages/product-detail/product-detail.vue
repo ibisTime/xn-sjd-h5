@@ -24,7 +24,7 @@
           <span>已募集份数</span><span>{{detail.nowCount}}份/{{detail.raiseCount}}份</span>
         </div>
         <div class="item">
-          <span>古树产地</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
+          <span>古树产地</span><span>{{detail.originPlace}}</span>
         </div>
         <div class="item">
           <span>古树学名</span><span>{{detail.scientificName}}</span>
@@ -32,7 +32,7 @@
         <div class="item">
           <span>古树品种</span><span>{{detail.variety}}</span>
         </div>
-        <div class="item" @click="go('/adopt-list?code=' + code)">
+        <div class="item" @click="go(`/adopt-list?code=${code}&type=${detail.sellType}`)">
           <span v-show="detail.sellType !== '3'">已认养名单</span>
           <span v-show="detail.sellType === '3'">已捐赠名单</span>
           <img src="./more@2x.png" alt="" class="fr more">
@@ -47,7 +47,7 @@
         <div class="description-title">
           <div class="border"></div>
           <span>图文详情</span>
-          <div class="description-detail" v-html="detailDescription" ref="description"></div>
+          <div class="description-detail rich-text-description" v-html="detailDescription" ref="description"></div>
         </div>
       </div>
       <!--<div class="mall-content">-->

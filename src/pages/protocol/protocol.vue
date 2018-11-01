@@ -3,8 +3,8 @@
     <!--<m-header class="cate-header" :title="title"></m-header>-->
     <!--  v-html="protocol" -->
     <div class="protocol">
-      <Scroll :pullUpLoad="pullUpLoad">
-        <p v-html="xyText" class="rich-text-description"></p>
+      <Scroll :pullUpLoad="pullUpLoad" ref='scroll'>
+        <p v-html="xyText" class="rich-text-description" ref="description"></p>
       </Scroll>
       <!-- <table>
         <tbody>
@@ -117,6 +117,27 @@
       },
       go(url) {
         this.$router.push(url);
+      },
+      // 富文本滚动
+      _refreshScroll() {
+        setTimeout(() => {
+          this.$refs.scroll.refresh();
+          let imgs = this.$refs.description.getElementsByTagName('img');
+          for (let i = 0; i < imgs.length; i++) {
+            let _img = imgs[i];
+            if (_img.complete) {
+              setTimeout(() => {
+                this.$refs.scroll.refresh();
+              }, 20);
+              continue;
+            }
+            _img.onload = () => {
+              setTimeout(() => {
+                this.$refs.scroll.refresh();
+              }, 20);
+            };
+          }
+        }, 20);
       }
     },
     watch: {
