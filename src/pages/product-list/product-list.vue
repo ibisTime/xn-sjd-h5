@@ -105,7 +105,7 @@ export default {
         return '您未登录';
       }
       // 专属产品
-      if(item.sellType === '1' || item.sellType === '4') {
+      if(item.sellType === '1') {
         // 销售类型为专属且未到认养量
         if(item.raiseCount === item.nowCount) {
           return '已被认养';
@@ -116,6 +116,9 @@ export default {
       // 定向产品
       if(item.directType && item.directType === '1') {
         // 等级定向且用户为该等级
+        if(item.raiseCount === item.nowCount) {
+          return '已被认养';
+        }
         if(item.directObject !== this.userDetail.level) {
           return '不可认养';
         } else {
@@ -124,6 +127,9 @@ export default {
       }
       if(item.directType && item.directType === '2') {
         // 用户定向且是定向用户
+        if(item.raiseCount === item.nowCount) {
+          return '已被认养';
+        }
         if(item.directObject !== this.userId) {
           return '不可认养';
         } else {
@@ -136,12 +142,18 @@ export default {
         // 2把字符串格式转换为日期类
         let startTime = new Date(Date.parse(item.raiseStartDatetime));
         let endTime = new Date(Date.parse(item.raiseEndDatetime));
-        // console.log(startTime);
-        // console.log(endTime);
         // 3进行比较
-        // console.log(curTime >= startTime && curTime <= endTime);
         if(curTime <= startTime || curTime >= endTime) {
           return '不可认养';
+        } else {
+          return '可认养';
+        }
+      }
+      // 专属产品
+      if(item.sellType === '4') {
+        // 销售类型为专属且未到认养量
+        if(item.raiseCount === item.nowCount) {
+          return '已满标';
         } else {
           return '可认养';
         }
@@ -203,7 +215,7 @@ export default {
           // sellType: sellType,
           parentCategoryCode: this.parentCategoryCode,
           categoryCode: this.selectdType,
-          statusList: [4, 5],
+          statusList: [4, 5, 6],
           orderDir: 'asc',
           orderColumn: 'order_no'
         })

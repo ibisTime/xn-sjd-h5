@@ -463,3 +463,10 @@ export function getBulletinList(data) {
     ...data
   });
 }
+
+// 产品已认养名单（列表）
+export function getAdoptList(data) {
+  return fetch(629209, {
+    ...data
+  });
+}

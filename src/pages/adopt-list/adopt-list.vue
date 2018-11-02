@@ -4,17 +4,16 @@
     <div class="adopt-list">
       <scroll ref="scroll"
               :data="dataList"
-              :hasMore="hasMore"
-              @pullingUp="getAdoptList">
+              :pullUpLoad="pullUpLoad">
         <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
           <div class="userPhoto" :style="getImgSyl(item.user ? item.user.photo : '')"></div>
           <div class="info">
             <p class="name">{{item.user.nickname ? item.user.nickname : jiami(item.user.mobile)}}</p>
             <p class="date">{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}</p>
           </div>
-          <span class="price fr">¥{{formatAmount(item.amount)}}</span>
+          <span class="price">¥{{formatAmount(item.amount)}} x{{item.userAdoptTreeCount}}</span>
         </div>
-        <no-result v-show="!hasMore && !(dataList && dataList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+        <no-result v-show="!(dataList && dataList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
       </Scroll>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
@@ -29,7 +28,7 @@
   import Toast from 'base/toast/toast';
   import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
-  import { getPageUserTree } from 'api/biz';
+  import { getAdoptList } from 'api/biz';
 
   export default {
     data() {
@@ -38,9 +37,7 @@
         loading: false,
         loadingText: '',
         dataList: [],
-        start: 1,
-        limit: 20,
-        hasMore: true
+        pullUpLoad: null
       };
     },
     mounted() {
@@ -65,18 +62,12 @@
         this.loading = true;
         this.code = this.$route.query.code;
         Promise.all([
-          getPageUserTree({
-            start: this.start,
-            limit: this.limit,
+          getAdoptList({
             productCode: this.code
           })
         ]).then(([res1]) => {
-          if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
-            this.hasMore = false;
-          }
+          this.dataList = res1;
           this.loading = false;
-          this.dataList = res1.list;
-          this.start++;
         }).catch(() => {
           this.loading = false;
         });

@@ -14,31 +14,36 @@
         <div class="item">
           <span>产品名称</span><span>{{detail.name}}</span>
         </div>
-        <div class="item" v-show="detail.sellType === '3'">
-          <span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>
-        </div>
-        <div class="item" v-show="detail.sellType === '3'">
-          <span>认养时间</span><span>{{formatDate(detail.productSpecsList[0].startDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.productSpecsList[0].endDatetime, 'yyyy-MM-dd')}}</span>
-        </div>
-        <div class="item" v-show="detail.sellType === '4'">
-          <span>已募集份数</span><span>{{detail.nowCount}}份/{{detail.raiseCount}}份</span>
+        <div class="item">
+          <span>产品产地</span><span>{{detail.name}}</span>
         </div>
         <div class="item">
-          <span>古树产地</span><span>{{detail.originPlace}}</span>
+          <span>产品学名</span><span>{{detail.scientificName}}</span>
         </div>
         <div class="item">
-          <span>古树学名</span><span>{{detail.scientificName}}</span>
+          <span>产品品种</span><span>{{detail.variety}}</span>
         </div>
         <div class="item">
-          <span>古树品种</span><span>{{detail.variety}}</span>
+          <span>预售产出产量</span><span>{{detail.scientificName}}</span>
         </div>
-        <div class="item" @click="go(`/adopt-list?code=${code}&type=${detail.sellType}`)">
-          <span v-show="detail.sellType !== '3'">已认养名单</span>
-          <span v-show="detail.sellType === '3'">已捐赠名单</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+        <div class="item">
+          <span>单棵树产量</span><span>{{detail.variety}}</span>
         </div>
-        <div class="item" @click="goTreeList()">
-          <span>树木查看</span>
+        <div class="item">
+          <span>树木总数</span><span>{{detail.scientificName}}</span>
+        </div>
+        <div class="item">
+          <span>年限</span><span>{{detail.variety}}</span>
+        </div>
+        <div class="item">
+          <span>预计收货时间</span><span>{{detail.scientificName}}</span>
+        </div>
+        <div class="item">
+          <span>树编号</span>
+          <img src="./more@2x.png" class="fr more">
+        </div>
+        <div class="item">
+          <span>已预售名单</span>
           <img src="./more@2x.png" class="fr more">
         </div>
       </div>
@@ -56,10 +61,8 @@
       </Scroll>
     </div>
     <div class="footer">
-      <!--<button @click="showPopUp">集体下单</button>-->
-      <!--<button @click="showPopUp">捐赠下单</button>-->
-      <button @click="showPopUp" v-show="canAdopt()">申请认养</button>
-      <button class="disabled" v-show="!canAdopt()" @click="goLogin()">{{noAdoptReason}}</button>
+      <span>¥1260.00～¥2480.00</span>
+      <button class="fr" @click="pay">确认购买</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
@@ -455,16 +458,23 @@ export default {
       padding: 0 0.3rem;
       .item {
         width: 100%;
-        height: 1.1rem;
         font-size: $font-size-medium-x;
         line-height: 1.1rem;
         border-bottom: 1px solid #eee;
+        display: flex;
         span:first-child {
           margin-right: 0.3rem;
+          display: inline-block;
+          width: 30%;
+        }
+        span:nth-child(2) {
+          flex: 1;
         }
         img {
           height: 0.21rem;
           margin-top: 0.4rem;
+          position: absolute;
+          right: 0.3rem;
         }
         &:last-child{
           border-bottom: none;
@@ -500,29 +510,30 @@ export default {
     }
   }
   .footer {
-    width: 100%;
     height: 0.98rem;
+    padding: 0.07rem 0.3rem;
+    border-top: 1px solid #eee;
     position: fixed;
     bottom: 0;
     left: 0;
-    padding: 0 0.3rem;
+    width: 100%;
+    font-size: $font-size-medium-x;
+    line-height: 0.7rem;
+    background: #fff;
     display: flex;
-    justify-content: space-between;
-    background: $color-highlight-background;
-    border-top: 1px solid $color-border;
     align-items: center;
-    button {
-      display: inline-block;
-      /*width: 3.2rem;*/
-      width: 100%;
-      height: 0.9rem;
-      background: $primary-color;
-      border-radius: 0.08rem;
-      color: $color-highlight-background;
-      font-size: 0.32rem;
+    justify-content: space-between;
+    span {
+      color: $primary-color;
+      font-size: $font-size-medium-xx;
     }
-    .disabled {
-      background: #969998;
+    button {
+      width: 2.96rem;
+      height: 0.84rem;
+      border-radius: 0.08rem;
+      background: $primary-color;
+      color: $color-highlight-background;
+      font-size: 0.3rem;
     }
   }
   .mask {

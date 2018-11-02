@@ -1,31 +1,21 @@
 <template>
-  <div class="home-wrapper">
-    <!--<m-header class="cate-header" title="认养列表"></m-header>-->
+  <div class="booking-product-wrapper">
     <div class="header clearfix category-wrapper">
       <category-scroll :currentIndex="currentIndex"
                        :categorys="categorys"
                        @select="selectCategory"></category-scroll>
-      <category-scroll :currentIndex="currentIndexSub"
-                       :categorys="categorysSub"
-                       @select="selectCategorySub"></category-scroll>
     </div>
     <div class="content">
-      <!--<div class="bulletin">-->
-        <!--<div class="title">恭喜Bluce，成功参加See的传承认养</div>-->
-      <!--</div>-->
       <div class="hot" v-show="proList.length">
         <Scroll :data="proList"
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
         <div class="proList">
-          <div class="item" @click="go('/hot-product-list/product-detail?code='+item.code)" v-for="item in proList">
-            <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-            <div class="sell-type-right">{{canAdopt(item)}}</div>
+          <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+item.code)" v-for="item in proList">
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
-              <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}起</span></p>
+              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}起</span></p>
             </div>
           </div>
         </div>
@@ -35,7 +25,7 @@
         <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
       </div>
     </div>
-    <full-loading v-show="loading"></full-loading>
+    <full-loading v-show="loading" :title="title"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
   </div>
@@ -167,9 +157,8 @@ export default {
       this.start = 1;
       this.limit = 10;
       this.proList = [];
-      this.categorysSub = [{value: '全部', key: 'all'}];
+      this.loading = true;
       this.getSubType();
-      // this.getPageOrders();
     },
     selectCategorySub(index) {
       this.indexSub = index;
@@ -182,13 +171,13 @@ export default {
     // 获取下级分类
     getSubType() {
       this.loading = true;
-      this.categorysSub = [{value: '全部', key: 'all'}];
       getProductType({
         parentCode: this.categorys[this.index].key,
         status: '1',
         orderDir: 'asc',
         orderColumn: 'order_no'
       }).then((res) => {
+        this.categorysSub = [{value: '全部', key: 'all'}];
         res.map((item) => {
           this.categorysSub.push({
             value: item.name,
@@ -216,8 +205,7 @@ export default {
           // sellType: sellType,
           parentCategoryCode: this.parentCategoryCode,
           categoryCode: this.selectdType,
-          statusList: [4, 5],
-          location: '1',
+          statusList: [4, 5, 6],
           orderDir: 'asc',
           orderColumn: 'order_no'
         })
@@ -293,7 +281,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../common/scss/mixin.scss";
 @import "../../common/scss/variable.scss";
-.home-wrapper {
+.booking-product-wrapper {
   position: fixed;
   width: 100%;
   bottom: 0;
@@ -310,6 +298,7 @@ export default {
     top: 0;
     left: 0;
     width: 100%;
+    height: 0.8rem;
     z-index: 100;
     overflow: hidden;
     line-height: 0.8rem;
@@ -317,32 +306,16 @@ export default {
     border-bottom: 1px solid $color-border;
   }
   .content {
-    margin: 1.6rem 0 0;
+    margin: 0.8rem 0 0;
     .bulletin {
       display: flex;
       align-items: center;
       font-size: 0.24rem;
       padding: 0.24rem 0.3rem;
       background: #f0f9f6;
-      img {
-        width: 0.6rem;
-        height: 0.25rem;
-        margin-right: 0.11rem;
-      }
-      .border {
-        display: inline;
-        width: 0;
-        height: 0.15rem;
-        border-right: 1px solid #ccc;
-        margin-right: 0.11rem;
-      }
       .title {
         line-height: 0.33rem;
         flex: 1;
-      }
-      .more {
-        line-height: 0.33rem;
-        color: #999;
       }
     }
     .hot {
@@ -350,7 +323,7 @@ export default {
       background: $color-highlight-background;
       position: absolute;
       /*top: 2.4rem;*/
-      top: 1.6rem;
+      top: 0.8rem;
       bottom: 0;
       left: 0;
       right: 0;
@@ -369,36 +342,8 @@ export default {
           border-radius: 0.04rem;
           display: inline-block;
           position: relative;
-          .sell-type {
-            position: absolute;
-            left: 0;
-            top: 0;
-            background: #F7B524;
-            /*opacity: 0.5;*/
-            padding: 0 0.1rem;
-            height: 0.4rem;
-            font-size: 0.24rem;
-            line-height: 0.4rem;
-            text-align: center;
-            color: $color-highlight-background;
-            border-radius: 0.05rem;
-          }
-          .sell-type-right {
-            position: absolute;
-            right: 0;
-            top: 0;
-            background: #969998;
-            /*opacity: 0.5;*/
-            padding: 0 0.1rem;
-            height: 0.4rem;
-            font-size: 0.24rem;
-            line-height: 0.4rem;
-            text-align: center;
-            color: $color-highlight-background;
-            border-radius: 0.05rem;
-          }
           .hot-pro-img {
-            height: 3.3rem;
+            height: 2.3rem;
             width: 100%;
             margin-bottom: 0.2rem;
           }
@@ -406,6 +351,9 @@ export default {
             padding: 0 0.2rem 0.2rem;
             p {
               font-size: 0;
+              display: flex;
+              align-items: flex-start;
+              justify-content: space-between;
             }
             .hot-pro-title {
               font-size: $font-size-medium-x;
@@ -414,22 +362,19 @@ export default {
             }
             .hot-pro-place {
               margin-bottom: 0.17rem;
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              .hot-pro-introduction {
-                color: $color-text-l;
-                font-size: $font-size-small;
-                line-height: $font-size-medium-xx;
-              }
               img {
                 width: 0.77rem;
                 height: 0.32rem;
               }
             }
+            .hot-pro-introduction {
+              color: $color-text-l;
+              font-size: $font-size-small;
+              line-height: $font-size-medium-xx;
+            }
             .hot-pro-price {
               color: $primary-color;
-              font-size: $font-size-small;
+              font-size: $font-size-medium-x;
               line-height: 0.29rem;
               font-weight: bold;
             }

@@ -145,7 +145,7 @@
               <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
             </div>
             <div class="item">
-              <span>养护人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.loginName : '暂无养护人'}}</span>
+              <span>负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.loginName : '暂无养护人'}}</span>
             </div>
             <!--<div class="item">-->
               <!--<span>当前认养人</span><span>三级</span>-->

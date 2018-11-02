@@ -15,7 +15,7 @@
           <img class="tit" src="./notice@2x.png">
           <div class="notice-wrap">
             <div class="border"></div>
-            <div class="title notice" v-for="item in noticeList" v-show="noticeList.length">{{item.title}}</div>
+            <div class="title notice" v-for="item in noticeList" v-show="noticeList.length" @click="go(`/notice-detail?code=${item.code}`)">{{item.title}}</div>
             <div class="title notice" v-show="!noticeList.length">暂无公告</div>
           </div>
           <div class="more" @click="go('/notices')">更多</div>
@@ -86,7 +86,7 @@ import ScrollY from 'base/scroll-y/scroll-y';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getBanner, getDictList } from 'api/general';
-import { getProductPage, getProductType, signIn, getMessage, getMessagePage } from 'api/biz';
+import { getProductPage, getProductType, signIn, getMessagePage } from 'api/biz';
 import { getUserDetail } from 'api/user';
 // import ScrollY from "../../base/scroll-y/scroll-y";
 export default {
@@ -171,13 +171,15 @@ export default {
           orderColumn: 'order_no',
           status: '1'
         }),
-        getMessage({
+        getMessagePage({
           status: '1',
           type: '1',
-          object: 'C'
+          object: 'C',
+          orderColumn: 'create_datetime',
+          orderDir: 'desc'
         }),
         getMessagePage({
-          status: '0',
+          status: '1',
           type: '3',
           orderColumn: 'create_datetime',
           orderDir: 'desc'
@@ -195,7 +197,7 @@ export default {
             this.proType.push(item);
           }
         });
-        this.noticeList = res4.slice(0, 1);
+        this.noticeList = res4.list.slice(0, 1);
         this.bulletinList = res5.list;
         this.loading = false;
         res6.map((item) => {
@@ -208,7 +210,7 @@ export default {
         return '您未登录';
       }
       // 专属产品
-      if(item.sellType === '1' || item.sellType === '4') {
+      if(item.sellType === '1') {
         // 销售类型为专属且未到认养量
         if(item.raiseCount === item.nowCount) {
           return '已被认养';
@@ -219,6 +221,9 @@ export default {
       // 定向产品
       if(item.directType && item.directType === '1') {
         // 等级定向且用户为该等级
+        if(item.raiseCount === item.nowCount) {
+          return '已被认养';
+        }
         if(item.directObject !== this.userDetail.level) {
           return '不可认养';
         } else {
@@ -227,6 +232,9 @@ export default {
       }
       if(item.directType && item.directType === '2') {
         // 用户定向且是定向用户
+        if(item.raiseCount === item.nowCount) {
+          return '已被认养';
+        }
         if(item.directObject !== this.userId) {
           return '不可认养';
         } else {
@@ -239,12 +247,18 @@ export default {
         // 2把字符串格式转换为日期类
         let startTime = new Date(Date.parse(item.raiseStartDatetime));
         let endTime = new Date(Date.parse(item.raiseEndDatetime));
-        // console.log(startTime);
-        // console.log(endTime);
         // 3进行比较
-        // console.log(curTime >= startTime && curTime <= endTime);
         if(curTime <= startTime || curTime >= endTime) {
           return '不可认养';
+        } else {
+          return '可认养';
+        }
+      }
+      // 专属产品
+      if(item.sellType === '4') {
+        // 销售类型为专属且未到认养量
+        if(item.raiseCount === item.nowCount) {
+          return '已满标';
         } else {
           return '可认养';
         }
@@ -395,6 +409,7 @@ export default {
         /*padding: 0.24rem 0.3rem;*/
         padding: 0.24rem 0;
         background: $color-highlight-background;
+        flex: 1;
         /*position: absolute;*/
         /*left: 1.24rem;*/
         /*width: calc(100% - 2.5rem);*/

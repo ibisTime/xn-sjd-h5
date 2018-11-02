@@ -11,7 +11,7 @@
                 <span v-show="errors.has('title')" class="error-tip">{{errors.first('title')}}</span>
               </div>
               <div class="text">
-                <textarea v-model="context" v-validate="'required'" rows="5" class="item-input" placeholder="发表下你的感想吧"></textarea>
+                <textarea v-model="context" ref="textarea" @input="autosize" v-validate="'required'" rows="5" class="item-input" placeholder="发表下你的感想吧"></textarea>
               </div>
             </div>
             <div class="avatar">
@@ -125,6 +125,16 @@
       }).catch(() => { this.loading = false; });
     },
     methods: {
+      autosize(obj) {
+        // let el = obj;
+        setTimeout(() => {
+          // console.log(1);
+          this.$refs.textarea.style.cssText = 'height:auto; padding:0';
+          // for box-sizing other than "content-box" use:
+          // el.style.cssText = '-moz-box-sizing:content-box';
+          this.$refs.textarea.style.cssText = 'height:' + this.$refs.textarea.scrollHeight + 'px';
+        }, 0);
+      },
       formatImg(img) {
         return formatImg(img);
       },

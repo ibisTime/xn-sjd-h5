@@ -72,14 +72,11 @@
       if (!isLogin()) {
         if (/code=([^&]+)&state=/.exec(location.href)) {
           this.code = RegExp.$1;
-          alert(1);
-          alert(this.code);
           if (/userReferee=([^&$]+)/.exec(location.href)) {
             this.userReferee = RegExp.$1;
           }
           this.wxLogin(this.code, this.userReferee);
         } else if (/userReferee=([^&$]+)/.exec(location.href)) {
-          alert(2);
           this.userReferee = RegExp.$1;
           this.AppId();
         }
@@ -94,7 +91,6 @@
       },
       // 微信登录
       wxLogin(code, userReferee) {
-        alert('wxlogin');
         let mobAndCapt = getWxMobAndCapt();
         let mobile;
         let smsCaptcha;
@@ -111,8 +107,8 @@
           isNeedMobile: '0'
         }).then((data) => {
           this.loading = false;
-          // code, , , , '0'
-          alert('data-' + JSON.stringify(data));
+          // // code, , , , '0'
+          // alert('data-' + JSON.stringify(data));
           setUser(data);
           if (data.isNeedMobile === '1') {
             this.text = '微信登录需要先绑定手机号';
@@ -166,7 +162,7 @@
           let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
           let suffix =
             '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
-          alert(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
+          // alert(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
           // 发送微信网页授权地址，由此获取code
           setTimeout(() => {
             location.replace(

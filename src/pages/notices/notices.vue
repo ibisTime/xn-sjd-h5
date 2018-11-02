@@ -1,7 +1,10 @@
 <template>
   <div class="adopt-list-wrapper">
     <div class="adopt-list">
-      <Scroll :pullUpLoad="pullUpLoad" :data="list">
+      <Scroll
+        :pullUpLoad="pullUpLoad"
+        :data="list"
+        @pullingUp="getList">
         <div class="item" @click="go('/notice-detail?code=' + item.code)" v-for="item in list" v-show="list.length">
           <div class="info">
             <p class="top"><span class="name">{{cut(item.title,6)}}</span><span class="status">{{formatDate(item.createDatetime)}}</span></p>
@@ -19,7 +22,7 @@
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
   import NoResult from 'base/no-result/no-result';
-  import { getMessage } from 'api/biz';
+  import { getMessagePage } from 'api/biz';
   import { formatDate, setTitle } from 'common/js/util';
 
   export default {
@@ -27,21 +30,17 @@
       return {
         pullUpLoad: null,
         loading: false,
-        list: []
+        list: [],
+        start: 1,
+        limit: 10,
+        hasMore: true
       };
     },
     mounted() {
       setTitle('公告');
       this.pullUpLoad = null;
       this.loading = true;
-      getMessage({
-        status: '1',
-        type: '1',
-        object: 'C'
-      }).then((res) => {
-        this.loading = false;
-        this.list = res;
-      }).catch(() => { this.loading = false; });
+      this.getList();
     },
     methods: {
       formatDate(date) {
@@ -55,6 +54,26 @@
           return str.slice(0, num) + '...';
         } else {
           return str;
+        }
+      },
+      getList() {
+        if(this.hasMore) {
+          getMessagePage({
+            start: this.start,
+            limit: this.limit,
+            status: '1',
+            type: '1',
+            object: 'C',
+            orderDir: 'desc',
+            orderColumn: 'create_datetime'
+          }).then((res) => {
+            if (res.totalPage <= this.start) {
+              this.hasMore = false;
+            }
+            this.list = [...this.list, ...res.list];
+            this.start ++;
+            this.loading = false;
+          }).catch(() => { this.loading = false; });
         }
       }
     },

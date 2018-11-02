@@ -77,6 +77,10 @@ const Address = () => import('@/pages/address-list/address-list');
 const AddressAddEdit = () => import('@/pages/address-addedit/address-addedit');
 // 古树认养(列表页）
 const ProductList = () => import('@/pages/product-list/product-list');
+// 预售列表页
+const BookingProductList = () => import('@/pages/booking-product-list/booking-product-list');
+// 预售产品详情页
+const BookingProductDetail = () => import('@/pages/booking-product-detail/booking-product-detail');
 // 热门古树(列表页）
 const HotProductList = () => import('@/pages/hot-product-list/hot-product-list');
 // 古树详情
@@ -243,6 +247,16 @@ export default new Router({
         {
           path: 'product-detail',
           component: ProductDetail
+        }
+      ]
+    },
+    {
+      path: '/booking-product-list',
+      component: BookingProductList,
+      children: [
+        {
+          path: 'booking-product-detail',
+          component: BookingProductDetail
         }
       ]
     },

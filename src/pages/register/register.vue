@@ -50,9 +50,9 @@
   </div>
 </template>
 <script>
-  import {register} from 'api/user';
+  import {register, login} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
-  import { setTitle } from 'common/js/util';
+  import { setTitle, setUser } from 'common/js/util';
   import {sendCaptcha} from 'api/general';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
@@ -96,12 +96,21 @@
               userRefereeType: this.type
             }).then((data) => {
               if(data.code) {
-                this.text = '注册成功，即将跳转到登录页';
-                this.$refs.toast.show();
-                this.loading = false;
-                setTimeout(() => {
-                  this.$router.replace('/login');
-                }, 1000);
+                // 注册完了去登录
+                login({
+                  loginName: this.mobile,
+                  loginPwd: this.pwd
+                }).then((data) => {
+                  setUser(data);
+                  this.text = '注册成功，已为您自动登录';
+                  this.$refs.toast.show();
+                  this.loading = false;
+                  setTimeout(() => {
+                    this.$router.replace('/home');
+                  }, 1000);
+                }).catch(() => {
+                  this.loading = false;
+                });
               }
             }).catch(() => {
               this.loading = false;

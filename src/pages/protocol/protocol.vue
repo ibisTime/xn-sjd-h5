@@ -141,7 +141,7 @@
       }
     },
     watch: {
-      content() {
+      xyText() {
         this._refreshScroll();
       }
     },
