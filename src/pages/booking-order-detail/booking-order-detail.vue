@@ -1,0 +1,381 @@
+<template>
+  <div class="booking-order-detail-wrapper">
+    <div class="content">
+      <Scroll :pullUpLoad="pullUpLoad">
+        <div class="status">
+          <img src="./overdue@1.5x.png" class="icon">
+          <p class="status-text">订单已过期</p>
+          <p class="remaining-time">剩余时间：20:00</p>
+        </div>
+        <div class="gray"></div>
+        <div class="order-list">
+          <!--<Scroll :pullUpLoad="pullUpLoad">-->
+            <div class="item" @click="go('/product-detail?code='+detail.productCode)">
+              <div class="top">
+                <span class="item-code">产权方</span>
+                <span class="item-status">{{statusObj[detail.status]}}</span>
+              </div>
+              <div class="info">
+                <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
+                <div class="text">
+                  <p class="title"><span class="title-title">{{detail.product.name}}</span><span class="title-number">x{{detail.quantity}}</span></p>
+                  <p class="position">预售规格：10斤装</p>
+                  <div class="props"><span class="duration">合计1件商品</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
+                </div>
+              </div>
+              <div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}}</div>
+              <div class="gray"></div>
+            </div>
+            <div class="gray" v-show="detail.status === '3'"></div>
+            <div class="order-info">
+              <div class="order-info-title">订单信息</div>
+              <div class="order-info-content">
+                <p><span>订单号</span><span>111111111</span></p>
+                <p><span>订单金额</span><span>111111111</span></p>
+                <p><span>卖家</span><span>111111111</span></p>
+                <p><span>支付流水号</span><span>111111111</span></p>
+                <p><span>预计发货时间</span><span>111111111</span></p>
+                <p><span>树木编号</span><span>111111111</span></p>
+                <p><span>数量</span><span>111111111</span></p>
+              </div>
+            </div>
+          <!--</Scroll>-->
+        </div>
+      </Scroll>
+      <div class="btns" v-show="showBtns(detail.status)">
+        <div class="btn cancel" v-show="showCancelBtn(detail.status)" @click="_cancelOrder(detail)">取消订单</div>
+        <div class="btn" v-show="showPayBtn(detail.status)" @click="payOrder(detail)">立即支付</div>
+      </div>
+    </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
+    <toast :text="toastText" ref="toast"></toast>
+  </div>
+</template>
+<script>
+  import {ORDER_STATUS} from 'common/js/dict';
+  import Toast from 'base/toast/toast';
+  import Scroll from 'base/scroll/scroll';
+  import FullLoading from 'base/full-loading/full-loading';
+  import ConfirmInput from 'base/confirm-input/confirm-input';
+  import Slider from 'base/slider/slider';
+  import NoResult from 'base/no-result/no-result';
+  import MHeader from 'components/m-header/m-header';
+  import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+  import { getOrderDetail, getOrganizeOrderDetail, cancelOrder } from 'api/biz';
+  import { getDictList } from 'api/general';
+  import defaultImg from './tree@3x.png';
+
+  export default {
+    data() {
+      return {
+        title: '正在加载...',
+        type: '',
+        loading: true,
+        toastText: '',
+        inputText: '',
+        loadingText: '',
+        text: '',
+        pullUpLoad: null,
+        detail: {product: {}, adoptOrderTreeList: {}},
+        choosedIndex: 0,
+        code: '',   // 产品code,
+        statusObj: {}
+      };
+    },
+    methods: {
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
+      formatImg(img) {
+        return formatImg(img);
+      },
+      formatDate(date, format) {
+        return formatDate(date, format);
+      },
+      formatStatus(status) {
+        return ORDER_STATUS[status];
+      },
+      go(url) {
+        this.$router.push(url);
+      },
+      chooseSpecs(index) {
+        this.choosedIndex = index;
+      },
+      showBtns(status) {
+        if (status !== '0') {
+          return false;
+        }
+        return true;
+      },
+      showPayBtn(status) {
+        return status === '0';
+      },
+      showCancelBtn(status) {
+        return status === '0';
+      },
+      payOrder(item) {
+        this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
+      },
+      handleInputConfirm(text) {
+        this.loading = true;
+        if (this.curItem.status === '0') {
+          this.cancelOrder(text);
+        }
+      },
+      cancelOrder(text) {
+        this.loadingText = '取消中...';
+        cancelOrder(this.curItem.code, text).then(() => {
+          this.loading = false;
+          this.editOrderListByCancel({
+            code: this.curItem.code
+          });
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      _cancelOrder(item) {
+        this.inputText = '取消原因';
+        this.curItem = item;
+        this.$refs.confirmInput.show();
+      },
+      getImgSyl(imgs) {
+        let img = imgs ? formatImg(imgs) : defaultImg;
+        return {
+          backgroundImage: `url(${img})`
+        };
+      }
+    },
+    mounted() {
+      setTitle('预售订单详情');
+      this.pullUpLoad = null;
+      this.code = this.$route.query.code;
+      this.type = this.$route.query.type;// 订单类型（1个人/2定向/3捐赠/4集体）
+      this.loading = true;
+      if(this.type === '4') {
+        Promise.all([
+          getOrganizeOrderDetail({
+            code: this.code
+          }),
+          getDictList('group_adopt_order_status')
+        ]).then(([res1, res2]) => {
+          this.loading = false;
+          this.detail = res1;
+          res2.map((item) => {
+            this.statusObj[item.dkey] = item.dvalue;
+          });
+        }).catch(() => { this.loading = false; });
+      } else {
+        Promise.all([
+          getOrderDetail({
+            code: this.code
+          }),
+          getDictList('adopt_order_status')
+        ]).then(([res1, res2]) => {
+          this.loading = false;
+          this.detail = res1;
+          res2.map((item) => {
+            this.statusObj[item.dkey] = item.dvalue;
+          });
+        }).catch(() => { this.loading = false; });
+      }
+    },
+    components: {
+      FullLoading,
+      Slider,
+      NoResult,
+      MHeader,
+      Scroll,
+      Toast,
+      ConfirmInput
+    }
+  };
+</script>
+<style lang="scss" scoped>
+  @import "~common/scss/variable";
+  .header-height{
+    width: 100%;
+    height: 0.88rem;
+  }
+  .booking-order-detail-wrapper {
+    background: #fff;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    .fl {
+      float: left;
+    }
+    .fr {
+      float: right;
+    }
+    .content {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: auto;
+      .status {
+        padding: 0.56rem;
+        text-align: center;
+        left: 0;
+        .icon {
+          width: 0.96rem;
+          height: 0.96rem;
+          margin-bottom: 0.2rem;
+        }
+        .status-text {
+          font-family: 'PingFangSC-Semibold';
+          color: #2D2D2D;
+          font-size: $font-size-medium-x;
+          line-height: 0.42rem;
+          margin-bottom: 0.12rem;
+        }
+        .remaining-time {
+          font-family: 'PingFang-SC-Medium';
+          font-size: 0.3rem;
+          color: #FE5656;
+          letter-spacing: 0.25px;
+        }
+      }
+      .gray {
+        width: 100%;
+        height: 0.2rem;
+        padding: 0;
+        background: #f5f5f5;
+      }
+      .top {
+        padding: 0.17rem 0.3rem;
+        font-size: $font-size-small;
+        line-height: 0.33rem;
+        color: #666;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid $color-border;
+        .item-status {
+          color: #FE5656;
+          line-height: 0.33rem;
+          display: inline;
+        }
+      }
+      .info {
+        display: flex;
+        font-size: 0;
+        padding: 0.3rem;
+        .imgWrap {
+          width: 1.5rem;
+          height: 1.5rem;
+          flex: 0 0 1.5rem;
+          margin-right: 0.2rem;
+          border-radius: 0.08rem;
+          position: relative;
+          overflow: hidden;
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: cover;
+        }
+        .text {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          .title {
+            font-size: 0.3rem;
+            line-height: 0.42rem;
+            margin-bottom: 0.17rem;
+            display: flex;
+            justify-content: space-between;
+            flex: 1;
+            .title-number {
+              color: #999;
+              font-size: 0.24rem;
+              line-height: 0.33rem;
+            }
+          }
+          .position {
+            font-size: 0.24rem;
+            line-height: 0.33rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+          }
+          .props {
+            font-size: $font-size-small;
+            line-height: 0.33rem;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+            .duration {
+              letter-spacing: 0.2px;
+            }
+            .price {
+              font-family: DIN-Bold;
+              font-size: 0.3rem;
+              color: #151515;
+              letter-spacing: 0.23px;
+              line-height: 0.3rem;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+      .identifyCode {
+        border-top: 1px solid $color-border;
+        padding: 0 0.3rem;
+      }
+      .order-list {
+        background: $color-highlight-background;
+        .item {
+          width: 100%;
+          font-size: $font-size-medium-x;
+          line-height: 1.1rem;
+          border-bottom: 1px solid #eee;
+        }
+      }
+      .btns {
+        display: flex;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0.98rem;
+        line-height: 0.98rem;
+        font-size: $font-size-large-s;
+        color: #fff;
+        border-top: 1px solid $color-border;
+
+        .btn {
+          flex: 1;
+          text-align: center;
+          background-color: $primary-color;
+
+          &.cancel {
+            color: $color-text;
+            background: #fff;
+          }
+        }
+      }
+      .order-info {
+        padding: 0.3rem;
+        color: #2D2D2D;
+        .order-info-title {
+          font-size: 0.3rem;
+          letter-spacing: 0.25px;
+          margin-bottom: 0.42rem;
+        }
+        .order-info-content {
+          font-size: 0.26rem;
+          letter-spacing: 0.22px;
+          p {
+            margin-bottom: 0.3rem;
+            span:first-child {
+              width: 30%;
+              display: inline-block;
+            }
+          }
+        }
+      }
+    }
+  }
+</style>

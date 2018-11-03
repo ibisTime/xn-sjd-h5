@@ -1,0 +1,152 @@
+<template>
+  <div class="tree-code-wrapper">
+    <!--<m-header class="cate-header" title="已认养名单"></m-header>-->
+    <div class="tree-code-list">
+      <scroll ref="scroll"
+              :data="dataList"
+              :pullUpLoad="pullUpLoad">
+        <div class="content">
+          <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
+            {{item.code}}
+          </div>
+        </div>
+        <no-result v-show="!(dataList && dataList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+      </Scroll>
+    </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <toast :text="toastText" ref="toast"></toast>
+  </div>
+</template>
+<script>
+  import Scroll from 'base/scroll/scroll';
+  import MHeader from 'components/m-header/m-header';
+  import NoResult from 'base/no-result/no-result';
+  import FullLoading from 'base/full-loading/full-loading';
+  import Toast from 'base/toast/toast';
+  import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
+  import defaltAvatarImg from './../../common/image/avatar@2x.png';
+  import { getAdoptList } from 'api/biz';
+
+  export default {
+    data() {
+      return {
+        toastText: '',
+        loading: false,
+        loadingText: '',
+        dataList: [{code: '33sjkfghe3'}, {code: '33akjb3'}, {code: '3s33'}, {code: '3jwfhkgaeywui33'}, {code: '33ajk3'}, {code: '33qw3'}, {code: '3q33'}, {code: '333'}],
+        pullUpLoad: null
+      };
+    },
+    mounted() {
+      let history = this.$route.query.history || false;
+      let type = this.$route.query.type || '';
+      if(history) {
+        setTitle('历史认养人');
+      } else {
+        if(type && type === '3') {
+          setTitle('已捐赠名单');
+        } else {
+          setTitle('已认养名单');
+        }
+      }
+      // this.getInitData();
+    },
+    methods: {
+      getInitData() {
+        this.getAdoptList();
+      },
+      getAdoptList() {
+        this.loading = true;
+        this.code = this.$route.query.code;
+        Promise.all([
+          getAdoptList({
+            productCode: this.code
+          })
+        ]).then(([res1]) => {
+          this.dataList = res1;
+          this.loading = false;
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      go(url) {
+        this.$router.push(url);
+      },
+      goUserHome(item) {
+        if(getUserId()) {
+          if(item.currentHolder === getUserId()) {
+            this.go(`/homepage`);
+          } else {
+            this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
+          }
+        } else {
+          this.toastText = '您未登录';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
+        }
+      },
+      formatAmount(amount) {
+        return formatAmount(amount);
+      },
+      formatDate(date, format) {
+        return formatDate(date, format);
+      },
+      getImgSyl(imgs) {
+        let img = imgs ? formatImg(imgs) : defaltAvatarImg;
+        return {
+          backgroundImage: `url(${img})`
+        };
+      },
+      jiami(mobile) {
+        return mobile.substr(0, 3) + '****' + mobile.substr(7);
+      }
+    },
+    components: {
+      Scroll,
+      MHeader,
+      NoResult,
+      FullLoading,
+      Toast
+    }
+  };
+</script>
+<style lang="scss" scoped>
+  @import "~common/scss/variable";
+  .tree-code-wrapper {
+    background: #fff;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    .fl {
+      float: left;
+    }
+    .fr {
+      float: right;
+    }
+    .tree-code-list {
+      background: $color-highlight-background;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0.3rem;
+      right: 0.3rem;
+      .content {
+        font-size: 0;
+        padding: 0.3rem 0;
+        .item {
+          display: inline-block;
+          font-size: $font-size-medium-s;
+          line-height: 0.37rem;
+          border: 1px solid $color-border;
+          padding: 0.11rem 0.16rem;
+          margin: 0 0.3rem 0.3rem 0;
+          color: #999;
+        }
+      }
+    }
+  }
+</style>

@@ -77,10 +77,6 @@ const Address = () => import('@/pages/address-list/address-list');
 const AddressAddEdit = () => import('@/pages/address-addedit/address-addedit');
 // 古树认养(列表页）
 const ProductList = () => import('@/pages/product-list/product-list');
-// 预售列表页
-const BookingProductList = () => import('@/pages/booking-product-list/booking-product-list');
-// 预售产品详情页
-const BookingProductDetail = () => import('@/pages/booking-product-detail/booking-product-detail');
 // 热门古树(列表页）
 const HotProductList = () => import('@/pages/hot-product-list/hot-product-list');
 // 古树详情
@@ -128,6 +124,24 @@ const Notices = () => import('@/pages/notices/notices');
 const NoticeDetail = () => import('@/pages/notice-detail/notice-detail');
 // 地图
 const Map = () => import('@/pages/map/map');
+// 二期
+
+// 预售列表页
+const BookingProductList = () => import('@/pages/booking-product-list/booking-product-list');
+// 预售产品详情页
+const BookingProductDetail = () => import('@/pages/booking-product-detail/booking-product-detail');
+// 预售订单
+const BookingOrder = () => import('@/pages/booking-order/booking-order');
+// 预售订单详情
+const BookingOrderDetail = () => import('@/pages/booking-order-detail/booking-order-detail');
+// 寄售大厅
+const ConsignmentHall = () => import('@/pages/consignment-hall/consignment-hall');
+// 寄售产品详情页
+const ConsignmentProductDetail = () => import('@/pages/consignment-product-detail/consignment-product-detail');
+// 树编号
+const TreeCode = () => import('@/pages/tree-code/tree-code');
+// 我的寄售
+const MyConsignment = () => import('@/pages/my-consignment/my-consignment');
 export default new Router({
   routes: [
     {
@@ -247,16 +261,6 @@ export default new Router({
         {
           path: 'product-detail',
           component: ProductDetail
-        }
-      ]
-    },
-    {
-      path: '/booking-product-list',
-      component: BookingProductList,
-      children: [
-        {
-          path: 'booking-product-detail',
-          component: BookingProductDetail
         }
       ]
     },
@@ -411,6 +415,47 @@ export default new Router({
     {
       path: '/map',
       component: Map
+    },
+    // 二期
+    {
+      path: '/booking-product-list',
+      component: BookingProductList,
+      children: [
+        {
+          path: 'booking-product-detail',
+          component: BookingProductDetail
+        }
+      ]
+    },
+    {
+      path: '/booking-order',
+      component: BookingOrder,
+      children: [
+        {
+          path: 'booking-order-detail',
+          component: BookingOrderDetail
+        }
+      ]
+    },
+    {
+      path: '/consignment-hall',
+      component: ConsignmentHall,
+      children: [
+        {
+          path: 'consignment-product-detail',
+          component: ConsignmentProductDetail,
+          children: [
+            {
+              path: 'tree-code',
+              component: TreeCode
+            }
+          ]
+        },
+        {
+          path: 'my-consignment',
+          component: MyConsignment
+        }
+      ]
     }
   ]
 });

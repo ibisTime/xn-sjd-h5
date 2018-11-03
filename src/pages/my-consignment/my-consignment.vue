@@ -1,21 +1,44 @@
 <template>
-  <div class="booking-product-wrapper">
-    <div class="header clearfix category-wrapper">
-      <category-scroll :currentIndex="currentIndex"
-                       :categorys="categorys"
-                       @select="selectCategory"></category-scroll>
+  <div class="consignment-hall-wrapper">
+    <div class="type">
+      <div @click="changeType(0)" :class="{active: type === 0}">我的树木资产</div>
+      <div @click="changeType(1)" :class="{active: type === 1}">寄售中</div>
+      <div @click="changeType(2)" :class="{active: type === 2}">已交易完成</div>
     </div>
     <div class="content">
       <div class="hot" v-show="proList.length">
         <Scroll :data="proList"
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
-        <div class="proList">
-          <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+item.code)" v-for="item in proList">
+          <div class="proList" v-show="type === 0">
+            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in proList">
+              <img :src="formatImg(item.listPic)" class="hot-pro-img">
+              <div class="hot-pro-text">
+                <p class="hot-pro-title">
+                  <span class="hot-pro-title-name">
+                    <span class="hot-pro-title-name-name">{{item.name}}</span>
+                  </span>
+                  <span class="hot-pro-title-date">可转让</span>
+                </p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥123</span><span class="hot-pro-bottom-number">库存：24</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="proList" v-show="type === 2">
+          <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in proList">
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
-              <p class="hot-pro-title">{{item.name}}</p>
-              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}起</span></p>
+              <p class="hot-pro-title">
+                <span class="hot-pro-title-name">
+                  <span class="hot-pro-title-name-name">{{item.name}}</span>
+                  <span class="dingxiang consignment-type">定向</span>
+                  <!--<span class="guadan consignment-type">挂单</span>-->
+                  <!--<span class="erweima consignment-type">二维码</span>-->
+                </span>
+
+                <span class="hot-pro-title-date">2018/10/28</span>
+              </p>
+              <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥123</span><span class="hot-pro-bottom-number">数量：24</span></p>
             </div>
           </div>
         </div>
@@ -68,7 +91,8 @@ export default {
       currentIndex: +this.$route.query.index || 0,
       currentIndexSub: +this.$route.query.index || 0,
       index: 0,
-      indexSub: 0
+      indexSub: 0,
+      type: 0
     };
   },
   methods: {
@@ -86,6 +110,9 @@ export default {
     },
     close() {
       this.showCheckIn = false;
+    },
+    changeType(index) {
+      this.type = index;
     },
     go(url) {
       this.$router.push(url);
@@ -234,7 +261,7 @@ export default {
     this.loading = true;
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
-    setTitle('预售列表');
+    setTitle('寄售大厅');
     Promise.all([
       getDictList('sell_type'),
       getProductType({
@@ -281,7 +308,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../common/scss/mixin.scss";
 @import "../../common/scss/variable.scss";
-.booking-product-wrapper {
+.consignment-hall-wrapper {
   position: fixed;
   width: 100%;
   bottom: 0;
@@ -293,36 +320,30 @@ export default {
   .fr {
     float: right;
   }
-  .category-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 0.8rem;
-    z-index: 100;
-    overflow: hidden;
-    line-height: 0.8rem;
+  .type {
+    font-size: 0;
     background: #fff;
+    height: 0.8rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
     border-bottom: 1px solid $color-border;
+    div {
+      width: 33.3%;
+      display: inline-block;
+      font-size: 0.3rem;
+      color: #666;
+      letter-spacing: 0.25px;
+    }
+    .active {
+      color: $primary-color;
+    }
   }
   .content {
-    margin: 0.8rem 0 0;
-    .bulletin {
-      display: flex;
-      align-items: center;
-      font-size: 0.24rem;
-      padding: 0.24rem 0.3rem;
-      background: #f0f9f6;
-      .title {
-        line-height: 0.33rem;
-        flex: 1;
-      }
-    }
     .hot {
       padding: 0 0.3rem 0;
       background: $color-highlight-background;
       position: absolute;
-      /*top: 2.4rem;*/
       top: 0.8rem;
       bottom: 0;
       left: 0;
@@ -335,48 +356,76 @@ export default {
         flex-wrap: wrap;
         font-size: 0;
         .item {
-          width: 3.3rem;
+          width: 100%;
           /*height: 5.17rem;*/
-          margin-top: 0.3rem;
-          border: 1px solid #e6e6e6;
-          border-radius: 0.04rem;
-          display: inline-block;
-          position: relative;
+          margin: 0.3rem 0 0;
+          border-bottom: 1px solid #e6e6e6;
+          display: flex;
+          padding-bottom: 0.3rem;
           .hot-pro-img {
-            height: 2.3rem;
-            width: 100%;
-            margin-bottom: 0.2rem;
+            height: 1.7rem;
+            width: 2.4rem;
+            margin-right: 0.3rem;
+            border-radius: 0.04rem;
           }
           .hot-pro-text {
-            padding: 0 0.2rem 0.2rem;
+            padding: 0.1rem 0 0 0;
+            flex: 1;
             p {
               font-size: 0;
-              display: flex;
-              align-items: flex-start;
-              justify-content: space-between;
             }
             .hot-pro-title {
-              font-size: $font-size-medium-x;
               line-height: 0.42rem;
-              margin-bottom: 0.19rem;
-            }
-            .hot-pro-place {
-              margin-bottom: 0.17rem;
-              img {
-                width: 0.77rem;
-                height: 0.32rem;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 0.7rem;
+              .hot-pro-title-name {
+                font-size: 0;
+                .hot-pro-title-name-name {
+                  font-size: 0.3rem;
+                }
+                .consignment-type {
+                  font-size: 0.2rem;
+                  line-height: 0.28rem;
+                  padding: 0.02rem 0.05rem;
+                  border-radius: 0.04rem;
+                  margin-left: 0.1rem;
+                }
+                .dingxiang {
+                  color: #3FC8ED;
+                  background: #daf2fa;
+                }
+                .guadan {
+                  color: #F0A65B;
+                  background: #faecdd;
+                }
+                .erweima {
+                  color: #F06C5B;
+                  background: #edd6d3;
+                }
+              }
+              .hot-pro-title-date {
+                font-size: 0.24rem;
+                color: #999;
               }
             }
-            .hot-pro-introduction {
-              color: $color-text-l;
-              font-size: $font-size-small;
-              line-height: $font-size-medium-xx;
-            }
-            .hot-pro-price {
-              color: $primary-color;
-              font-size: $font-size-medium-x;
-              line-height: 0.29rem;
-              font-weight: bold;
+            .hot-pro-bottom {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              .hot-pro-bottom-price {
+                font-family: 'DIN-Bold';
+                font-size:0.3rem;
+                color: $primary-color;
+                letter-spacing: 0.23px;
+                line-height: 0.3rem;
+                font-weight: 900;
+              }
+              .hot-pro-bottom-number {
+                font-size: 0.24rem;
+                color: #999;
+              }
             }
           }
         }

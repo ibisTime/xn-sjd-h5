@@ -1,5 +1,5 @@
 <template>
-  <div class="product-detail-wrapper">
+  <div class="product-detail-wrapper" :style="{bottom: buy || status === '2' || status === '3' ? '0.98rem' : '0'}">
     <!--<m-header class="cate-header" title="产品详情"></m-header>-->
     <div class="content">
       <Scroll ref='scroll' :pullUpLoad="pullUpLoad">
@@ -24,26 +24,38 @@
           <span>产品品种</span><span>{{detail.variety}}</span>
         </div>
         <div class="item">
-          <span>预售产出产量</span><span>{{detail.scientificName}}</span>
+          <span>总产出</span><span>{{detail.scientificName}}</span>
         </div>
-        <div class="item">
-          <span>单棵树产量</span><span>{{detail.variety}}</span>
+        <div class="item" v-show="status === '2'">
+          <span>可转让</span><span>{{detail.variety}}</span>
         </div>
-        <div class="item">
-          <span>树木总数</span><span>{{detail.scientificName}}</span>
+        <div class="item" v-show="status === '3'">
+          <span>可提货</span><span>{{detail.variety}}</span>
         </div>
-        <div class="item">
-          <span>年限</span><span>{{detail.variety}}</span>
+        <div class="item" v-show="status === '4'">
+          <span>转让</span><span>{{detail.variety}}</span>
         </div>
-        <div class="item">
-          <span>预计收货时间</span><span>{{detail.scientificName}}</span>
+        <div class="item" v-show="status === '5'">
+          <span>可生效</span><span>{{detail.variety}}</span>
         </div>
-        <div class="item">
-          <span>树编号</span>
+        <div class="item" v-show="status === '4'">
+          <span>已提货</span><span>{{detail.variety}}</span>
+        </div>
+        <div class="item" v-show="status === '4'">
+          <span>可支配</span><span>{{detail.variety}}</span>
+        </div>
+        <div class="item" v-show="status === '3' || status === '4' || status === '5'">
+          <span>转让有效时间</span><span>{{detail.variety}}</span>
+        </div>
+        <div class="item" v-show="status === '2'">
+          <span>转让截止时间</span><span>{{detail.variety}}</span>
+        </div>
+        <div class="item" @click="go('/consignment-hall/consignment-product-detail/tree-code')">
+          <span>树编号</span><span>209棵</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item">
-          <span>已预售名单</span>
+          <span>所属人</span>
           <img src="./more@2x.png" class="fr more">
         </div>
       </div>
@@ -55,16 +67,20 @@
           <div class="description-detail rich-text-description" v-html="detailDescription" ref="description"></div>
         </div>
       </div>
-      <!--<div class="mall-content">-->
-        <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
-      <!--</div>-->
       </Scroll>
     </div>
-    <div class="footer">
+    <div class="footer" v-show="buy">
       <span>¥1260.00～¥2480.00</span>
       <button class="fr" @click="showPopUp">确认购买</button>
     </div>
-    <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
+    <div class="footer" v-show="status === '2'">
+      <button class="two" @click="showAssignment">转让</button>
+      <button class="two">填写地址，确认自用</button>
+    </div>
+    <div class="footer" v-show="status === '3'">
+      <button class="one">确认购买</button>
+    </div>
+    <div :class="['mask',flag || assignmentFlag? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
       <div class="title">
         <div class="title-pic">
@@ -76,17 +92,10 @@
           <p class="position"><img src="./position@2x.png">{{detail.province}}{{detail.city}}{{detail.area}}</p>
         </div>
       </div>
-      <div class="packaging">
-        <p class="packaging-title">预售规格</p>
-        <div class="select">
-          <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">
-            <span class="item-name">{{item.name}}</span>
-            <div class="item-price-isSelect">
-              <span>¥{{formatAmount(item.price)}}</span>
-              <img src="./choosed@2x.png" v-show="choosedIndex === index">
-              <img src="./unchoosed@2x.png" v-show="choosedIndex !== index">
-            </div>
-          </div>
+      <div class="number">
+        <span>价格</span>
+        <div class="right">
+          <span>¥2480.00</span>
         </div>
       </div>
       <div class="number">
@@ -98,7 +107,44 @@
         </div>
       </div>
       <div class="buypart-bottom">
-        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
+        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(2480 * number)}})</div>
+      </div>
+    </div>
+    <div :class="['assignment-part',assignmentFlag ? 'show' : '']">
+      <div class="assignment-type">
+        <div @click="chooseType(0)" class="assignment-type-item">
+          <img src="./choosed@2x.png" v-show="choosedIndex === 0">
+          <img src="./unchoosed@2x.png" v-show="choosedIndex !== 0">
+          <span>二维码转让/转赠</span>
+        </div>
+        <div @click="chooseType(1)" class="assignment-type-item">
+          <img src="./choosed@2x.png" v-show="choosedIndex === 1">
+          <img src="./unchoosed@2x.png" v-show="choosedIndex !== 1">
+          <span>定向转让/转赠</span>
+        </div>
+        <div @click="chooseType(2)" class="assignment-type-item">
+          <img src="./choosed@2x.png" v-show="choosedIndex === 2">
+          <img src="./unchoosed@2x.png" v-show="choosedIndex !== 2">
+          <span>挂单寄售</span>
+        </div>
+      </div>
+      <div class="gray"></div>
+      <div class="assignment-info">
+        <div class="assignment-item" v-show="choosedIndex === 1">
+          <span>对方账号</span>
+          <input type="text" v-model="price" placeholder="请输入对方账号">
+        </div>
+        <div class="assignment-item">
+          <span>价格</span>
+          <input type="text" v-model="price" placeholder="请输入价格">
+        </div>
+        <div class="assignment-item">
+          <span>数量</span>
+          <input type="text" v-model="number" placeholder="请输入数量">
+        </div>
+      </div>
+      <div class="buypart-bottom">
+        <div class="confirm" @click="confirm()">{{assignmentBtnText()}}</div>
       </div>
     </div>
     <toast ref="toast" :text="text"></toast>
@@ -132,6 +178,7 @@ export default {
       pullUpLoad: null,
       detailDescription: '',
       flag: false,
+      assignmentFlag: false,
       number: 1,
       idCode: '',
       detail: {
@@ -145,7 +192,10 @@ export default {
       banners: [],
       loop: false,
       userDetail: {},
-      noAdoptReason: ''
+      noAdoptReason: '',
+      status: '2',
+      buy: 1, // 是否是从寄售大厅点进来要购买
+      price: 0
     };
   },
   methods: {
@@ -164,8 +214,18 @@ export default {
     showPopUp() {
       this.flag = true;
     },
+    showAssignment() {
+      this.assignmentFlag = true;
+    },
     genghuan() {
-      this.flag = !this.flag;
+      if(this.flag) {
+        this.flag = !this.flag;
+      } else if(this.assignmentFlag) {
+        this.assignmentFlag = !this.assignmentFlag;
+      }
+    },
+    assignmentBtnText() {
+      return this.choosedIndex === 0 ? '生成二维码' : '确定';
     },
     add() {
       this.number++;
@@ -257,7 +317,7 @@ export default {
         }, 1000);
       }
     },
-    chooseSpecs(index) {
+    chooseType(index) {
       this.choosedIndex = index;
     },
     getImgSyl(imgs) {
@@ -291,12 +351,7 @@ export default {
       initShare({
         title: '氧林',
         desc: this.detail.name,
-        // link: location.href.split('#')[0],
-        // link: location.origin + '/#' + location.href.split('#')[1],
-        // link: location.origin + '/#/product-detail?code=' + this.code,
         link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code,
-        // imgUrl: Logo
-        // imgUrl: 'http://image.tree.hichengdai.com/ForDa3S7_OY8tk81eGFag6PEchBF?imageMogr2/auto-orient/thumbnail/!300x300'
         imgUrl: formatImg(this.detail.listPic)
       }, (data) => {
         this.isWxConfiging = false;
@@ -311,12 +366,13 @@ export default {
     }
   },
   mounted() {
-    setTitle('预售详情');
+    setTitle('寄售详情');
     this.isWxConfiging = false;
     this.wxData = null;
     this.pullUpLoad = null;
     this.userId = getCookie('userId');
     this.code = this.$route.query.code;
+    this.buy = this.$route.query.buy || 0;
     this.loading = true;
     if(this.userId) {
       Promise.all([
@@ -514,6 +570,16 @@ export default {
       color: $color-highlight-background;
       font-size: 0.3rem;
     }
+    .one {
+      width: 100%;
+      font-size: 0.32rem;
+      line-height: 0.45rem;
+    }
+    .two {
+      width: 3.3rem;
+      font-size: 0.32rem;
+      line-height: 0.45rem;
+    }
   }
   .mask {
     width: 100%;
@@ -644,14 +710,19 @@ export default {
       margin: 0 0.3rem;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       span {
         font-size: 0.3rem;
       }
       .right {
-        flex: 1;
         display: table-cell;
         vertical-align: middle;
         text-align: center;
+        span {
+          font-size: 0.33rem;
+          color: $primary-color;
+          line-height: 0.33rem;
+        }
         .right-item {
           float: right;
           text-align: center;
@@ -668,6 +739,79 @@ export default {
           height: 0.36rem;
         }
       }
+    }
+    .buypart-bottom {
+      height: 0.98rem;
+      line-height: 0.9rem;
+      color: #fff;
+      font-size: $font-size-medium-x;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      left: 0;
+      padding: 0 0.3rem;
+      border-top: 1px solid $color-border;
+      display: flex;
+      align-items: center;
+      div {
+        display: inline-block;
+        width: 50%;
+        text-align: center;
+      }
+      .confirm {
+        border-radius: 0.08rem;
+        background: $primary-color;
+        width: 100%;
+        height: 0.9rem;
+        line-height: 0.98rem;
+      }
+    }
+  }
+  .assignment-part {
+    width: 100%;
+    height: 7.7rem;
+    position: fixed;
+    bottom: 0;
+    background-color: #fff;
+    display: none;
+    z-index: 9;
+    &.show {
+      display: block;
+    }
+    .assignment-type {
+      font-size: 0.3rem;
+      line-height: 0.42rem;
+      .assignment-type-item {
+        padding: 0.3rem;
+        border-bottom: 1px solid $color-border;
+        display: flex;
+        align-items: center;
+        img {
+          width: 0.36rem;
+          height: 0.36rem;
+          margin-right: 0.3rem;
+        }
+        span {
+          font-size: 0.3rem;
+          line-height: 0.42rem;
+        }
+      }
+    }
+    .assignment-info {
+      font-size: 0.26rem;
+      line-height: 0.37rem;
+      .assignment-item {
+        padding: 0.3rem;
+        border-bottom: 1px solid $color-border;
+        span {
+          margin-right: 0.3rem;
+          width: 30%;
+          display: inline-block;
+        }
+      }
+    }
+    .active {
+      color: $primary-color;
     }
     .buypart-bottom {
       height: 0.98rem;
