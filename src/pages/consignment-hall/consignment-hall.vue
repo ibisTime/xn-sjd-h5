@@ -1,8 +1,8 @@
 <template>
   <div class="consignment-hall-wrapper">
     <div class="type">
-      <div>按时间排</div>
-      <div>品种</div>
+      <div @click="changeType(0)" :class="{active: type === 0}">按时间排</div>
+      <div @click="changeType(1)" :class="{active: type === 1}">品种</div>
       <div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售</div>
     </div>
     <div class="content">
@@ -68,7 +68,8 @@ export default {
       currentIndex: +this.$route.query.index || 0,
       currentIndexSub: +this.$route.query.index || 0,
       index: 0,
-      indexSub: 0
+      indexSub: 0,
+      type: 0
     };
   },
   methods: {
@@ -89,6 +90,9 @@ export default {
     },
     go(url) {
       this.$router.push(url);
+    },
+    changeType(index) {
+      this.type = index;
     },
     canAdopt(item) {
       if(!this.userDetail.level) {
@@ -310,6 +314,10 @@ export default {
     }
     .my-consignment {
       border-left: 1px solid $color-border;
+    }
+    .active {
+      color: $primary-color;
+      font-family: PingFangSC-Semibold;
     }
   }
   .content {

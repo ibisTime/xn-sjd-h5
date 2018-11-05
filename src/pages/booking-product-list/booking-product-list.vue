@@ -1,9 +1,12 @@
 <template>
   <div class="booking-product-wrapper">
     <div class="header clearfix category-wrapper">
-      <category-scroll :currentIndex="currentIndex"
-                       :categorys="categorys"
-                       @select="selectCategory"></category-scroll>
+      <!--<category-scroll :currentIndex="currentIndex"-->
+                       <!--:categorys="categorys"-->
+                       <!--@select="selectCategory"></category-scroll>-->
+      <category-scroll :currentIndex="currentIndexSub"
+                       :categorys="categorysSub"
+                       @select="selectCategorySub"></category-scroll>
     </div>
     <div class="content">
       <div class="hot" v-show="proList.length">
@@ -40,7 +43,7 @@ import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
-import { getDictList } from 'api/general';
+// import { getDictList } from 'api/general';
 import { getProductPage, getProductType } from 'api/biz';
 import { getUserDetail } from 'api/user';
 export default {
@@ -172,7 +175,7 @@ export default {
     getSubType() {
       this.loading = true;
       getProductType({
-        parentCode: this.categorys[this.index].key,
+        parentCode: this.categoryCode,
         status: '1',
         orderDir: 'asc',
         orderColumn: 'order_no'
@@ -235,37 +238,38 @@ export default {
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
     setTitle('预售列表');
-    Promise.all([
-      getDictList('sell_type'),
-      getProductType({
-        orderDir: 'asc',
-        orderColumn: 'order_no',
-        status: '1'
-      })
-    ]).then(([res1, res2]) => {
-      res1.map((item) => {
-        this.sellTypeObj[item.dkey] = item.dvalue;
-      });
-      res2.map((item) => {
-        if(!item.parentCode) {
-          this.categorys.push({
-            value: item.name,
-            key: item.code
-          });
-        }
-      });
-      this.categorys.map((item, index) => {
-        if(item.key === this.categoryCode) {
-          this.index = index;
-          this.currentIndex = index;
-        }
-      });
-      this.loading = false;
-      this.getSubType();
-      if(this.userId) {
-        this.getUserDetail();
-      }
-    }).catch(() => { this.loading = false; });
+    this.getSubType();
+    // Promise.all([
+      // getDictList('sell_type'),
+      // getProductType({
+      //   orderDir: 'asc',
+      //   orderColumn: 'order_no',
+      //   status: '1'
+      // })
+    // ]).then(([res2]) => {
+      // res1.map((item) => {
+      //   this.sellTypeObj[item.dkey] = item.dvalue;
+      // });
+      // res2.map((item) => {
+      //   if(!item.parentCode) {
+      //     this.categorys.push({
+      //       value: item.name,
+      //       key: item.code
+      //     });
+      //   }
+      // });
+      // this.categorys.map((item, index) => {
+      //   if(item.key === this.categoryCode) {
+      //     this.index = index;
+      //     this.currentIndex = index;
+      //   }
+      // });
+    //   this.loading = false;
+    //   this.getSubType();
+    //   if(this.userId) {
+    //     this.getUserDetail();
+    //   }
+    // }).catch(() => { this.loading = false; });
   },
   components: {
     FullLoading,

@@ -21,7 +21,7 @@
           <div class="more" @click="go('/notices')">更多</div>
         </div>
         <div class="icons">
-          <div class="icon-item" @click="go('/product-list?typeCode=' + item.code)" v-for="item in proType">
+          <div class="icon-item" @click="goProList(item)" v-for="item in proType">
             <img :src="formatImg(item.pic)">
             <p>{{item.name}}</p>
           </div>
@@ -151,6 +151,13 @@ export default {
     },
     go(url) {
       this.$router.push(url);
+    },
+    goProList(item) {
+      if(item.name === '果树预售') {
+        this.go('/booking-product-list?typeCode=' + item.code);
+      } else {
+        this.go('/product-list?typeCode=' + item.code);
+      }
     },
     getImgSyl(imgs) {
       return {

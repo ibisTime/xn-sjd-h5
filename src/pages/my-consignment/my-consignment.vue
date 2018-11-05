@@ -24,6 +24,24 @@
               </div>
             </div>
           </div>
+          <div class="proList" v-show="type === 1">
+            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in proList">
+              <img :src="formatImg(item.listPic)" class="hot-pro-img">
+              <div class="hot-pro-text">
+                <p class="hot-pro-title">
+                <span class="hot-pro-title-name">
+                  <span class="hot-pro-title-name-name">{{item.name}}</span>
+                  <span class="dingxiang consignment-type">定向</span>
+                  <!--<span class="guadan consignment-type">挂单</span>-->
+                  <!--<span class="erweima consignment-type">二维码</span>-->
+                </span>
+
+                  <span class="hot-pro-title-date">2018/10/28</span>
+                </p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥123</span><span class="hot-pro-bottom-number">数量：24</span></p>
+              </div>
+            </div>
+          </div>
           <div class="proList" v-show="type === 2">
           <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in proList">
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
@@ -337,6 +355,7 @@ export default {
     }
     .active {
       color: $primary-color;
+      font-family: PingFangSC-Semibold;
     }
   }
   .content {
