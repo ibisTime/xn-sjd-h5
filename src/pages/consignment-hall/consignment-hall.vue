@@ -1,10 +1,42 @@
 <template>
   <div class="consignment-hall-wrapper">
-    <div class="type">
-      <div @click="changeType(0)" :class="{active: type === 0}">按时间排</div>
-      <div @click="changeType(1)" :class="{active: type === 1}">品种</div>
-      <div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售</div>
-    </div>
+    <!--<div class="type">-->
+      <!--<div @click="clickType"><span>1</span><img src="./up-choosed@2x.png"/></div>-->
+      <!--<div @click="clickType"><span>1</span><img src="./up-choosed@2x.png"/></div>-->
+      <!--<div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售</div>-->
+    <!--</div>-->
+    <category-sjd-consignment></category-sjd-consignment>
+    <!--<div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>-->
+    <!--<div :class="['buypart',flag ? 'show' : '']">-->
+      <!--<div class="title">-->
+        <!--<div class="title-pic">-->
+          <!--&lt;!&ndash;<img :src="formatImg(detail.bannerPic)" alt="">&ndash;&gt;-->
+        <!--</div>-->
+        <!--<div class="title-right">-->
+          <!--<i @click="genghuan">X</i>-->
+          <!--&lt;!&ndash;<p class="position"><img src="./position@2x.png">{{detail.province}}{{detail.city}}{{detail.area}}</p>&ndash;&gt;-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="packaging">-->
+        <!--<p class="packaging-title">认养规格</p>-->
+        <!--<div class="select">-->
+          <!--&lt;!&ndash;<div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">&ndash;&gt;-->
+            <!--&lt;!&ndash;<span v-show="detail.sellType !== '3'">{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>&ndash;&gt;-->
+            <!--&lt;!&ndash;<span v-show="detail.sellType === '3'">{{item.name}}：价格：¥{{formatAmount(item.price)}}</span>&ndash;&gt;-->
+            <!--&lt;!&ndash;<img src="./choosed@2x.png" v-show="choosedIndex === index">&ndash;&gt;-->
+            <!--&lt;!&ndash;<img src="./unchoosed@2x.png" v-show="choosedIndex !== index">&ndash;&gt;-->
+          <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="number">-->
+        <!--<span>认养份数</span>-->
+        <!--<div class="right">-->
+          <!--&lt;!&ndash;<img class="diamonds right-item" @click="add" src="./add@2x.png">&ndash;&gt;-->
+          <!--&lt;!&ndash;<input class="num right-item" v-model="number" type="number">&ndash;&gt;-->
+          <!--&lt;!&ndash;<img class="diamonds right-item" @click="sub" src="./sub@2x.png">&ndash;&gt;-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
     <div class="content">
       <div class="hot" v-show="proList.length">
         <Scroll :data="proList"
@@ -12,10 +44,10 @@
                 @pullingUp="getPageOrders">
         <div class="proList">
           <div class="item" @click="go('/consignment-hall/consignment-product-detail?buy=1&code='+item.code)" v-for="item in proList">
-            <img :src="formatImg(item.listPic)" class="hot-pro-img">
+            <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
-              <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.name}}</span><span class="hot-pro-title-date">2018/10/28</span></p>
-              <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥123</span><span class="hot-pro-bottom-number">可售数量：24</span></p>
+              <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.productName}}</span><span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span></p>
+              <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">可售数量：{{item.quantity}}</span></p>
             </div>
           </div>
         </div>
@@ -40,9 +72,10 @@ import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
-import { getDictList } from 'api/general';
-import { getProductPage, getProductType } from 'api/biz';
+// import { getDictList } from 'api/general';
+import { getDeriveZichanPage, getProductType } from 'api/biz';
 import { getUserDetail } from 'api/user';
+import CategorySjdConsignment from 'components/category-sjd-consignment/category-sjd-consignment';
 export default {
   data() {
     return {
@@ -69,15 +102,23 @@ export default {
       currentIndexSub: +this.$route.query.index || 0,
       index: 0,
       indexSub: 0,
-      type: 0
+      type: 0,
+      showFlag: true,
+      flag: false
     };
   },
   methods: {
+    clickType() {
+      this.flag = true;
+    },
+    genghuan() {
+      this.flag = !this.flag;
+    },
     formatAmount(amount) {
       return formatAmount(amount);
     },
-    formatDate(date, format) {
-      return formatDate(date, format);
+    formatDate(date) {
+      return formatDate(date, 'yyyy-MM-dd');
     },
     formatImg(img) {
       return formatImg(img);
@@ -193,25 +234,13 @@ export default {
         this.loading = false;
       }).catch(() => { this.loading = false; });
     },
-    getPageOrders() {
-      if(this.categorysSub[this.indexSub].key === 'all') {
-        this.parentCategoryCode = this.categorys[this.index].key;
-        this.selectdType = '';
-      } else {
-        this.parentCategoryCode = '';
-        this.selectdType = this.categorysSub[this.indexSub].key;
-      }
+    getPageOrder() {
       this.loading = true;
       Promise.all([
-        getProductPage({
+        getDeriveZichanPage({
           start: this.start,
           limit: this.limit,
-          // sellType: sellType,
-          parentCategoryCode: this.parentCategoryCode,
-          categoryCode: this.selectdType,
-          statusList: [4, 5, 6],
-          orderDir: 'asc',
-          orderColumn: 'order_no'
+          status: 0
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -239,39 +268,42 @@ export default {
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
     setTitle('寄售大厅');
-    Promise.all([
-      getDictList('sell_type'),
-      getProductType({
-        orderDir: 'asc',
-        orderColumn: 'order_no',
-        status: '1'
-      })
-    ]).then(([res1, res2]) => {
-      res1.map((item) => {
-        this.sellTypeObj[item.dkey] = item.dvalue;
-      });
-      res2.map((item) => {
-        if(!item.parentCode) {
-          this.categorys.push({
-            value: item.name,
-            key: item.code
-          });
-        }
-      });
-      this.categorys.map((item, index) => {
-        if(item.key === this.categoryCode) {
-          this.index = index;
-          this.currentIndex = index;
-        }
-      });
-      this.loading = false;
-      this.getSubType();
-      if(this.userId) {
-        this.getUserDetail();
-      }
-    }).catch(() => { this.loading = false; });
+    this.getPageOrder();
+    // Promise.all([
+    //   getDictList('sell_type'),
+    //   getProductType({
+    //     orderDir: 'asc',
+    //     orderColumn: 'order_no',
+    //     status: '1'
+    //   })
+    // ]).then(([res1, res2]) => {
+    //   res1.map((item) => {
+    //     this.sellTypeObj[item.dkey] = item.dvalue;
+    //   });
+    //   res2.map((item) => {
+    //     if(!item.parentCode) {
+    //       this.categorys.push({
+    //         value: item.name,
+    //         key: item.code
+    //       });
+    //     }
+    //   });
+    //   this.categorys.map((item, index) => {
+    //     if(item.key === this.categoryCode) {
+    //       this.index = index;
+    //       this.currentIndex = index;
+    //     }
+    //   });
+    //   this.loading = false;
+    //   this.getPageOrder();
+    //   // this.getSubType();
+    //   // if(this.userId) {
+    //   //   this.getUserDetail();
+    //   // }
+    // }).catch(() => { this.loading = false; });
   },
   components: {
+    CategorySjdConsignment,
     FullLoading,
     Toast,
     Slider,
@@ -297,6 +329,15 @@ export default {
   .fr {
     float: right;
   }
+  .mask {
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color: #000000, $alpha: 0.7);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+  }
   .type {
     font-size: 0;
     background: #fff;
@@ -311,6 +352,10 @@ export default {
       font-size: 0.3rem;
       color: #666;
       letter-spacing: 0.25px;
+    }
+    img {
+      width: 0.18rem;
+      height: 0.12rem;
     }
     .my-consignment {
       border-left: 1px solid $color-border;
@@ -330,6 +375,7 @@ export default {
       left: 0;
       right: 0;
       overflow: auto;
+      z-index: -1;
       .proList {
         background: $color-highlight-background;
         display: flex;
@@ -391,6 +437,199 @@ export default {
       }
     }
   }
-
+  .mask {
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color: #000000, $alpha: 0.7);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+  }
+  .show {
+    display: block;
+  }
+  .buypart {
+    width: 100%;
+    height: 7.7rem;
+    position: fixed;
+    bottom: 0;
+    background-color: #fff;
+    display: none;
+    z-index: 9;
+    &.show {
+      display: block;
+    }
+    // padding: 0 0.3rem;
+    .title {
+      height: 1.5rem;
+      position: relative;
+      border-bottom: 1px solid #eee;
+      margin: 0 0.3rem;
+      .title-pic {
+        position: absolute;
+        left: 0;
+        bottom: 0.28rem;
+        padding: 0.03rem;
+        border-radius: 0.1rem;
+        background-color: #fff;
+        img {
+          width: 1.6rem;
+          height: 1.6rem;
+        }
+      }
+      .title-right {
+        margin-left: 2.14rem;
+        position: relative;
+        overflow: hidden;
+        p {
+          margin-top: 0.27rem;
+          font-size: $font-size-medium-x;
+          line-height: 0.42rem;
+          color: #333;
+        }
+        span {
+          margin-top: 0.4rem;
+          font-size: $font-size-medium;
+          color: #999;
+        }
+        i {
+          width: 0.34rem;
+          line-height: 0.34rem;
+          line-height: 0.34rem;
+          font-size: $font-size-medium;
+          text-align: center;
+          color: #333;
+          border: 1px solid #333;
+          border-radius: 50%;
+          position: absolute;
+          top: 0.2rem;
+          right: 0;
+        }
+        .position {
+          font-size: 0.24rem;
+          line-height: 0.33rem;
+          color: $color-text-l;
+          img {
+            width: 0.16rem;
+            height: 0.2rem;
+            margin-right: 0.08rem;
+          }
+        }
+      }
+    }
+    .packaging {
+      height: 1.74rem;
+      border-bottom: 1px solid #eee;
+      margin: 0.3rem;
+      overflow: scroll;
+      .packaging-title {
+        font-size: $font-size-medium-x;
+        line-height: 0.42rem;
+        margin: 0 0 0.3rem 0;
+      }
+      p {
+        margin-top: 0.3rem;
+        margin-bottom: 0.4rem;
+        font-size: $font-size-medium-xx;
+        color: #333;
+      }
+      .select {
+        .select-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0.28rem;
+          span {
+            float: left;
+            min-width: 1.18rem;
+            padding: 0 0.1rem;
+            font-size: $font-size-medium-s;
+            border-radius: 0.1rem;
+            flex: 1;
+            color: #666;
+            line-height: 0.37rem;
+          }
+          img {
+            width: 0.36rem;
+          }
+          span + span {
+            margin-left: 0.2rem;
+          }
+        }
+      }
+    }
+    .number {
+      height: 1.1rem;
+      border-bottom: 1px solid #eee;
+      margin: 0 0.3rem;
+      display: flex;
+      align-items: center;
+      span {
+        font-size: 0.3rem;
+      }
+      .right {
+        flex: 1;
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+        .right-item {
+          float: right;
+          text-align: center;
+          line-height: 0.5rem;
+        }
+        .diamonds {
+          width: 0.36rem;
+          height: 0.36rem;
+        }
+        .num {
+          width: 0.9rem;
+          font-size: $font-size-medium-x;
+          color: #333;
+          height: 0.36rem;
+        }
+      }
+    }
+    .other {
+      height: 1.1rem;
+      border-bottom: 1px solid #eee;
+      margin: 0 0.3rem;
+      display: flex;
+      align-items: center;
+      font-size: 0.3rem;
+      span {
+        margin-right: 0.2rem;
+      }
+      input {
+        height: 70%;
+        border: 1px solid $color-border;
+      }
+    }
+    .buypart-bottom {
+      height: 0.98rem;
+      line-height: 0.9rem;
+      color: #fff;
+      font-size: $font-size-medium-x;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      left: 0;
+      padding: 0 0.3rem;
+      border-top: 1px solid $color-border;
+      display: flex;
+      align-items: center;
+      div {
+        display: inline-block;
+        width: 50%;
+        text-align: center;
+      }
+      .confirm {
+        border-radius: 0.08rem;
+        background: $primary-color;
+        width: 100%;
+        height: 0.9rem;
+        line-height: 0.98rem;
+      }
+    }
+  }
 }
 </style>

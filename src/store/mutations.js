@@ -7,6 +7,12 @@ const mutations = {
   },
   [types.SET_CURRENT_ORDER](state, order) {
     state.currentOrder = order;
+  },
+  [types.SET_PRE_ORDER_LIST](state, list) {
+    state.preOrderList = list;
+  },
+  [types.SET_CURRENT_PRE_ORDER](state, order) {
+    state.currentPreOrder = order;
   }
   // [types.SET_USER_STATE](state, me) {
   //   state.me = new User(me);

@@ -1,5 +1,5 @@
 <template>
-  <div class="product-detail-wrapper" :style="{bottom: buy || status === '2' || status === '3' ? '0.98rem' : '0'}">
+  <div class="product-detail-wrapper" :style="{bottom: buy || detail.status === '1' || detail.status === '2' ? '0.98rem' : '0'}">
     <!--<m-header class="cate-header" title="产品详情"></m-header>-->
     <div class="content">
       <Scroll ref='scroll' :pullUpLoad="pullUpLoad">
@@ -12,25 +12,25 @@
         </div>
       <div class="info">
         <div class="item">
-          <span>产品名称</span><span>{{detail.name}}</span>
+          <span>产品名称</span><span>{{detail.presellProduct.name}}</span>
         </div>
         <div class="item">
-          <span>产品产地</span><span>{{detail.name}}</span>
+          <span>产品产地</span><span>{{detail.presellProduct.originPlace}}</span>
         </div>
         <div class="item">
-          <span>产品学名</span><span>{{detail.scientificName}}</span>
+          <span>产品学名</span><span>{{detail.presellProduct.scientificName}}</span>
         </div>
         <div class="item">
-          <span>产品品种</span><span>{{detail.variety}}</span>
+          <span>产品品种</span><span>{{detail.presellProduct.variety}}</span>
         </div>
         <div class="item">
-          <span>总产出</span><span>{{detail.scientificName}}</span>
+          <span>总产出</span><span>{{detail.presellProduct.totalOutput}}</span>
         </div>
         <div class="item" v-show="status === '2'">
-          <span>可转让</span><span>{{detail.variety}}</span>
+          <span>可转让</span><span>{{detail.quantity}}</span>
         </div>
         <div class="item" v-show="status === '3'">
-          <span>可提货</span><span>{{detail.variety}}</span>
+          <span>可提货</span><span>{{detail.quantity}}</span>
         </div>
         <div class="item" v-show="status === '4'">
           <span>转让</span><span>{{detail.variety}}</span>
@@ -48,7 +48,7 @@
           <span>转让有效时间</span><span>{{detail.variety}}</span>
         </div>
         <div class="item" v-show="status === '2'">
-          <span>转让截止时间</span><span>{{detail.variety}}</span>
+          <span>转让截止时间</span><span>{{formatDate(detail.adoptEndDatetime)}}</span>
         </div>
         <div class="item" @click="go('/consignment-hall/consignment-product-detail/tree-code')">
           <span>树编号</span><span>209棵</span>
@@ -73,12 +73,12 @@
       <span>¥1260.00～¥2480.00</span>
       <button class="fr" @click="showPopUp">确认购买</button>
     </div>
-    <div class="footer" v-show="status === '2'">
+    <div class="footer" v-show="detail.status === '1'">
       <button class="two" @click="showAssignment">转让</button>
       <button class="two">填写地址，确认自用</button>
     </div>
-    <div class="footer" v-show="status === '3'">
-      <button class="one">确认购买</button>
+    <div class="footer" v-show="detail.status === '3'">
+      <button class="one">确认地址，确认自用</button>
     </div>
     <div :class="['mask',flag || assignmentFlag? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
@@ -162,7 +162,7 @@ import MHeader from 'components/m-header/m-header';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
-import { getProductDetail } from 'api/biz';
+import { getDeriveZichanDetail, getOriginZichanDetail, guadanjishou } from 'api/biz';
 import { getUserDetail } from 'api/user';
 // import Logo from './../../../static/sjdicon.ico';
 // import Logo from './tree-default.png';
@@ -182,7 +182,7 @@ export default {
       number: 1,
       idCode: '',
       detail: {
-        productSpecsList: [{price: 0}],
+        presellProduct: [{price: 0, name: ''}],
         province: '',
         city: '',
         area: ''
@@ -247,67 +247,27 @@ export default {
         this.go(`/productTree-list?code=${this.code}`);
       }
     },
-    // 是否可被认养
-    canAdopt() {
-      if(!this.userId) {
-        this.noAdoptReason = '您未登录';
-        return false;
-      }
-      if(this.detail.sellType === '1' && this.detail.raiseCount === this.detail.nowCount) {
-        // 销售类型为专属且未到认养量
-        this.noAdoptReason = '已被认养';
-        return false;
-      }
-      if(this.detail.sellType === '3') {
-        let curTime = new Date();
-        // 2把字符串格式转换为日期类
-        let startTime = new Date(Date.parse(this.detail.raiseStartDatetime));
-        let endTime = new Date(Date.parse(this.detail.raiseEndDatetime));
-        // 3进行比较
-        if(curTime <= startTime || curTime >= endTime) {
-          this.noAdoptReason = '当前不在募集期内';
-          return false;
-        }
-      }
-      if(this.detail.directType && this.detail.directType === '1') {
-        if(this.detail.raiseCount === this.detail.nowCount) {
-          this.noAdoptReason = '已被认养';
-          return false;
-        }
-        // 等级定向且用户为该等级
-        if(this.detail.directObject !== this.userDetail.level) {
-          this.noAdoptReason = '您不属于该产品定向的等级';
-          return false;
-        }
-      }
-      if(this.detail.directType && this.detail.directType === '2') {
-        if(this.detail.raiseCount === this.detail.nowCount) {
-          this.noAdoptReason = '已被认养';
-          return false;
-        }
-        if(this.detail.directObject !== this.userId) {
-          this.noAdoptReason = '您不是该产品定向的用户';
-          return false;
-        }
-        // 用户定向且是定向用户
-      }
-      if(this.detail.sellType === '4' && this.detail.raiseCount === this.detail.nowCount) {
-        // 销售类型为集体且未到认养量
-        this.noAdoptReason = '已满标';
-        return false;
-      }
-      return true;
-    },
     confirm() {
+      // debugger;
       if(this.userId) {
-        let proCode = this.detail.code;
-        let specsCode = this.detail.productSpecsList[this.choosedIndex].code;
-        let quantity = this.number;
-        if(this.detail.sellType !== '4') {
-          let type = this.detail.sellType;
-          this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
-        } else {
-          // 123
+        let price = this.price;
+        let number = this.number;
+        let type = this.type;
+        if(type === 0) {
+
+        } else if(type === 1) {
+
+        } else if(type === 2) {
+          guadanjishou({
+            code: this.code,
+            price: price * 1000,
+            quantity: number
+          }).then((res) => {
+            if(res.isSuccess) {
+              this.text = '发布成功';
+              this.$refs.toast.show();
+            }
+          });
         }
       } else {
         this.text = '您未登录';
@@ -319,6 +279,7 @@ export default {
     },
     chooseType(index) {
       this.choosedIndex = index;
+      this.type = index;
     },
     getImgSyl(imgs) {
       return {
@@ -374,9 +335,30 @@ export default {
     this.code = this.$route.query.code;
     this.buy = this.$route.query.buy || 0;
     this.loading = true;
-    if(this.userId) {
+    if(this.code[0] === 'O') {
       Promise.all([
-        getProductDetail({
+        getOriginZichanDetail({
+          code: this.code
+        }),
+        getUserDetail({
+          userId: this.userId
+        })
+      ]).then(([res1, res2]) => {
+        this.loading = false;
+        this.detail = res1;
+        this.detailDescription = res1.description;
+        this.banners = this.detail.presellProduct.bannerPic.split('||');
+        if(this.banners.length >= 2) {
+          this.loop = true;
+        }
+        this.userDetail = res2;
+        if(!this.isWxConfiging && !this.wxData) {
+          this.getInitWXSDKConfig();
+        }
+      }).catch(() => { this.loading = false; });
+    } else {
+      Promise.all([
+        getDeriveZichanDetail({
           code: this.code
         }),
         getUserDetail({
@@ -391,26 +373,9 @@ export default {
           this.loop = true;
         }
         this.userDetail = res2;
-        if(!this.isWxConfiging && !this.wxData) {
-          this.getInitWXSDKConfig();
-        }
-      }).catch(() => { this.loading = false; });
-    } else {
-      Promise.all([
-        getProductDetail({
-          code: this.code
-        })
-      ]).then(([res1]) => {
-        this.loading = false;
-        this.detail = res1;
-        this.detailDescription = res1.description;
-        this.banners = this.detail.bannerPic.split('||');
-        if(this.banners.length >= 2) {
-          this.loop = true;
-        }
-        if(!this.isWxConfiging && !this.wxData) {
-          this.getInitWXSDKConfig();
-        }
+        // if(!this.isWxConfiging && !this.wxData) {
+        //   this.getInitWXSDKConfig();
+        // }
       }).catch(() => { this.loading = false; });
     }
   },

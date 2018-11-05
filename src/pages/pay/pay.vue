@@ -37,7 +37,7 @@
           </div>
         </div>
         <div class="gray"></div>
-        <div class="score">
+        <div class="score" v-show="!pre">
           <p>积分抵扣</p>
           <div class="info-item">使用{{formatAmount(rate.jfAmount)}}积分抵扣{{formatAmount(rate.cnyAmount)}}元（剩余{{formatAmount(jf)}}积分）
             <div class="label">
@@ -69,7 +69,8 @@
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import { getCookie } from 'common/js/cookie';
   import { formatAmount, setTitle } from 'common/js/util';
-  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore } from 'api/biz';
+  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore,
+            getPreOrderDetail, payPreOrder} from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { getSystemConfigPage } from 'api/general';
 
@@ -87,66 +88,21 @@
         rate: 0,
         inputText: '',
         sysConfig: [],
-        identifyCode: ''
+        identifyCode: '',
+        pre: false
       };
     },
     mounted() {
       setTitle('支付订单');
       this.orderCode = this.$route.query.orderCode || '';
       this.type = this.$route.query.type;
-      let userId = getCookie('userId');
+      this.pre = this.$route.query.pre;
+      this.userId = getCookie('userId');
       this.loading = true;
-      if(this.orderCode[0] === 'G') {
-        // 集体订单
-        Promise.all([
-          getOrganizeOrderDetail({
-            code: this.orderCode
-          }),
-          getAccount({
-            userId: userId
-          }),
-          getOrganizeOrderScore(this.orderCode),
-          getUserDetail({userId: userId}),
-          this.getConfig()
-        ]).then(([res1, res2, res3, res4]) => {
-          this.identifyCode = res1.identifyCode;
-          this.amount = res1.amount;
-          this.rate = res3;
-          res2.list.map((item) => {
-            if(item.currency === 'CNY') {
-              this.cny = item.amount;
-            }
-            if(item.currency === 'JF') {
-              this.jf = item.amount;
-            }
-          });
-          this.userDetail = res4;
-        });
+      if(this.pre) {
+        this.getPreInitData();
       } else {
-        // 非集体订单
-        Promise.all([
-          getOrderDetail({
-            code: this.orderCode
-          }),
-          getAccount({
-            userId: userId
-          }),
-          getDeductibleAmount(this.orderCode),
-          getUserDetail({userId: userId}),
-          this.getConfig()
-        ]).then(([res1, res2, res3, res4]) => {
-          this.amount = res1.amount;
-          this.rate = res3;
-          res2.list.map((item) => {
-            if(item.currency === 'CNY') {
-              this.cny = item.amount;
-            }
-            if(item.currency === 'JF') {
-              this.jf = item.amount;
-            }
-          });
-          this.userDetail = res4;
-        });
+        this.getInitData();
       }
     },
     methods: {
@@ -155,6 +111,84 @@
       },
       go(url) {
         this.$router.push(url);
+      },
+      getInitData() {
+        if(this.orderCode[0] === 'G') {
+          // 集体订单
+          Promise.all([
+            getOrganizeOrderDetail({
+              code: this.orderCode
+            }),
+            getAccount({
+              userId: this.userId
+            }),
+            getOrganizeOrderScore(this.orderCode),
+            getUserDetail({userId: this.userId}),
+            this.getConfig()
+          ]).then(([res1, res2, res3, res4]) => {
+            this.identifyCode = res1.identifyCode;
+            this.amount = res1.amount;
+            this.rate = res3;
+            res2.list.map((item) => {
+              if(item.currency === 'CNY') {
+                this.cny = item.amount;
+              }
+              if(item.currency === 'JF') {
+                this.jf = item.amount;
+              }
+            });
+            this.userDetail = res4;
+          });
+        } else {
+          // 非集体订单
+          Promise.all([
+            getOrderDetail({
+              code: this.orderCode
+            }),
+            getAccount({
+              userId: this.userId
+            }),
+            getDeductibleAmount(this.orderCode),
+            getUserDetail({userId: this.userId}),
+            this.getConfig()
+          ]).then(([res1, res2, res3, res4]) => {
+            this.amount = res1.amount;
+            this.rate = res3;
+            res2.list.map((item) => {
+              if(item.currency === 'CNY') {
+                this.cny = item.amount;
+              }
+              if(item.currency === 'JF') {
+                this.jf = item.amount;
+              }
+            });
+            this.userDetail = res4;
+          });
+        }
+      },
+      getPreInitData() {
+        Promise.all([
+          getPreOrderDetail({
+            code: this.orderCode
+          }),
+          getAccount({
+            userId: this.userId
+          }),
+          getUserDetail({userId: this.userId}),
+          this.getConfig()
+        ]).then(([res1, res2, res3]) => {
+          this.identifyCode = res1.identifyCode;
+          this.amount = res1.amount;
+          res2.list.map((item) => {
+            if(item.currency === 'CNY') {
+              this.cny = item.amount;
+            }
+            if(item.currency === 'JF') {
+              this.jf = item.amount;
+            }
+          });
+          this.userDetail = res3;
+        });
       },
       selectPayType(index) {
         if(index === 1) {
@@ -188,7 +222,11 @@
             // this.curItem = item;
             this.$refs.confirmInput.show();
           } else {
-            this.payOrder();
+            if(this.pre) {
+              this.payPreOrder();
+            } else {
+              this.payOrder();
+            }
           }
         }
       },
@@ -236,6 +274,25 @@
           });
         }
       },
+      // 支付预售订单
+      payPreOrder() {
+        payPreOrder({
+          code: this.orderCode,
+          payType: this.payType,
+          tradePwd: this.pwd || ''
+        }).then((res) => {
+          this.loading = false;
+          if(res) {
+            if(this.payType === '3' && res.signOrder) {
+              this._alipay(res);
+            } else {
+              this.paySuccess();
+            }
+          }
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
       _alipay(res) {
         this.text = '正在跳转支付宝...';
         this.$refs.toast.show();
@@ -246,9 +303,15 @@
       paySuccess() {
         this.text = '支付成功';
         this.$refs.toast.show();
-        setTimeout(() => {
-          this.$router.push(`/my-order?type=${this.type}`);
-        }, 1000);
+        if(this.pre) {
+          setTimeout(() => {
+            this.$router.push(`/booking-order`);
+          }, 1000);
+        } else {
+          setTimeout(() => {
+            this.$router.push(`/my-order?type=${this.type}`);
+          }, 1000);
+        }
       },
       // 输入支付密码后点击确定执行的方法
       handleInputConfirm(text) {
@@ -259,7 +322,11 @@
           this.inputText = '支付密码';
           this.$refs.confirmInput.show();
         } else {
-          this.payOrder();
+          if(this.pre) {
+            this.payPreOrder();
+          } else {
+            this.payOrder();
+          }
         }
       },
       getConfig() {

@@ -258,10 +258,12 @@ export default {
       });
       res2.map((item) => {
         if(!item.parentCode) {
-          this.categorys.push({
-            value: item.name,
-            key: item.code
-          });
+          if(item.name !== '果树预售') {
+            this.categorys.push({
+              value: item.name,
+              key: item.code
+            });
+          }
         }
       });
       this.categorys.map((item, index) => {

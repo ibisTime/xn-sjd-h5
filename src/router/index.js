@@ -443,19 +443,17 @@ export default new Router({
       children: [
         {
           path: 'consignment-product-detail',
-          component: ConsignmentProductDetail,
-          children: [
-            {
-              path: 'tree-code',
-              component: TreeCode
-            }
-          ]
+          component: ConsignmentProductDetail
         },
         {
           path: 'my-consignment',
           component: MyConsignment
         }
       ]
+    },
+    {
+      path: '/tree-code',
+      component: TreeCode
     }
   ]
 });

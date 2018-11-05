@@ -3,40 +3,40 @@
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="status">
-          <img src="./overdue@1.5x.png" class="icon">
-          <p class="status-text">订单已过期</p>
-          <p class="remaining-time">剩余时间：20:00</p>
+          <!--<img src="./overdue@1.5x.png" class="icon">-->
+          <img src="./daizhifu@2x.png" class="icon" v-if="detail.status === '0'">
+          <img src="./yiquxiao@2x.png" class="icon" v-if="detail.status === '1'">
+          <p class="status-text">订单{{statusObj[detail.status]}}</p>
+          <!--<p class="remaining-time">剩余时间：20:00</p>-->
         </div>
         <div class="gray"></div>
         <div class="order-list">
           <!--<Scroll :pullUpLoad="pullUpLoad">-->
-            <div class="item" @click="go('/product-detail?code='+detail.productCode)">
+            <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+detail.productCode)">
               <div class="top">
                 <span class="item-code">产权方</span>
                 <span class="item-status">{{statusObj[detail.status]}}</span>
               </div>
               <div class="info">
-                <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
+                <div class="imgWrap" :style="getImgSyl(detail.presellProduct.listPic)"></div>
                 <div class="text">
-                  <p class="title"><span class="title-title">{{detail.product.name}}</span><span class="title-number">x{{detail.quantity}}</span></p>
-                  <p class="position">预售规格：10斤装</p>
-                  <div class="props"><span class="duration">合计1件商品</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
+                  <p class="title"><span class="title-title">{{detail.presellProduct.name}}</span><span class="title-number">x{{detail.quantity}}</span></p>
+                  <p class="position">预售规格：{{detail.specsName}}</p>
+                  <div class="props"><span class="duration">合计{{detail.quantity}}件商品</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
                 </div>
               </div>
-              <div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}}</div>
               <div class="gray"></div>
             </div>
-            <div class="gray" v-show="detail.status === '3'"></div>
             <div class="order-info">
               <div class="order-info-title">订单信息</div>
               <div class="order-info-content">
-                <p><span>订单号</span><span>111111111</span></p>
-                <p><span>订单金额</span><span>111111111</span></p>
+                <p><span>订单号</span><span>{{detail.code}}</span></p>
+                <p><span>订单金额</span><span>{{formatAmount(detail.amount)}}</span></p>
                 <p><span>卖家</span><span>111111111</span></p>
                 <p><span>支付流水号</span><span>111111111</span></p>
-                <p><span>预计发货时间</span><span>111111111</span></p>
+                <p><span>预计发货时间</span><span>{{formatDate(detail.presellProduct.harvestDatetime)}}</span></p>
                 <p><span>树木编号</span><span>111111111</span></p>
-                <p><span>数量</span><span>111111111</span></p>
+                <p><span>数量</span><span>{{detail.quantity}}</span></p>
               </div>
             </div>
           <!--</Scroll>-->
@@ -62,7 +62,7 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
-  import { getOrderDetail, getOrganizeOrderDetail, cancelOrder } from 'api/biz';
+  import { getPreOrderDetail, cancelOrder } from 'api/biz';
   import { getDictList } from 'api/general';
   import defaultImg from './tree@3x.png';
 
@@ -77,7 +77,7 @@
         loadingText: '',
         text: '',
         pullUpLoad: null,
-        detail: {product: {}, adoptOrderTreeList: {}},
+        detail: {presellProduct: {listPic: ''}, adoptOrderTreeList: {}},
         choosedIndex: 0,
         code: '',   // 产品code,
         statusObj: {}
@@ -150,35 +150,19 @@
       setTitle('预售订单详情');
       this.pullUpLoad = null;
       this.code = this.$route.query.code;
-      this.type = this.$route.query.type;// 订单类型（1个人/2定向/3捐赠/4集体）
       this.loading = true;
-      if(this.type === '4') {
-        Promise.all([
-          getOrganizeOrderDetail({
-            code: this.code
-          }),
-          getDictList('group_adopt_order_status')
-        ]).then(([res1, res2]) => {
-          this.loading = false;
-          this.detail = res1;
-          res2.map((item) => {
-            this.statusObj[item.dkey] = item.dvalue;
-          });
-        }).catch(() => { this.loading = false; });
-      } else {
-        Promise.all([
-          getOrderDetail({
-            code: this.code
-          }),
-          getDictList('adopt_order_status')
-        ]).then(([res1, res2]) => {
-          this.loading = false;
-          this.detail = res1;
-          res2.map((item) => {
-            this.statusObj[item.dkey] = item.dvalue;
-          });
-        }).catch(() => { this.loading = false; });
-      }
+      Promise.all([
+        getPreOrderDetail({
+          code: this.code
+        }),
+        getDictList('presell_order_status')
+      ]).then(([res1, res2]) => {
+        this.loading = false;
+        this.detail = res1;
+        res2.map((item) => {
+          this.statusObj[item.dkey] = item.dvalue;
+        });
+      }).catch(() => { this.loading = false; });
     },
     components: {
       FullLoading,
@@ -319,10 +303,6 @@
             }
           }
         }
-      }
-      .identifyCode {
-        border-top: 1px solid $color-border;
-        padding: 0 0.3rem;
       }
       .order-list {
         background: $color-highlight-background;

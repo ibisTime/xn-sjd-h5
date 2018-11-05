@@ -58,7 +58,7 @@
     },
     data() {
       return {
-        showFlag: false,
+        showFlag: true,
         priceIndex: -1,
         minPrice: '',
         maxPrice: '',

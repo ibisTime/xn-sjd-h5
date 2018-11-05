@@ -47,18 +47,30 @@
         </div>
         <div class="item" @click="go('/my-order')">
           <img src="./order@2x.png" class="me-list-icon">
-          <span>我的订单</span>
+          <span>我的认养订单</span>
           <img src="./more@2x.png" class="fr more">
         </div>
+        <div class="white"></div>
+        <div class="item" @click="go('/consignment-hall')">
+          <img src="./consignment-hall@2x.png" class="me-list-icon">
+          <span>寄售大厅</span>
+          <img src="./more@2x.png" class="fr more">
+        </div>
+        <div class="item" @click="go('/booking-order')">
+          <img src="./booking-order@2x.png" class="me-list-icon">
+          <span>我的预售订单</span>
+          <img src="./more@2x.png" class="fr more">
+        </div>
+        <div class="white"></div>
         <div class="item" @click="go('/my-article')">
           <img src="./article@2x.png" class="me-list-icon">
           <span>我的文章</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <!--<div class="item" @click="go('/my-collect')">-->
-          <!--<img src="./collection@2x.png">-->
-          <!--<span>我的收藏</span>-->
-          <!--<img src="./more@2x.png" class="fr more">-->
+        <!--<img src="./collection@2x.png">-->
+        <!--<span>我的收藏</span>-->
+        <!--<img src="./more@2x.png" class="fr more">-->
         <!--</div>-->
         <div class="item" @click="go('/invitation')">
           <img src="./invitation@2x.png" class="me-list-icon">
@@ -338,6 +350,7 @@
         width: 100%;
         height: 1.1rem;
         font-size: $font-size-medium-x;
+        font-family: PingFangSC-Semibold;
         line-height: 1.1rem;
         border-bottom: 1px solid #eee;
         display: flex;
@@ -352,6 +365,11 @@
           flex: 1;
         }
       }
+    }
+    .white {
+      width: 100%;
+      height: 0.3rem;
+      padding: 0;
     }
   }
 </style>

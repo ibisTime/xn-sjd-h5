@@ -2,7 +2,8 @@ const state = {
   user: null,
   cnyAccount: null,
   jfAccount: null,
-  orderList: {}
+  orderList: {},
+  preOrderList: {}
 };
 
 export default state;

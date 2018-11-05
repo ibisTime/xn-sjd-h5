@@ -470,3 +470,87 @@ export function getAdoptList(data) {
     ...data
   });
 }
+
+// 二期
+// 分页查询预售产品
+export function getBookingProPage(data) {
+  return fetch(629415, {
+    ...data
+  });
+}
+
+// 详情查询预售产品
+export function getBookingProDetail(data) {
+  return fetch(629416, {
+    ...data
+  });
+}
+
+// 下单预售产品
+export function placePreOrder(data) {
+  return fetch(629420, {
+    ...data
+  });
+}
+
+// 详细查询预售订单
+export function getPreOrderDetail(data) {
+  return fetch(629426, {
+    ...data
+  });
+}
+
+// 支付预售订单
+export function payPreOrder(data) {
+  return fetch(629422, {
+    ...data
+  });
+}
+
+// 分页查询预售订单
+export function getPreOrderPage(start, limit, status, type) {
+  let params = {
+    start,
+    limit,
+    status,
+    userId: getUserId()
+  };
+  return fetch(629425, {
+    ...params
+  });
+}
+
+// 分页查询原生资产
+export function getOriginZichanPage(data) {
+  return fetch(629435, {
+    ...data
+  });
+}
+
+// 分页查询原生资产
+export function getOriginZichanDetail(data) {
+  return fetch(629436, {
+    ...data
+  });
+}
+
+// 分页查询派生资产
+export function getDeriveZichanPage(data) {
+  return fetch(629455, {
+    ...data
+  });
+}
+
+// 详细查询派生资产
+export function getDeriveZichanDetail(data) {
+  return fetch(629456, {
+    ...data
+  });
+}
+
+// 挂单寄售
+export function guadanjishou(data) {
+  return fetch(629432, {
+    ...data
+  });
+}

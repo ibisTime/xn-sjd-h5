@@ -4,3 +4,4 @@
 //
 // export const jfAccount = state => state.jfAccount;
 export const orderList = state => state.orderList;
+export const preOrderList = state => state.preOrderList;

@@ -1,32 +1,32 @@
 <template>
-  <div class="consignment-hall-wrapper">
+  <div class="my-consignment-wrapper">
     <div class="type">
       <div @click="changeType(0)" :class="{active: type === 0}">我的树木资产</div>
       <div @click="changeType(1)" :class="{active: type === 1}">寄售中</div>
       <div @click="changeType(2)" :class="{active: type === 2}">已交易完成</div>
     </div>
     <div class="content">
-      <div class="hot" v-show="proList.length">
-        <Scroll :data="proList"
+      <div class="hot" v-show="type === 0 && originList.length || type === 1 && deriveList.length">
+        <Scroll :data="type === 0 ? originList : deriveList"
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
           <div class="proList" v-show="type === 0">
-            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in proList">
-              <img :src="formatImg(item.listPic)" class="hot-pro-img">
+            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in originList">
+              <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
               <div class="hot-pro-text">
                 <p class="hot-pro-title">
                   <span class="hot-pro-title-name">
-                    <span class="hot-pro-title-name-name">{{item.name}}</span>
+                    <span class="hot-pro-title-name-name">{{item.productName}}</span>
                   </span>
-                  <span class="hot-pro-title-date">可转让</span>
+                  <span class="hot-pro-title-date">{{originStatusObj[item.status]}}</span>
                 </p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥123</span><span class="hot-pro-bottom-number">库存：24</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">库存：{{item.quantity}}</span></p>
               </div>
             </div>
           </div>
           <div class="proList" v-show="type === 1">
-            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in proList">
-              <img :src="formatImg(item.listPic)" class="hot-pro-img">
+            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in deriveList">
+              <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
               <div class="hot-pro-text">
                 <p class="hot-pro-title">
                 <span class="hot-pro-title-name">
@@ -43,8 +43,8 @@
             </div>
           </div>
           <div class="proList" v-show="type === 2">
-          <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in proList">
-            <img :src="formatImg(item.listPic)" class="hot-pro-img">
+            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in deriveList">
+            <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">
                 <span class="hot-pro-title-name">
@@ -59,11 +59,11 @@
               <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥123</span><span class="hot-pro-bottom-number">数量：24</span></p>
             </div>
           </div>
-        </div>
+          </div>
         </Scroll>
       </div>
       <div class="mall-content">
-        <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+        <no-result v-show="showNoResult()" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
       </div>
     </div>
     <full-loading v-show="loading" :title="title"></full-loading>
@@ -82,7 +82,7 @@ import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getDictList } from 'api/general';
-import { getProductPage, getProductType } from 'api/biz';
+import { getOriginZichanPage, getDeriveZichanPage, getProductType } from 'api/biz';
 import { getUserDetail } from 'api/user';
 export default {
   data() {
@@ -95,14 +95,12 @@ export default {
       start: 1,
       limit: 10,
       hasMore: true,
-      proList: [],
+      originList: [],
+      deriveList: [{presellProduct: {listPic: ''}}],
       categorys: [],
       categorysSub: [{value: '全部', key: 'all'}],
-      sellTypeObj: {},
-        // {value: '个人', key: '0'},
-        // {value: '定向', key: '1'},
-        // {value: '集体', key: '2'},
-        // {value: '捐赠', key: '3'}],
+      originStatusObj: {},
+      deriveStatusObj: {},
       userDetail: {},
       showCheckIn: false,
       pullUpLoad: null,
@@ -114,6 +112,15 @@ export default {
     };
   },
   methods: {
+    showNoResult() {
+      if(this.type === 1 && !this.originList.length && !this.hasMore) {
+        return true;
+      }
+      if(this.type === 2 && !this.deriveList.length && !this.hasMore) {
+        return true;
+      }
+      return false;
+    },
     formatAmount(amount) {
       return formatAmount(amount);
     },
@@ -131,140 +138,61 @@ export default {
     },
     changeType(index) {
       this.type = index;
+      this.start = 1;
+      this.limit = 10;
+      this.originList = [];
+      this.deriveList = [];
+      this.getPageOrders();
     },
     go(url) {
       this.$router.push(url);
     },
-    canAdopt(item) {
-      if(!this.userDetail.level) {
-        return '您未登录';
-      }
-      // 专属产品
-      if(item.sellType === '1') {
-        // 销售类型为专属且未到认养量
-        if(item.raiseCount === item.nowCount) {
-          return '已被认养';
-        } else {
-          return '可认养';
-        }
-      }
-      // 定向产品
-      if(item.directType && item.directType === '1') {
-        // 等级定向且用户为该等级
-        if(item.raiseCount === item.nowCount) {
-          return '已被认养';
-        }
-        if(item.directObject !== this.userDetail.level) {
-          return '不可认养';
-        } else {
-          return '可认养';
-        }
-      }
-      if(item.directType && item.directType === '2') {
-        // 用户定向且是定向用户
-        if(item.raiseCount === item.nowCount) {
-          return '已被认养';
-        }
-        if(item.directObject !== this.userId) {
-          return '不可认养';
-        } else {
-          return '可认养';
-        }
-      }
-      // 捐赠产品
-      if(item.sellType === '3') {
-        let curTime = new Date();
-        // 2把字符串格式转换为日期类
-        let startTime = new Date(Date.parse(item.raiseStartDatetime));
-        let endTime = new Date(Date.parse(item.raiseEndDatetime));
-        // 3进行比较
-        if(curTime <= startTime || curTime >= endTime) {
-          return '不可认养';
-        } else {
-          return '可认养';
-        }
-      }
-      // 专属产品
-      if(item.sellType === '4') {
-        // 销售类型为专属且未到认养量
-        if(item.raiseCount === item.nowCount) {
-          return '已满标';
-        } else {
-          return '可认养';
-        }
-      }
-    },
-    selectCategory(index) {
-      this.index = index;
-      this.indexSub = 0;
-      this.currentIndexSub = 0;
-      this.currentIndex = index;
-      this.start = 1;
-      this.limit = 10;
-      this.proList = [];
-      this.loading = true;
-      this.getSubType();
-    },
-    selectCategorySub(index) {
-      this.indexSub = index;
-      this.currentIndexSub = index;
-      this.start = 1;
-      this.limit = 10;
-      this.proList = [];
-      this.getPageOrders();
-    },
-    // 获取下级分类
-    getSubType() {
-      this.loading = true;
-      getProductType({
-        parentCode: this.categorys[this.index].key,
-        status: '1',
-        orderDir: 'asc',
-        orderColumn: 'order_no'
-      }).then((res) => {
-        this.categorysSub = [{value: '全部', key: 'all'}];
-        res.map((item) => {
-          this.categorysSub.push({
-            value: item.name,
-            key: item.code
-          });
-        });
-        this.selectdType = this.categorysSub[this.indexSub].key;
-        this.getPageOrders();
-        this.loading = false;
-      }).catch(() => { this.loading = false; });
-    },
     getPageOrders() {
-      if(this.categorysSub[this.indexSub].key === 'all') {
-        this.parentCategoryCode = this.categorys[this.index].key;
-        this.selectdType = '';
-      } else {
-        this.parentCategoryCode = '';
-        this.selectdType = this.categorysSub[this.indexSub].key;
-      }
       this.loading = true;
-      Promise.all([
-        getProductPage({
+      if(this.type === 0) {
+        Promise.all([
+          getOriginZichanPage({
+            start: this.start,
+            limit: this.limit,
+            ownerId: this.userId
+          })
+        ]).then(([res1]) => {
+          if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
+            this.hasMore = false;
+          }
+          res1.list.map(function () {
+            res1.applyDatetime = formatDate(res1.applyDatetime);
+          });
+          this.originList = this.originList.concat(res1.list);
+          this.start++;
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
+      } else {
+        this.params = {
           start: this.start,
           limit: this.limit,
-          // sellType: sellType,
-          parentCategoryCode: this.parentCategoryCode,
-          categoryCode: this.selectdType,
-          statusList: [4, 5, 6],
-          orderDir: 'asc',
-          orderColumn: 'order_no'
-        })
-      ]).then(([res1]) => {
-        if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
-          this.hasMore = false;
+          creater: this.userId,
+          status: 0
+        };
+        if(this.type === 1) {
+          this.params.status = 0;
+        } else {
+          this.params.statusList = [1, 2];
         }
-        res1.list.map(function () {
-          res1.applyDatetime = formatDate(res1.applyDatetime);
-        });
-        this.proList = this.proList.concat(res1.list);
-        this.start++;
-        this.loading = false;
-      }).catch(() => { this.loading = false; });
+        Promise.all([
+          getDeriveZichanPage(this.params)
+        ]).then(([res1]) => {
+          if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
+            this.hasMore = false;
+          }
+          res1.list.map(function () {
+            res1.applyDatetime = formatDate(res1.applyDatetime);
+          });
+          this.deriveList = this.deriveList.concat(res1.list);
+          this.start++;
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
+      }
     },
     getUserDetail() {
       getUserDetail({
@@ -281,17 +209,21 @@ export default {
     this.categoryCode = this.$route.query.typeCode || '';
     setTitle('寄售大厅');
     Promise.all([
-      getDictList('sell_type'),
+      getDictList('original_group_status'),
+      getDictList('derive_group_status'),
       getProductType({
         orderDir: 'asc',
         orderColumn: 'order_no',
         status: '1'
       })
-    ]).then(([res1, res2]) => {
+    ]).then(([res1, res2, res3]) => {
       res1.map((item) => {
-        this.sellTypeObj[item.dkey] = item.dvalue;
+        this.originStatusObj[item.dkey] = item.dvalue;
       });
       res2.map((item) => {
+        this.deriveStatusObj[item.dkey] = item.dvalue;
+      });
+      res3.map((item) => {
         if(!item.parentCode) {
           this.categorys.push({
             value: item.name,
@@ -306,10 +238,11 @@ export default {
         }
       });
       this.loading = false;
-      this.getSubType();
-      if(this.userId) {
-        this.getUserDetail();
-      }
+      this.getPageOrders();
+      // this.getSubType();
+      // if(this.userId) {
+      //   this.getUserDetail();
+      // }
     }).catch(() => { this.loading = false; });
   },
   components: {
@@ -326,12 +259,13 @@ export default {
 <style lang="scss" scoped>
 @import "../../common/scss/mixin.scss";
 @import "../../common/scss/variable.scss";
-.consignment-hall-wrapper {
+.my-consignment-wrapper {
   position: fixed;
   width: 100%;
   bottom: 0;
   top: 0;
   left: 0;
+  background: #fff;
   .fl {
     float: left;
   }

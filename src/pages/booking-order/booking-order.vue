@@ -21,11 +21,11 @@
               <span class="item-status">{{formatStatus(item.status)}}</span>
             </div>
             <div class="info">
-              <div class="imgWrap" :style="getImgSyl(item.product.listPic)"></div>
+              <div class="imgWrap" :style="getImgSyl(item.presellProduct.listPic)"></div>
               <div class="text">
-                <p class="title"><span class="title-title">{{item.product.name}}</span><span class="title-number">x{{item.quantity}}</span></p>
-                <p class="position">预售规格：10斤装</p>
-                <div class="props"><span class="duration">合计1件商品</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
+                <p class="title"><span class="title-title">{{item.presellProduct.name}}</span><span class="title-number">x{{item.quantity}}</span></p>
+                <p class="position">预售规格：{{item.specsName}}</p>
+                <div class="props"><span class="duration">合计{{item.quantity}}件商品</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
               </div>
             </div>
             <div class="clearfix btns" v-show="showBtns(item.status)">
@@ -55,8 +55,8 @@
   import Toast from 'base/toast/toast'; // 已加载完/加载时的loading
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import {mapGetters, mapMutations, mapActions} from 'vuex';
-  import {SET_ORDER_LIST, SET_CURRENT_ORDER} from 'store/mutation-types';
-  import {getPageOrders, cancelOrder, cancelGroupOrder} from 'api/biz';
+  import {SET_PRE_ORDER_LIST, SET_CURRENT_PRE_ORDER} from 'store/mutation-types';
+  import {getPreOrderPage, cancelOrder, cancelGroupOrder} from 'api/biz';
   import { getDictList } from 'api/general';
   import {formatAmount, formatImg, setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
@@ -103,7 +103,8 @@
     computed: {
       currentList() {
         if(this.categorysStatus[this.currentIndex]) {
-          let _curListObj = this.orderList[this.categorysStatus[this.currentIndex].key];
+          console.log(this.preOrderList);
+          let _curListObj = this.preOrderList[this.categorysStatus[this.currentIndex].key];
           if (!_curListObj) {
             _curListObj = {
               start: 1,
@@ -117,34 +118,19 @@
           return _curListObj;
         }
       },
-      ...mapGetters(['orderList'])
+      ...mapGetters(['preOrderList'])
     },
     methods: {
       getInitData() {
         // this.getCategorysSell();
         this.getCategorysStatus(0);
-        this.getStatus();
-        this.getGroupStatus();
+        // this.getGroupStatus();
         if (this.shouldGetData()) {
           this.first = false;
           // 清除缓存的订单列表数据
-          this.setOrderList({});
+          this.setPreOrderList({});
           this.getPageOrders();
         }
-      },
-      getStatus() {
-        getDictList('adopt_order_status').then((res) => {
-          res.map((item) => {
-            this.statusObj[item.dkey] = item.dvalue;
-          });
-        });
-      },
-      getGroupStatus() {
-        getDictList('group_adopt_order_status').then((res) => {
-          res.map((item) => {
-            this.groupStatusObj[item.dkey] = item.dvalue;
-          });
-        });
       },
       shouldGetData() {
         if (this.$route.path === '/booking-order') {
@@ -166,19 +152,14 @@
       //   }).catch(() => {});
       // },
       // 获取状态分类
-      getCategorysStatus(index) {
-        if(index === '4') {
-          this.dkey = 'group_adopt_order_status';
-        } else {
-          this.dkey = 'adopt_order_status';
-        }
-        this.categorysStatus = [{key: 'all', value: '全部'}];
-        getDictList(this.dkey).then((res) => {
+      getCategorysStatus() {
+        getDictList('presell_order_status').then((res) => {
           res.map((item) => {
             this.categorysStatus.push({
               key: item.dkey,
               value: item.dvalue
             });
+            this.statusObj[item.dkey] = item.dvalue;
           });
         }).catch(() => {});
       },
@@ -195,7 +176,7 @@
         this.type = index;
         this.first = false;
         // 清除缓存的订单列表数据
-        this.setOrderList({});
+        this.setPreOrderList({});
         this.getPageOrders();
       },
       changeStatus(index) {
@@ -213,8 +194,8 @@
         // return ORDER_STATUS[status];
       },
       goDetail(item) {
-        this.setCurrentOrder(item);
-        this.$router.push(`/booking-order/booking-order-detail?code=${item.code}&type=${item.product.sellType}`);
+        this.setCurrentPreOrder(item);
+        this.$router.push(`/booking-order/booking-order-detail?code=${item.code}`);
       },
       payOrder(item) {
         this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
@@ -271,7 +252,7 @@
         if(this.curItem.product.sellType === '4') {
           cancelGroupOrder(this.curItem.code, text).then(() => {
             this.fetching = false;
-            this.editOrderListByCancel({
+            this.editPreOrderListByCancel({
               code: this.curItem.code
             });
           }).catch(() => {
@@ -280,7 +261,7 @@
         } else {
           cancelOrder(this.curItem.code, text).then(() => {
             this.fetching = false;
-            this.editOrderListByCancel({
+            this.editPreOrderListByCancel({
               code: this.curItem.code
             });
           }).catch(() => {
@@ -292,8 +273,8 @@
         let key = this.categorysStatus[this.currentIndex].key;
         let status = key === 'all' ? '' : key;
         if (this.currentList.hasMore) {
-          getPageOrders(this.currentList.start, this.currentList.limit, status, this.type).then((data) => {
-            let _orderOri = this.orderList[key];
+          getPreOrderPage(this.currentList.start, this.currentList.limit, status, this.type).then((data) => {
+            let _orderOri = this.preOrderList[key];
             let _order;
             if (!_orderOri) {
               _order = {
@@ -318,20 +299,20 @@
             };
             _currentList.data = _currentList.data.concat(data.list);
             let _orderList = {
-              ...this.orderList,
+              ...this.preOrderList,
               [_currentList['key']]: _currentList
             };
-            this.setOrderList(_orderList);
+            this.setPreOrderList(_orderList);
           });
         }
       },
       ...mapMutations({
-        'setOrderList': SET_ORDER_LIST,
-        'setCurrentOrder': SET_CURRENT_ORDER
+        'setPreOrderList': SET_PRE_ORDER_LIST,
+        'setCurrentPreOrder': SET_CURRENT_PRE_ORDER
       }),
       ...mapActions([
-        'editOrderListByRating',
-        'editOrderListByCancel'
+        'editPreOrderListByPay',
+        'editPreOrderListByCancel'
       ])
     },
     components: {

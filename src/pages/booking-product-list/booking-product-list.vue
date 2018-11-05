@@ -18,7 +18,7 @@
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
-              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}起</span></p>
+              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}</span></p>
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@ import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 // import { getDictList } from 'api/general';
-import { getProductPage, getProductType } from 'api/biz';
+import { getBookingProPage, getProductType } from 'api/biz';
 import { getUserDetail } from 'api/user';
 export default {
   data() {
@@ -164,6 +164,7 @@ export default {
       this.getSubType();
     },
     selectCategorySub(index) {
+      this.selectdType = this.categorysSub[index].key;
       this.indexSub = index;
       this.currentIndexSub = index;
       this.start = 1;
@@ -187,31 +188,35 @@ export default {
             key: item.code
           });
         });
+        console.log(this.categorysSub);
         this.selectdType = this.categorysSub[this.indexSub].key;
         this.getPageOrders();
         this.loading = false;
       }).catch(() => { this.loading = false; });
     },
     getPageOrders() {
-      if(this.categorysSub[this.indexSub].key === 'all') {
-        this.parentCategoryCode = this.categorys[this.index].key;
-        this.selectdType = '';
+      if(this.selectdType === 'all') {
+        this.params = {
+          start: this.start,
+          limit: this.limit,
+          parentCategoryCode: this.categoryCode,
+          statusList: [4],
+          orderDir: 'asc',
+          orderColumn: 'order_no'
+        };
       } else {
-        this.parentCategoryCode = '';
-        this.selectdType = this.categorysSub[this.indexSub].key;
+        this.params = {
+          start: this.start,
+          limit: this.limit,
+          categoryCode: this.selectdType,
+          statusList: [4],
+          orderDir: 'asc',
+          orderColumn: 'order_no'
+        };
       }
       this.loading = true;
       Promise.all([
-        getProductPage({
-          start: this.start,
-          limit: this.limit,
-          // sellType: sellType,
-          parentCategoryCode: this.parentCategoryCode,
-          categoryCode: this.selectdType,
-          statusList: [4, 5, 6],
-          orderDir: 'asc',
-          orderColumn: 'order_no'
-        })
+        getBookingProPage(this.params)
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
           this.hasMore = false;

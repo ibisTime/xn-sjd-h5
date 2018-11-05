@@ -15,7 +15,7 @@
           <span>产品名称</span><span>{{detail.name}}</span>
         </div>
         <div class="item">
-          <span>产品产地</span><span>{{detail.name}}</span>
+          <span>产品产地</span><span>{{detail.originPlace}}</span>
         </div>
         <div class="item">
           <span>产品学名</span><span>{{detail.scientificName}}</span>
@@ -24,22 +24,22 @@
           <span>产品品种</span><span>{{detail.variety}}</span>
         </div>
         <div class="item">
-          <span>预售产出产量</span><span>{{detail.scientificName}}</span>
+          <span>预售产出产量</span><span>{{detail.totalOutput}}</span>
         </div>
         <div class="item">
-          <span>单棵树产量</span><span>{{detail.variety}}</span>
+          <span>单棵树产量</span><span>{{detail.singleOutput}}</span>
         </div>
         <div class="item">
-          <span>树木总数</span><span>{{detail.scientificName}}</span>
+          <span>树木总数</span><span>{{detail.treeList.length}}</span>
         </div>
         <div class="item">
-          <span>年限</span><span>{{detail.variety}}</span>
+          <span>年限</span><span>{{detail.adopt_year}}</span>
         </div>
         <div class="item">
-          <span>预计收货时间</span><span>{{detail.scientificName}}</span>
+          <span>预计收货时间</span><span>{{formatDate(detail.harvestDatetime)}}</span>
         </div>
-        <div class="item">
-          <span>树编号</span>
+        <div class="item" @click="go(`/tree-code?code=${detail.code}`)">
+          <span>树编号</span><span>{{detail.treeList.length}}棵</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item">
@@ -61,7 +61,8 @@
       </Scroll>
     </div>
     <div class="footer">
-      <span>¥1260.00～¥2480.00</span>
+      <span v-show="detail.minPrice !== detail.maxPrice">¥{{formatAmount(detail.minPrice)}}～¥{{formatAmount(detail.maxPrice)}}</span>
+      <span v-show="detail.minPrice === detail.maxPrice">¥{{formatAmount(detail.minPrice)}}</span>
       <button class="fr" @click="showPopUp">确认购买</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
@@ -79,7 +80,7 @@
       <div class="packaging">
         <p class="packaging-title">预售规格</p>
         <div class="select">
-          <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">
+          <div class="select-item" v-for="(item, index) in detail.presellSpecsList" @click="chooseSpecs(index)" :key="index">
             <span class="item-name">{{item.name}}</span>
             <div class="item-price-isSelect">
               <span>¥{{formatAmount(item.price)}}</span>
@@ -98,7 +99,7 @@
         </div>
       </div>
       <div class="buypart-bottom">
-        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
+        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.presellSpecsList[choosedIndex].price) * number}})</div>
       </div>
     </div>
     <toast ref="toast" :text="text"></toast>
@@ -116,7 +117,7 @@ import MHeader from 'components/m-header/m-header';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
-import { getProductDetail } from 'api/biz';
+import { getBookingProDetail } from 'api/biz';
 import { getUserDetail } from 'api/user';
 // import Logo from './../../../static/sjdicon.ico';
 // import Logo from './tree-default.png';
@@ -241,14 +242,9 @@ export default {
     confirm() {
       if(this.userId) {
         let proCode = this.detail.code;
-        let specsCode = this.detail.productSpecsList[this.choosedIndex].code;
+        let specsCode = this.detail.presellSpecsList[this.choosedIndex].code;
         let quantity = this.number;
-        if(this.detail.sellType !== '4') {
-          let type = this.detail.sellType;
-          this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
-        } else {
-          // 123
-        }
+        this.go('/protocol?sign=1&pre=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity);
       } else {
         this.text = '您未登录';
         this.$refs.toast.show();
@@ -291,12 +287,7 @@ export default {
       initShare({
         title: '氧林',
         desc: this.detail.name,
-        // link: location.href.split('#')[0],
-        // link: location.origin + '/#' + location.href.split('#')[1],
-        // link: location.origin + '/#/product-detail?code=' + this.code,
         link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code,
-        // imgUrl: Logo
-        // imgUrl: 'http://image.tree.hichengdai.com/ForDa3S7_OY8tk81eGFag6PEchBF?imageMogr2/auto-orient/thumbnail/!300x300'
         imgUrl: formatImg(this.detail.listPic)
       }, (data) => {
         this.isWxConfiging = false;
@@ -320,7 +311,7 @@ export default {
     this.loading = true;
     if(this.userId) {
       Promise.all([
-        getProductDetail({
+        getBookingProDetail({
           code: this.code
         }),
         getUserDetail({
@@ -341,7 +332,7 @@ export default {
       }).catch(() => { this.loading = false; });
     } else {
       Promise.all([
-        getProductDetail({
+        getBookingProDetail({
           code: this.code
         })
       ]).then(([res1]) => {

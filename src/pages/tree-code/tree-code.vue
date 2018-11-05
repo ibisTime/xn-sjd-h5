@@ -23,9 +23,8 @@
   import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
-  import defaltAvatarImg from './../../common/image/avatar@2x.png';
-  import { getAdoptList } from 'api/biz';
+  import {formatAmount, formatDate, setTitle} from 'common/js/util';
+  import { getBookingProDetail } from 'api/biz';
 
   export default {
     data() {
@@ -33,7 +32,8 @@
         toastText: '',
         loading: false,
         loadingText: '',
-        dataList: [{code: '33sjkfghe3'}, {code: '33akjb3'}, {code: '3s33'}, {code: '3jwfhkgaeywui33'}, {code: '33ajk3'}, {code: '33qw3'}, {code: '3q33'}, {code: '333'}],
+        dataList: [],
+        // dataList: [{code: '33sjkfghe3'}, {code: '33akjb3'}, {code: '3s33'}, {code: '3jwfhkgaeywui33'}, {code: '33ajk3'}, {code: '33qw3'}, {code: '3q33'}, {code: '333'}],
         pullUpLoad: null
       };
     },
@@ -49,7 +49,7 @@
           setTitle('已认养名单');
         }
       }
-      // this.getInitData();
+      this.getInitData();
     },
     methods: {
       getInitData() {
@@ -59,48 +59,21 @@
         this.loading = true;
         this.code = this.$route.query.code;
         Promise.all([
-          getAdoptList({
-            productCode: this.code
+          getBookingProDetail({
+            code: this.code
           })
         ]).then(([res1]) => {
-          this.dataList = res1;
+          this.dataList = res1.treeList;
           this.loading = false;
         }).catch(() => {
           this.loading = false;
         });
-      },
-      go(url) {
-        this.$router.push(url);
-      },
-      goUserHome(item) {
-        if(getUserId()) {
-          if(item.currentHolder === getUserId()) {
-            this.go(`/homepage`);
-          } else {
-            this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
-          }
-        } else {
-          this.toastText = '您未登录';
-          this.$refs.toast.show();
-          setTimeout(() => {
-            this.$router.push('/login');
-          }, 1000);
-        }
       },
       formatAmount(amount) {
         return formatAmount(amount);
       },
       formatDate(date, format) {
         return formatDate(date, format);
-      },
-      getImgSyl(imgs) {
-        let img = imgs ? formatImg(imgs) : defaltAvatarImg;
-        return {
-          backgroundImage: `url(${img})`
-        };
-      },
-      jiami(mobile) {
-        return mobile.substr(0, 3) + '****' + mobile.substr(7);
       }
     },
     components: {

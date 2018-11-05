@@ -28,7 +28,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
   import { getCookie } from 'common/js/cookie';
-  import { placeOrder, recognizeOrder, recognizeOrderFirst, getProductDetail, getCompany } from 'api/biz';
+  import { placeOrder, recognizeOrder, recognizeOrderFirst, getProductDetail, getBookingProDetail, getCompany, placePreOrder } from 'api/biz';
   import { getSystemConfigCkey } from 'api/general';
   import { setTitle } from 'common/js/util';
 
@@ -56,6 +56,7 @@
       this.type = this.$route.query.type || '';
       this.identifyCode = this.$route.query.identifyCode || '';
       this.register = this.$route.query.register || '';
+      this.pre = this.$route.query.pre || '';  // 是否为预售
       this.loading = true;
       if(this.register) {
         getSystemConfigCkey('REGISTRATION_AGREEMENT').then((res) => {
@@ -63,57 +64,88 @@
           this.xyText = res.cvalue;
         }).catch(() => { this.loading = false; });
       } else {
-        Promise.all([
-          getProductDetail({code: this.proCode}).then((res) => {
-            getCompany({userId: res.ownerId}).then((data) => {
-              this.loading = false;
-              this.xyText = data.contractTemplate;
-            });
-          })
-        ]).catch(() => { this.loading = false; });
+        if(this.pre) {
+          Promise.all([
+            getBookingProDetail({code: this.proCode}).then((res) => {
+              getCompany({userId: res.ownerId}).then((data) => {
+                this.loading = false;
+                this.xyText = data.contractTemplate;
+              });
+            })
+          ]).catch(() => { this.loading = false; });
+        } else {
+          Promise.all([
+            getProductDetail({code: this.proCode}).then((res) => {
+              getCompany({userId: res.ownerId}).then((data) => {
+                this.loading = false;
+                this.xyText = data.contractTemplate;
+              });
+            })
+          ]).catch(() => { this.loading = false; });
+        }
       }
     },
     methods: {
+      // 点击签署协议
       confirm() {
-        let userId = getCookie('userId');
-        this.loading = true;
-        if(this.type) {
-          // 非集体下单
-          placeOrder({
-            productCode: this.proCode,
-            specsCode: this.specsCode,
-            userId: userId,
-            quantity: this.quantity,
-            type: this.type
-          }).then((res) => {
-            this.loading = false;
-            this.go('/pay?orderCode=' + res.code + '&type=' + this.type);
-          }).catch(() => { this.loading = false; });
+        if(this.pre) {
+          this.preConfirm();
         } else {
-          // 集体下单
-          if(this.identifyCode) {
-            // 非第一人
-            recognizeOrder({
-              identifyCode: this.identifyCode,
-              userId: userId,
-              quantity: this.quantity
-            }).then((res) => {
-              this.loading = false;
-              this.go('/pay?orderCode=' + res);
-            }).catch(() => { this.loading = false; });
-          } else {
-            // 第一人
-            recognizeOrderFirst({
+          let userId = getCookie('userId');
+          this.loading = true;
+          if(this.type) {
+            // 非集体下单
+            placeOrder({
               productCode: this.proCode,
               specsCode: this.specsCode,
               userId: userId,
-              quantity: this.quantity
+              quantity: this.quantity,
+              type: this.type
             }).then((res) => {
               this.loading = false;
-              this.go('/pay?orderCode=' + res);
+              this.go('/pay?orderCode=' + res.code + '&type=' + this.type);
             }).catch(() => { this.loading = false; });
+          } else {
+            // 集体下单
+            if(this.identifyCode) {
+              // 非第一人
+              recognizeOrder({
+                identifyCode: this.identifyCode,
+                userId: userId,
+                quantity: this.quantity
+              }).then((res) => {
+                this.loading = false;
+                this.go('/pay?orderCode=' + res);
+              }).catch(() => { this.loading = false; });
+            } else {
+              // 第一人
+              recognizeOrderFirst({
+                productCode: this.proCode,
+                specsCode: this.specsCode,
+                userId: userId,
+                quantity: this.quantity
+              }).then((res) => {
+                this.loading = false;
+                this.go('/pay?orderCode=' + res);
+              }).catch(() => { this.loading = false; });
+            }
           }
         }
+      },
+      // 预售签署协议
+      preConfirm() {
+        let userId = getCookie('userId');
+        this.loading = true;
+        placePreOrder({
+          // productCode: this.proCode,
+          specsCode: this.specsCode,
+          userId: userId,
+          quantity: this.quantity
+          // type: this.type
+        }).then((res) => {
+          this.loading = false;
+          this.go('/pay?pre=1&orderCode=' + res.code);
+        }).catch(() => { this.loading = false; });
       },
       go(url) {
         this.$router.push(url);
