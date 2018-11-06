@@ -7,7 +7,7 @@
               :pullUpLoad="pullUpLoad">
         <div class="content">
           <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
-            {{item.code}}
+            {{item.code || item.treeNumber}}
           </div>
         </div>
         <no-result v-show="!(dataList && dataList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
@@ -24,7 +24,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
   import {formatAmount, formatDate, setTitle} from 'common/js/util';
-  import { getBookingProDetail } from 'api/biz';
+  import { getBookingProDetail, getDeriveZichanDetail, getOriginZichanDetail } from 'api/biz';
 
   export default {
     data() {
@@ -38,22 +38,27 @@
       };
     },
     mounted() {
-      let history = this.$route.query.history || false;
-      let type = this.$route.query.type || '';
-      if(history) {
-        setTitle('历史认养人');
+      this.derive = this.$route.query.derive || '';
+      this.origin = this.$route.query.origin || '';
+      this.buy = this.$route.query.buy || '';
+      setTitle('树编号');
+      if(this.derive) {
+        this.getJishouInitData();
+      } else if(this.origin) {
+        this.getOriginInitData();
       } else {
-        if(type && type === '3') {
-          setTitle('已捐赠名单');
-        } else {
-          setTitle('已认养名单');
-        }
+        this.getInitData();
       }
-      this.getInitData();
     },
     methods: {
       getInitData() {
         this.getAdoptList();
+      },
+      getJishouInitData() {
+        this.getJishouList();
+      },
+      getOriginInitData() {
+        this.getOriginList();
       },
       getAdoptList() {
         this.loading = true;
@@ -64,6 +69,34 @@
           })
         ]).then(([res1]) => {
           this.dataList = res1.treeList;
+          this.loading = false;
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      getJishouList() {
+        this.loading = true;
+        this.code = this.$route.query.code;
+        Promise.all([
+          getDeriveZichanDetail({
+            code: this.code
+          })
+        ]).then(([res1]) => {
+          this.dataList = res1.treeList;
+          this.loading = false;
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      getOriginList() {
+        this.loading = true;
+        this.code = this.$route.query.code;
+        Promise.all([
+          getOriginZichanDetail({
+            code: this.code
+          })
+        ]).then(([res1]) => {
+          this.dataList = res1.treeNumberList;
           this.loading = false;
         }).catch(() => {
           this.loading = false;

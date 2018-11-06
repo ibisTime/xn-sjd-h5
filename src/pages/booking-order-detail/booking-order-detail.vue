@@ -14,7 +14,7 @@
           <!--<Scroll :pullUpLoad="pullUpLoad">-->
             <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+detail.productCode)">
               <div class="top">
-                <span class="item-code">产权方</span>
+                <span class="item-code">{{detail.sellerName}}</span>
                 <span class="item-status">{{statusObj[detail.status]}}</span>
               </div>
               <div class="info">
@@ -22,7 +22,7 @@
                 <div class="text">
                   <p class="title"><span class="title-title">{{detail.presellProduct.name}}</span><span class="title-number">x{{detail.quantity}}</span></p>
                   <p class="position">预售规格：{{detail.specsName}}</p>
-                  <div class="props"><span class="duration">合计{{detail.quantity}}件商品</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
+                  <div class="props"><span class="duration">合计{{detail.quantity}}件商品</span><span class="price">¥{{formatAmount(detail.amount)}}</span></div>
                 </div>
               </div>
               <div class="gray"></div>
@@ -31,11 +31,11 @@
               <div class="order-info-title">订单信息</div>
               <div class="order-info-content">
                 <p><span>订单号</span><span>{{detail.code}}</span></p>
-                <p><span>订单金额</span><span>{{formatAmount(detail.amount)}}</span></p>
-                <p><span>卖家</span><span>111111111</span></p>
-                <p><span>支付流水号</span><span>111111111</span></p>
+                <p><span>订单金额</span><span>{{formatAmount(detail.amount)}}元</span></p>
+                <p><span>卖家</span><span>{{detail.sellerName}}</span></p>
+                <p><span>支付流水号</span><span>{{detail.jourCode}}</span></p>
                 <p><span>预计发货时间</span><span>{{formatDate(detail.presellProduct.harvestDatetime)}}</span></p>
-                <p><span>树木编号</span><span>111111111</span></p>
+                <p><span>树木编号</span><span>{{detail.treeNumbers}}</span></p>
                 <p><span>数量</span><span>{{detail.quantity}}</span></p>
               </div>
             </div>

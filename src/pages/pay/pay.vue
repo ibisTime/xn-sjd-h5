@@ -37,7 +37,7 @@
           </div>
         </div>
         <div class="gray"></div>
-        <div class="score" v-show="!pre">
+        <div class="score" v-show="!pre && !jishou">
           <p>积分抵扣</p>
           <div class="info-item">使用{{formatAmount(rate.jfAmount)}}积分抵扣{{formatAmount(rate.cnyAmount)}}元（剩余{{formatAmount(jf)}}积分）
             <div class="label">
@@ -59,6 +59,7 @@
     </div>
     <confirm-input ref="confirmInput" :inpType="'password'" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast ref="toast" :text="text"></toast>
+    <full-loading v-show="loading"></full-loading>
   </div>
 </template>
 <script>
@@ -67,16 +68,18 @@
   import SwitchOption from 'base/switch-option/switch-option';
   import Toast from 'base/toast/toast';
   import ConfirmInput from 'base/confirm-input/confirm-input';
+  import FullLoading from 'base/full-loading/full-loading'; // loading
   import { getCookie } from 'common/js/cookie';
   import { formatAmount, setTitle } from 'common/js/util';
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore,
-            getPreOrderDetail, payPreOrder} from 'api/biz';
+            getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder} from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { getSystemConfigPage } from 'api/general';
 
   export default {
     data() {
       return {
+        loading: false,
         text: '',
         // wechat: true,    // 微信支付
         alipay: false,   // 支付宝支付
@@ -89,7 +92,8 @@
         inputText: '',
         sysConfig: [],
         identifyCode: '',
-        pre: false
+        pre: false,
+        jishou: false
       };
     },
     mounted() {
@@ -97,10 +101,12 @@
       this.orderCode = this.$route.query.orderCode || '';
       this.type = this.$route.query.type;
       this.pre = this.$route.query.pre;
+      this.jishou = this.$route.query.jishou;
       this.userId = getCookie('userId');
-      this.loading = true;
       if(this.pre) {
         this.getPreInitData();
+      } else if(this.jishou) {
+        this.getJishouInitData();
       } else {
         this.getInitData();
       }
@@ -113,6 +119,7 @@
         this.$router.push(url);
       },
       getInitData() {
+        this.loading = true;
         if(this.orderCode[0] === 'G') {
           // 集体订单
           Promise.all([
@@ -138,7 +145,8 @@
               }
             });
             this.userDetail = res4;
-          });
+            this.loading = false;
+          }).catch(() => { this.loading = false; });
         } else {
           // 非集体订单
           Promise.all([
@@ -163,10 +171,12 @@
               }
             });
             this.userDetail = res4;
-          });
+            this.loading = false;
+          }).catch(() => { this.loading = false; });
         }
       },
       getPreInitData() {
+        this.loading = true;
         Promise.all([
           getPreOrderDetail({
             code: this.orderCode
@@ -188,7 +198,34 @@
             }
           });
           this.userDetail = res3;
-        });
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
+      },
+      getJishouInitData() {
+        this.loading = true;
+        Promise.all([
+          getJishouOrderDetail({
+            code: this.orderCode
+          }),
+          getAccount({
+            userId: this.userId
+          }),
+          getUserDetail({userId: this.userId}),
+          this.getConfig()
+        ]).then(([res1, res2, res3]) => {
+          this.identifyCode = res1.identifyCode;
+          this.amount = res1.amount;
+          res2.list.map((item) => {
+            if(item.currency === 'CNY') {
+              this.cny = item.amount;
+            }
+            if(item.currency === 'JF') {
+              this.jf = item.amount;
+            }
+          });
+          this.userDetail = res3;
+          this.loading = false;
+        }).catch(() => { this.loading = false; });
       },
       selectPayType(index) {
         if(index === 1) {
@@ -224,6 +261,8 @@
           } else {
             if(this.pre) {
               this.payPreOrder();
+            } else if(this.jishou) {
+              this.payJishouOrder();
             } else {
               this.payOrder();
             }
@@ -276,7 +315,27 @@
       },
       // 支付预售订单
       payPreOrder() {
+        this.loading = true;
         payPreOrder({
+          code: this.orderCode,
+          payType: this.payType,
+          tradePwd: this.pwd || ''
+        }).then((res) => {
+          this.loading = false;
+          if(res) {
+            if(this.payType === '3' && res.signOrder) {
+              this._alipay(res);
+            } else {
+              this.paySuccess();
+            }
+          }
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      // 支付寄售订单
+      payJishouOrder() {
+        payJishouOrder({
           code: this.orderCode,
           payType: this.payType,
           tradePwd: this.pwd || ''
@@ -307,6 +366,10 @@
           setTimeout(() => {
             this.$router.push(`/booking-order`);
           }, 1000);
+        } else if(this.jishou) {
+          setTimeout(() => {
+            this.$router.push(`/consignment-hall/my-consignment`);
+          }, 1000);
         } else {
           setTimeout(() => {
             this.$router.push(`/my-order?type=${this.type}`);
@@ -324,6 +387,8 @@
         } else {
           if(this.pre) {
             this.payPreOrder();
+          } else if(this.jishou) {
+            this.payJishouOrder();
           } else {
             this.payOrder();
           }
@@ -344,7 +409,8 @@
       MHeader,
       SwitchOption,
       Toast,
-      ConfirmInput
+      ConfirmInput,
+      FullLoading
     }
   };
 </script>

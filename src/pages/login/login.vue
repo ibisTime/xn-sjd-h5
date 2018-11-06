@@ -135,7 +135,7 @@
             }).then((data) => {
               setUser(data);
               this.loading = false;
-              this.$router.replace('/home');
+              this.$router.back();
             }).catch(() => {
               this.loading = false;
             });

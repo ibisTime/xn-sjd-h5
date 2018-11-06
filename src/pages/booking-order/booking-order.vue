@@ -17,7 +17,7 @@
         <ul v-if="currentList">
           <li class="item" v-for="(item, index) in currentList.data" @click="goDetail(item)">
             <div class="top">
-              <span class="item-code">产权方</span>
+              <span class="item-code">{{item.sellerName}}</span>
               <span class="item-status">{{formatStatus(item.status)}}</span>
             </div>
             <div class="info">
@@ -25,7 +25,7 @@
               <div class="text">
                 <p class="title"><span class="title-title">{{item.presellProduct.name}}</span><span class="title-number">x{{item.quantity}}</span></p>
                 <p class="position">预售规格：{{item.specsName}}</p>
-                <div class="props"><span class="duration">合计{{item.quantity}}件商品</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
+                <div class="props"><span class="duration">合计{{item.quantity}}件商品</span><span class="price">¥{{formatAmount(item.amount)}}</span></div>
               </div>
             </div>
             <div class="clearfix btns" v-show="showBtns(item.status)">
@@ -56,7 +56,7 @@
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import {mapGetters, mapMutations, mapActions} from 'vuex';
   import {SET_PRE_ORDER_LIST, SET_CURRENT_PRE_ORDER} from 'store/mutation-types';
-  import {getPreOrderPage, cancelOrder, cancelGroupOrder} from 'api/biz';
+  import {getPreOrderPage, cancelPreOrder} from 'api/biz';
   import { getDictList } from 'api/general';
   import {formatAmount, formatImg, setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
@@ -139,18 +139,6 @@
         }
         return false;
       },
-      // 获取销售分类
-      // getCategorysSell() {
-      //   getDictList('sell_type').then((res) => {
-      //     res.map((item) => {
-      //       this.categorysSell.push({
-      //         key: item.dkey,
-      //         value: item.dvalue
-      //       });
-      //       this.sellTypeObj[item.dkey] = item.dvalue;
-      //     });
-      //   }).catch(() => {});
-      // },
       // 获取状态分类
       getCategorysStatus() {
         getDictList('presell_order_status').then((res) => {
@@ -198,7 +186,7 @@
         this.$router.push(`/booking-order/booking-order-detail?code=${item.code}`);
       },
       payOrder(item) {
-        this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
+        this.go(`/pay?pre=1&orderCode=${item.code}`);
       },
       _cancelOrder(item) {
         this.inputText = '取消原因';
@@ -244,30 +232,18 @@
           this.cancelOrder(text);
         }
       },
-      // handleUpdateNum(type) {
-      //   this.$emit('updateNum', type);
-      // },
       cancelOrder(text) {
-        this.fetchText = '取消中...';
-        if(this.curItem.product.sellType === '4') {
-          cancelGroupOrder(this.curItem.code, text).then(() => {
-            this.fetching = false;
-            this.editPreOrderListByCancel({
-              code: this.curItem.code
-            });
-          }).catch(() => {
-            this.fetching = false;
+        cancelPreOrder({
+          code: this.curItem.code,
+          remark: text
+        }).then(() => {
+          this.fetching = false;
+          this.editPreOrderListByCancel({
+            code: this.curItem.code
           });
-        } else {
-          cancelOrder(this.curItem.code, text).then(() => {
-            this.fetching = false;
-            this.editPreOrderListByCancel({
-              code: this.curItem.code
-            });
-          }).catch(() => {
-            this.fetching = false;
-          });
-        }
+        }).catch(() => {
+          this.fetching = false;
+        });
       },
       getPageOrders() {
         let key = this.categorysStatus[this.currentIndex].key;

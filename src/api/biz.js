@@ -500,6 +500,13 @@ export function getPreOrderDetail(data) {
   });
 }
 
+// 取消预售订单
+export function cancelPreOrder(data) {
+  return fetch(629421, {
+    ...data
+  });
+}
+
 // 支付预售订单
 export function payPreOrder(data) {
   return fetch(629422, {
@@ -548,9 +555,72 @@ export function getDeriveZichanDetail(data) {
   });
 }
 
+// 定向转让
+export function dingxiangjishou(data) {
+  return fetch(629430, {
+    ...data
+  });
+}
+
+// 二维码转让
+export function erweimajishou(data) {
+  return fetch(629431, {
+    ...data
+  });
+}
+
 // 挂单寄售
 export function guadanjishou(data) {
   return fetch(629432, {
+    ...data
+  });
+}
+
+// 填写收货地址(确认提货）
+export function confirmTihuo(data) {
+  return fetch(629433, {
+    ...data
+  });
+}
+
+// 认领挂单寄售
+export function placeOrderGuadan(data) {
+  return fetch(629444, {
+    ...data
+  });
+}
+
+// 详细查询订单
+export function getJishouOrderDetail(data) {
+  return fetch(629476, {
+    ...data
+  });
+}
+
+// 支付寄售订单
+export function payJishouOrder(data) {
+  return fetch(629471, {
+    ...data
+  });
+}
+
+// 拒绝定向寄售
+export function refuseDingxiangJishou(data) {
+  return fetch(629442, {
+    ...data
+  });
+}
+
+// 撤销寄售
+export function cancelDingxiangJishou(data) {
+  return fetch(629440, {
+    ...data
+  });
+}
+
+// 列表查询我的寄售中
+export function getMyConsignmentList(data) {
+  return fetch(629458, {
     ...data
   });
 }

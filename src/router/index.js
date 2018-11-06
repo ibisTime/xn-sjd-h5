@@ -142,6 +142,12 @@ const ConsignmentProductDetail = () => import('@/pages/consignment-product-detai
 const TreeCode = () => import('@/pages/tree-code/tree-code');
 // 我的寄售
 const MyConsignment = () => import('@/pages/my-consignment/my-consignment');
+// 二维码寄售
+const ConsignmentErweima = () => import('@/pages/consignment-erweima/consignment-erweima');
+// 预售地址
+const YushouAddress = () => import('@/pages/yushou-address/yushou-address');
+// 预售地址
+const TihuoAddressAddedit = () => import('@/pages/tihuo-address-addedit/tihuo-address-addedit');
 export default new Router({
   routes: [
     {
@@ -454,6 +460,24 @@ export default new Router({
     {
       path: '/tree-code',
       component: TreeCode
+    },
+    {
+      path: '/consignment-erweima',
+      component: ConsignmentErweima
+    },
+    {
+      path: '/yushou-address',
+      component: YushouAddress
+      // children: [
+      //   {
+      //     path: 'tihuo-address-addedit',
+      //     component: TihuoAddressAddedit
+      //   }
+      // ]
+    },
+    {
+      path: '/tihuo-address-addedit',
+      component: TihuoAddressAddedit
     }
   ]
 });

@@ -24,21 +24,21 @@
           <span>产品品种</span><span>{{detail.variety}}</span>
         </div>
         <div class="item">
-          <span>预售产出产量</span><span>{{detail.totalOutput}}</span>
+          <span>预售产出产量</span><span>{{detail.totalOutput}}斤/年</span>
         </div>
         <div class="item">
-          <span>单棵树产量</span><span>{{detail.singleOutput}}</span>
+          <span>单棵树产量</span><span>{{detail.singleOutput}}斤</span>
         </div>
         <div class="item">
           <span>树木总数</span><span>{{detail.treeList.length}}</span>
         </div>
         <div class="item">
-          <span>年限</span><span>{{detail.adopt_year}}</span>
+          <span>年限</span><span>{{detail.adoptYear}}年</span>
         </div>
         <div class="item">
           <span>预计收货时间</span><span>{{formatDate(detail.harvestDatetime)}}</span>
         </div>
-        <div class="item" @click="go(`/tree-code?code=${detail.code}`)">
+        <div class="item" @click="go(`/tree-code?buy=1&code=${detail.code}`)">
           <span>树编号</span><span>{{detail.treeList.length}}棵</span>
           <img src="./more@2x.png" class="fr more">
         </div>
@@ -74,7 +74,8 @@
         <div class="title-right">
           <p>{{detail.scientificName}}</p>
           <i @click="genghuan">X</i>
-          <p class="position"><img src="./position@2x.png">{{detail.province}}{{detail.city}}{{detail.area}}</p>
+          <p class="kucun">库存：{{detail.presellSpecsList[choosedIndex].packCount}}{{detail.packUnit}}</p>
+          <p class="position"><img src="./position@2x.png">{{detail.originPlace}}</p>
         </div>
       </div>
       <div class="packaging">
@@ -139,7 +140,8 @@ export default {
         productSpecsList: [{price: 0}],
         province: '',
         city: '',
-        area: ''
+        area: '',
+        treeList: []
       },
       choosedIndex: 0,
       code: '',   // 产品code
@@ -187,57 +189,6 @@ export default {
       } else {
         this.go(`/productTree-list?code=${this.code}`);
       }
-    },
-    // 是否可被认养
-    canAdopt() {
-      if(!this.userId) {
-        this.noAdoptReason = '您未登录';
-        return false;
-      }
-      if(this.detail.sellType === '1' && this.detail.raiseCount === this.detail.nowCount) {
-        // 销售类型为专属且未到认养量
-        this.noAdoptReason = '已被认养';
-        return false;
-      }
-      if(this.detail.sellType === '3') {
-        let curTime = new Date();
-        // 2把字符串格式转换为日期类
-        let startTime = new Date(Date.parse(this.detail.raiseStartDatetime));
-        let endTime = new Date(Date.parse(this.detail.raiseEndDatetime));
-        // 3进行比较
-        if(curTime <= startTime || curTime >= endTime) {
-          this.noAdoptReason = '当前不在募集期内';
-          return false;
-        }
-      }
-      if(this.detail.directType && this.detail.directType === '1') {
-        if(this.detail.raiseCount === this.detail.nowCount) {
-          this.noAdoptReason = '已被认养';
-          return false;
-        }
-        // 等级定向且用户为该等级
-        if(this.detail.directObject !== this.userDetail.level) {
-          this.noAdoptReason = '您不属于该产品定向的等级';
-          return false;
-        }
-      }
-      if(this.detail.directType && this.detail.directType === '2') {
-        if(this.detail.raiseCount === this.detail.nowCount) {
-          this.noAdoptReason = '已被认养';
-          return false;
-        }
-        if(this.detail.directObject !== this.userId) {
-          this.noAdoptReason = '您不是该产品定向的用户';
-          return false;
-        }
-        // 用户定向且是定向用户
-      }
-      if(this.detail.sellType === '4' && this.detail.raiseCount === this.detail.nowCount) {
-        // 销售类型为集体且未到认养量
-        this.noAdoptReason = '已满标';
-        return false;
-      }
-      return true;
     },
     confirm() {
       if(this.userId) {
@@ -576,6 +527,7 @@ export default {
           right: 0;
         }
         .position {
+          margin-top: 0;
           font-size: 0.24rem;
           line-height: 0.33rem;
           color: $color-text-l;
@@ -584,6 +536,9 @@ export default {
             height: 0.2rem;
             margin-right: 0.08rem;
           }
+        }
+        .kucun {
+          margin-top: 0;
         }
       }
     }

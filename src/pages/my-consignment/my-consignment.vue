@@ -6,7 +6,7 @@
       <div @click="changeType(2)" :class="{active: type === 2}">已交易完成</div>
     </div>
     <div class="content">
-      <div class="hot" v-show="type === 0 && originList.length || type === 1 && deriveList.length">
+      <div class="hot" v-show="type === 0 ? originList.length : deriveList.length">
         <Scroll :data="type === 0 ? originList : deriveList"
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
@@ -24,41 +24,23 @@
               </div>
             </div>
           </div>
-          <div class="proList" v-show="type === 1">
+          <div class="proList" v-show="type === 1 || type === 2">
             <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in deriveList">
               <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
               <div class="hot-pro-text">
                 <p class="hot-pro-title">
                 <span class="hot-pro-title-name">
-                  <span class="hot-pro-title-name-name">{{item.name}}</span>
-                  <span class="dingxiang consignment-type">定向</span>
-                  <!--<span class="guadan consignment-type">挂单</span>-->
-                  <!--<span class="erweima consignment-type">二维码</span>-->
+                  <span class="hot-pro-title-name-name">{{item.productName}}</span>
+                  <span class="dingxiang consignment-type" v-show="item.type === '0'">定向</span>
+                  <span class="guadan consignment-type" v-show="item.type === '2'">挂单</span>
+                  <span class="erweima consignment-type" v-show="item.type === '1'">二维码</span>
                 </span>
 
-                  <span class="hot-pro-title-date">2018/10/28</span>
+                  <span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span>
                 </p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥123</span><span class="hot-pro-bottom-number">数量：24</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">数量：{{item.quantity}}</span></p>
               </div>
             </div>
-          </div>
-          <div class="proList" v-show="type === 2">
-            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in deriveList">
-            <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">
-                <span class="hot-pro-title-name">
-                  <span class="hot-pro-title-name-name">{{item.name}}</span>
-                  <span class="dingxiang consignment-type">定向</span>
-                  <!--<span class="guadan consignment-type">挂单</span>-->
-                  <!--<span class="erweima consignment-type">二维码</span>-->
-                </span>
-
-                <span class="hot-pro-title-date">2018/10/28</span>
-              </p>
-              <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥123</span><span class="hot-pro-bottom-number">数量：24</span></p>
-            </div>
-          </div>
           </div>
         </Scroll>
       </div>
@@ -82,7 +64,7 @@ import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getDictList } from 'api/general';
-import { getOriginZichanPage, getDeriveZichanPage, getProductType } from 'api/biz';
+import { getOriginZichanPage, getDeriveZichanPage, getMyConsignmentList } from 'api/biz';
 import { getUserDetail } from 'api/user';
 export default {
   data() {
@@ -97,8 +79,6 @@ export default {
       hasMore: true,
       originList: [],
       deriveList: [{presellProduct: {listPic: ''}}],
-      categorys: [],
-      categorysSub: [{value: '全部', key: 'all'}],
       originStatusObj: {},
       deriveStatusObj: {},
       userDetail: {},
@@ -113,7 +93,10 @@ export default {
   },
   methods: {
     showNoResult() {
-      if(this.type === 1 && !this.originList.length && !this.hasMore) {
+      if(this.type === 0 && !this.originList.length && !this.hasMore) {
+        return true;
+      }
+      if(this.type === 1 && !this.deriveList.length && !this.hasMore) {
         return true;
       }
       if(this.type === 2 && !this.deriveList.length && !this.hasMore) {
@@ -124,8 +107,8 @@ export default {
     formatAmount(amount) {
       return formatAmount(amount);
     },
-    formatDate(date, format) {
-      return formatDate(date, format);
+    formatDate(date) {
+      return formatDate(date, 'yyyy-MM-dd');
     },
     formatImg(img) {
       return formatImg(img);
@@ -160,38 +143,43 @@ export default {
           if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
             this.hasMore = false;
           }
-          res1.list.map(function () {
-            res1.applyDatetime = formatDate(res1.applyDatetime);
-          });
           this.originList = this.originList.concat(res1.list);
           this.start++;
           this.loading = false;
         }).catch(() => { this.loading = false; });
       } else {
-        this.params = {
-          start: this.start,
-          limit: this.limit,
-          creater: this.userId,
-          status: 0
-        };
         if(this.type === 1) {
-          this.params.status = 0;
+          this.params = {};
+          this.params.userId = this.userId;
+          Promise.all([
+            getMyConsignmentList(this.params)
+          ]).then(([res1]) => {
+            if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
+              this.hasMore = false;
+            }
+            this.deriveList = this.deriveList.concat(res1.list);
+            this.start++;
+            this.loading = false;
+          }).catch((msg) => { console.log(msg); this.loading = false; });
         } else {
-          this.params.statusList = [1, 2];
+          this.params = {
+            start: this.start,
+            limit: this.limit
+          };
+          this.params.statusList = [1, 2, 3];
+          this.params.creater = this.userId;
+          Promise.all([
+            getDeriveZichanPage(this.params)
+          ]).then(([res1]) => {
+            if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
+              this.hasMore = false;
+            }
+            this.deriveList = this.deriveList.concat(res1.list);
+            this.start++;
+            this.loading = false;
+          }).catch((msg) => { console.log(msg); this.loading = false; });
         }
-        Promise.all([
-          getDeriveZichanPage(this.params)
-        ]).then(([res1]) => {
-          if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
-            this.hasMore = false;
-          }
-          res1.list.map(function () {
-            res1.applyDatetime = formatDate(res1.applyDatetime);
-          });
-          this.deriveList = this.deriveList.concat(res1.list);
-          this.start++;
-          this.loading = false;
-        }).catch(() => { this.loading = false; });
+        // console.log(this.deriveList);
       }
     },
     getUserDetail() {
@@ -210,39 +198,16 @@ export default {
     setTitle('寄售大厅');
     Promise.all([
       getDictList('original_group_status'),
-      getDictList('derive_group_status'),
-      getProductType({
-        orderDir: 'asc',
-        orderColumn: 'order_no',
-        status: '1'
-      })
-    ]).then(([res1, res2, res3]) => {
+      getDictList('derive_group_status')
+    ]).then(([res1, res2]) => {
       res1.map((item) => {
         this.originStatusObj[item.dkey] = item.dvalue;
       });
       res2.map((item) => {
         this.deriveStatusObj[item.dkey] = item.dvalue;
       });
-      res3.map((item) => {
-        if(!item.parentCode) {
-          this.categorys.push({
-            value: item.name,
-            key: item.code
-          });
-        }
-      });
-      this.categorys.map((item, index) => {
-        if(item.key === this.categoryCode) {
-          this.index = index;
-          this.currentIndex = index;
-        }
-      });
       this.loading = false;
       this.getPageOrders();
-      // this.getSubType();
-      // if(this.userId) {
-      //   this.getUserDetail();
-      // }
     }).catch(() => { this.loading = false; });
   },
   components: {
@@ -265,7 +230,7 @@ export default {
   bottom: 0;
   top: 0;
   left: 0;
-  background: #fff;
+  /*background: #fff;*/
   .fl {
     float: left;
   }

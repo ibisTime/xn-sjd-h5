@@ -6,16 +6,6 @@
       <Scroll :pullUpLoad="pullUpLoad" ref='scroll'>
         <p v-html="xyText" class="rich-text-description" ref="description"></p>
       </Scroll>
-      <!-- <table>
-        <tbody>
-          <tr>
-            <td width="240px" height="240px">
-
-              <img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e">
-            </td>
-          </tr>
-        </tbody>
-      </table> -->
     </div>
     <div class="footer" v-show="sign">
       <div class="confirm" @click="confirm()">我已阅读并签署</div>
@@ -28,7 +18,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
   import { getCookie } from 'common/js/cookie';
-  import { placeOrder, recognizeOrder, recognizeOrderFirst, getProductDetail, getBookingProDetail, getCompany, placePreOrder } from 'api/biz';
+  import { placeOrder, recognizeOrder, recognizeOrderFirst, getProductDetail, getBookingProDetail, getCompany, placePreOrder, getDeriveZichanDetail } from 'api/biz';
   import { getSystemConfigCkey } from 'api/general';
   import { setTitle } from 'common/js/util';
 
@@ -57,6 +47,7 @@
       this.identifyCode = this.$route.query.identifyCode || '';
       this.register = this.$route.query.register || '';
       this.pre = this.$route.query.pre || '';  // 是否为预售
+      this.jishou = this.$route.query.jishou || '';  // 是否为寄售
       this.loading = true;
       if(this.register) {
         getSystemConfigCkey('REGISTRATION_AGREEMENT').then((res) => {
@@ -64,7 +55,16 @@
           this.xyText = res.cvalue;
         }).catch(() => { this.loading = false; });
       } else {
-        if(this.pre) {
+        if(this.jishou) {
+          Promise.all([
+            getDeriveZichanDetail({code: this.proCode}).then((res) => {
+              getCompany({userId: res.ownerId}).then((data) => {
+                this.loading = false;
+                this.xyText = data.contractTemplate;
+              });
+            })
+          ]).catch(() => { this.loading = false; });
+        } else if(this.pre) {
           Promise.all([
             getBookingProDetail({code: this.proCode}).then((res) => {
               getCompany({userId: res.ownerId}).then((data) => {

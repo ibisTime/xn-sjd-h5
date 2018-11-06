@@ -1,5 +1,5 @@
 <template>
-  <div class="product-detail-wrapper" :style="{bottom: buy || detail.status === '1' || detail.status === '2' ? '0.98rem' : '0'}">
+  <div class="product-detail-wrapper" :style="{bottom: showBottom ? '0.98rem' : '0'}">
     <!--<m-header class="cate-header" title="产品详情"></m-header>-->
     <div class="content">
       <Scroll ref='scroll' :pullUpLoad="pullUpLoad">
@@ -24,34 +24,38 @@
           <span>产品品种</span><span>{{detail.presellProduct.variety}}</span>
         </div>
         <div class="item">
-          <span>总产出</span><span>{{detail.presellProduct.totalOutput}}</span>
+          <span>总产出</span><span>{{detail.presellProduct.totalOutput}}斤/年</span>
         </div>
         <div class="item" v-show="status === '2'">
-          <span>可转让</span><span>{{detail.quantity}}</span>
+          <span>可转让</span><span>{{detail.quantity}}{{detail.unit}}</span>
         </div>
         <div class="item" v-show="status === '3'">
-          <span>可提货</span><span>{{detail.quantity}}</span>
+          <span>可提货</span><span>{{detail.quantity}}{{detail.unit}}</span>
         </div>
         <div class="item" v-show="status === '4'">
-          <span>转让</span><span>{{detail.variety}}</span>
+          <span>转让</span><span>{{detail.variety}}{{detail.unit}}</span>
         </div>
         <div class="item" v-show="status === '5'">
-          <span>可生效</span><span>{{detail.variety}}</span>
+          <span>可生效</span><span>{{detail.variety}}{{detail.unit}}</span>
         </div>
         <div class="item" v-show="status === '4'">
-          <span>已提货</span><span>{{detail.variety}}</span>
+          <span>已提货</span><span>{{detail.variety}}{{detail.unit}}</span>
         </div>
         <div class="item" v-show="status === '4'">
-          <span>可支配</span><span>{{detail.variety}}</span>
+          <span>可支配</span><span>{{detail.variety}}{{detail.unit}}</span>
         </div>
         <div class="item" v-show="status === '3' || status === '4' || status === '5'">
           <span>转让有效时间</span><span>{{detail.variety}}</span>
         </div>
-        <div class="item" v-show="status === '2'">
+        <div class="item" v-show="status === '1'">
           <span>转让截止时间</span><span>{{formatDate(detail.adoptEndDatetime)}}</span>
         </div>
-        <div class="item" @click="go('/consignment-hall/consignment-product-detail/tree-code')">
-          <span>树编号</span><span>209棵</span>
+        <div class="item" @click="go(`/consignment-erweima?code=${detail.code}&number=${detail.quantity}&price=${detail.price}`)" v-show="derive && detail.type === '1'">
+          <span>转让二维码</span>
+          <img src="./more@2x.png" class="fr more">
+        </div>
+        <div class="item" @click="goTreeCode()">
+          <span>树编号</span><span>{{detail.treeNumberList.length}}棵</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item">
@@ -70,44 +74,61 @@
       </Scroll>
     </div>
     <div class="footer" v-show="buy">
-      <span>¥1260.00～¥2480.00</span>
+      <span>¥{{formatAmount(detail.price)}}</span>
       <button class="fr" @click="showPopUp">确认购买</button>
     </div>
-    <div class="footer" v-show="detail.status === '1'">
-      <button class="two" @click="showAssignment">转让</button>
-      <button class="two">填写地址，确认自用</button>
+    <div class="footer-dingxiangjishou" v-show="dingxiangJishou">
+      <span>¥{{formatAmount(detail.price)}}</span>
+      <div class="buttons">
+        <button @click="showRefuse">拒绝</button>
+        <button @click="showPopUp">确认购买</button>
+      </div>
     </div>
-    <div class="footer" v-show="detail.status === '3'">
-      <button class="one">确认地址，确认自用</button>
+    <div class="footer" v-show="chexiao">
+      <span>¥{{formatAmount(detail.price)}}</span>
+      <button class="fr" @click="showChexiao">撤销</button>
+    </div>
+    <div class="footer" v-show="this.origin && detail.status === '1'">
+      <button class="two" @click="showAssignment">转让</button>
+      <button class="two" @click="address">填写地址，确认自用</button>
+    </div>
+    <div class="footer" v-show="this.origin && detail.status === '2'">
+      <button class="one" @click="address">确认地址，确认自用</button>
     </div>
     <div :class="['mask',flag || assignmentFlag? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
       <div class="title">
         <div class="title-pic">
-          <img :src="formatImg(detail.bannerPic)" alt="">
+          <img :src="formatImg(detail.presellProduct.listPic)">
         </div>
         <div class="title-right">
-          <p>{{detail.scientificName}}</p>
+          <p>{{detail.presellProduct.scientificName}}</p>
           <i @click="genghuan">X</i>
-          <p class="position"><img src="./position@2x.png">{{detail.province}}{{detail.city}}{{detail.area}}</p>
+          <p class="position"><img src="./position@2x.png">{{detail.presellProduct.originPlace}}</p>
         </div>
       </div>
       <div class="number">
         <span>价格</span>
         <div class="right">
-          <span>¥2480.00</span>
+          <span>¥{{formatAmount(detail.price)}}</span>
         </div>
       </div>
       <div class="number">
         <span>数量</span>
-        <div class="right">
+        <div class="right" v-show="!erweimaJishou && !dingxiangJishou">
           <img class="diamonds right-item" @click="add" src="./add@2x.png">
           <input class="num right-item" v-model="number" type="number">
           <img class="diamonds right-item" @click="sub" src="./sub@2x.png">
         </div>
+        <div class="right" v-show="erweimaJishou || dingxiangJishou">
+          <!--<img class="diamonds right-item" @click="add" src="./add@2x.png">-->
+          <!--<input class="num right-item" v-model="number" type="number">-->
+          <!--<img class="diamonds right-item" @click="sub" src="./sub@2x.png">-->
+          <span>{{number}}</span>
+        </div>
       </div>
       <div class="buypart-bottom">
-        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(2480 * number)}})</div>
+        <div class="confirm" @click="buyJiShou()">确定(总额：¥{{formatAmount(detail.price * number)}})</div>
       </div>
     </div>
     <div :class="['assignment-part',assignmentFlag ? 'show' : '']">
@@ -132,7 +153,7 @@
       <div class="assignment-info">
         <div class="assignment-item" v-show="choosedIndex === 1">
           <span>对方账号</span>
-          <input type="text" v-model="price" placeholder="请输入对方账号">
+          <input type="text" v-model="mobile" placeholder="请输入对方账号">
         </div>
         <div class="assignment-item">
           <span>价格</span>
@@ -149,6 +170,8 @@
     </div>
     <toast ref="toast" :text="text"></toast>
     <full-loading v-show="loading"></full-loading>
+    <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
+    <confirm-input ref="confirmInputChexiao" :text="inputText" @confirm="handleInputConfirmChexiao"></confirm-input>
     <router-view></router-view>
   </div>
 </template>
@@ -159,11 +182,12 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import ConfirmInput from 'base/confirm-input/confirm-input';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
-import { getDeriveZichanDetail, getOriginZichanDetail, guadanjishou } from 'api/biz';
-import { getUserDetail } from 'api/user';
+import { getDeriveZichanDetail, getOriginZichanDetail, guadanjishou, dingxiangjishou, erweimajishou, placeOrderGuadan, refuseDingxiangJishou, cancelDingxiangJishou } from 'api/biz';
+// import { getUserDetail } from 'api/user';
 // import Logo from './../../../static/sjdicon.ico';
 // import Logo from './tree-default.png';
 export default {
@@ -179,23 +203,30 @@ export default {
       detailDescription: '',
       flag: false,
       assignmentFlag: false,
-      number: 1,
       idCode: '',
       detail: {
         presellProduct: [{price: 0, name: ''}],
         province: '',
         city: '',
-        area: ''
+        area: '',
+        treeNumberList: []
       },
       choosedIndex: 0,
       code: '',   // 产品code
       banners: [],
       loop: false,
-      userDetail: {},
-      noAdoptReason: '',
       status: '2',
       buy: 1, // 是否是从寄售大厅点进来要购买
-      price: 0
+      price: '',
+      number: 1,
+      mobile: '',
+      type: 0,
+      origin: false,
+      derive: false,
+      showBottom: false,
+      erweimaJishou: false,
+      dingxiangJishou: false,
+      inputText: ''
     };
   },
   methods: {
@@ -208,8 +239,57 @@ export default {
     formatDate(date, format) {
       return formatDate(date, format);
     },
+    showRefuse(item) {
+      this.inputText = '拒绝原因';
+      this.curItem = item;
+      this.$refs.confirmInput.show();
+    },
+    showChexiao(item) {
+      this.inputText = '撤销原因';
+      this.curItem = item;
+      this.$refs.confirmInputChexiao.show();
+    },
+    handleInputConfirm(text) {
+      // 拒绝定向寄售
+      refuseDingxiangJishou({
+        code: this.code,
+        userId: getUserId(),
+        remark: text
+      }).then((res) => {
+        if(res.isSuccess) {
+          this.text = '已拒绝';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.back();
+          }, 1000);
+        }
+      });
+    },
+    handleInputConfirmChexiao(text) {
+      // 撤销定向寄售
+      cancelDingxiangJishou({
+        code: this.code,
+        userId: getUserId(),
+        remark: text
+      }).then((res) => {
+        if(res.isSuccess) {
+          this.text = '已撤销';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.back();
+          }, 1000);
+        }
+      });
+    },
     go(url) {
       this.$router.push(url);
+    },
+    goTreeCode() {
+      if(this.origin) {
+        this.go(`/tree-code?origin=1&code=${this.detail.code}`);
+      } else {
+        this.go(`/tree-code?derive=1&code=${this.detail.code}`);
+      }
     },
     showPopUp() {
       this.flag = true;
@@ -240,35 +320,92 @@ export default {
         this.go('/login');
       }
     },
-    goTreeList() {
-      if(this.detail.sellType === '3' || this.detail.sellType === '4') {
-        this.go(`/productTree-detail?code=${this.detail.treeList[0].code}`);
-      } else {
-        this.go(`/productTree-list?code=${this.code}`);
-      }
-    },
     confirm() {
       // debugger;
       if(this.userId) {
         let price = this.price;
         let number = this.number;
         let type = this.type;
+        let mobile = this.mobile;
+        if(!this.price) {
+          this.text = '请填写价格';
+          this.$refs.toast.show();
+          return;
+        }
+        if(!this.number) {
+          this.text = '请填写数量';
+          this.$refs.toast.show();
+          return;
+        }
         if(type === 0) {
-
+          erweimajishou({
+            code: this.code,
+            price: price * 1000,
+            quantity: number
+          }).then((res) => {
+            if(res.code) {
+              this.text = '将为您跳转到二维码页';
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.$router.push(`/consignment-erweima?code=${res.code}&number=${this.number}&price=${this.price}`);
+              }, 1000);
+            }
+          });
         } else if(type === 1) {
-
+          dingxiangjishou({
+            code: this.code,
+            price: price * 1000,
+            quantity: number,
+            userMobile: mobile
+          }).then((res) => {
+            if(res.code) {
+              this.text = '发布成功';
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.$router.push('/consignment-hall');
+              }, 1000);
+            }
+          });
         } else if(type === 2) {
           guadanjishou({
             code: this.code,
             price: price * 1000,
             quantity: number
           }).then((res) => {
-            if(res.isSuccess) {
+            if(res.code) {
               this.text = '发布成功';
               this.$refs.toast.show();
+              setTimeout(() => {
+                this.$router.push('/consignment-hall');
+              }, 1000);
             }
           });
         }
+      } else {
+        this.text = '您未登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
+      }
+    },
+    buyJiShou() {
+      if(this.userId) {
+        let quantity = this.number;
+        placeOrderGuadan({
+          code: this.code,
+          userId: getUserId(),
+          quantity: this.number
+        }).then((res) => {
+          if(res.code) {
+            this.text = '下单成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.go(`/pay?jishou=1&orderCode=${res.code}&quantity=${quantity}`);
+            }, 500);
+          }
+        });
+        // this.go(`/protocol?sign=1&jishou=1&proCode=${proCode}&quantity=${quantity}`);
       } else {
         this.text = '您未登录';
         this.$refs.toast.show();
@@ -324,6 +461,9 @@ export default {
         this.wxData = null;
         this.loading = false;
       });
+    },
+    address() {
+      this.go(`/yushou-address?pre=1&clear=1&code=${this.code}`);
     }
   },
   mounted() {
@@ -336,14 +476,12 @@ export default {
     this.buy = this.$route.query.buy || 0;
     this.loading = true;
     if(this.code[0] === 'O') {
+      this.origin = true;
       Promise.all([
         getOriginZichanDetail({
           code: this.code
-        }),
-        getUserDetail({
-          userId: this.userId
         })
-      ]).then(([res1, res2]) => {
+      ]).then(([res1]) => {
         this.loading = false;
         this.detail = res1;
         this.detailDescription = res1.description;
@@ -351,28 +489,41 @@ export default {
         if(this.banners.length >= 2) {
           this.loop = true;
         }
-        this.userDetail = res2;
         if(!this.isWxConfiging && !this.wxData) {
           this.getInitWXSDKConfig();
         }
+        if(this.detail.status === '1' || this.detail.status === '2') {
+          this.showBottom = true;
+        }
       }).catch(() => { this.loading = false; });
     } else {
+      this.derive = true;
+      this.showBottom = false;
       Promise.all([
         getDeriveZichanDetail({
           code: this.code
-        }),
-        getUserDetail({
-          userId: this.userId
         })
-      ]).then(([res1, res2]) => {
+      ]).then(([res1]) => {
         this.loading = false;
         this.detail = res1;
         this.detailDescription = res1.description;
-        this.banners = this.detail.bannerPic.split('||');
+        this.banners = this.detail.presellProduct.bannerPic.split('||');
         if(this.banners.length >= 2) {
           this.loop = true;
         }
-        this.userDetail = res2;
+        if(this.detail.type === '1') {
+          this.number = this.detail.quantity;
+          this.erweimaJishou = true;
+        }
+        if(this.detail.type === '0') {
+          if(this.detail.creater === getUserId()) {
+            this.chexiao = true;
+          } else {
+            this.buy = 1;
+            this.number = this.detail.quantity;
+            this.dingxiangJishou = true;
+          }
+        }
         // if(!this.isWxConfiging && !this.wxData) {
         //   this.getInitWXSDKConfig();
         // }
@@ -390,7 +541,8 @@ export default {
     Slider,
     NoResult,
     MHeader,
-    Scroll
+    Scroll,
+    ConfirmInput
   }
 };
 </script>
@@ -544,6 +696,36 @@ export default {
       width: 3.3rem;
       font-size: 0.32rem;
       line-height: 0.45rem;
+    }
+  }
+  .footer-dingxiangjishou {
+    height: 0.98rem;
+    padding: 0.07rem 0.3rem;
+    border-top: 1px solid #eee;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    font-size: $font-size-medium-x;
+    line-height: 0.7rem;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    span {
+      color: $primary-color;
+      font-size: $font-size-medium-xx;
+    }
+    .buttons {
+      display: inline;
+      button {
+        width: 1.96rem;
+        height: 0.84rem;
+        border-radius: 0.08rem;
+        background: $primary-color;
+        color: $color-highlight-background;
+        font-size: 0.3rem;
+      }
     }
   }
   .mask {

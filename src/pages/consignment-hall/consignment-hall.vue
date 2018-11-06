@@ -234,13 +234,14 @@ export default {
         this.loading = false;
       }).catch(() => { this.loading = false; });
     },
-    getPageOrder() {
+    getPageOrders() {
       this.loading = true;
       Promise.all([
         getDeriveZichanPage({
           start: this.start,
           limit: this.limit,
-          status: 0
+          status: 0,
+          type: 2
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -268,7 +269,7 @@ export default {
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
     setTitle('寄售大厅');
-    this.getPageOrder();
+    this.getPageOrders();
     // Promise.all([
     //   getDictList('sell_type'),
     //   getProductType({
