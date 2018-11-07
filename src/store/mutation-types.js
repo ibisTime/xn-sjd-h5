@@ -18,6 +18,10 @@ export const SET_CURRENT_ORDER = 'SET_CURRENT_ORDER';
 export const SET_PRE_ORDER_LIST = 'SET_PRE_ORDER_LIST';
 // 设置当前选择的订单
 export const SET_CURRENT_PRE_ORDER = 'SET_CURRENT_PRE_ORDER';
+// 设置用户订单列表
+export const SET_CON_ORDER_LIST = 'SET_CON_ORDER_LIST';
+// 设置当前选择的订单
+export const SET_CURRENT_CON_ORDER = 'SET_CURRENT_CON_ORDER';
 // 设置是否已经更新过登录日志了
 export const SET_LOG_FLAG = 'SET_LOG_FLAG';
 // 设置所有的聊天记录

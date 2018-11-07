@@ -56,6 +56,11 @@
           <span>寄售大厅</span>
           <img src="./more@2x.png" class="fr more">
         </div>
+        <div class="item" @click="go('/my-consignment')">
+          <img src="./my-consignment@2x.png" class="me-list-icon">
+          <span>我的预售资产</span>
+          <img src="./more@2x.png" class="fr more">
+        </div>
         <div class="item" @click="go('/booking-order')">
           <img src="./booking-order@2x.png" class="me-list-icon">
           <span>我的预售订单</span>

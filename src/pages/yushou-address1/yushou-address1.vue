@@ -10,6 +10,28 @@
             <p>注意：填写地址后此批货物不可转让</p>
           </div>
           <div class="gray"></div>
+          <div class="tip">
+            <div class="addButton" @click="toAddress">
+              <div class="addButton-inner">
+                <img src="./add-border@2x.png">
+                <span>添加地址</span>
+              </div>
+            </div>
+            <div class="opeator border-top-1px">
+              <div class="default" @click.stop="setDefault(item, index)">
+                <!--<i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>-->
+                <!--<span>设为默认地址</span>-->
+              </div>
+              <!--<button class="edit" @click.stop="goEdit(item)">编辑</button>-->
+              <!--<button class="delete" @click.stop="deleteItem(item, index)">删除</button>-->
+              <div class="right">
+                <img class="diamonds right-item" @click="addNumber" src="./add@2x.png">
+                <input class="num right-item" v-model="number" type="number">
+                <img class="diamonds right-item" @click="subNumber" src="./sub@2x.png">
+              </div>
+            </div>
+          </div>
+          <div class="gray"></div>
           <ul>
             <li v-for="(item, index) in addressList[0]" :key="index" class="border-bottom-1px" v-show="addressList[0].length">
               <div class="content">
@@ -33,7 +55,6 @@
           </ul>
         </scroll>
         <div class="footer">
-          <button class="two" @click="addTihuoAddress">继续添加地址</button>
           <button class="two" @click="confirmTihuo">确认提货</button>
         </div>
       </div>
@@ -70,7 +91,8 @@
         addressList: [],
         deleteIndex: 0,
         detail: {},
-        pullUpLoad: null
+        pullUpLoad: null,
+        number: 1
       };
     },
     created() {
@@ -112,6 +134,17 @@
         if (this.number >= 2) {
           item.deliverCount--;
         }
+      },
+      addNumber() {
+        this.number++;
+      },
+      subNumber() {
+        if (this.number >= 2) {
+          this.number--;
+        }
+      },
+      toAddress() {
+        this.go(`/yushou-address-list?tihuo=1&number=${this.number}`);
       },
       getProDetail() {
         this.loadingFlag = true;
@@ -426,7 +459,7 @@
         line-height: 0.45rem;
       }
       .two {
-        width: 3.3rem;
+        width: 100%;
         font-size: 0.32rem;
         line-height: 0.45rem;
       }
@@ -450,6 +483,83 @@
         font-size: $font-size-medium-x;
         color: #333;
         height: 0.36rem;
+      }
+    }
+    .tip {
+      background: #ffffff;
+      .addButton {
+        width: 100%;
+        height: 1.6rem;
+        .addButton-inner {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.6rem;
+          border-bottom: 1px solid $color-border;
+          img {
+            width: 0.4rem;
+            height: 0.4rem;
+            margin-right: 0.2rem;
+          }
+          span {
+            color: #b3b3b3;
+            font-size: 0.24rem;
+          }
+        }
+      }
+      .opeator {
+        display: flex;
+        align-items: center;
+        height: 0.9rem;
+        font-size: 0;
+        padding: 0 0.3rem;
+        @include border-top-1px($color-border);
+
+        .default {
+          flex: 1;
+
+          .icon-chose {
+            margin-left: 0.3rem;
+            display: inline-block;
+            vertical-align: middle;
+            width: 0.36rem;
+            height: 0.36rem;
+            background-size: 0.36rem;
+            @include bg-image('un-select');
+
+            &.active {
+              @include bg-image('selected');
+            }
+          }
+
+          span {
+            display: inline-block;
+            vertical-align: middle;
+            padding-left: 0.1rem;
+            line-height: 0.33rem;
+            font-size: $font-size-small;
+            color: $color-text-l;
+          }
+          .act {
+            color: $primary-color;
+          }
+        }
+
+        button {
+          display: inline-block;
+          vertical-align: middle;
+          font-size: 0.24rem;
+          padding: 0.06rem 0.25rem;
+          background: #fff;
+          border: 1px solid #979797;
+          border-radius: 0.04rem;
+          color: #666;
+        }
+
+        .delete {
+          margin-left: 0.5rem;
+          margin-right: 0.3rem;
+        }
       }
     }
   }

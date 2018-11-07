@@ -69,6 +69,7 @@
     mounted() {
       setTitle('登录');
       this.me = this.$route.query.me || '';
+      this.setting = this.$route.query.setting || '';
       if (!isLogin()) {
         if (/code=([^&]+)&state=/.exec(location.href)) {
           this.code = RegExp.$1;
@@ -135,7 +136,11 @@
             }).then((data) => {
               setUser(data);
               this.loading = false;
-              this.$router.back();
+              if(this.setting) {
+                this.back();
+              } else {
+                this.$router.back();
+              }
             }).catch(() => {
               this.loading = false;
             });

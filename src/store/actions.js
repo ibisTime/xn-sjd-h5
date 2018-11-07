@@ -88,6 +88,50 @@ function _getPreOrderList(state, code, prevStatus, nextStatus) {
   return _orderList;
 }
 
+function _getConOrderList(state, code, prevStatus, nextStatus) {
+  let allList = null;
+  let prevList = null;
+  let nextList = null; // 置空下个状态
+
+  // 如果有all的数据，并且有这个订单，则改变状态
+  if (state.conOrderList.all) {
+    allList = {
+      ...state.conOrderList.all
+    };
+    let index = allList.data.findIndex((order) => {
+      return order.code === code;
+    });
+    if (index !== -1) {
+      allList.data = allList.data.slice();
+      let _item = {
+        ...allList.data[index],
+        status: nextStatus
+      };
+      allList.data.splice(index, 1, _item);
+    }
+  }
+  // 如果有当前状态的数据，则删除这条订单
+  if (state.conOrderList[prevStatus]) {
+    prevList = {
+      ...state.conOrderList[prevStatus]
+    };
+    let index = prevList.data.findIndex((order) => {
+      return order.code === code;
+    });
+    if (index !== -1) {
+      prevList.data = prevList.data.slice();
+      prevList.data.splice(index, 1);
+    }
+  }
+  let _orderList = {
+    ...state.conOrderList,
+    prevStatus: prevList,
+    nextStatus: nextList,
+    all: allList
+  };
+  return _orderList;
+}
+
 // 取消订单后，改变orderList
 export const editOrderListByCancel = function({commit, state}, {code}) {
   let prevStatus = '0';
@@ -120,6 +164,22 @@ export const editPreOrderListByCancel = function({commit, state}, {code}) {
   }
 };
 
+// 取消订单后，改变orderList
+export const editConOrderListByCancel = function({commit, state}, {code}) {
+  let prevStatus = '0';
+  let nextStatus = '1';
+  let _orderList = _getConOrderList(state, code, prevStatus, nextStatus);
+  commit(types.SET_CON_ORDER_LIST, _orderList);
+
+  if (state.currentConOrder && state.currentConOrder.code === code) {
+    let _order = {
+      ...state.currentConOrder
+    };
+    _order.status = nextStatus;
+    commit(types.SET_CURRENT_CON_ORDER, _order);
+  }
+};
+
 // 支付订单后，改变orderList
 export const editPreOrderListByPay = function({commit, state}, {code}) {
   let prevStatus = '0';
@@ -137,6 +197,27 @@ export const editPreOrderListByPay = function({commit, state}, {code}) {
       commit(types.SET_CURRENT_PRE_ORDER, _order);
     } else {
       commit(types.SET_CURRENT_PRE_ORDER, null);
+    }
+  }
+};
+
+// 支付订单后，改变orderList
+export const editConOrderListByPay = function({commit, state}, {code}) {
+  let prevStatus = '0';
+  let nextStatus = '2';
+
+  let _orderList = _getConOrderList(state, code, prevStatus, nextStatus);
+  commit(types.SET_CON_ORDER_LIST, _orderList);
+
+  if (state.currentConOrder) {
+    if (state.currentConOrder.code === code) {
+      let _order = {
+        ...state.currentConOrder
+      };
+      _order.status = nextStatus;
+      commit(types.SET_CURRENT_CON_ORDER, _order);
+    } else {
+      commit(types.SET_CURRENT_CON_ORDER, null);
     }
   }
 };

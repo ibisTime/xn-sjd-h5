@@ -500,6 +500,13 @@ export function getPreOrderDetail(data) {
   });
 }
 
+// 详细查询寄售订单
+export function getConOrderDetail(data) {
+  return fetch(629476, {
+    ...data
+  });
+}
+
 // 取消预售订单
 export function cancelPreOrder(data) {
   return fetch(629421, {
@@ -587,6 +594,19 @@ export function confirmTihuo(data) {
 export function placeOrderGuadan(data) {
   return fetch(629444, {
     ...data
+  });
+}
+
+// 分页查寄售订单
+export function getJishouOrderPage(start, limit, status, type) {
+  let params = {
+    start,
+    limit,
+    status,
+    userId: getUserId()
+  };
+  return fetch(629475, {
+    ...params
   });
 }
 

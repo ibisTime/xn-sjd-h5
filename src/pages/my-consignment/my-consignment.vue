@@ -1,7 +1,7 @@
 <template>
   <div class="my-consignment-wrapper">
     <div class="type">
-      <div @click="changeType(0)" :class="{active: type === 0}">我的树木资产</div>
+      <div @click="changeType(0)" :class="{active: type === 0}">我的预售资产</div>
       <div @click="changeType(1)" :class="{active: type === 1}">寄售中</div>
       <div @click="changeType(2)" :class="{active: type === 2}">已交易完成</div>
     </div>
@@ -21,6 +21,8 @@
                   <span class="hot-pro-title-date">{{originStatusObj[item.status]}}</span>
                 </p>
                 <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">库存：{{item.quantity}}</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">转让中：{{item.presellQuantity}}</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">提货中：{{item.receivingQuantity}}</span></p>
               </div>
             </div>
           </div>
@@ -35,10 +37,10 @@
                   <span class="guadan consignment-type" v-show="item.type === '2'">挂单</span>
                   <span class="erweima consignment-type" v-show="item.type === '1'">二维码</span>
                 </span>
-
                   <span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span>
                 </p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">数量：{{item.quantity}}</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">总数量：{{item.quantity}}</span></p>
+                <p class="hot-pro-bottom" v-show="type === 1"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">转让中数量：{{item.presellQuantity}}</span></p>
               </div>
             </div>
           </div>
@@ -137,7 +139,8 @@ export default {
           getOriginZichanPage({
             start: this.start,
             limit: this.limit,
-            ownerId: this.userId
+            ownerId: this.userId,
+            minQuantity: 0
           })
         ]).then(([res1]) => {
           if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -195,7 +198,7 @@ export default {
     this.loading = true;
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
-    setTitle('寄售大厅');
+    setTitle('我的寄售');
     Promise.all([
       getDictList('original_group_status'),
       getDictList('derive_group_status')
@@ -230,7 +233,7 @@ export default {
   bottom: 0;
   top: 0;
   left: 0;
-  /*background: #fff;*/
+  background: #fff;
   .fl {
     float: left;
   }
@@ -332,6 +335,7 @@ export default {
               display: flex;
               align-items: center;
               justify-content: space-between;
+              margin-bottom: 0.1rem;
               .hot-pro-bottom-price {
                 font-family: 'DIN-Bold';
                 font-size:0.3rem;

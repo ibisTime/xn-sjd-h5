@@ -23,7 +23,7 @@
   const QRCode = require('js-qrcode');
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import {setTitle, getUserId} from 'common/js/util';
+  import {setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import {initShare} from 'common/js/weixin';
   // import { getConfig } from 'api/general';
@@ -80,7 +80,7 @@
         initShare({
           title: '氧林',
           desc: '二维码转让',
-          link: location.href.split('#')[0] + '/#/invitation?userId=' + getUserId(),
+          link: location.href.split('#')[0] + '#/consignment-hall/consignment-product-detail?buy=1&code=' + this.code,
           imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300'
         }, (data) => {
           this.isWxConfiging = false;

@@ -1,47 +1,33 @@
 <template>
   <transition name="slide">
     <div class="address-list-wrapper">
+      <m-header class="cate-header" title="我的收货地址" actText="新增" @action="action"></m-header>
       <div class="addr-scroll-wrapper">
-        <scroll :data="addressList[0]" :hasMore="hasMore" :pullUpLoad="pullUpLoad">
-          <div class="pro-info">
-            <p><span>{{detail.productName}}</span><span>买入单价：{{formatAmount(detail.price)}}元/{{detail.unit}}</span></p>
-            <p><span>可收货总数</span><span>50箱</span></p>
-            <p><span>可收货数量</span><span>30箱</span></p>
-            <p>注意：填写地址后此批货物不可转让</p>
-          </div>
-          <div class="gray"></div>
+        <scroll :data="addressList" :hasMore="hasMore">
           <ul>
-            <li v-for="(item, index) in addressList[0]" :key="index" class="border-bottom-1px" v-show="addressList[0].length">
+            <li v-for="(item, index) in addressList" :key="index" class="border-bottom-1px" @click="selectAddress(index, item)">
               <div class="content">
-                <div class="info"><span class="name">{{item.receiver}}</span><span class="mobile">{{item.receiverMobile}}</span></div>
-                <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
+                <div class="info"><span class="name">{{item.addressee}}</span><span class="mobile">{{item.mobile}}</span></div>
+                <div class="addr">{{item.province}} {{item.city}} {{item.district}} {{item.detailAddress}}</div>
+                <img src="./ok.png" v-show="currIndex === index">
               </div>
               <div class="opeator border-top-1px">
                 <div class="default" @click.stop="setDefault(item, index)">
-                  <!--<i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>-->
-                  <!--<span>设为默认地址</span>-->
+
                 </div>
-                <!--<button class="edit" @click.stop="goEdit(item)">编辑</button>-->
-                <!--<button class="delete" @click.stop="deleteItem(item, index)">删除</button>-->
-                <div class="right">
-                  <img class="diamonds right-item" @click="add(item)" src="./add@2x.png">
-                  <input class="num right-item" v-model="item.deliverCount" type="number">
-                  <img class="diamonds right-item" @click="sub(item)" src="./sub@2x.png">
-                </div>
+                <button class="edit" @click.stop="goEdit(item)">编辑</button>
+                <button class="delete" @click.stop="deleteItem(item, index)">删除</button>
               </div>
             </li>
           </ul>
         </scroll>
-        <div class="footer">
-          <button class="two" @click="addTihuoAddress">继续添加地址</button>
-          <button class="two" @click="confirmTihuo">确认提货</button>
-        </div>
       </div>
       <div class="no-result-wrapper">
         <no-result v-show="!hasMore && !addressList.length" title="您尚未添加收货地址"></no-result>
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
       <confirm ref="confirm" text="确定删除地址吗" @confirm="_deleteAddress"></confirm>
+      <confirm ref="getGiftConfirm" text="确定使用该地址领取礼物吗" @confirm="getGift" @cancel="cancelAddress"></confirm>
       <toast ref="toast" :text="text"></toast>
       <router-view></router-view>
     </div>
@@ -53,37 +39,29 @@
   import Confirm from 'base/confirm/confirm';
   import Toast from 'base/toast/toast';
   import NoResult from 'base/no-result/no-result';
-  import {setTitle, formatAmount} from 'common/js/util';
+  import MHeader from 'components/m-header/m-header';
+  import {setTitle} from 'common/js/util';
+  import { getGift } from 'api/biz';
   // import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
-  import {deleteAddress, setDefaultAddress} from 'api/user';
-  import { confirmTihuo, getOriginZichanDetail } from 'api/biz';
+  import {deleteAddress, getAddressList, setDefaultAddress} from 'api/user';
   // import {mapGetters, mapMutations, mapActions} from 'vuex';
 
   export default {
     data() {
       return {
-        text: '',
         hasMore: true,
         loadingFlag: false,
         loadingText: '',
-        list: [],
         addressList: [],
         deleteIndex: 0,
-        detail: {},
-        pullUpLoad: null
+        currIndex: null,
+        text: ''
       };
     },
-    created() {
-      let clear = this.$route.query.clear;
-      if(clear) {
-        sessionStorage.removeItem('tihuo-address');
-      }
-      setTitle('提货');
+    mounted() {
       this.code = this.$route.query.code;
       this.currentItem = null;
       this.getAddress();
-      this.getProDetail();
-      this.addressList = [];
     },
     updated() {
       this.getAddress();
@@ -102,43 +80,31 @@
         } */
     },
     methods: {
-      formatAmount(amount) {
-        return formatAmount(amount);
-      },
-      add(item) {
-        item.deliverCount++;
-      },
-      sub(item) {
-        if (this.number >= 2) {
-          item.deliverCount--;
-        }
-      },
-      getProDetail() {
-        this.loadingFlag = true;
-        getOriginZichanDetail({
-          code: this.code
-        }).then((res) => {
-          this.detail = res;
-          this.loadingFlag = false;
-        }).catch(() => { this.loadingFlag = false; });
+      action() {
+        sessionStorage.clear('ressCode');
+        this.go('/address-addedit');
       },
       go(url) {
         this.$router.push(url);
       },
       getAddress() {
-        if (!this.addressList.length) {
-          this.addressList.push(JSON.parse(sessionStorage.getItem('tihuo-address')));
-        } else {
-          this.hasMore = false;
+        if (this.shouldGetData()) {
+          if (!this.addressList.length) {
+            getAddressList().then((data) => {
+              this.addressList = data;
+              this.hasMore = false;
+              // this.setAddressList(data);
+            }).catch(() => {
+              this.hasMore = false;
+            });
+          } else {
+            this.hasMore = false;
+          }
         }
       },
       shouldGetData() {
-        if (/\/address/.test(this.$route.path) || this.$route.path === '/yushou-address') {
-          setTitle('提货申请');
-          return this.hasMore;
-        }else{
-          return !this.hasMore;
-        }
+        setTitle('地址列表');
+        return this.hasMore;
       },
       setDefault(item, index) {
         if (item.isDefault !== '1') {
@@ -189,20 +155,65 @@
           });
         }
       },
-      addTihuoAddress() {
-        this.go(`/tihuo-address-addedit?code=${this.code}`);
+      selectAddress(index, item) {
+        console.log(item);
+        item.receiver = item.addressee;
+        item.address = item.detailAddress;
+        item.area = item.district;
+        item.receiverMobile = item.mobile;
+        item.deliverCount = this.number;
+        delete item.addressee;
+        delete item.detailAddress;
+        delete item.district;
+        delete item.mobile;
+        if(!sessionStorage.getItem('tihuo-address')) {
+          let arr = [];
+          arr.push(item);
+          sessionStorage.setItem('tihuo-address', JSON.stringify(arr));
+        } else {
+          // debugger;
+          let arr = JSON.parse(sessionStorage.getItem('tihuo-address'));
+          arr.push(item);
+          sessionStorage.setItem('tihuo-address', JSON.stringify(arr));
+        }
+        setTimeout(() => {
+          this.$router.push(`/yushou-address?pre=1&code=${this.trueCode}`);
+        }, 500);
+        this.currIndex = index;
+        this.currentItem = item;
+        this.$refs.getGiftConfirm.show();
       },
-      confirmTihuo() {
-        confirmTihuo({
-          code: this.code,
-          logisticsList: this.addressList[0]
-        }).then((res) => {
-          if(res.isSuccess) {
-            this.text = '提交成功';
-            this.$refs.toast.show();
-            setTimeout(() => {
-              this.go('/consignment-hall/my-consignment');
-            }, 1000);
+      cancelAddress() {
+        this.currIndex = null;
+      },
+      getGift() {
+        this.$validator.validateAll().then((result) => {
+          if(result) {
+            this.loading = true;
+            console.log(this.currentItem);
+            Promise.all([
+              getGift({
+                code: this.code,
+                addressCode: this.currentItem.code
+              })
+              // addAddress({
+              //   addressee: this.receiver,
+              //   mobile: this.mobile,
+              //   province: this.province,
+              //   city: this.city,
+              //   district: this.district,
+              //   detailAddress: this.address
+              // })
+            ]).then(([res1]) => {
+              this.loading = false;
+              if(res1.isSuccess) {
+                this.text = '认领成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/gift');
+                }, 1000);
+              }
+            }).catch(() => { this.loading = false; });
           }
         });
       }
@@ -212,7 +223,8 @@
       Toast,
       Confirm,
       FullLoading,
-      NoResult
+      NoResult,
+      MHeader
     }
   };
 </script>
@@ -259,11 +271,10 @@
             font-size: $font-size-medium-x;
             display: flex;
             .name {
-              margin-right: 0.3rem;
+              flex: 1;
             }
             .mobile {
               width: 2.1rem;
-              color: #999;
             }
             span {
               line-height: 0.42rem;
@@ -271,12 +282,17 @@
           }
 
           .addr {
-            padding-top: 0.26rem;
+            padding-top: 0.3rem;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
             font-size: $font-size-medium-x;
             color: #666;
+          }
+          img {
+            position: absolute;
+            right: 0.5rem;
+            opacity: 0.7;
           }
         }
 
@@ -285,7 +301,6 @@
           align-items: center;
           height: 0.9rem;
           font-size: 0;
-          padding: 0 0.3rem;
           @include border-top-1px($color-border);
 
           .default {
@@ -347,7 +362,7 @@
 
     .addr-scroll-wrapper {
       position: absolute;
-      top: 0;
+      top: 0.88rem;
       bottom: 0;
       left: 0;
       right: 0;
@@ -365,92 +380,6 @@
       font-size: $font-size-large-s;
       color: #fff;
       background: $primary-color;
-    }
-    .pro-info {
-      background: #ffffff;
-      p {
-        color: #ED4A4A;
-        font-size: 0.24rem;
-        line-height: 0.33rem;
-        padding: 0.23rem;
-        border-bottom: 1px solid $color-border;
-        span {
-          font-size: 0.3rem;
-          line-height: 0.42rem;
-          color: #333;
-        }
-        span:first-child {
-          width: 30%;
-          display: inline-block;
-        }
-      }
-      p:last-child {
-        padding: 0.2rem;
-      }
-    }
-    .gray {
-      width: 100%;
-      height: 0.2rem;
-      padding: 0;
-      background: #f5f5f5;
-    }
-    .footer {
-      height: 0.98rem;
-      padding: 0.07rem 0.3rem;
-      border-top: 1px solid #eee;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      font-size: $font-size-medium-x;
-      line-height: 0.7rem;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      span {
-        color: $primary-color;
-        font-size: $font-size-medium-xx;
-      }
-      button {
-        width: 2.96rem;
-        height: 0.84rem;
-        border-radius: 0.08rem;
-        background: $primary-color;
-        color: $color-highlight-background;
-        font-size: 0.3rem;
-      }
-      .one {
-        width: 100%;
-        font-size: 0.32rem;
-        line-height: 0.45rem;
-      }
-      .two {
-        width: 3.3rem;
-        font-size: 0.32rem;
-        line-height: 0.45rem;
-      }
-    }
-    .right {
-      flex: 1;
-      display: table-cell;
-      vertical-align: middle;
-      text-align: center;
-      .right-item {
-        float: right;
-        text-align: center;
-        line-height: 0.5rem;
-      }
-      .diamonds {
-        width: 0.36rem;
-        height: 0.36rem;
-      }
-      .num {
-        width: 0.9rem;
-        font-size: $font-size-medium-x;
-        color: #333;
-        height: 0.36rem;
-      }
     }
   }
 </style>

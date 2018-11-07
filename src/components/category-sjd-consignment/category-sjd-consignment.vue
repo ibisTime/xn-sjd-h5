@@ -5,7 +5,8 @@
       <div class="type">
         <div @click="showOrder"><span>{{orderText}}</span><img :src="getOrderImg()"/></div>
         <div @click="showType"><span>{{typeText}}</span><img :src="getTypeImg()"/></div>
-        <div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售</div>
+        <!--<div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售订单</div>-->
+        <div class="my-consignment" @click="go('/consignment-order')">我的寄售订单</div>
       </div>
       <div class="more" v-show="order">
         <p v-for="(item, index) in orderList" @click="checkedOrder(index)" :class="{active: orderIndex === index}"><span>{{item.value}}</span><img

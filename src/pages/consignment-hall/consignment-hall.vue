@@ -241,7 +241,8 @@ export default {
           start: this.start,
           limit: this.limit,
           status: 0,
-          type: 2
+          type: 2,
+          minQuantity: 0
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -270,38 +271,6 @@ export default {
     this.categoryCode = this.$route.query.typeCode || '';
     setTitle('寄售大厅');
     this.getPageOrders();
-    // Promise.all([
-    //   getDictList('sell_type'),
-    //   getProductType({
-    //     orderDir: 'asc',
-    //     orderColumn: 'order_no',
-    //     status: '1'
-    //   })
-    // ]).then(([res1, res2]) => {
-    //   res1.map((item) => {
-    //     this.sellTypeObj[item.dkey] = item.dvalue;
-    //   });
-    //   res2.map((item) => {
-    //     if(!item.parentCode) {
-    //       this.categorys.push({
-    //         value: item.name,
-    //         key: item.code
-    //       });
-    //     }
-    //   });
-    //   this.categorys.map((item, index) => {
-    //     if(item.key === this.categoryCode) {
-    //       this.index = index;
-    //       this.currentIndex = index;
-    //     }
-    //   });
-    //   this.loading = false;
-    //   this.getPageOrder();
-    //   // this.getSubType();
-    //   // if(this.userId) {
-    //   //   this.getUserDetail();
-    //   // }
-    // }).catch(() => { this.loading = false; });
   },
   components: {
     CategorySjdConsignment,

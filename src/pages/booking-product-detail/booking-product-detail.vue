@@ -74,7 +74,7 @@
         <div class="title-right">
           <p>{{detail.scientificName}}</p>
           <i @click="genghuan">X</i>
-          <p class="kucun">库存：{{detail.presellSpecsList[choosedIndex].packCount}}{{detail.packUnit}}</p>
+          <!--<p class="kucun">库存：{{detail.presellSpecsList[choosedIndex].packCount}}{{detail.packUnit}}</p>-->
           <p class="position"><img src="./position@2x.png">{{detail.originPlace}}</p>
         </div>
       </div>
@@ -82,7 +82,7 @@
         <p class="packaging-title">预售规格</p>
         <div class="select">
           <div class="select-item" v-for="(item, index) in detail.presellSpecsList" @click="chooseSpecs(index)" :key="index">
-            <span class="item-name">{{item.name}}</span>
+            <span class="item-name">{{item.name}}{{detail.packUnit}}</span>
             <div class="item-price-isSelect">
               <span>¥{{formatAmount(item.price)}}</span>
               <img src="./choosed@2x.png" v-show="choosedIndex === index">
@@ -527,7 +527,7 @@ export default {
           right: 0;
         }
         .position {
-          margin-top: 0;
+          margin-top: 0.27rem;
           font-size: 0.24rem;
           line-height: 0.33rem;
           color: $color-text-l;

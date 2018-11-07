@@ -53,7 +53,6 @@
   </div>
 </template>
 <script>
-  import {ORDER_STATUS} from 'common/js/dict';
   import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import FullLoading from 'base/full-loading/full-loading';
@@ -62,7 +61,7 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
-  import { getPreOrderDetail, cancelOrder } from 'api/biz';
+  import { getPreOrderDetail, cancelPreOrder } from 'api/biz';
   import { getDictList } from 'api/general';
   import defaultImg from './tree@3x.png';
 
@@ -93,9 +92,6 @@
       formatDate(date, format) {
         return formatDate(date, format);
       },
-      formatStatus(status) {
-        return ORDER_STATUS[status];
-      },
       go(url) {
         this.$router.push(url);
       },
@@ -115,21 +111,21 @@
         return status === '0';
       },
       payOrder(item) {
-        this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
+        this.go(`/pay?pre=1&orderCode=${item.code}`);
       },
       handleInputConfirm(text) {
-        this.loading = true;
         if (this.curItem.status === '0') {
           this.cancelOrder(text);
         }
       },
       cancelOrder(text) {
-        this.loadingText = '取消中...';
-        cancelOrder(this.curItem.code, text).then(() => {
+        this.loading = true;
+        cancelPreOrder({
+          code: this.curItem.code,
+          remark: text
+        }).then(() => {
           this.loading = false;
-          this.editOrderListByCancel({
-            code: this.curItem.code
-          });
+          location.reload();
         }).catch(() => {
           this.loading = false;
         });

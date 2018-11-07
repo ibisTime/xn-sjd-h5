@@ -151,6 +151,11 @@
       </div>
       <div class="gray"></div>
       <div class="assignment-info">
+        <div class="title" v-show="type === 0 || type === 1">
+          <div class="title-inner">
+            <span @click="zhuanrang" :class="iszhuanrang ? 'active' : ''">转让</span><span @click="zhuanzeng" :class="!iszhuanrang ? 'active' : ''">转赠</span>
+          </div>
+        </div>
         <div class="assignment-item" v-show="choosedIndex === 1">
           <span>对方账号</span>
           <input type="text" v-model="mobile" placeholder="请输入对方账号">
@@ -171,7 +176,8 @@
     <toast ref="toast" :text="text"></toast>
     <full-loading v-show="loading"></full-loading>
     <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
-    <confirm-input ref="confirmInputChexiao" :text="inputText" @confirm="handleInputConfirmChexiao"></confirm-input>
+    <confirm ref="confirmInputChexiao" text="确定撤销吗" @confirm="handleInputConfirmChexiao"></confirm>
+    <!--<confirm-input ref="confirmInputChexiao" :text="inputText" @confirm="handleInputConfirmChexiao"></confirm-input>-->
     <router-view></router-view>
   </div>
 </template>
@@ -183,13 +189,11 @@ import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import ConfirmInput from 'base/confirm-input/confirm-input';
+import Confirm from 'base/confirm/confirm';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getDeriveZichanDetail, getOriginZichanDetail, guadanjishou, dingxiangjishou, erweimajishou, placeOrderGuadan, refuseDingxiangJishou, cancelDingxiangJishou } from 'api/biz';
-// import { getUserDetail } from 'api/user';
-// import Logo from './../../../static/sjdicon.ico';
-// import Logo from './tree-default.png';
 export default {
   data() {
     return {
@@ -226,7 +230,9 @@ export default {
       showBottom: false,
       erweimaJishou: false,
       dingxiangJishou: false,
-      inputText: ''
+      chexiao: false,
+      inputText: '',
+      iszhuanrang: true
     };
   },
   methods: {
@@ -249,6 +255,14 @@ export default {
       this.curItem = item;
       this.$refs.confirmInputChexiao.show();
     },
+    zhuanrang() {
+      this.iszhuanrang = true;
+      this.price = '';
+    },
+    zhuanzeng() {
+      this.iszhuanrang = false;
+      this.price = 0;
+    },
     handleInputConfirm(text) {
       // 拒绝定向寄售
       refuseDingxiangJishou({
@@ -265,12 +279,12 @@ export default {
         }
       });
     },
-    handleInputConfirmChexiao(text) {
+    handleInputConfirmChexiao() {
       // 撤销定向寄售
       cancelDingxiangJishou({
         code: this.code,
-        userId: getUserId(),
-        remark: text
+        userId: getUserId()
+        // remark: text
       }).then((res) => {
         if(res.isSuccess) {
           this.text = '已撤销';
@@ -417,6 +431,9 @@ export default {
     chooseType(index) {
       this.choosedIndex = index;
       this.type = index;
+      if(index === 2) {
+        this.price = '';
+      }
     },
     getImgSyl(imgs) {
       return {
@@ -484,7 +501,7 @@ export default {
       ]).then(([res1]) => {
         this.loading = false;
         this.detail = res1;
-        this.detailDescription = res1.description;
+        this.detailDescription = res1.presellProduct.description;
         this.banners = this.detail.presellProduct.bannerPic.split('||');
         if(this.banners.length >= 2) {
           this.loop = true;
@@ -497,8 +514,8 @@ export default {
         }
       }).catch(() => { this.loading = false; });
     } else {
+      this.showBottom = this.buy;
       this.derive = true;
-      this.showBottom = false;
       Promise.all([
         getDeriveZichanDetail({
           code: this.code
@@ -506,24 +523,43 @@ export default {
       ]).then(([res1]) => {
         this.loading = false;
         this.detail = res1;
-        this.detailDescription = res1.description;
+        this.detailDescription = res1.presellProduct.description;
         this.banners = this.detail.presellProduct.bannerPic.split('||');
         if(this.banners.length >= 2) {
           this.loop = true;
+        }
+        if(this.detail.status === '0' && this.status.type === '0') {
+          this.number = this.detail.quantity;
+          this.dingxiangJishou = true;
+        }
+        if(this.detail.status === '0' && this.detail.creater === getUserId() && !this.buy) {
+          this.chexiao = true;
+        }
+        if(this.detail.creater === getUserId() && this.buy) {
+          this.buy = !this.buy;
+          this.showBottom = false;
         }
         if(this.detail.type === '1') {
           this.number = this.detail.quantity;
           this.erweimaJishou = true;
         }
-        if(this.detail.type === '0') {
-          if(this.detail.creater === getUserId()) {
-            this.chexiao = true;
-          } else {
-            this.buy = 1;
-            this.number = this.detail.quantity;
-            this.dingxiangJishou = true;
-          }
-        }
+        // if(this.detail.status === '0') {
+        //   if(this.detail.creater === getUserId()) {
+        //     this.chexiao = true;
+        //   } else {
+        //     this.number = this.detail.quantity;
+        //     this.dingxiangJishou = true;
+        //   }
+        // }
+        // if(this.detail.type === '0' && this.detail.status === '3') {
+        //   if(this.detail.creater === getUserId()) {
+        //     this.chexiao = true;
+        //   } else {
+        //     this.buy = 1;
+        //     this.number = this.detail.quantity;
+        //     this.dingxiangJishou = true;
+        //   }
+        // }
         // if(!this.isWxConfiging && !this.wxData) {
         //   this.getInitWXSDKConfig();
         // }
@@ -542,7 +578,8 @@ export default {
     NoResult,
     MHeader,
     Scroll,
-    ConfirmInput
+    ConfirmInput,
+    Confirm
   }
 };
 </script>
@@ -916,7 +953,7 @@ export default {
   }
   .assignment-part {
     width: 100%;
-    height: 7.7rem;
+    height: 8.7rem;
     position: fixed;
     bottom: 0;
     background-color: #fff;
@@ -947,6 +984,24 @@ export default {
     .assignment-info {
       font-size: 0.26rem;
       line-height: 0.37rem;
+      .title {
+        height: 1rem;
+        padding: 0.3rem;
+        text-align: center;
+        border-bottom: 1px solid $color-border;
+        .title-inner {
+          span {
+            font-size: 0.3rem;
+          }
+          span:first-child {
+            margin-right: 1.6rem;
+          }
+          .active {
+            color: $primary-color;
+            border-bottom: 3px solid $primary-color;
+          }
+        }
+      }
       .assignment-item {
         padding: 0.3rem;
         border-bottom: 1px solid $color-border;

@@ -53,7 +53,7 @@
       },
       logout() {
         clearUser();
-        this.go('/login');
+        this.go('/login?setting=1');
         // this._reloadPage();
       }
       // _reloadPage() {

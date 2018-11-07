@@ -13,6 +13,12 @@ const mutations = {
   },
   [types.SET_CURRENT_PRE_ORDER](state, order) {
     state.currentPreOrder = order;
+  },
+  [types.SET_CON_ORDER_LIST](state, list) {
+    state.conOrderList = list;
+  },
+  [types.SET_CURRENT_CON_ORDER](state, order) {
+    state.currentConOrder = order;
   }
   // [types.SET_USER_STATE](state, me) {
   //   state.me = new User(me);

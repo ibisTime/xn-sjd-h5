@@ -145,9 +145,15 @@ const MyConsignment = () => import('@/pages/my-consignment/my-consignment');
 // 二维码寄售
 const ConsignmentErweima = () => import('@/pages/consignment-erweima/consignment-erweima');
 // 预售地址
-const YushouAddress = () => import('@/pages/yushou-address/yushou-address');
+const YushouAddress = () => import('@/pages/yushou-address1/yushou-address1');
+// 预售地址
+const YushouAddressList = () => import('@/pages/yushou-address-list/yushou-address-list');
 // 预售地址
 const TihuoAddressAddedit = () => import('@/pages/tihuo-address-addedit/tihuo-address-addedit');
+// 寄售订单
+const ConsignmentOrder = () => import('@/pages/consignment-order/consignment-order');
+// 寄售订单详情
+const ConsignmentOrderDetail = () => import('@/pages/consignment-order-detail/consignment-order-detail');
 export default new Router({
   routes: [
     {
@@ -450,10 +456,6 @@ export default new Router({
         {
           path: 'consignment-product-detail',
           component: ConsignmentProductDetail
-        },
-        {
-          path: 'my-consignment',
-          component: MyConsignment
         }
       ]
     },
@@ -476,8 +478,24 @@ export default new Router({
       // ]
     },
     {
+      path: '/yushou-address-list',
+      component: YushouAddressList
+    },
+    {
       path: '/tihuo-address-addedit',
       component: TihuoAddressAddedit
+    },
+    {
+      path: '/consignment-order',
+      component: ConsignmentOrder
+    },
+    {
+      path: '/consignment-order-detail',
+      component: ConsignmentOrderDetail
+    },
+    {
+      path: '/my-consignment',
+      component: MyConsignment
     }
   ]
 });

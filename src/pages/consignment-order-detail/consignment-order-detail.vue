@@ -1,46 +1,43 @@
 <template>
-  <div class="adopt-list-wrapper">
+  <div class="booking-order-detail-wrapper">
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="status" v-show="detail.status === '4'">
-          <img src="./overdue@1.5x.png" class="icon">
-          <p class="status-text">订单已过期</p>
+        <div class="status">
+          <!--<img src="./overdue@1.5x.png" class="icon">-->
+          <img src="./daizhifu@2x.png" class="icon" v-if="detail.status === '0'">
+          <img src="./yiquxiao@2x.png" class="icon" v-if="detail.status === '1'">
+          <p class="status-text">订单{{statusObj[detail.status]}}</p>
+          <!--<p class="remaining-time">剩余时间：20:00</p>-->
         </div>
-        <div class="gray" v-show="detail.status === '4'"></div>
+        <div class="gray"></div>
         <div class="order-list">
           <!--<Scroll :pullUpLoad="pullUpLoad">-->
-            <div class="item" @click="go('/product-detail?code='+detail.productCode)">
+            <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+detail.productCode)">
               <div class="top">
-                <span class="item-code">{{detail.code}}</span>
+                <span class="item-code">{{detail.sellerName}}</span>
                 <span class="item-status">{{statusObj[detail.status]}}</span>
               </div>
               <div class="info">
-                <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
+                <div class="imgWrap" :style="getImgSyl(detail.presellProduct.listPic)"></div>
                 <div class="text">
-                  <p class="title"><span class="title-title">{{detail.product.name}}</span><span class="title-number" v-show="detail.status === '3' || detail.status === '4'">x{{detail.adoptOrderTreeList.length}}</span></p>
-                  <p class="position">{{detail.product.province}} {{detail.product.city}} {{detail.product.area}}</p>
-                  <div class="props"><span class="duration">规格：{{detail.productSpecsName}}</span><span class="price" v-show="!detail.jfDeductAmount">¥{{formatAmount(detail.price)}}</span><span class="price" v-show="detail.jfDeductAmount">¥{{formatAmount(detail.payAmount)}}+{{formatAmount(detail.jfDeductAmount)}}积分</span></div>
+                  <p class="title"><span class="title-title">{{detail.presellProduct.name}}</span><span class="title-number">x{{detail.quantity}}</span></p>
+                  <p class="position">预售规格：{{detail.specsName}}</p>
+                  <div class="props"><span class="duration">合计{{detail.quantity}}件商品</span><span class="price">¥{{formatAmount(detail.amount)}}</span></div>
                 </div>
               </div>
-              <div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}}</div>
               <div class="gray"></div>
             </div>
-            <div class="treeList" v-show="detail.status === '3'">
-              <div class="top">
-                <span class="item-code">树木列表</span>
+            <div class="order-info">
+              <div class="order-info-title">订单信息</div>
+              <div class="order-info-content">
+                <p><span>订单号</span><span>{{detail.code}}</span></p>
+                <p><span>订单金额</span><span>{{formatAmount(detail.amount)}}元</span></p>
+                <p><span>卖家</span><span>{{detail.sellerName}}</span></p>
+                <p><span>支付流水号</span><span>{{detail.jourCode}}</span></p>
+                <p><span>预计发货时间</span><span>{{formatDate(detail.presellProduct.harvestDatetime)}}</span></p>
+                <p><span>树木编号</span><span>{{detail.treeNumbers}}</span></p>
+                <p><span>数量</span><span>{{detail.quantity}}</span></p>
               </div>
-              <div class="info" v-for="(item, index) in detail.treeList" @click="goTree(index)">
-                <div class="imgWrap" :style="getImgSyl(item.pic)"></div>
-                <div class="text">
-                  <p class="title"><span class="title-title">{{item.treeNumber}}</span><span class="title-number">x1</span></p>
-                  <div class="props"><span class="duration">树龄：{{item.age}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></div>
-                </div>
-              </div>
-            </div>
-            <div class="gray" v-show="detail.status === '3'"></div>
-            <div class="duration">
-              <div class="duration-item"><span class="name">起始时间</span><span>{{formatDate(detail.startDatetime, 'yyyy-MM-dd')}}</span></div>
-              <div class="duration-item"><span class="name">终止时间</span><span>{{formatDate(detail.endDatetime, 'yyyy-MM-dd')}}</span></div>
             </div>
           <!--</Scroll>-->
         </div>
@@ -50,16 +47,12 @@
         <div class="btn" v-show="showPayBtn(detail.status)" @click="payOrder(detail)">立即支付</div>
       </div>
     </div>
-    <!--<div class="btns" v-show="detail.adoptOrderTreeList.length && detail.adoptOrderTreeList[0].status === '2'">-->
-      <!--<div class="btn" @click="goTree">看看这棵树</div>-->
-    <!--</div>-->
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast :text="toastText" ref="toast"></toast>
   </div>
 </template>
 <script>
-  import {ORDER_STATUS} from 'common/js/dict';
   import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import FullLoading from 'base/full-loading/full-loading';
@@ -68,7 +61,7 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
-  import { getOrderDetail, getOrganizeOrderDetail, cancelOrder } from 'api/biz';
+  import { getConOrderDetail, cancelPreOrder } from 'api/biz';
   import { getDictList } from 'api/general';
   import defaultImg from './tree@3x.png';
 
@@ -83,7 +76,7 @@
         loadingText: '',
         text: '',
         pullUpLoad: null,
-        detail: {product: {}, adoptOrderTreeList: {}},
+        detail: {presellProduct: {listPic: ''}, adoptOrderTreeList: {}},
         choosedIndex: 0,
         code: '',   // 产品code,
         statusObj: {}
@@ -98,9 +91,6 @@
       },
       formatDate(date, format) {
         return formatDate(date, format);
-      },
-      formatStatus(status) {
-        return ORDER_STATUS[status];
       },
       go(url) {
         this.$router.push(url);
@@ -121,17 +111,19 @@
         return status === '0';
       },
       payOrder(item) {
-        this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
+        this.go(`/pay?pre=1&orderCode=${item.code}`);
       },
       handleInputConfirm(text) {
-        this.loading = true;
         if (this.curItem.status === '0') {
           this.cancelOrder(text);
         }
       },
       cancelOrder(text) {
-        this.loadingText = '取消中...';
-        cancelOrder(this.curItem.code, text).then(() => {
+        this.loading = true;
+        cancelPreOrder({
+          code: this.curItem.code,
+          remark: text
+        }).then(() => {
           this.loading = false;
           location.reload();
         }).catch(() => {
@@ -148,50 +140,25 @@
         return {
           backgroundImage: `url(${img})`
         };
-      },
-      // 点击树木列表时触发的事件
-      goTree(index) {
-        if(this.detail.adoptOrderTreeList[index].status === '2') {
-          this.go(`/my-tree?aTCode=${this.detail.adoptOrderTreeList[index].code}`);
-        } else {
-          this.toastText = '这棵树已经被赠送或到期咯';
-          this.$refs.toast.show();
-        }
       }
     },
     mounted() {
-      setTitle('订单详情');
+      setTitle('预售订单详情');
       this.pullUpLoad = null;
       this.code = this.$route.query.code;
-      this.type = this.$route.query.type;// 订单类型（1个人/2定向/3捐赠/4集体）
       this.loading = true;
-      if(this.type === '4') {
-        Promise.all([
-          getOrganizeOrderDetail({
-            code: this.code
-          }),
-          getDictList('group_adopt_order_status')
-        ]).then(([res1, res2]) => {
-          this.loading = false;
-          this.detail = res1;
-          res2.map((item) => {
-            this.statusObj[item.dkey] = item.dvalue;
-          });
-        }).catch(() => { this.loading = false; });
-      } else {
-        Promise.all([
-          getOrderDetail({
-            code: this.code
-          }),
-          getDictList('adopt_order_status')
-        ]).then(([res1, res2]) => {
-          this.loading = false;
-          this.detail = res1;
-          res2.map((item) => {
-            this.statusObj[item.dkey] = item.dvalue;
-          });
-        }).catch(() => { this.loading = false; });
-      }
+      Promise.all([
+        getConOrderDetail({
+          code: this.code
+        }),
+        getDictList('group_order_status')
+      ]).then(([res1, res2]) => {
+        this.loading = false;
+        this.detail = res1;
+        res2.map((item) => {
+          this.statusObj[item.dkey] = item.dvalue;
+        });
+      }).catch(() => { this.loading = false; });
     },
     components: {
       FullLoading,
@@ -210,7 +177,7 @@
     width: 100%;
     height: 0.88rem;
   }
-  .adopt-list-wrapper {
+  .booking-order-detail-wrapper {
     background: #fff;
     position: fixed;
     width: 100%;
@@ -244,6 +211,13 @@
           color: #2D2D2D;
           font-size: $font-size-medium-x;
           line-height: 0.42rem;
+          margin-bottom: 0.12rem;
+        }
+        .remaining-time {
+          font-family: 'PingFang-SC-Medium';
+          font-size: 0.3rem;
+          color: #FE5656;
+          letter-spacing: 0.25px;
         }
       }
       .gray {
@@ -294,6 +268,11 @@
             display: flex;
             justify-content: space-between;
             flex: 1;
+            .title-number {
+              color: #999;
+              font-size: 0.24rem;
+              line-height: 0.33rem;
+            }
           }
           .position {
             font-size: 0.24rem;
@@ -308,19 +287,18 @@
             display: flex;
             justify-content: space-between;
             .duration {
-
+              letter-spacing: 0.2px;
             }
             .price {
               font-family: DIN-Bold;
-              font-size: $font-size-medium-x;
+              font-size: 0.3rem;
               color: #151515;
+              letter-spacing: 0.23px;
+              line-height: 0.3rem;
+              font-weight: 600;
             }
           }
         }
-      }
-      .identifyCode {
-        border-top: 1px solid $color-border;
-        padding: 0 0.3rem;
       }
       .order-list {
         background: $color-highlight-background;
@@ -329,11 +307,6 @@
           font-size: $font-size-medium-x;
           line-height: 1.1rem;
           border-bottom: 1px solid #eee;
-        }
-        .treeList {
-          .info {
-            border-bottom: 1px solid $color-border;
-          }
         }
       }
       .btns {
@@ -359,15 +332,23 @@
           }
         }
       }
-      .duration {
-        font-size: $font-size-medium-s;
-        line-height: 0.37rem;
-        font-family: 'PingFangSC-Medium';
-        .duration-item {
-          padding: 0.37rem 0.3rem;
-          border-bottom: 1px solid $color-border;
-          .name {
-            margin-right: 0.76rem;
+      .order-info {
+        padding: 0.3rem;
+        color: #2D2D2D;
+        .order-info-title {
+          font-size: 0.3rem;
+          letter-spacing: 0.25px;
+          margin-bottom: 0.42rem;
+        }
+        .order-info-content {
+          font-size: 0.26rem;
+          letter-spacing: 0.22px;
+          p {
+            margin-bottom: 0.3rem;
+            span:first-child {
+              width: 30%;
+              display: inline-block;
+            }
           }
         }
       }

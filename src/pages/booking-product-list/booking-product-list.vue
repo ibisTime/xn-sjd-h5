@@ -188,7 +188,6 @@ export default {
             key: item.code
           });
         });
-        console.log(this.categorysSub);
         this.selectdType = this.categorysSub[this.indexSub].key;
         this.getPageOrders();
         this.loading = false;
