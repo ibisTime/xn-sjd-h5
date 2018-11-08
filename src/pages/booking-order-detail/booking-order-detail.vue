@@ -1,17 +1,18 @@
 <template>
   <div class="booking-order-detail-wrapper">
-    <div class="content">
+    <div class="content" :style="{'bottom': showBtns(detail.status) ? '0.98rem' : '0'}">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="status">
-          <!--<img src="./overdue@1.5x.png" class="icon">-->
-          <img src="./daizhifu@2x.png" class="icon" v-if="detail.status === '0'">
-          <img src="./yiquxiao@2x.png" class="icon" v-if="detail.status === '1'">
-          <p class="status-text">订单{{statusObj[detail.status]}}</p>
-          <!--<p class="remaining-time">剩余时间：20:00</p>-->
-        </div>
-        <div class="gray"></div>
-        <div class="order-list">
-          <!--<Scroll :pullUpLoad="pullUpLoad">-->
+        <div class="scroll-scroll">
+          <div class="status">
+            <!--<img src="./overdue@1.5x.png" class="icon">-->
+            <img src="./daizhifu@2x.png" class="icon" v-if="detail.status === '0'">
+            <img src="./yiquxiao@2x.png" class="icon" v-if="detail.status === '1'">
+            <p class="status-text">订单{{statusObj[detail.status]}}</p>
+            <!--<p class="remaining-time">剩余时间：20:00</p>-->
+          </div>
+          <div class="gray"></div>
+          <div class="order-list">
+            <!--<Scroll :pullUpLoad="pullUpLoad">-->
             <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+detail.productCode)">
               <div class="top">
                 <span class="item-code">{{detail.sellerName}}</span>
@@ -33,13 +34,14 @@
                 <p><span>订单号</span><span>{{detail.code}}</span></p>
                 <p><span>订单金额</span><span>{{formatAmount(detail.amount)}}元</span></p>
                 <p><span>卖家</span><span>{{detail.sellerName}}</span></p>
-                <p><span>支付流水号</span><span>{{detail.jourCode}}</span></p>
+                <p v-if="detail.jourCode"><span>支付流水号</span><span>{{detail.jourCode}}</span></p>
                 <p><span>预计发货时间</span><span>{{formatDate(detail.presellProduct.harvestDatetime)}}</span></p>
-                <p><span>树木编号</span><span>{{detail.treeNumbers}}</span></p>
+                <p v-if="detail.treeNumbers"><span>树木编号</span><span>{{detail.treeNumbers}}</span></p>
                 <p><span>数量</span><span>{{detail.quantity}}</span></p>
               </div>
             </div>
-          <!--</Scroll>-->
+            <!--</Scroll>-->
+          </div>
         </div>
       </Scroll>
       <div class="btns" v-show="showBtns(detail.status)">
@@ -89,8 +91,8 @@
       formatImg(img) {
         return formatImg(img);
       },
-      formatDate(date, format) {
-        return formatDate(date, format);
+      formatDate(date) {
+        return formatDate(date, 'yyyy-MM-dd');
       },
       go(url) {
         this.$router.push(url);
@@ -99,7 +101,7 @@
         this.choosedIndex = index;
       },
       showBtns(status) {
-        if (status !== '0') {
+        if(status !== '0') {
           return false;
         }
         return true;
@@ -193,7 +195,7 @@
     .content {
       position: absolute;
       top: 0;
-      bottom: 0;
+      bottom: 0.98rem;
       left: 0;
       right: 0;
       overflow: auto;
@@ -311,7 +313,8 @@
       }
       .btns {
         display: flex;
-        position: absolute;
+        /*position: absolute;*/
+        position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;

@@ -54,7 +54,7 @@
           <span>转让二维码</span>
           <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item" @click="goTreeCode()">
+        <div class="item" @click="goTreeCode()" v-show="detail.treeNumberList.length">
           <span>树编号</span><span>{{detail.treeNumberList.length}}棵</span>
           <img src="./more@2x.png" class="fr more">
         </div>
@@ -74,8 +74,9 @@
       </Scroll>
     </div>
     <div class="footer" v-show="buy">
-      <span>¥{{formatAmount(detail.price)}}</span>
-      <button class="fr" @click="showPopUp">确认购买</button>
+      <span v-show="erweimaJishou">¥{{formatAmount(detail.price) * detail.quantity}}</span>
+      <span v-show="!erweimaJishou">¥{{formatAmount(detail.price)}}</span>
+      <button :style="{'background' : buyDisable ? 'gray' : ''}" @click="showPopUp">{{buyText}}</button>
     </div>
     <div class="footer-dingxiangjishou" v-show="dingxiangJishou">
       <span>¥{{formatAmount(detail.price)}}</span>
@@ -232,7 +233,9 @@ export default {
       dingxiangJishou: false,
       chexiao: false,
       inputText: '',
-      iszhuanrang: true
+      iszhuanrang: true,
+      buyText: '确认购买',
+      buyDisable: false
     };
   },
   methods: {
@@ -341,7 +344,7 @@ export default {
         let number = this.number;
         let type = this.type;
         let mobile = this.mobile;
-        if(!this.price) {
+        if(this.price === '') {
           this.text = '请填写价格';
           this.$refs.toast.show();
           return;
@@ -484,7 +487,7 @@ export default {
     }
   },
   mounted() {
-    setTitle('寄售详情');
+    setTitle('详情');
     this.isWxConfiging = false;
     this.wxData = null;
     this.pullUpLoad = null;
@@ -521,6 +524,7 @@ export default {
           code: this.code
         })
       ]).then(([res1]) => {
+        // debugger;
         this.loading = false;
         this.detail = res1;
         this.detailDescription = res1.presellProduct.description;
@@ -528,16 +532,21 @@ export default {
         if(this.banners.length >= 2) {
           this.loop = true;
         }
-        if(this.detail.status === '0' && this.status.type === '0') {
+        if(this.detail.status === '0' && this.detail.type === '0') {
           this.number = this.detail.quantity;
           this.dingxiangJishou = true;
+          this.showBottom = true;
         }
         if(this.detail.status === '0' && this.detail.creater === getUserId() && !this.buy) {
           this.chexiao = true;
+          this.showBottom = true;
         }
         if(this.detail.creater === getUserId() && this.buy) {
-          this.buy = !this.buy;
-          this.showBottom = false;
+          this.buyText = '无法购买自己发布的产品';
+          this.buyDisable = true;
+          this.showBottom = true;
+          // this.buy = !this.buy;
+          // this.showBottom = false;
         }
         if(this.detail.type === '1') {
           this.number = this.detail.quantity;

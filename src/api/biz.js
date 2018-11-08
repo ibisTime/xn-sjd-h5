@@ -644,3 +644,10 @@ export function getMyConsignmentList(data) {
     ...data
   });
 }
+
+// 列表查询品种
+export function getVarietyList(data) {
+  return fetch(629459, {
+    ...data
+  });
+}

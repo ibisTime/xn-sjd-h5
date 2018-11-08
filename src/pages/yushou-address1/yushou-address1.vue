@@ -14,16 +14,13 @@
             <div class="addButton" @click="toAddress">
               <div class="addButton-inner">
                 <img src="./add-border@2x.png">
-                <span>添加地址</span>
+                <span class="add-address-text">添加地址</span>
               </div>
             </div>
             <div class="opeator border-top-1px">
-              <div class="default" @click.stop="setDefault(item, index)">
-                <!--<i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>-->
-                <!--<span>设为默认地址</span>-->
+              <div class="default">
+                <span class="add-address-text">收货数量</span>
               </div>
-              <!--<button class="edit" @click.stop="goEdit(item)">编辑</button>-->
-              <!--<button class="delete" @click.stop="deleteItem(item, index)">删除</button>-->
               <div class="right">
                 <img class="diamonds right-item" @click="addNumber" src="./add@2x.png">
                 <input class="num right-item" v-model="number" type="number">
@@ -39,12 +36,9 @@
                 <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
               </div>
               <div class="opeator border-top-1px">
-                <div class="default" @click.stop="setDefault(item, index)">
-                  <!--<i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>-->
-                  <!--<span>设为默认地址</span>-->
+                <div class="default">
+                  <span class="add-address-text">收货数量</span>
                 </div>
-                <!--<button class="edit" @click.stop="goEdit(item)">编辑</button>-->
-                <!--<button class="delete" @click.stop="deleteItem(item, index)">删除</button>-->
                 <div class="right">
                   <img class="diamonds right-item" @click="add(item)" src="./add@2x.png">
                   <input class="num right-item" v-model="item.deliverCount" type="number">
@@ -76,7 +70,7 @@
   import NoResult from 'base/no-result/no-result';
   import {setTitle, formatAmount} from 'common/js/util';
   // import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
-  import {deleteAddress, setDefaultAddress} from 'api/user';
+  import {deleteAddress} from 'api/user';
   import { confirmTihuo, getOriginZichanDetail } from 'api/biz';
   // import {mapGetters, mapMutations, mapActions} from 'vuex';
 
@@ -131,7 +125,7 @@
         item.deliverCount++;
       },
       sub(item) {
-        if (this.number >= 2) {
+        if (item.deliverCount >= 2) {
           item.deliverCount--;
         }
       },
@@ -144,7 +138,10 @@
         }
       },
       toAddress() {
-        this.go(`/yushou-address-list?tihuo=1&number=${this.number}`);
+        if(this.addressList[0]) {
+          sessionStorage.setItem('tihuo-address', JSON.stringify(this.addressList[0]));
+        }
+        this.go(`/yushou-address-list?tihuo=1&number=${this.number}&code=${this.code}`);
       },
       getProDetail() {
         this.loadingFlag = true;
@@ -171,28 +168,6 @@
           return this.hasMore;
         }else{
           return !this.hasMore;
-        }
-      },
-      setDefault(item, index) {
-        if (item.isDefault !== '1') {
-          this.loadingText = '设置中...';
-          this.loadingFlag = true;
-          setDefaultAddress(item.code).then(() => {
-            this.loadingFlag = false;
-            // this.setDefaultAddress({
-            //   code: item.code
-            // });
-            this.addressList.forEach((item, i) => {
-              if (index === i) {
-                this.addressList[index].isDefault = '1';
-              }else{
-                this.addressList[i].isDefault = '0';
-              }
-            });
-            this.setCurAddr(item);
-          }).catch(() => {
-            this.loadingFlag = false;
-          });
         }
       },
       goEdit(item) {
@@ -226,18 +201,25 @@
         this.go(`/tihuo-address-addedit?code=${this.code}`);
       },
       confirmTihuo() {
-        confirmTihuo({
-          code: this.code,
-          logisticsList: this.addressList[0]
-        }).then((res) => {
-          if(res.isSuccess) {
-            this.text = '提交成功';
-            this.$refs.toast.show();
-            setTimeout(() => {
-              this.go('/consignment-hall/my-consignment');
-            }, 1000);
-          }
-        });
+        if(this.addressList[0] && this.addressList[0].length) {
+          this.loadingFlag = true;
+          confirmTihuo({
+            code: this.code,
+            logisticsList: this.addressList[0]
+          }).then((res) => {
+            this.loadingFlag = false;
+            if(res.isSuccess) {
+              this.text = '提交成功';
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.go('/my-consignment');
+              }, 1000);
+            }
+          }).catch(() => { this.loadingFlag = false; });
+        } else {
+          this.text = '请添加至少一条地址';
+          this.$refs.toast.show();
+        }
       }
     },
     components: {
@@ -271,6 +253,7 @@
     }
 
     ul {
+      padding-bottom: 0.98rem;
       li {
         position: relative;
         @include border-bottom-1px($color-border);
@@ -501,7 +484,7 @@
             height: 0.4rem;
             margin-right: 0.2rem;
           }
-          span {
+          .add-address-text {
             color: #b3b3b3;
             font-size: 0.24rem;
           }
@@ -518,6 +501,10 @@
         .default {
           flex: 1;
 
+          .add-address-text {
+            color: #b3b3b3;
+            font-size: 0.24rem;
+          }
           .icon-chose {
             margin-left: 0.3rem;
             display: inline-block;

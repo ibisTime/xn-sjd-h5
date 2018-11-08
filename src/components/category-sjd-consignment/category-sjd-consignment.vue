@@ -23,6 +23,7 @@
 
 <script type="text/ecmascript-6">
   // import BScroll from 'better-scroll';
+  import { getVarietyList } from 'api/biz';
 
   export default {
     props: {
@@ -71,14 +72,14 @@
           value: '按数量排'
         }],
         typeList: [{
-          key: 1,
-          value: '樟子松'
+          key: 'all',
+          value: '全部品种'
         }]
       };
     },
     mounted() {
       this.orderText = this.orderList[0].value;
-      this.typeText = this.typeList[0].value;
+      this.getVariety();
     },
     methods: {
       showOrder() {
@@ -98,12 +99,14 @@
         this.orderBy = this.orderList[index].key;
         this.orderText = this.orderList[index].value;
         this.order = !this.order;
+        this.sendMessage();
       },
       checkedType(index) {
         this.typeIndex = index;
-        this.pinzhong = this.typeList[index].key;
+        this.pinzhong = this.typeList[index].value;
         this.typeText = this.typeList[index].value;
         this.type = !this.type;
+        this.sendMessage();
       },
       getOrderImg() {
         return this.order ? require('./down-unchoosed@2x.png') : require('./up-choosed@2x.png');
@@ -118,6 +121,24 @@
       go(url) {
         this.close();
         this.$router.push(url);
+      },
+      getVariety() {
+        getVarietyList({
+          status: 0,
+          type: 2,
+          minQuality: 0
+        }).then((res) => {
+          res.map((item, index) => {
+            this.typeList.push({
+              key: index,
+              value: item.variety
+            });
+          });
+          this.typeText = this.typeList[0].value;
+        }).catch(() => {});
+      },
+      sendMessage() {
+        this.$emit('sendMessage', this.orderBy, this.pinzhong);
       }
     }
   };
@@ -155,6 +176,8 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          white-space: nowrap;
+          overflow: hidden;
         }
         img {
           width: 0.18rem;

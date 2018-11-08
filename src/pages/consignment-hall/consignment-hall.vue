@@ -5,7 +5,7 @@
       <!--<div @click="clickType"><span>1</span><img src="./up-choosed@2x.png"/></div>-->
       <!--<div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售</div>-->
     <!--</div>-->
-    <category-sjd-consignment></category-sjd-consignment>
+    <category-sjd-consignment @sendMessage="sendMessage"></category-sjd-consignment>
     <!--<div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>-->
     <!--<div :class="['buypart',flag ? 'show' : '']">-->
       <!--<div class="title">-->
@@ -242,7 +242,10 @@ export default {
           limit: this.limit,
           status: 0,
           type: 2,
-          minQuantity: 0
+          minQuantity: 0,
+          variety: this.variety || '',
+          orderColumn: this.orderColumn || '',
+          orderDir: 'asc'
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -262,6 +265,23 @@ export default {
       }).then((res) => {
         this.userDetail = res;
       });
+    },
+    sendMessage(orderby, pinzhong) {
+      if(pinzhong === '全部品种') {
+        this.variety = '';
+      } else {
+        this.variety = pinzhong;
+      }
+      switch (orderby) {
+        case 0: this.orderColumn = ''; break;
+        case 1: this.orderColumn = 'create_datetime'; break;
+        case 2: this.orderColumn = 'price'; break;
+        case 3: this.orderColumn = 'quantity'; break;
+      }
+      this.start = 1;
+      this.limit = 10;
+      this.proList = [];
+      this.getPageOrders();
     }
   },
   mounted() {

@@ -103,7 +103,6 @@
     computed: {
       currentList() {
         if(this.categorysStatus[this.currentIndex]) {
-          console.log(this.preOrderList);
           let _curListObj = this.preOrderList[this.categorysStatus[this.currentIndex].key];
           if (!_curListObj) {
             _curListObj = {

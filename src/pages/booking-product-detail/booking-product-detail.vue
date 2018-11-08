@@ -36,9 +36,9 @@
           <span>年限</span><span>{{detail.adoptYear}}年</span>
         </div>
         <div class="item">
-          <span>预计收货时间</span><span>{{formatDate(detail.harvestDatetime)}}</span>
+          <span>预计收获时间</span><span>{{formatDate(detail.harvestDatetime, 'yyyy-MM-dd')}}</span>
         </div>
-        <div class="item" @click="go(`/tree-code?buy=1&code=${detail.code}`)">
+        <div class="item" @click="go(`/booking-product-list/booking-product-detail/tree-code?buy=1&code=${detail.code}`)">
           <span>树编号</span><span>{{detail.treeList.length}}棵</span>
           <img src="./more@2x.png" class="fr more">
         </div>
@@ -82,7 +82,7 @@
         <p class="packaging-title">预售规格</p>
         <div class="select">
           <div class="select-item" v-for="(item, index) in detail.presellSpecsList" @click="chooseSpecs(index)" :key="index">
-            <span class="item-name">{{item.name}}{{detail.packUnit}}</span>
+            <span class="item-name">{{item.name}}/{{detail.packUnit}}</span>
             <div class="item-price-isSelect">
               <span>¥{{formatAmount(item.price)}}</span>
               <img src="./choosed@2x.png" v-show="choosedIndex === index">
@@ -120,8 +120,6 @@ import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getBookingProDetail } from 'api/biz';
 import { getUserDetail } from 'api/user';
-// import Logo from './../../../static/sjdicon.ico';
-// import Logo from './tree-default.png';
 export default {
   data() {
     return {
@@ -195,6 +193,11 @@ export default {
         let proCode = this.detail.code;
         let specsCode = this.detail.presellSpecsList[this.choosedIndex].code;
         let quantity = this.number;
+        if(quantity > this.detail.presellSpecsList[this.choosedIndex].packCount) {
+          this.text = '库存不足，无法下单';
+          this.$refs.toast.show();
+          return;
+        }
         this.go('/protocol?sign=1&pre=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity);
       } else {
         this.text = '您未登录';
@@ -253,13 +256,14 @@ export default {
     }
   },
   mounted() {
-    setTitle('预售详情');
     this.isWxConfiging = false;
     this.wxData = null;
     this.pullUpLoad = null;
     this.userId = getCookie('userId');
     this.code = this.$route.query.code;
     this.loading = true;
+    setTitle('预售详情');
+    // console.log(2);
     if(this.userId) {
       Promise.all([
         getBookingProDetail({

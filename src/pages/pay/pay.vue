@@ -368,7 +368,7 @@
           }, 1000);
         } else if(this.jishou) {
           setTimeout(() => {
-            this.$router.push(`/consignment-hall/my-consignment`);
+            this.$router.push(`/me`);
           }, 1000);
         } else {
           setTimeout(() => {

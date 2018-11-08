@@ -11,7 +11,7 @@
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
           <div class="proList" v-show="type === 0">
-            <div class="item" @click="go('/consignment-hall/consignment-product-detail?code='+item.code)" v-for="item in originList">
+            <div class="item" @click="go('/consignment-product-detail?code='+item.code)" v-for="item in originList">
               <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
               <div class="hot-pro-text">
                 <p class="hot-pro-title">
@@ -40,7 +40,7 @@
                   <span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span>
                 </p>
                 <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">总数量：{{item.quantity}}</span></p>
-                <p class="hot-pro-bottom" v-show="type === 1"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">转让中数量：{{item.presellQuantity}}</span></p>
+                <!--<p class="hot-pro-bottom" v-show="type === 1"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">转让中数量：{{item.presellQuantity}}</span></p>-->
               </div>
             </div>
           </div>
@@ -154,6 +154,8 @@ export default {
         if(this.type === 1) {
           this.params = {};
           this.params.userId = this.userId;
+          this.params.orderColumn = 'create_datetime';
+          this.params.orderDir = 'desc';
           Promise.all([
             getMyConsignmentList(this.params)
           ]).then(([res1]) => {
@@ -198,7 +200,7 @@ export default {
     this.loading = true;
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
-    setTitle('我的寄售');
+    setTitle('我的预售资产');
     Promise.all([
       getDictList('original_group_status'),
       getDictList('derive_group_status')

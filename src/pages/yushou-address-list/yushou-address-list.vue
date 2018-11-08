@@ -27,7 +27,7 @@
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
       <confirm ref="confirm" text="确定删除地址吗" @confirm="_deleteAddress"></confirm>
-      <confirm ref="getGiftConfirm" text="确定使用该地址领取礼物吗" @confirm="getGift" @cancel="cancelAddress"></confirm>
+      <confirm ref="getGiftConfirm" text="确定使用该地址吗" @confirm="getGift" @cancel="cancelAddress"></confirm>
       <toast ref="toast" :text="text"></toast>
       <router-view></router-view>
     </div>
@@ -41,10 +41,7 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import {setTitle} from 'common/js/util';
-  import { getGift } from 'api/biz';
-  // import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
   import {deleteAddress, getAddressList, setDefaultAddress} from 'api/user';
-  // import {mapGetters, mapMutations, mapActions} from 'vuex';
 
   export default {
     data() {
@@ -60,24 +57,12 @@
     },
     mounted() {
       this.code = this.$route.query.code;
+      this.number = this.$route.query.number;
       this.currentItem = null;
       this.getAddress();
     },
     updated() {
       this.getAddress();
-    },
-    computed: {
-      // ...mapGetters([
-      //   'addressList'
-      // ])
-      /* {
-          name: '东南',
-          mobile: '18888888888',
-          province: '浙江省',
-          city: '杭州市',
-          area: '余杭区',
-          address: '仓前街道'
-        } */
     },
     methods: {
       action() {
@@ -156,29 +141,6 @@
         }
       },
       selectAddress(index, item) {
-        console.log(item);
-        item.receiver = item.addressee;
-        item.address = item.detailAddress;
-        item.area = item.district;
-        item.receiverMobile = item.mobile;
-        item.deliverCount = this.number;
-        delete item.addressee;
-        delete item.detailAddress;
-        delete item.district;
-        delete item.mobile;
-        if(!sessionStorage.getItem('tihuo-address')) {
-          let arr = [];
-          arr.push(item);
-          sessionStorage.setItem('tihuo-address', JSON.stringify(arr));
-        } else {
-          // debugger;
-          let arr = JSON.parse(sessionStorage.getItem('tihuo-address'));
-          arr.push(item);
-          sessionStorage.setItem('tihuo-address', JSON.stringify(arr));
-        }
-        setTimeout(() => {
-          this.$router.push(`/yushou-address?pre=1&code=${this.trueCode}`);
-        }, 500);
         this.currIndex = index;
         this.currentItem = item;
         this.$refs.getGiftConfirm.show();
@@ -187,35 +149,30 @@
         this.currIndex = null;
       },
       getGift() {
-        this.$validator.validateAll().then((result) => {
-          if(result) {
-            this.loading = true;
-            console.log(this.currentItem);
-            Promise.all([
-              getGift({
-                code: this.code,
-                addressCode: this.currentItem.code
-              })
-              // addAddress({
-              //   addressee: this.receiver,
-              //   mobile: this.mobile,
-              //   province: this.province,
-              //   city: this.city,
-              //   district: this.district,
-              //   detailAddress: this.address
-              // })
-            ]).then(([res1]) => {
-              this.loading = false;
-              if(res1.isSuccess) {
-                this.text = '认领成功';
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  this.$router.push('/gift');
-                }, 1000);
-              }
-            }).catch(() => { this.loading = false; });
-          }
-        });
+        this.currentItem.receiver = this.currentItem.addressee;
+        this.currentItem.address = this.currentItem.detailAddress;
+        this.currentItem.area = this.currentItem.district;
+        this.currentItem.receiverMobile = this.currentItem.mobile;
+        this.currentItem.deliverCount = this.number;
+        delete this.currentItem.addressee;
+        delete this.currentItem.detailAddress;
+        delete this.currentItem.district;
+        delete this.currentItem.mobile;
+        delete this.currentItem.userId;
+        delete this.currentItem.isDefault;
+        if(!sessionStorage.getItem('tihuo-address')) {
+          let arr = [];
+          arr.push(this.currentItem);
+          sessionStorage.setItem('tihuo-address', JSON.stringify(arr));
+        } else {
+          // debugger;
+          let arr = JSON.parse(sessionStorage.getItem('tihuo-address'));
+          arr.push(this.currentItem);
+          sessionStorage.setItem('tihuo-address', JSON.stringify(arr));
+        }
+        setTimeout(() => {
+          this.$router.push(`/yushou-address?pre=1&code=${this.code}`);
+        }, 500);
       }
     },
     components: {

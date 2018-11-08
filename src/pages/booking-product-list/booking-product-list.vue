@@ -1,9 +1,9 @@
 <template>
   <div class="booking-product-wrapper">
     <div class="header clearfix category-wrapper">
-      <!--<category-scroll :currentIndex="currentIndex"-->
-                       <!--:categorys="categorys"-->
-                       <!--@select="selectCategory"></category-scroll>-->
+      <category-scroll :currentIndex="currentIndex"
+                       :categorys="categorys"
+                       @select="selectCategory"></category-scroll>
       <category-scroll :currentIndex="currentIndexSub"
                        :categorys="categorysSub"
                        @select="selectCategorySub"></category-scroll>
@@ -15,6 +15,7 @@
                 @pullingUp="getPageOrders">
         <div class="proList">
           <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+item.code)" v-for="item in proList">
+            <div class="sell-type-right">{{canAdopt(item)}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
@@ -61,10 +62,6 @@ export default {
       categorys: [],
       categorysSub: [{value: '全部', key: 'all'}],
       sellTypeObj: {},
-        // {value: '个人', key: '0'},
-        // {value: '定向', key: '1'},
-        // {value: '集体', key: '2'},
-        // {value: '捐赠', key: '3'}],
       userDetail: {},
       showCheckIn: false,
       pullUpLoad: null,
@@ -97,60 +94,7 @@ export default {
       if(!this.userDetail.level) {
         return '您未登录';
       }
-      // 专属产品
-      if(item.sellType === '1') {
-        // 销售类型为专属且未到认养量
-        if(item.raiseCount === item.nowCount) {
-          return '已被认养';
-        } else {
-          return '可认养';
-        }
-      }
-      // 定向产品
-      if(item.directType && item.directType === '1') {
-        // 等级定向且用户为该等级
-        if(item.raiseCount === item.nowCount) {
-          return '已被认养';
-        }
-        if(item.directObject !== this.userDetail.level) {
-          return '不可认养';
-        } else {
-          return '可认养';
-        }
-      }
-      if(item.directType && item.directType === '2') {
-        // 用户定向且是定向用户
-        if(item.raiseCount === item.nowCount) {
-          return '已被认养';
-        }
-        if(item.directObject !== this.userId) {
-          return '不可认养';
-        } else {
-          return '可认养';
-        }
-      }
-      // 捐赠产品
-      if(item.sellType === '3') {
-        let curTime = new Date();
-        // 2把字符串格式转换为日期类
-        let startTime = new Date(Date.parse(item.raiseStartDatetime));
-        let endTime = new Date(Date.parse(item.raiseEndDatetime));
-        // 3进行比较
-        if(curTime <= startTime || curTime >= endTime) {
-          return '不可认养';
-        } else {
-          return '可认养';
-        }
-      }
-      // 专属产品
-      if(item.sellType === '4') {
-        // 销售类型为专属且未到认养量
-        if(item.raiseCount === item.nowCount) {
-          return '已满标';
-        } else {
-          return '可认养';
-        }
-      }
+      // if(item.)
     },
     selectCategory(index) {
       this.index = index;
@@ -176,7 +120,7 @@ export default {
     getSubType() {
       this.loading = true;
       getProductType({
-        parentCode: this.categoryCode,
+        parentCode: this.categorys[this.index].key,
         status: '1',
         orderDir: 'asc',
         orderColumn: 'order_no'
@@ -194,28 +138,44 @@ export default {
       }).catch(() => { this.loading = false; });
     },
     getPageOrders() {
-      if(this.selectdType === 'all') {
-        this.params = {
-          start: this.start,
-          limit: this.limit,
-          parentCategoryCode: this.categoryCode,
-          statusList: [4],
-          orderDir: 'asc',
-          orderColumn: 'order_no'
-        };
+      if(this.categorysSub[this.indexSub].key === 'all') {
+        this.parentCategoryCode = this.categorys[this.index].key;
+        this.selectdType = '';
       } else {
-        this.params = {
-          start: this.start,
-          limit: this.limit,
-          categoryCode: this.selectdType,
-          statusList: [4],
-          orderDir: 'asc',
-          orderColumn: 'order_no'
-        };
+        this.parentCategoryCode = '';
+        this.selectdType = this.categorysSub[this.indexSub].key;
       }
+      // if(this.selectdType === 'all') {
+      //   this.params = {
+      //     start: this.start,
+      //     limit: this.limit,
+      //     parentCategoryCode: this.categoryCode,
+      //     statusList: [4],
+      //     orderDir: 'asc',
+      //     orderColumn: 'order_no'
+      //   };
+      // } else {
+      //   this.params = {
+      //     start: this.start,
+      //     limit: this.limit,
+      //     categoryCode: this.selectdType,
+      //     statusList: [4],
+      //     orderDir: 'asc',
+      //     orderColumn: 'order_no'
+      //   };
+      // }
       this.loading = true;
       Promise.all([
-        getBookingProPage(this.params)
+        getBookingProPage({
+          start: this.start,
+          limit: this.limit,
+          // sellType: sellType,
+          parentCategoryCode: this.parentCategoryCode,
+          categoryCode: this.selectdType,
+          statusList: [4, 5, 6],
+          orderDir: 'asc',
+          orderColumn: 'order_no'
+        })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
           this.hasMore = false;
@@ -242,38 +202,35 @@ export default {
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
     setTitle('预售列表');
-    this.getSubType();
-    // Promise.all([
-      // getDictList('sell_type'),
-      // getProductType({
-      //   orderDir: 'asc',
-      //   orderColumn: 'order_no',
-      //   status: '1'
-      // })
-    // ]).then(([res2]) => {
-      // res1.map((item) => {
-      //   this.sellTypeObj[item.dkey] = item.dvalue;
-      // });
-      // res2.map((item) => {
-      //   if(!item.parentCode) {
-      //     this.categorys.push({
-      //       value: item.name,
-      //       key: item.code
-      //     });
-      //   }
-      // });
-      // this.categorys.map((item, index) => {
-      //   if(item.key === this.categoryCode) {
-      //     this.index = index;
-      //     this.currentIndex = index;
-      //   }
-      // });
-    //   this.loading = false;
-    //   this.getSubType();
-    //   if(this.userId) {
-    //     this.getUserDetail();
-    //   }
-    // }).catch(() => { this.loading = false; });
+    // console.log(1);
+    Promise.all([
+      getProductType({
+        status: 1,
+        level: 2,
+        orderColumn: 'order_no',
+        orderDir: 'asc',
+        type: 1
+      })
+    ]).then(([res2]) => {
+      // console.log(res2);
+      res2.map((item) => {
+        this.categorys.push({
+          value: item.name,
+          key: item.code
+        });
+      });
+      this.categorys.map((item, index) => {
+        if(item.key === this.categoryCode) {
+          this.index = index;
+          this.currentIndex = index;
+        }
+      });
+      this.loading = false;
+      this.getSubType();
+      if(this.userId) {
+        this.getUserDetail();
+      }
+    }).catch(() => { this.loading = false; });
   },
   components: {
     FullLoading,
@@ -306,7 +263,7 @@ export default {
     top: 0;
     left: 0;
     width: 100%;
-    height: 0.8rem;
+    height: 1.6rem;
     z-index: 100;
     overflow: hidden;
     line-height: 0.8rem;
@@ -314,7 +271,7 @@ export default {
     border-bottom: 1px solid $color-border;
   }
   .content {
-    margin: 0.8rem 0 0;
+    margin: 1.6rem 0 0;
     .bulletin {
       display: flex;
       align-items: center;
@@ -330,8 +287,7 @@ export default {
       padding: 0 0.3rem 0;
       background: $color-highlight-background;
       position: absolute;
-      /*top: 2.4rem;*/
-      top: 0.8rem;
+      top: 1.6rem;
       bottom: 0;
       left: 0;
       right: 0;
@@ -350,6 +306,20 @@ export default {
           border-radius: 0.04rem;
           display: inline-block;
           position: relative;
+          .sell-type-right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #969998;
+            /*opacity: 0.5;*/
+            padding: 0 0.1rem;
+            height: 0.4rem;
+            font-size: 0.24rem;
+            line-height: 0.4rem;
+            text-align: center;
+            color: $color-highlight-background;
+            border-radius: 0.05rem;
+          }
           .hot-pro-img {
             height: 2.3rem;
             width: 100%;

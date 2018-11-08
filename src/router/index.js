@@ -435,7 +435,13 @@ export default new Router({
       children: [
         {
           path: 'booking-product-detail',
-          component: BookingProductDetail
+          component: BookingProductDetail,
+          children: [
+            {
+              path: 'tree-code',
+              component: TreeCode
+            }
+          ]
         }
       ]
     },
@@ -496,6 +502,10 @@ export default new Router({
     {
       path: '/my-consignment',
       component: MyConsignment
+    },
+    {
+      path: '/consignment-product-detail',
+      component: ConsignmentProductDetail
     }
   ]
 });

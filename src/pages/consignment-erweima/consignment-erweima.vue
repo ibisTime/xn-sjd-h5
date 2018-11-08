@@ -80,14 +80,13 @@
         initShare({
           title: '氧林',
           desc: '二维码转让',
-          link: location.href.split('#')[0] + '#/consignment-hall/consignment-product-detail?buy=1&code=' + this.code,
+          link: location.href.split('#')[0] + '/#/consignment-hall/consignment-product-detail?buy=1&code=' + this.code,
           imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300'
         }, (data) => {
           this.isWxConfiging = false;
           this.wxData = data;
           this.loading = false;
         }, (msg) => {
-          alert(msg);
           this.isWxConfiging = false;
           this.wxData = null;
           this.loading = false;
@@ -98,7 +97,8 @@
         this.$refs.toast.show();
       },
       onError: function (e) {
-        console.log('无法复制文本！');
+        this.text = '无法复制文本';
+        this.$refs.toast.show();
       }
     },
     components: {
