@@ -20,9 +20,8 @@
                   </span>
                   <span class="hot-pro-title-date">{{originStatusObj[item.status]}}</span>
                 </p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">库存：{{item.quantity}}</span></p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">转让中：{{item.presellQuantity}}</span></p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">提货中：{{item.receivingQuantity}}</span></p>
+                <p class="hot-pro-middle"><span class="hot-pro-bottom-number">转让中:{{item.presellQuantity}}</span><span class="hot-pro-bottom-number">提货中:{{item.receivingQuantity}}</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">库存：{{item.quantity}}{{item.presellProduct.packUnit}}</span></p>
               </div>
             </div>
           </div>
@@ -298,11 +297,11 @@ export default {
               font-size: 0;
             }
             .hot-pro-title {
-              line-height: 0.42rem;
+              /*line-height: 0.42rem;*/
               display: flex;
               align-items: center;
               justify-content: space-between;
-              margin-bottom: 0.7rem;
+              margin-bottom: 0.3rem;
               .hot-pro-title-name {
                 font-size: 0;
                 .hot-pro-title-name-name {
@@ -331,6 +330,14 @@ export default {
               .hot-pro-title-date {
                 font-size: 0.24rem;
                 color: #999;
+              }
+            }
+            .hot-pro-middle {
+              margin-bottom: 0.3rem;
+              span {
+                font-size: 0.24rem;
+                color: #999;
+                margin-right: 0.2rem;
               }
             }
             .hot-pro-bottom {

@@ -136,10 +136,16 @@ const BookingOrder = () => import('@/pages/booking-order/booking-order');
 const BookingOrderDetail = () => import('@/pages/booking-order-detail/booking-order-detail');
 // 寄售大厅
 const ConsignmentHall = () => import('@/pages/consignment-hall/consignment-hall');
+// 交易板页面
+const EChart = () => import('@/pages/echart/echart');
 // 寄售产品详情页
 const ConsignmentProductDetail = () => import('@/pages/consignment-product-detail/consignment-product-detail');
+// 归属人
+const Belongs = () => import('@/pages/belongs/belongs');
 // 树编号
 const TreeCode = () => import('@/pages/tree-code/tree-code');
+// 已预售名单
+const BookingAlreadyList = () => import('@/pages/booking-already-list/booking-already-list');
 // 我的寄售
 const MyConsignment = () => import('@/pages/my-consignment/my-consignment');
 // 二维码寄售
@@ -440,6 +446,10 @@ export default new Router({
             {
               path: 'tree-code',
               component: TreeCode
+            },
+            {
+              path: 'booking-already-list',
+              component: BookingAlreadyList
             }
           ]
         }
@@ -462,8 +472,16 @@ export default new Router({
         {
           path: 'consignment-product-detail',
           component: ConsignmentProductDetail
+        },
+        {
+          path: 'echart',
+          component: EChart
         }
       ]
+    },
+    {
+      path: '/belongs',
+      component: Belongs
     },
     {
       path: '/tree-code',

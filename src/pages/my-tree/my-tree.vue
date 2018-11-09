@@ -121,6 +121,10 @@
                       </div>
                     </div>
                   </div>
+                  <p v-show="item.type === '5' || item.type === '6'">
+                    <span class="name">{{item.note}}</span>
+                    <span class="activity"></span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+                  </p>
                 </div>
                 <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
               </div>
@@ -145,7 +149,7 @@
               <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
             </div>
             <div class="item">
-              <span>负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.loginName : '暂无养护人'}}</span>
+              <span>负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.charger || treeDetail.tree.maintainer.company.chargeMobile : '暂无养护人'}}</span>
             </div>
             <!--<div class="item">-->
               <!--<span>当前认养人</span><span>三级</span>-->

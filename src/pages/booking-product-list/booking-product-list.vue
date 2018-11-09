@@ -94,7 +94,10 @@ export default {
       if(!this.userDetail.level) {
         return '您未登录';
       }
-      // if(item.)
+      if(item.totalOutput > item.nowCount) {
+        return '可购买';
+      }
+      return '无法购买';
     },
     selectCategory(index) {
       this.index = index;
@@ -202,7 +205,6 @@ export default {
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
     setTitle('预售列表');
-    // console.log(1);
     Promise.all([
       getProductType({
         status: 1,

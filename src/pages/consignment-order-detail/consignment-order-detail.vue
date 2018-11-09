@@ -21,7 +21,7 @@
                 <div class="imgWrap" :style="getImgSyl(detail.presellProduct.listPic)"></div>
                 <div class="text">
                   <p class="title"><span class="title-title">{{detail.presellProduct.name}}</span><span class="title-number">x{{detail.quantity}}</span></p>
-                  <p class="position">预售规格：{{detail.specsName}}</p>
+                  <p class="position">规格：{{detail.specsName}}</p>
                   <div class="props"><span class="duration">合计{{detail.quantity}}件商品</span><span class="price">¥{{formatAmount(detail.amount)}}</span></div>
                 </div>
               </div>
@@ -33,9 +33,9 @@
                 <p><span>订单号</span><span>{{detail.code}}</span></p>
                 <p><span>订单金额</span><span>{{formatAmount(detail.amount)}}元</span></p>
                 <p><span>卖家</span><span>{{detail.sellerName}}</span></p>
-                <p><span>支付流水号</span><span>{{detail.jourCode}}</span></p>
+                <p v-if="detail.jourCode"><span>支付流水号</span><span>{{detail.jourCode}}</span></p>
                 <p><span>预计发货时间</span><span>{{formatDate(detail.presellProduct.harvestDatetime)}}</span></p>
-                <p><span>树木编号</span><span>{{detail.treeNumbers}}</span></p>
+                <p v-if="detail.treeNumbers"><span>树木编号</span><span>{{detail.treeNumbers}}</span></p>
                 <p><span>数量</span><span>{{detail.quantity}}</span></p>
               </div>
             </div>
@@ -61,7 +61,7 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
-  import { getConOrderDetail, cancelPreOrder } from 'api/biz';
+  import { getConOrderDetail, cancelConOrder } from 'api/biz';
   import { getDictList } from 'api/general';
   import defaultImg from './tree@3x.png';
 
@@ -89,8 +89,8 @@
       formatImg(img) {
         return formatImg(img);
       },
-      formatDate(date, format) {
-        return formatDate(date, format);
+      formatDate(date) {
+        return formatDate(date, 'yyyy-MM-dd');
       },
       go(url) {
         this.$router.push(url);
@@ -111,7 +111,7 @@
         return status === '0';
       },
       payOrder(item) {
-        this.go(`/pay?pre=1&orderCode=${item.code}`);
+        this.go(`/pay?jishou=1&orderCode=${item.code}`);
       },
       handleInputConfirm(text) {
         if (this.curItem.status === '0') {
@@ -120,7 +120,7 @@
       },
       cancelOrder(text) {
         this.loading = true;
-        cancelPreOrder({
+        cancelConOrder({
           code: this.curItem.code,
           remark: text
         }).then(() => {

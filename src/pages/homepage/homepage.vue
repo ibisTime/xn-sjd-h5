@@ -128,6 +128,15 @@
                       </div>
                     </div>
                   </div>
+                  <div class="daily-content-item-info" v-if="item.type === '5' || item.type === '6'">
+                    <!--<img src="./steal@2x.png" alt="">-->
+                    <p class="activity"><span>{{item.note}}</span></p>
+                    <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                  </div>
+                  <!--<p v-show="item.type === '5' || item.type === '6'">-->
+                    <!--<span class="name">{{item.note}}</span>-->
+                    <!--<span class="activity"></span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>-->
+                  <!--</p>-->
                   <div class="border"></div>
                 </div>
                 <!--<div class="daily-content-item">-->

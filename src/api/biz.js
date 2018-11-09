@@ -617,6 +617,13 @@ export function getJishouOrderDetail(data) {
   });
 }
 
+// 取消寄售订单
+export function cancelConOrder(data) {
+  return fetch(629470, {
+    ...data
+  });
+}
+
 // 支付寄售订单
 export function payJishouOrder(data) {
   return fetch(629471, {
@@ -648,6 +655,13 @@ export function getMyConsignmentList(data) {
 // 列表查询品种
 export function getVarietyList(data) {
   return fetch(629459, {
+    ...data
+  });
+}
+
+// 已预售人员名单
+export function getBookingAlreadyList(data) {
+  return fetch(629428, {
     ...data
   });
 }

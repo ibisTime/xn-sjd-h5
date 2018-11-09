@@ -24,7 +24,7 @@
               <div class="imgWrap" :style="getImgSyl(item.presellProduct.listPic)"></div>
               <div class="text">
                 <p class="title"><span class="title-title">{{item.presellProduct.name}}</span><span class="title-number">x{{item.quantity}}</span></p>
-                <p class="position">预售规格：{{item.specsName}}</p>
+                <p class="position">规格：{{item.specsName}}</p>
                 <div class="props"><span class="duration">合计{{item.quantity}}件商品</span><span class="price">¥{{formatAmount(item.amount)}}</span></div>
               </div>
             </div>
@@ -56,7 +56,7 @@
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import {mapGetters, mapMutations, mapActions} from 'vuex';
   import {SET_CON_ORDER_LIST, SET_CURRENT_CON_ORDER} from 'store/mutation-types';
-  import {getJishouOrderPage, cancelPreOrder} from 'api/biz';
+  import {getJishouOrderPage, cancelConOrder} from 'api/biz';
   import { getDictList } from 'api/general';
   import {formatAmount, formatImg, setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
@@ -177,7 +177,7 @@
         this.$router.push(`/consignment-order-detail?code=${item.code}`);
       },
       payOrder(item) {
-        this.go(`/pay?pre=1&orderCode=${item.code}`);
+        this.go(`/pay?jishou=1&orderCode=${item.code}`);
       },
       _cancelOrder(item) {
         this.inputText = '取消原因';
@@ -224,12 +224,12 @@
         }
       },
       cancelOrder(text) {
-        cancelPreOrder({
+        cancelConOrder({
           code: this.curItem.code,
           remark: text
         }).then(() => {
           this.fetching = false;
-          this.editPreOrderListByCancel({
+          this.editConOrderListByCancel({
             code: this.curItem.code
           });
         }).catch(() => {
@@ -239,7 +239,6 @@
       getPageOrders() {
         let key = this.categorysStatus[this.currentIndex].key;
         let status = key === 'all' ? '' : key;
-        console.log(this.currentList);
         if (this.currentList.hasMore) {
           getJishouOrderPage(this.currentList.start, this.currentList.limit, status, this.type).then((data) => {
             let _orderOri = this.conOrderList[key];

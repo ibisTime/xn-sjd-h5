@@ -6,6 +6,7 @@ import store from './store';
 import fastclick from 'fastclick';
 import VueLazyLoad from 'vue-lazyload';
 import VueClipboard from 'vue-clipboard2';
+import echarts from 'echarts';
 import 'common/js/validate';
 /* eslint-disable no-unused-vars */
 // import vConsole from 'vconsole';
@@ -18,6 +19,7 @@ Vue.use(VueLazyLoad, {
   loading: require('common/image/default.png')
 });
 Vue.use(VueClipboard);
+Vue.use(echarts);
 
 /* eslint-disable no-new */
 new Vue({

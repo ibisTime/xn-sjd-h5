@@ -154,8 +154,11 @@
         if(this.detail.adoptOrderTreeList[index].status === '2') {
           this.go(`/my-tree?aTCode=${this.detail.adoptOrderTreeList[index].code}`);
         } else {
-          this.toastText = '这棵树已经被赠送或到期咯';
-          this.$refs.toast.show();
+          switch (this.detail.adoptOrderTreeList[index].status) {
+            case '1': this.toastText = '这棵树还未开始认养哦'; this.$refs.toast.show(); break;
+            case '3': this.toastText = '这棵树已经到期咯'; this.$refs.toast.show(); break;
+            case '4': this.toastText = '这棵树已经被赠送咯'; this.$refs.toast.show(); break;
+          }
         }
       }
     },

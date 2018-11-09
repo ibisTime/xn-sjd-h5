@@ -42,7 +42,7 @@
           <span>树编号</span><span>{{detail.treeList.length}}棵</span>
           <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item">
+        <div class="item" @click="go(`/booking-product-list/booking-product-detail/booking-already-list?code=${detail.code}`)">
           <span>已预售名单</span>
           <img src="./more@2x.png" class="fr more">
         </div>
@@ -563,6 +563,7 @@ export default {
         color: #333;
       }
       .select {
+        /*padding: 0 0.1rem;*/
         .select-item {
           display: flex;
           align-items: center;
@@ -579,6 +580,7 @@ export default {
             img {
               width: 0.36rem;
               height: 0.36rem;
+              margin-right: 0.1rem;
             }
             span {
               flex: 1;

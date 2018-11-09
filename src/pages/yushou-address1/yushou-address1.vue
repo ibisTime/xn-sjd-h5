@@ -5,8 +5,8 @@
         <scroll :data="addressList[0]" :hasMore="hasMore" :pullUpLoad="pullUpLoad">
           <div class="pro-info">
             <p><span>{{detail.productName}}</span><span>买入单价：{{formatAmount(detail.price)}}元/{{detail.unit}}</span></p>
-            <p><span>可收货总数</span><span>50箱</span></p>
-            <p><span>可收货数量</span><span>30箱</span></p>
+            <p><span>可收货总数</span><span>{{detail.quantity}}{{detail.presellProduct.packUnit}}</span></p>
+            <!--<p><span>可收货数量</span><span>30箱</span></p>-->
             <p>注意：填写地址后此批货物不可转让</p>
           </div>
           <div class="gray"></div>
@@ -32,8 +32,13 @@
           <ul>
             <li v-for="(item, index) in addressList[0]" :key="index" class="border-bottom-1px" v-show="addressList[0].length">
               <div class="content">
-                <div class="info"><span class="name">{{item.receiver}}</span><span class="mobile">{{item.receiverMobile}}</span></div>
-                <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
+                <div class="content-left">
+                  <div class="info"><span class="name">{{item.receiver}}</span><span class="mobile">{{item.receiverMobile}}</span></div>
+                  <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
+                </div>
+                <div class="content-right" @click="deleteItem(item, index)">
+                  <img src="./delete@2x.png">
+                </div>
               </div>
               <div class="opeator border-top-1px">
                 <div class="default">
@@ -69,10 +74,7 @@
   import Toast from 'base/toast/toast';
   import NoResult from 'base/no-result/no-result';
   import {setTitle, formatAmount} from 'common/js/util';
-  // import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
-  import {deleteAddress} from 'api/user';
   import { confirmTihuo, getOriginZichanDetail } from 'api/biz';
-  // import {mapGetters, mapMutations, mapActions} from 'vuex';
 
   export default {
     data() {
@@ -84,7 +86,7 @@
         list: [],
         addressList: [],
         deleteIndex: 0,
-        detail: {},
+        detail: {presellProduct: {packUnit: ''}},
         pullUpLoad: null,
         number: 1
       };
@@ -156,6 +158,7 @@
         this.$router.push(url);
       },
       getAddress() {
+        // debugger;
         if (!this.addressList.length) {
           this.addressList.push(JSON.parse(sessionStorage.getItem('tihuo-address')));
         } else {
@@ -170,13 +173,6 @@
           return !this.hasMore;
         }
       },
-      goEdit(item) {
-        sessionStorage.setItem('ressCode', item.code);
-        this.$router.push(`/address-addedit`);
-      },
-      goAdd() {
-        this.$router.push(this.$route.path + '/add');
-      },
       deleteItem(item, index) {
         this.currentItem = item;
         this.deleteIndex = index;
@@ -184,17 +180,11 @@
       },
       _deleteAddress() {
         if (this.currentItem) {
-          this.loadingText = '删除中...';
-          this.loadingFlag = true;
-          deleteAddress(this.currentItem.code).then(() => {
-            this.loadingFlag = false;
-            // this.deleteAddress({
-            //   code: this.currentItem.code
-            // });
-            this.addressList.splice(this.deleteIndex, 1);
-          }).catch(() => {
-            this.loadingFlag = false;
-          });
+          let tempArr = JSON.parse(sessionStorage.getItem('tihuo-address'));
+          tempArr.splice(this.deleteIndex, 1);
+          this.addressList[0] = tempArr;
+          sessionStorage.setItem('tihuo-address', JSON.stringify(this.addressList[0]));
+          this.addressList.push(JSON.parse(sessionStorage.getItem('tihuo-address')));
         }
       },
       addTihuoAddress() {
@@ -266,23 +256,34 @@
 
         .content {
           display: flex;
-          flex-direction: column;
-          justify-content: center;
+          /*flex-direction: column;*/
+          align-items: center;
           height: 1.6rem;
           padding: 0 0.3rem;
+          .content-left {
+            flex: 1;
+            .info {
+              font-size: $font-size-medium-x;
+              display: flex;
+              .name {
+                margin-right: 0.3rem;
+              }
+              .mobile {
+                width: 2.1rem;
+                color: #999;
+              }
+              span {
+                line-height: 0.42rem;
+              }
+            }
+          }
 
-          .info {
-            font-size: $font-size-medium-x;
-            display: flex;
-            .name {
-              margin-right: 0.3rem;
-            }
-            .mobile {
-              width: 2.1rem;
-              color: #999;
-            }
-            span {
-              line-height: 0.42rem;
+          .content-right {
+            border-left: 1px solid $color-border;
+            img {
+              width: 0.36rem;
+              height: 0.36rem;
+              margin-left: 0.3rem;
             }
           }
 

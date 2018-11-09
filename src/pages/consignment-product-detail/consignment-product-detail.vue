@@ -58,7 +58,7 @@
           <span>树编号</span><span>{{detail.treeNumberList.length}}棵</span>
           <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item">
+        <div class="item" @click="go(`/belongs?code=${detail.code}`)">
           <span>所属人</span>
           <img src="./more@2x.png" class="fr more">
         </div>
@@ -408,7 +408,7 @@ export default {
     },
     buyJiShou() {
       if(this.userId) {
-        let quantity = this.number;
+        // let quantity = this.number;
         placeOrderGuadan({
           code: this.code,
           userId: getUserId(),
@@ -418,7 +418,7 @@ export default {
             this.text = '下单成功';
             this.$refs.toast.show();
             setTimeout(() => {
-              this.go(`/pay?jishou=1&orderCode=${res.code}&quantity=${quantity}`);
+              this.go(`/pay?jishou=1&orderCode=${res.code}`);
             }, 500);
           }
         });

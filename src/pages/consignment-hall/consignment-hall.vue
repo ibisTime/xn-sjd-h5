@@ -1,62 +1,38 @@
 <template>
   <div class="consignment-hall-wrapper">
-    <!--<div class="type">-->
-      <!--<div @click="clickType"><span>1</span><img src="./up-choosed@2x.png"/></div>-->
-      <!--<div @click="clickType"><span>1</span><img src="./up-choosed@2x.png"/></div>-->
-      <!--<div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售</div>-->
-    <!--</div>-->
     <category-sjd-consignment @sendMessage="sendMessage"></category-sjd-consignment>
-    <!--<div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>-->
-    <!--<div :class="['buypart',flag ? 'show' : '']">-->
-      <!--<div class="title">-->
-        <!--<div class="title-pic">-->
-          <!--&lt;!&ndash;<img :src="formatImg(detail.bannerPic)" alt="">&ndash;&gt;-->
-        <!--</div>-->
-        <!--<div class="title-right">-->
-          <!--<i @click="genghuan">X</i>-->
-          <!--&lt;!&ndash;<p class="position"><img src="./position@2x.png">{{detail.province}}{{detail.city}}{{detail.area}}</p>&ndash;&gt;-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--<div class="packaging">-->
-        <!--<p class="packaging-title">认养规格</p>-->
-        <!--<div class="select">-->
-          <!--&lt;!&ndash;<div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">&ndash;&gt;-->
-            <!--&lt;!&ndash;<span v-show="detail.sellType !== '3'">{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>&ndash;&gt;-->
-            <!--&lt;!&ndash;<span v-show="detail.sellType === '3'">{{item.name}}：价格：¥{{formatAmount(item.price)}}</span>&ndash;&gt;-->
-            <!--&lt;!&ndash;<img src="./choosed@2x.png" v-show="choosedIndex === index">&ndash;&gt;-->
-            <!--&lt;!&ndash;<img src="./unchoosed@2x.png" v-show="choosedIndex !== index">&ndash;&gt;-->
-          <!--&lt;!&ndash;</div>&ndash;&gt;-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--<div class="number">-->
-        <!--<span>认养份数</span>-->
-        <!--<div class="right">-->
-          <!--&lt;!&ndash;<img class="diamonds right-item" @click="add" src="./add@2x.png">&ndash;&gt;-->
-          <!--&lt;!&ndash;<input class="num right-item" v-model="number" type="number">&ndash;&gt;-->
-          <!--&lt;!&ndash;<img class="diamonds right-item" @click="sub" src="./sub@2x.png">&ndash;&gt;-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</div>-->
     <div class="content">
       <div class="hot" v-show="proList.length">
         <Scroll :data="proList"
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
-        <div class="proList">
-          <div class="item" @click="go('/consignment-hall/consignment-product-detail?buy=1&code='+item.code)" v-for="item in proList">
-            <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.productName}}</span><span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span></p>
-              <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">可售数量：{{item.quantity}}</span></p>
+          <div class="proList">
+            <div class="item" @click="go('/consignment-hall/consignment-product-detail?buy=1&code='+item.code)" v-for="item in proList">
+              <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
+              <div class="hot-pro-text">
+                <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.productName}}</span><span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">可售数量：{{item.quantity}}</span></p>
+              </div>
             </div>
           </div>
-        </div>
         </Scroll>
       </div>
       <div class="mall-content">
         <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
       </div>
     </div>
+    <!--<div class="footer" @click="goEChart">-->
+      <!--<p>最新成交信息</p>-->
+      <!--<p>-->
+        <!--<span>苹果树/年</span>-->
+        <!--<span>¥2480.00/棵</span>-->
+        <!--<span class="up-down">-->
+          <!--<img src="./up@2x.png">-->
+          <!--<span>24</span>-->
+        <!--</span>-->
+        <!--<span>2018/10/28</span>-->
+      <!--</p>-->
+    <!--</div>-->
     <full-loading v-show="loading" :title="title"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
@@ -72,7 +48,6 @@ import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
-// import { getDictList } from 'api/general';
 import { getDeriveZichanPage, getProductType } from 'api/biz';
 import { getUserDetail } from 'api/user';
 import CategorySjdConsignment from 'components/category-sjd-consignment/category-sjd-consignment';
@@ -282,6 +257,9 @@ export default {
       this.limit = 10;
       this.proList = [];
       this.getPageOrders();
+    },
+    goEChart() {
+      this.go('/consignment-hall/echart');
     }
   },
   mounted() {
@@ -423,6 +401,30 @@ export default {
               }
             }
           }
+        }
+      }
+    }
+  }
+  .footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 1.3rem;
+    background: #373838;
+    padding: 0.3rem;
+    font-size: 0.24rem;
+    color: #fff;
+    p:first-child {
+      margin-bottom: 0.16rem;
+    }
+    p:last-child {
+      display: flex;
+      justify-content: space-between;
+      .up-down {
+        color: $primary-color;
+        img {
+          width: 0.16rem;
+          height: 0.2rem;
         }
       }
     }
