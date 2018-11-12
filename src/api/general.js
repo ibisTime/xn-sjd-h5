@@ -174,3 +174,9 @@ export function getDictList(parentKey) {
 export function getQiniuToken() {
   return fetch(630091, {});
 }
+
+export function getdomain(ckey) {
+  return fetch(630047, {
+    ckey: 'qiniu_domain'
+  });
+}

@@ -193,7 +193,7 @@ export default {
         let proCode = this.detail.code;
         let specsCode = this.detail.presellSpecsList[this.choosedIndex].code;
         let quantity = this.number;
-        if(quantity > this.detail.presellSpecsList[this.choosedIndex].packCount) {
+        if(quantity * this.detail.presellSpecsList[this.choosedIndex].packCount > this.detail.totalOutput - this.detail.nowCount) {
           this.text = '库存不足，无法下单';
           this.$refs.toast.show();
           return;

@@ -44,10 +44,13 @@
         <div class="item" v-show="status === '4'">
           <span>可支配</span><span>{{detail.variety}}{{detail.unit}}</span>
         </div>
-        <div class="item" v-show="status === '3' || status === '4' || status === '5'">
-          <span>转让有效时间</span><span>{{detail.variety}}</span>
+        <div class="item" v-show="detail.status === '2' || detail.status === '3'">
+          <span>转让有效时间</span><span>已过期</span>
         </div>
-        <div class="item" v-show="status === '1'">
+        <div class="item" v-show="detail.status === '0'">
+          <span>转让有效时间</span><span>待生效</span>
+        </div>
+        <div class="item" v-show="detail.status === '1'">
           <span>转让截止时间</span><span>{{formatDate(detail.adoptEndDatetime)}}</span>
         </div>
         <div class="item" @click="go(`/consignment-erweima?code=${detail.code}&number=${detail.quantity}&price=${detail.price}`)" v-show="derive && detail.type === '1'">
@@ -89,12 +92,13 @@
       <span>¥{{formatAmount(detail.price)}}</span>
       <button class="fr" @click="showChexiao">撤销</button>
     </div>
-    <div class="footer" v-show="this.origin && detail.status === '1'">
+    <div class="footer" v-show="this.origin && detail.status === '1' || this.origin && detail.status === '0'">
       <button class="two" @click="showAssignment">转让</button>
       <button class="two" @click="address">填写地址，确认自用</button>
     </div>
     <div class="footer" v-show="this.origin && detail.status === '2'">
-      <button class="one" @click="address">确认地址，确认自用</button>
+      <button @click="address" v-if="detail.quantity !== '0'">确认地址，确认自用</button>
+      <button @click="confirmShouhuo">确认收货</button>
     </div>
     <div :class="['mask',flag || assignmentFlag? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
@@ -194,7 +198,9 @@ import Confirm from 'base/confirm/confirm';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
-import { getDeriveZichanDetail, getOriginZichanDetail, guadanjishou, dingxiangjishou, erweimajishou, placeOrderGuadan, refuseDingxiangJishou, cancelDingxiangJishou } from 'api/biz';
+import { getDeriveZichanDetail, getOriginZichanDetail,
+  guadanjishou, dingxiangjishou, erweimajishou, placeOrderGuadan,
+  refuseDingxiangJishou, cancelDingxiangJishou, zhifuzhuanzeng, placeOrderDingxiang, placeOrderErweima } from 'api/biz';
 export default {
   data() {
     return {
@@ -265,6 +271,9 @@ export default {
     zhuanzeng() {
       this.iszhuanrang = false;
       this.price = 0;
+    },
+    confirmShouhuo() {
+      this.$router.push(`/tihuo-xiangqing?code=${this.code}`);
     },
     handleInputConfirm(text) {
       // 拒绝定向寄售
@@ -409,19 +418,89 @@ export default {
     buyJiShou() {
       if(this.userId) {
         // let quantity = this.number;
-        placeOrderGuadan({
-          code: this.code,
-          userId: getUserId(),
-          quantity: this.number
-        }).then((res) => {
-          if(res.code) {
-            this.text = '下单成功';
-            this.$refs.toast.show();
-            setTimeout(() => {
-              this.go(`/pay?jishou=1&orderCode=${res.code}`);
-            }, 500);
-          }
-        });
+        if(this.detail.type === '2') {
+          placeOrderGuadan({
+            code: this.code,
+            userId: getUserId(),
+            quantity: this.number
+          }).then((res) => {
+            if(res.code) {
+              this.text = '下单成功';
+              this.$refs.toast.show();
+              if(formatAmount(this.detail.price * this.number) === '0') {
+                zhifuzhuanzeng({
+                  code: res.code
+                }).then((res) => {
+                  if(res.isSuccess) {
+                    this.text = '成功';
+                    this.$refs.toast.show();
+                    setTimeout(() => {
+                      this.$router.push(`/me`);
+                    }, 500);
+                  }
+                });
+              } else {
+                setTimeout(() => {
+                  this.go(`/pay?jishou=1&orderCode=${res.code}`);
+                }, 500);
+              }
+            }
+          });
+        } else if(this.detail.type === '1') {
+          placeOrderErweima({
+            code: this.code,
+            userId: getUserId()
+          }).then((res) => {
+            if(res.code) {
+              this.text = '下单成功';
+              this.$refs.toast.show();
+              if(formatAmount(this.detail.price * this.number) === '0') {
+                zhifuzhuanzeng({
+                  code: res.code
+                }).then((res) => {
+                  if(res.isSuccess) {
+                    this.text = '成功';
+                    this.$refs.toast.show();
+                    setTimeout(() => {
+                      this.$router.push(`/me`);
+                    }, 500);
+                  }
+                });
+              } else {
+                setTimeout(() => {
+                  this.go(`/pay?jishou=1&orderCode=${res.code}`);
+                }, 500);
+              }
+            }
+          });
+        } else if(this.detail.type === '0') {
+          placeOrderDingxiang({
+            code: this.code,
+            userId: getUserId()
+          }).then((res) => {
+            if(res.code) {
+              this.text = '下单成功';
+              this.$refs.toast.show();
+              if(formatAmount(this.detail.price * this.number) === '0') {
+                zhifuzhuanzeng({
+                  code: res.code
+                }).then((res) => {
+                  if(res.isSuccess) {
+                    this.text = '成功';
+                    this.$refs.toast.show();
+                    setTimeout(() => {
+                      this.$router.push(`/me`);
+                    }, 500);
+                  }
+                });
+              } else {
+                setTimeout(() => {
+                  this.go(`/pay?jishou=1&orderCode=${res.code}`);
+                }, 500);
+              }
+            }
+          });
+        }
         // this.go(`/protocol?sign=1&jishou=1&proCode=${proCode}&quantity=${quantity}`);
       } else {
         this.text = '您未登录';

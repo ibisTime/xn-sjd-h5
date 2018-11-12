@@ -5,11 +5,11 @@
       <scroll ref="scroll"
               :data="dataList"
               :pullUpLoad="pullUpLoad">
-        <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
+        <div class="item" v-for="(item, index) in dataList " :key="index">
           <div class="userPhoto" :style="getImgSyl(item.user ? item.user.photo : '')"></div>
           <div class="info">
             <p class="name">{{item.nickname ? item.nickname : jiami(item.mobile)}}</p>
-            <p class="date">{{formatDate(detail.createDatetime, 'yyyy-MM-dd')}}</p>
+            <p class="date">{{formatDate(detail.createDatetime || item.createDatetime, 'yyyy-MM-dd')}}</p>
           </div>
           <span class="price">¥{{formatAmount(detail.price)}} x{{detail.quantity}}</span>
         </div>
@@ -26,9 +26,9 @@
   import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
+  import {formatAmount, formatDate, formatImg, setTitle} from 'common/js/util';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
-  import { getDeriveZichanDetail } from 'api/biz';
+  import { getDeriveZichanDetail, getOriginZichanDetail } from 'api/biz';
 
   export default {
     data() {
@@ -48,9 +48,13 @@
     },
     methods: {
       getInitData() {
-        this.getAdoptList();
+        if(this.code[0] === 'D') {
+          this.getDeriveList();
+        } else {
+          this.getOriginList();
+        }
       },
-      getAdoptList() {
+      getDeriveList() {
         this.loading = true;
         this.code = this.$route.query.code;
         Promise.all([
@@ -58,11 +62,23 @@
             code: this.code
           })
         ]).then(([res1]) => {
-          console.log(res1);
           this.detail = res1;
           this.dataList.push(res1.createrInfo);
-          // console.log(this.dataList);
-          // this.dataList = res1;
+          this.loading = false;
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      getOriginList() {
+        this.loading = true;
+        this.code = this.$route.query.code;
+        Promise.all([
+          getOriginZichanDetail({
+            code: this.code
+          })
+        ]).then(([res1]) => {
+          this.detail = res1;
+          this.dataList.push(res1.ownerInfo);
           this.loading = false;
         }).catch(() => {
           this.loading = false;
@@ -70,21 +86,6 @@
       },
       go(url) {
         this.$router.push(url);
-      },
-      goUserHome(item) {
-        if(getUserId()) {
-          if(item.currentHolder === getUserId()) {
-            this.go(`/homepage`);
-          } else {
-            this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
-          }
-        } else {
-          this.toastText = '您未登录';
-          this.$refs.toast.show();
-          setTimeout(() => {
-            this.$router.push('/login');
-          }, 1000);
-        }
       },
       formatAmount(amount) {
         return formatAmount(amount);

@@ -1,18 +1,23 @@
 <template>
   <div class="echart-wrapper">
-    <category-chart></category-chart>
+    <category-chart @sendMessage="sendMessage"></category-chart>
     <div id="main" class="e-chart"></div>
     <div class="me-list" ref="description">
       <Scroll
         :pullUpLoad="pullUpLoad"
         ref="scroll"
-        :data="list"
+        :data="proList"
         :hasMore="hasMore"
         @pullingUp="getPageOrders"
       >
         <table>
           <tr class="first"><th>名称</th><th>成交价格</th><th>波动</th><th>成交时间</th></tr>
-          <tr v-for="item in proList"><td>{{item.productName}}</td><td>{{formatAmount(item.price)}}</td><td class="wave">{{item.wave}}</td><td>{{formatDate(item.createDatetime)}}</td></tr>
+          <tr v-for="item in proList">
+            <td>{{item.productName}}</td>
+            <td>{{formatAmount(item.price)}}</td>
+            <td class="wave"><img src="./up@2x.png" v-if="+item.wave > 0"><img src="./down@2x.png" v-if="+item.wave < 0">{{item.wave}}</td>
+            <td>{{formatDate(item.createDatetime)}}</td>
+          </tr>
         </table>
       </Scroll>
     </div>
@@ -44,18 +49,12 @@
         tppAccountNumber: '',
         src: '',
         charts: '',
-        opinion: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎'],
-        opinionData: [
-          {value: 335, name: '直接访问'},
-          {value: 310, name: '邮件营销'},
-          {value: 234, name: '联盟广告'},
-          {value: 135, name: '视频广告'},
-          {value: 1548, name: '搜索引擎'}
-        ],
         proList: [],
         start: 1,
         limit: 10,
-        hasMore: true
+        hasMore: true,
+        dataArr: [],
+        xArr: []
       };
     },
     created() {
@@ -66,8 +65,8 @@
       getUserId() {
         return getUserId();
       },
-      formatDate(date) {
-        return formatDate(date);
+      formatDate(date, format) {
+        return formatDate(date, format);
       },
       formatAmount(amount) {
         return formatAmount(amount);
@@ -103,17 +102,43 @@
       drawPie(id) {
         this.charts = echarts.init(document.getElementById(id));
         this.charts.setOption({
+          // backgroundColor: '#23AD8C',
+          color: '#23AD8C',
+          areaStyle: {},
+          grid: {
+            top: '10px',
+            bottom: '20px'
+          },
           xAxis: {
             type: 'category',
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            data: this.xArr
+            // boundaryGap: false
+            // show: false
           },
           yAxis: {
             type: 'value'
+            // boundaryGap: false
+            // show: false
           },
           series: [{
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            data: this.dataArr,
             type: 'line',
-            smooth: true
+            smooth: true,
+            areaStyle: {
+              color: {
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [{
+                  offset: 0, color: '#23AD8C' // 0% 处的颜色
+                }, {
+                  offset: 1, color: '#fff' // 100% 处的颜色
+                }],
+                globalCoord: false // 缺省为 false
+              }
+            }
           }]
         });
       },
@@ -137,15 +162,39 @@
           }
           this.proList = this.proList.concat(res1.list);
           this.start++;
-          console.log(this.proList);
+          this.proList.map((item) => {
+            this.dataArr.push(formatAmount(item.price));
+            this.xArr.push(formatDate(item.createDatetime, 'hh:mm:ss'));
+          });
+          console.log(this.xArr);
+          this.drawPie('main');
           this.loading = false;
         }).catch(() => { this.loading = false; });
+      },
+      sendMessage(orderby, pinzhong) {
+        if(pinzhong === '全部品种') {
+          this.variety = '';
+        } else {
+          this.variety = pinzhong;
+        }
+        // switch (orderby) {
+        //   case 0: this.orderColumn = ''; break;
+        //   case 1: this.orderColumn = 'create_datetime'; break;
+        //   case 2: this.orderColumn = 'price'; break;
+        //   case 3: this.orderColumn = 'quantity'; break;
+        // }
+        this.start = 1;
+        this.limit = 10;
+        this.proList = [];
+        this.getPageOrders();
+        this.dataArr = [];
+        this.xArr = [];
       }
     },
     mounted() {
-      this.$nextTick(function() {
-        this.drawPie('main');
-      });
+      // this.$nextTick(function() {
+      //   this.drawPie('main');
+      // });
       setTitle('我的');
       this.getPageOrders();
     },
@@ -176,133 +225,6 @@
       width: 100%;
       height: 4.76rem;
     }
-    .bg {
-      overflow: auto;
-      background: url("./top@2x.png") no-repeat;
-      background-size: contain;
-      .title {
-        font-size: 0.36rem;
-        color: #fff;
-        padding-top: 0.19rem;
-        text-align: center;
-      }
-      .content {
-        padding: 0.88rem 0.3rem 0;
-        .in-content {
-          background: $color-highlight-background;
-          .card {
-            height: 3.2rem;
-            background: $color-highlight-background;
-            border-radius: 0.12rem;
-            box-shadow: 0 8px 16px 0 #EBEFED;
-            margin-bottom: 0.25rem;
-            padding: 0.5rem;
-            .info {
-              height: 1.1rem;
-              img {
-                width: 1.1rem;
-                vertical-align: middle;
-              }
-              .head {
-                height: 1.1rem;
-                border-radius: 50%;
-              }
-              .text {
-                display: inline-block;
-                vertical-align: middle;
-                p:first-child{
-                  margin-bottom: 0.06rem;
-                  font-size: 0;
-                  display: flex;
-                  align-items: center;
-                  span:first-child {
-                    font-size: $font-size-medium-xx;
-                    color: #333;
-                  }
-                }
-                .mobile {
-                  font-size: $font-size-medium;
-                  color: #666;
-                  line-height: 0.4rem;
-                }
-                .lv {
-                  background: #FEAE62;
-                  border-radius: 0.06rem;
-                  width: 0.67rem;
-                  height: 0.33rem;
-                  display: inline-block;
-                  color: #fff;
-                  font-size: 0.24rem;
-                  margin-left: 0.23rem;
-                  text-align: center;
-                  padding-top: 0.03rem;
-                }
-              }
-              .me-more {
-                width: 0.21rem;
-                margin-top: 0.4rem;
-              }
-            }
-            .account {
-              padding-top: 0.4rem;
-              height: 1.5rem;
-              div {
-                display: inline-block;
-                width: 49%;
-                text-align: center;
-              }
-              .line {
-                height: 0.32rem;
-                border-right: 1px solid #ebebeb;
-                display: inline;
-                width: 0;
-                margin-top: 0.2rem;
-              }
-              .number {
-                color: #333;
-                font-weight:bold;
-                font-size: $font-size-large-s;
-                line-height: $font-size-large-x;
-                margin-bottom: 0.1rem;
-              }
-              .text {
-                font-size: $font-size-small;
-                line-height: $font-size-medium-xx;
-                color: #666;
-              }
-            }
-            .noUser {
-              width: 100%;
-              text-align: center;
-              font-size: 0;
-              height: 100%;
-              button {
-                width: 1.54rem;
-                height: 0.62rem;
-                border-radius: 0.04rem;
-                font-size: 0.3rem;
-                border: 1px solid $primary-color;
-                margin-top: 0.79rem;
-              }
-              .login {
-                background: $primary-color;
-                color: $color-highlight-background;
-              }
-              .register {
-                background: $color-highlight-background;
-                color: $primary-color;
-                margin-left: 0.4rem;
-              }
-            }
-          }
-          .card-bg {
-            background: url("./decoration@2x.png") no-repeat;
-            background-size: contain;
-            background-position: bottom;
-          }
-        }
-      }
-    }
     .me-list {
       background: $color-highlight-background;
       position: absolute;
@@ -311,6 +233,7 @@
       left: 0;
       right: 0;
       overflow: auto;
+      z-index: -1;
       table {
         font-size: 0.22rem;
         width: 100%;
@@ -320,22 +243,23 @@
         tr.first {
           background: #edf8f5;
           color: #2d2d2d;
-          /*display: flex;*/
-          /*justify-content: space-between;*/
           width: 100%;
           height: 0.76rem;
           line-height: 0.76rem;
           padding: 0 0.3rem;
         }
         tr {
-          /*display: flex;*/
-          /*justify-content: space-between;*/
           width: 100%;
           height: 1rem;
           line-height: 1rem;
           padding: 0 0.3rem;
           border-bottom: 1px solid $color-border;
           .wave {
+            img {
+              width: 0.16rem;
+              height: 0.2rem;
+              margin-right: 0.1rem;
+            }
             .red {
               color: #E15252;
             }

@@ -10,7 +10,7 @@
             <div class="item" @click="go('/consignment-hall/consignment-product-detail?buy=1&code='+item.code)" v-for="item in proList">
               <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
               <div class="hot-pro-text">
-                <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.productName}}</span><span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span></p>
+                <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.productName}}</span><span class="hot-pro-title-date">{{formatDate(item.createDatetime, 'yyyy/MM/dd')}}</span></p>
                 <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">可售数量：{{item.quantity}}</span></p>
               </div>
             </div>
@@ -21,18 +21,19 @@
         <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
       </div>
     </div>
-    <!--<div class="footer" @click="goEChart">-->
-      <!--<p>最新成交信息</p>-->
-      <!--<p>-->
-        <!--<span>苹果树/年</span>-->
-        <!--<span>¥2480.00/棵</span>-->
-        <!--<span class="up-down">-->
-          <!--<img src="./up@2x.png">-->
-          <!--<span>24</span>-->
-        <!--</span>-->
-        <!--<span>2018/10/28</span>-->
-      <!--</p>-->
-    <!--</div>-->
+    <div class="footer" @click="goEChart">
+      <p>最新成交信息</p>
+      <p>
+        <span>{{proList[0].productName}}/年</span>
+        <span>¥{{formatAmount(proList[0].price)}}/{{proList[0].unit}}</span>
+        <span class="up-down">
+          <img src="./up@2x.png" v-if="proList[0].wave > 0">
+          <img src="./down@2x.png" v-if="proList[0].wave < 0">
+          <span>{{proList[0].wave}}</span>
+        </span>
+        <span>{{formatDate(proList[0].createDatetime, 'yyyy/MM/dd')}}</span>
+      </p>
+    </div>
     <full-loading v-show="loading" :title="title"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
@@ -92,8 +93,8 @@ export default {
     formatAmount(amount) {
       return formatAmount(amount);
     },
-    formatDate(date) {
-      return formatDate(date, 'yyyy-MM-dd');
+    formatDate(date, format) {
+      return formatDate(date, format);
     },
     formatImg(img) {
       return formatImg(img);
@@ -226,9 +227,6 @@ export default {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
           this.hasMore = false;
         }
-        res1.list.map(function () {
-          res1.applyDatetime = formatDate(res1.applyDatetime);
-        });
         this.proList = this.proList.concat(res1.list);
         this.start++;
         this.loading = false;
@@ -339,7 +337,7 @@ export default {
       background: $color-highlight-background;
       position: absolute;
       top: 0.8rem;
-      bottom: 0;
+      bottom: 1.3rem;
       left: 0;
       right: 0;
       overflow: auto;

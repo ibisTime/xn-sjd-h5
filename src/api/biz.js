@@ -596,6 +596,18 @@ export function placeOrderGuadan(data) {
     ...data
   });
 }
+// 认领二维码寄售
+export function placeOrderErweima(data) {
+  return fetch(629443, {
+    ...data
+  });
+}
+// 认领定向寄售
+export function placeOrderDingxiang(data) {
+  return fetch(629441, {
+    ...data
+  });
+}
 
 // 分页查寄售订单
 export function getJishouOrderPage(start, limit, status, type) {
@@ -662,6 +674,27 @@ export function getVarietyList(data) {
 // 已预售人员名单
 export function getBookingAlreadyList(data) {
   return fetch(629428, {
+    ...data
+  });
+}
+
+// 支付转增订单
+export function zhifuzhuanzeng(data) {
+  return fetch(629472, {
+    ...data
+  });
+}
+
+// 列表查询物流单
+export function getWuliudanList(data) {
+  return fetch(629467, {
+    ...data
+  });
+}
+
+// 确认收货
+export function confirmShouhuo(data) {
+  return fetch(629461, {
     ...data
   });
 }

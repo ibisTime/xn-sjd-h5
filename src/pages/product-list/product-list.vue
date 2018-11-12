@@ -89,6 +89,7 @@ export default {
       return formatDate(date, format);
     },
     formatImg(img) {
+      console.log(formatImg(img));
       return formatImg(img);
     },
     action() {

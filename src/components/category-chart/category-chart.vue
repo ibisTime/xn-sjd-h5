@@ -3,7 +3,7 @@
     <!--<div class="check-in-wrapper"></div>-->
     <div class="consignment-category">
       <div class="type">
-        <div @click="showOrder"><span>{{orderText}}</span><img :src="getOrderImg()"/></div>
+        <!--<div @click="showOrder"><span>{{orderText}}</span><img :src="getOrderImg()"/></div>-->
         <div @click="showType"><span>{{typeText}}</span><img :src="getTypeImg()"/></div>
         <!--<div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售订单</div>-->
       </div>
@@ -168,7 +168,7 @@
         align-items: center;
         border-bottom: 1px solid $color-border;
         div {
-          width: 50%;
+          width: 100%;
           font-size: 0.3rem;
           color: #666;
           letter-spacing: 0.25px;

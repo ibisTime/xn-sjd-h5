@@ -19,7 +19,7 @@
   import {setUser, getWxMobAndCapt} from 'common/js/util';
   // import { getCookie } from 'common/js/cookie';
   // import {setUser, getWxMobAndCapt} from 'common/js/util';
-  import {getAppId} from 'api/general';
+  import {getAppId, getdomain} from 'api/general';
   // import {wxLogin, saveLoginLog} from 'api/user';
   import {wxLogin} from 'api/user';
   import {mapMutations, mapGetters} from 'vuex';
@@ -40,6 +40,9 @@
       ])
     },
     created() {
+      getdomain().then((res) => {
+        sessionStorage.setItem('url', res.cvalue);
+      });
       // if (!isLogin()) {
       //   if (/code=([^&]+)&state=/.exec(location.href)) {
       //     let code = RegExp.$1;

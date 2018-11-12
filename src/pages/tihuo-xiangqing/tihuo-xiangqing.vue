@@ -2,66 +2,42 @@
   <transition name="slide">
     <div class="address-list-wrapper">
       <div class="addr-scroll-wrapper">
-        <scroll :data="addressList[0]" :hasMore="hasMore" :pullUpLoad="pullUpLoad">
-          <div class="pro-info">
-            <p><span>{{detail.productName}}</span><span>买入单价：{{formatAmount(detail.price)}}元/{{detail.unit}}</span></p>
-            <p><span>可收货总数</span><span>{{detail.quantity}}{{detail.presellProduct.packUnit}}</span></p>
-            <p><span>可收货数量</span><input type="text" placeholder="请输入数量"/></p>
-            <p>注意：填写地址后此批货物不可转让</p>
-          </div>
-          <div class="gray"></div>
-          <div class="tip">
-            <div class="addButton" @click="toAddress">
-              <div class="addButton-inner">
-                <img src="./add-border@2x.png">
-                <span class="add-address-text">添加地址</span>
-              </div>
-            </div>
-            <div class="opeator border-top-1px">
-              <div class="default">
-                <span class="add-address-text">收货数量</span>
-              </div>
-              <div class="right">
-                <img class="diamonds right-item" @click="addNumber" src="./add@2x.png">
-                <input class="num right-item" v-model="number" type="number">
-                <img class="diamonds right-item" @click="subNumber" src="./sub@2x.png">
-              </div>
-            </div>
-          </div>
-          <div class="gray"></div>
+        <scroll :data="list" :hasMore="hasMore" :pullUpLoad="pullUpLoad">
           <ul>
-            <li v-for="(item, index) in addressList[0]" :key="index" class="border-bottom-1px" v-show="addressList[0].length">
+            <li v-for="(item, index) in list" :key="index" class="border-bottom-1px" v-show="list.length">
               <div class="content">
                 <div class="content-left">
-                  <div class="info"><span class="name">{{item.receiver}}</span><span class="mobile">{{item.receiverMobile}}</span></div>
+                  <div class="info">
+                    <div class="name-mobile">
+                      <span class="name">{{item.receiver}}</span>
+                      <span class="mobile">{{item.receiverMobile}}</span>
+                    </div>
+                    <div class="number">{{item.deliverCount}}{{item.unit}}</div>
+                  </div>
                   <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
-                </div>
-                <div class="content-right" @click="deleteItem(item, index)">
-                  <img src="./delete@2x.png">
                 </div>
               </div>
               <div class="opeator border-top-1px">
                 <div class="default">
-                  <span class="add-address-text">收货数量</span>
+                  <!--<span class="add-address-text">收货数量</span>-->
                 </div>
                 <div class="right">
-                  <img class="diamonds right-item" @click="add(item)" src="./add@2x.png">
-                  <input class="num right-item" v-model="item.deliverCount" type="number">
-                  <img class="diamonds right-item" @click="sub(item)" src="./sub@2x.png">
+                  <button>查看物流</button>
+                  <button class="confirm" @click="confirm(item)" v-if="item.status === '1'">确认收货</button>
                 </div>
               </div>
             </li>
           </ul>
         </scroll>
-        <div class="footer">
-          <button class="two" @click="confirmTihuo">确认提货</button>
-        </div>
+        <!--<div class="footer">-->
+          <!--<button class="two" @click="confirmTihuo">确认提货</button>-->
+        <!--</div>-->
       </div>
       <div class="no-result-wrapper">
         <no-result v-show="!hasMore && !addressList.length" title="您尚未添加收货地址"></no-result>
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
-      <confirm ref="confirm" text="确定删除地址吗" @confirm="_deleteAddress"></confirm>
+      <confirm ref="confirm" text="确认收货" @confirm="confirmShouhuo"></confirm>
       <toast ref="toast" :text="text"></toast>
       <router-view></router-view>
     </div>
@@ -74,7 +50,7 @@
   import Toast from 'base/toast/toast';
   import NoResult from 'base/no-result/no-result';
   import {setTitle, formatAmount} from 'common/js/util';
-  import { confirmTihuo, getOriginZichanDetail } from 'api/biz';
+  import { confirmTihuo, getOriginZichanDetail, getWuliudanList, confirmShouhuo } from 'api/biz';
 
   export default {
     data() {
@@ -92,32 +68,10 @@
       };
     },
     created() {
-      let clear = this.$route.query.clear;
-      if(clear) {
-        sessionStorage.removeItem('tihuo-address');
-      }
-      setTitle('提货');
+      setTitle('提货详情');
       this.code = this.$route.query.code;
       this.currentItem = null;
       this.getAddress();
-      this.getProDetail();
-      this.addressList = [];
-    },
-    updated() {
-      this.getAddress();
-    },
-    computed: {
-      // ...mapGetters([
-      //   'addressList'
-      // ])
-      /* {
-          name: '东南',
-          mobile: '18888888888',
-          province: '浙江省',
-          city: '杭州市',
-          area: '余杭区',
-          address: '仓前街道'
-        } */
     },
     methods: {
       formatAmount(amount) {
@@ -158,12 +112,13 @@
         this.$router.push(url);
       },
       getAddress() {
-        // debugger;
-        if (!this.addressList.length) {
-          this.addressList.push(JSON.parse(sessionStorage.getItem('tihuo-address')));
-        } else {
-          this.hasMore = false;
-        }
+        Promise.all([
+          getWuliudanList({
+            originalGroupCode: 'OG2018111216592292877707'
+          }).then((res) => {
+            this.list = res;
+          })
+        ]);
       },
       shouldGetData() {
         if (/\/address/.test(this.$route.path) || this.$route.path === '/yushou-address') {
@@ -210,6 +165,23 @@
           this.text = '请添加至少一条地址';
           this.$refs.toast.show();
         }
+      },
+      confirm(item) {
+        this.currentItem = item;
+        this.$refs.confirm.show();
+      },
+      confirmShouhuo() {
+        confirmShouhuo({
+          code: this.currentItem.code
+        }).then((res) => {
+          if(res.isSuccess) {
+            this.text = '确认收货成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              location.reload();
+            }, 1000);
+          }
+        });
       }
     },
     components: {
@@ -265,12 +237,19 @@
             .info {
               font-size: $font-size-medium-x;
               display: flex;
-              .name {
-                margin-right: 0.3rem;
+              justify-content: space-between;
+              align-items: center;
+              .name-mobile {
+                .name {
+                  margin-right: 0.3rem;
+                }
+                .mobile {
+                  width: 2.1rem;
+                  color: #999;
+                }
               }
-              .mobile {
-                width: 2.1rem;
-                color: #999;
+              .number {
+                margin-right: 0.3rem;
               }
               span {
                 line-height: 0.42rem;
@@ -452,24 +431,13 @@
       }
     }
     .right {
-      flex: 1;
       display: table-cell;
       vertical-align: middle;
-      text-align: center;
-      .right-item {
-        float: right;
-        text-align: center;
-        line-height: 0.5rem;
-      }
-      .diamonds {
-        width: 0.36rem;
-        height: 0.36rem;
-      }
-      .num {
-        width: 0.9rem;
-        font-size: $font-size-medium-x;
-        color: #333;
-        height: 0.36rem;
+      text-align: right;
+      .confirm {
+        color: $primary-color;
+        border-color: $primary-color;
+        margin-left: 0.2rem;
       }
     }
     .tip {
@@ -503,7 +471,6 @@
         @include border-top-1px($color-border);
 
         .default {
-          flex: 1;
 
           .add-address-text {
             color: #b3b3b3;
