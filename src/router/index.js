@@ -118,6 +118,12 @@ const EmotionChannel = () => import('@/pages/emotion-channel/emotion-channel');
 const ArticleDetail = () => import('@/pages/article-detail/article-detail');
 // 商城
 const Mall = () => import('@/pages/mall/mall');
+// 产品详情
+const MallShopDetail = () => import('@/pages/mall-shop_detail/mall-shopDetail');
+// 商品列表
+const mallShopList = () => import('@/pages/mall-shopList/mall-shopList');
+// 购物车
+const mallShopCart = () => import('@/pages/mall-shopCart/mall-shopCart');
 // 公告
 const Notices = () => import('@/pages/notices/notices');
 // 公告详情
@@ -387,6 +393,18 @@ export default new Router({
       component: Mall
     },
     {
+      path: '/mall-shop_detail',
+      component: MallShopDetail
+    },
+    {
+      path: '/mall-shopList',
+      component: mallShopList
+    },
+    {
+      path: '/mall-shopCart',
+      component: mallShopCart
+    },
+    {
       path: '/money',
       component: Money,
       children: [
@@ -525,5 +543,12 @@ export default new Router({
       path: '/consignment-product-detail',
       component: ConsignmentProductDetail
     }
-  ]
+  ],
+  mode: 'history',
+  scrollBehavior(to, from, savedPosition) { // vue滚动行为
+    return {
+      x: 0,
+      y: 0
+    };
+  }
 });

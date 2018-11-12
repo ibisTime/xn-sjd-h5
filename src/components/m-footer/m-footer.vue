@@ -8,11 +8,10 @@
       <i></i>
       <p>林空间</p>
     </router-link>
-    <!--<router-link tag="div" class="foot-item item-2" to="/mall">-->
-      <!--<i></i>-->
-      <!--<p>商城</p>-->
-      <!--&lt;!&ndash;<div class="badge-wrapper"><badge v-show="count" :text="count"></badge></div>&ndash;&gt;-->
-    <!--</router-link>-->
+    <router-link tag="div" class="foot-item item-2" to="/mall">
+      <i></i>
+      <p>商城</p>
+    </router-link>
     <router-link tag="div" class="foot-item item-3" to="/me">
       <i></i>
       <p>我的</p>

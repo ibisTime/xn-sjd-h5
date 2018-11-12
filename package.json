@@ -20,6 +20,7 @@
     "fastclick": "^1.0.6",
     "good-storage": "^1.0.1",
     "js-base64": "^2.3.2",
+    "js-qrcode": "^1.0.0",
     "vee-validate": "^2.0.0-rc.18",
     "vue": "^2.4.2",
     "vue-clipboard2": "^0.2.1",
