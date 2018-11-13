@@ -118,12 +118,26 @@ const EmotionChannel = () => import('@/pages/emotion-channel/emotion-channel');
 const ArticleDetail = () => import('@/pages/article-detail/article-detail');
 // 商城
 const Mall = () => import('@/pages/mall/mall');
+// 店铺
+const MallStore = () => import('@/pages/mall-store/mall-store');
 // 产品详情
 const MallShopDetail = () => import('@/pages/mall-shop_detail/mall-shopDetail');
-// 商品列表
-const mallShopList = () => import('@/pages/mall-shopList/mall-shopList');
 // 购物车
 const mallShopCart = () => import('@/pages/mall-shopCart/mall-shopCart');
+// 全部商品
+const mallShopList = () => import('@/pages/mall-shopList/mall-shopList');
+// 确认订单
+const affirmOrder = () => import('@/pages/affirm-order/affirm-order');
+// 全部评论
+const userComment = () => import('@/pages/user-comment/user-comment');
+// 售后
+const afterSale = () => import('@/pages/after-sale/after-sale');
+// 商品订单
+const storeOrder = () => import('@/pages/store-order/store-order');
+// 发表评论
+const userPj = () => import('@/pages/user-pj/user-pj');
+// 订单详情
+const storeOrderDetail = () => import('@/pages/store-order_detail/store-detail');
 // 公告
 const Notices = () => import('@/pages/notices/notices');
 // 公告详情
@@ -390,19 +404,50 @@ export default new Router({
     },
     {
       path: '/mall',
-      component: Mall
+      component: Mall,
+      children: [
+        {
+          path: '/mall/mall-shopList',
+          name: 'mallShopList',
+          component: mallShopList
+        }
+      ]
+    },
+    {
+      path: '/mall-store',
+      component: MallStore
     },
     {
       path: '/mall-shop_detail',
       component: MallShopDetail
     },
     {
-      path: '/mall-shopList',
-      component: mallShopList
-    },
-    {
       path: '/mall-shopCart',
       component: mallShopCart
+    },
+    {
+      path: '/affirm-order',
+      component: affirmOrder
+    },
+    {
+      path: '/user-comment',
+      component: userComment
+    },
+    {
+      path: '/after-sale',
+      component: afterSale
+    },
+    {
+      path: '/store-order',
+      component: storeOrder
+    },
+    {
+      path: '/user-pj',
+      component: userPj
+    },
+    {
+      path: '/store-order_detail',
+      component: storeOrderDetail
     },
     {
       path: '/money',

@@ -3,10 +3,8 @@
     <div class="content" v-show="!isAll">
       <div class="mall-header">
         <div class="head-search">
-          <div class="search">
-            <span></span>
-            <input type="text" placeholder="搜索商品">
-          </div>
+          <h4>商铺名称</h4>
+          <p>辅助文字辅助文字辅助文字辅助文字</p>
         </div>
       </div>
       <div class="mall-list">
@@ -17,7 +15,7 @@
       </div>
       <div class="mall-content">
         <div class="con-head">
-          <h5>热门推荐 <router-link to="/mall/mall-shopList" class="fr" @click.native="isAll = true;">更多</router-link></h5>
+          <h5>所有商品<span class="fr" @click="tomore">更多</span></h5>
           <div class="con-list">
             <div class="con-sing" @click="toShopDet">
               <div class="con-sing_img">
@@ -45,20 +43,20 @@
         </div>
       </div>
     </div>
-    <router-view v-show="isAll"></router-view>
+    <MallShopList v-show="isAll" />
     <div class="go-cart" @click.stop="addCart">
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
-    <m-footer></m-footer>
   </div>
 </template>
 <script>
-import MFooter from 'components/m-footer/m-footer';
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
+import MallShopList from '../mall-shopList/mall-shopList';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 export default {
+  // name: "home",
   data() {
     return {
       mallList: ['分类一', '分类二', '分类三', '分类四'],
@@ -69,7 +67,7 @@ export default {
     };
   },
   created() {
-    setTitle('商场');
+    setTitle('店铺名称');
   },
   mounted() {
     this.loading = false;
@@ -104,21 +102,9 @@ export default {
     }
   },
   components: {
-    MFooter,
     FullLoading,
-    Toast
-  },
-  watch: {
-    '$route.path': function (newVal, oldVal) {
-      this.loading = true;
-      if(newVal === '/mall') {
-        this.isAll = false;
-        setTitle('商场');
-      }
-      setTimeout(() => {
-        this.loading = false;
-      }, 1000);
-    }
+    Toast,
+    MallShopList
   }
 };
 </script>
@@ -152,7 +138,7 @@ export default {
 
     .mall-header{
       width: 100%;
-      height: 3.7rem;
+      height: 4.3rem;
       margin: 0 auto;
       position: relative;
       background-image: url('./banner.png');
@@ -162,34 +148,19 @@ export default {
         left: 0;
         top: 0;
         width: 100%;
-        padding: 0.24rem 0.3rem;
-        .search{
-          width: 100%;
-          opacity: 0.9;
-          background: #FFFFFF;
-          border: 0.01rem solid #E5E5E5;
-          border-radius: 0.72rem;
-          overflow: hidden;
-          height: 0.72rem;
-          line-height: 0.2rem;
-          padding-left: 0.3rem;
-          span{
-            width: .24rem;
-            height: 0.24rem;
-            display: inline-block;
-            vertical-align: middle;
-            background-image: url('./search.png');
-            background-size: 100% 100%;
-          }
-          input{
-            font-size: 0.28rem;
-            color: #999999;
+        height: 1.5rem;
+        background-color: rgba(0, 0, 0, .5);
+        padding: 0.3rem 0 0.35rem 0.3rem;
+        font-family: PingFang-SC-Medium;
+        color: #FFFFFF;
+        h4{
+            font-size: 0.34rem;
+            letter-spacing: 0.0.027rem;
+            margin-bottom: 0.12rem;
+        }
+        p{
+            font-size: 0.26rem;
             letter-spacing: 0.002rem;
-            width: 90%;
-            height: 100%;
-            vertical-align: middle;
-            margin-left: -0.2rem;
-          }
         }
       }
     }
@@ -239,7 +210,7 @@ export default {
           color: #333333;
           letter-spacing: 0.0027rem;
           font-weight: 600;
-          a{
+          span{
             font-family: PingFang-SC-Medium;
             font-size: 0.26rem;
             color: #999999;

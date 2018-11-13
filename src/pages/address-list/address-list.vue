@@ -12,8 +12,8 @@
               </div>
               <div class="opeator border-top-1px">
                 <div class="default" @click.stop="setDefault(item, index)">
-                  <!--<i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>-->
-                  <!--<span>设为默认地址</span>-->
+                  <i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>
+                  <span>设为默认地址</span>
                 </div>
                 <button class="edit" @click.stop="goEdit(item)">编辑</button>
                 <button class="delete" @click.stop="deleteItem(item, index)">删除</button>

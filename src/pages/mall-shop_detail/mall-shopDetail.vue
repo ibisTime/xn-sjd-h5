@@ -22,7 +22,7 @@
         </div>
         <div class="shop-pj">
           <div class="pj-head">
-            <p>评价 <span class="fr pj-all">查看全部 ></span></p>
+            <p>评价 <span class="fr pj-all" @click="go('user-comment')">查看全部 ></span></p>
           </div>
           <div class="pj-content">
             <div class="con-head">
@@ -42,7 +42,7 @@
         </div>
         <div class="shop-foo">
           <div class="foo-left">
-            <div class="le-dp">
+            <div class="le-dp" @click="go('mall-store');">
               <div class="dp-img"></div>
               <p>店铺</p>
             </div>
@@ -51,10 +51,10 @@
               <p>客服</p>
             </div>
           </div>
-          <dic class="foo-right">
+          <div class="foo-right">
             <button class="add-cart" @click="istoast = true">加入购物车</button>
             <button class="buy">立即购买</button>
-          </dic>
+          </div>
         </div>
       </div>
       <div class="toast" v-show="istoast">
@@ -129,8 +129,6 @@ export default {
     }
   },
   mounted() {
-  },
-  components: {
   }
 };
 </script>

@@ -1,0 +1,372 @@
+<template>
+  <div class="mall-wrapper" @click.stop>
+    <div class="content">
+        <div class="order-head">
+            <div class="o-h_left">
+                <span></span>
+            </div>
+            <div class="o-h_right" @click="go('my-site')">
+                <p>王大锤 <span>15083962283</span></p>
+                <p class="to-r"><span class="fr"></span></p>
+                <p>北京市朝阳区蓬莱东路1001号</p>
+            </div>
+        </div>
+        <p class="back-co"></p>
+        <div class="order-con">
+            <div class="con-head">
+                <p>店家名称</p>
+            </div>
+            <div class="o-c_con">
+                <div class="c-c_left">
+                    <div class="c-c_img"></div>
+                </div>
+                <div class="o-c_right">
+                    <p class="r-p1">古树名称 <span class="fr">×1</span></p>
+                    <p class="r-p2">规格分类：规格分类</p>
+                    <p class="r-p3">¥2480.00</p>
+                </div>
+            </div>
+        </div>
+        <p class="back-co"></p>
+        <div class="order-foo">
+            <div class="foo-box01">
+                <div class="box01-left foo-left">
+                    购买数量
+                </div>
+                <div class="box01-right">
+                    <span class="jian"></span>
+                    <b>1</b>
+                    <span class="jia"></span>
+                </div> 
+            </div>
+            <div class="foo-box02">
+                <div class="box02-left foo-left">
+                    配送方式
+                </div>
+                <div class="box02-right">
+                    <p>快递免邮 <span></span></p>
+                </div>
+            </div>
+            <div class="foo-box03">
+                <div class="box03-left foo-left">
+                    买家留言:
+                </div>
+                <div class="box03-right">
+                    <input type="text">
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="foo-left">
+                <p>合计：<span>¥2480.00</span></p>
+            </div>
+            <div class="foo-right">
+                确认购买
+            </div>
+        </div>
+    </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <toast ref="toast" :text="textMsg"></toast>
+  </div>
+</template>
+<script>
+import FullLoading from 'base/full-loading/full-loading';
+import Toast from 'base/toast/toast';
+import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+export default {
+  data() {
+    return {
+      loading: true,
+      textMsg: '',
+      loadingText: '正在加载中...'
+    };
+  },
+  created() {
+    setTitle('确认订单');
+  },
+  mounted() {
+    this.loading = false;
+  },
+  methods: {
+    formatAmount(amount) {
+      return formatAmount(amount);
+    },
+    formatImg(img) {
+      return formatImg(img);
+    },
+    formatDate(date, format) {
+      return formatDate(date, format);
+    },
+    go(url) {
+      this.$router.push(url);
+    },
+    getImgSyl(imgs) {
+      return {
+        // backgroundImage: `url(${formatImg(imgs)})`
+        backgroundImage: `url(${imgs})`
+      };
+    },
+    addCart() {
+      this.go('/mall-shopCart');
+    },
+    toShopDet() {
+      this.go('/mall-shop_detail');
+    },
+    tomore() {
+      this.isAll = true;
+    }
+  },
+  components: {
+    FullLoading,
+    Toast
+  }
+};
+</script>
+<style lang="scss" scoped>
+@import "../../common/scss/mixin.scss";
+@import "../../common/scss/variable.scss";
+.mall-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0.98rem;
+  width: 100%;
+  .fl {
+    float: left;
+  }
+  .fr {
+    float: right;
+  }
+  .content {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: auto;
+    background-color: #fff;
+    font-family: PingFangSC-Regular;
+    .back-co{
+        height: 0.2rem;
+        background-color: #f5f5f5;
+    }
+    .order-head{
+        display: flex;
+        height: 1.6rem;
+        background-color: #fff;
+        padding: 0.3rem 0.3rem 0.3rem 0.2rem;
+        box-shadow: 0 0.01rem 0 0 #EBEBEB;
+        .o-h_left{
+            position: relative;
+            width: 1rem;
+            height: 100%;
+            span{
+                position: absolute;
+                left: 0%;
+                top: 50%;
+                transform: translateY(-50%);
+                display: inline-block;
+                width: 0.6rem;
+                height: 0.6rem;
+                background-image: url('./dz.png');
+                background-size: 100% 100%;
+            }
+        }
+        .o-h_right{
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: space-around;
+            font-family: PingFang-SC-Medium;
+            font-size: 0.28rem;
+            color: #333333;
+            p{
+                width: 100%;
+                span{
+                    color: #999;
+                }
+            }
+            .to-r{
+                height: 0.22rem;
+                span{
+                    display: inline-block;
+                    width: 0.22rem;
+                    height: 0.22rem;
+                    background-size: 100% 100%;
+                    background-image: url('./tz.png');
+                }
+            }
+        }
+    }
+    .order-con{
+        padding: 0 0.3rem 0 0.2rem;
+        .con-head{
+            height: 0.8rem;
+            line-height: 0.8rem;
+            background: rgba(224,187,187,0.00);
+            box-shadow: 0 0.01rem 0 0 #EBEBEB;
+            font-family: PingFang-SC-Medium;
+            font-size: 0.26rem;
+            color: #333333;
+            letter-spacing: 0.002rem;
+        }
+        .o-c_con{
+            padding: 0.32rem 0 0.28rem;
+            display: flex;
+            .c-c_left{
+                width: 1.6rem;
+                height: 1.6rem;
+                .c-c_img{
+                    width: 100%;
+                    height: 100%;
+                    background-image: url('./shop.png');
+                    background-size: 100% 100%;
+                }
+            }
+            .o-c_right{
+                width: 84%;
+                padding-left: 0.2rem;
+                display: flex;
+                align-content: space-around;
+                flex-wrap: wrap;
+                p{
+                    width: 100%;
+                    font-size: 0.32rem;
+                    font-family: PingFang-SC-Medium;
+                }
+                .r-p1{
+                    color: #333333;
+                    letter-spacing: 0.0025rem;
+                    span{
+                        font-size: 0.3rem;
+                        color: #999999;
+                        letter-spacing: 0.0023rem;
+                    }
+                }
+                .r-p2{
+                    font-size: 0.26rem;
+                    color: #999999;
+                    letter-spacing: 0.002rem;
+                }
+                .r-p3{
+                    font-family: DIN-Bold;
+                    color: #151515;
+                    letter-spacing: 0.0023rem;
+                }
+            }
+        }
+    }
+    .order-foo{
+        padding: 0 0.3rem 0 0.2rem;
+        font-family: PingFang-SC-Medium;
+        .foo-left{
+            font-size: 0.3rem;
+            color: #2D2D2D;
+            letter-spacing: 0.0022rem;
+        } 
+        .foo-box01{
+            height: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(216,216,216,0.00);
+            box-shadow: 0 0.01rem 0 0 #EBEBEB;
+            .box01-right{
+                span{
+                    display: inline-block;
+                    width: 0.36rem;
+                    height: 0.36rem;
+                    vertical-align: middle;
+                    background-size: 100% 100%;
+                }
+                b{
+                    font-size: 0.26rem;
+                    vertical-align: middle;
+                }
+                .jia{
+                    background-image: url('./jia.png');
+                }
+                .jian{
+                    background-image: url('./jian.png');
+                }
+            }
+        }
+        .foo-box02{
+            height: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(216,216,216,0.00);
+            box-shadow: 0 0.02rem 0 0 #EBEBEB;
+            .box02-right{
+                font-size: 0.3rem;
+                color: #2D2D2D;
+                letter-spacing: 0.0022rem;
+                span{
+                    display: inline-block;
+                    width: 0.22rem;
+                    height: 0.22rem;
+                    background-image: url('./tz.png');
+                    background-size: 100% 100%;
+                }
+            }
+        }
+        .foo-box03{
+            height: 1.2rem;
+            display: flex;
+            align-items: center;
+            background: rgba(216,216,216,0.00);
+            box-shadow: 0 0.01rem 0 0 #EBEBEB;
+            .box03-right{
+                width: 81%;
+                height: 0.6rem;
+                padding-left: 0.2rem;
+                box-sizing: border-box;
+                overflow: hidden;
+                input{
+                    vertical-align: top;
+                    width: 100%;
+                    height: 100%;
+                    padding: 0.1rem;
+                    font-family: PingFang-SC-Medium;
+                    font-size: 0.28rem;
+                    color: #2D2D2D;
+                    letter-spacing: 0.0022rem;
+                }
+            }
+        }
+    }
+    .footer{
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 1.2rem;
+        box-shadow: 0 -1px 0 0 #DBDBDB;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 0.3rem;
+        font-family: PingFangSC-Medium;
+        letter-spacing: 0.0027rem;
+        background-color: #fff;
+        .foo-left{
+            font-size: 0.28rem;
+            color: #666666;
+            span{
+                color: #23AD8C;
+            }
+        }
+        .foo-right{
+            font-size: 0.36rem;
+            color: #FFFFFF;
+            width: 2.6rem;
+            height: 0.9rem;
+            line-height: 0.9rem;
+            text-align: center;
+            border-radius: 0.12rem;
+            background-color: #23AD8C;
+        }
+    }
+  }
+}
+</style>

@@ -34,9 +34,6 @@
             </div>
         </div>
     </div>
-    <full-loading v-show="loading" :title="loadingText"></full-loading>
-    <toast ref="toast" :text="textMsg"></toast>
-    <m-footer></m-footer>
   </div>
 </template>
 <script>
@@ -54,7 +51,7 @@ export default {
     };
   },
   created() {
-    setTitle('商场');
+    setTitle('全部商品');
   },
   mounted() {
     this.loading = false;
