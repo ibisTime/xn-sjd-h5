@@ -51,7 +51,7 @@
           <span>转让有效时间</span><span>待生效</span>
         </div>
         <div class="item" v-show="detail.status === '1'">
-          <span>转让截止时间</span><span>{{formatDate(detail.adoptEndDatetime)}}</span>
+          <span>转让截止时间</span><span>{{formatDate(detail.adoptEndDatetime || detail.presellProduct.adoptEndDatetime, 'yyyy-MM-dd')}}</span>
         </div>
         <div class="item" @click="go(`/consignment-erweima?code=${detail.code}&number=${detail.quantity}&price=${detail.price}`)" v-show="derive && detail.type === '1'">
           <span>转让二维码</span>
@@ -341,13 +341,7 @@ export default {
         this.number--;
       }
     },
-    goLogin() {
-      if(this.noAdoptReason === '您未登录') {
-        this.go('/login');
-      }
-    },
     confirm() {
-      // debugger;
       if(this.userId) {
         let price = this.price;
         let number = this.number;
@@ -388,7 +382,7 @@ export default {
               this.text = '发布成功';
               this.$refs.toast.show();
               setTimeout(() => {
-                this.$router.push('/consignment-hall');
+                this.$router.push('/my-consignment?type=1');
               }, 1000);
             }
           });

@@ -148,25 +148,6 @@ export default {
         this.parentCategoryCode = '';
         this.selectdType = this.categorysSub[this.indexSub].key;
       }
-      // if(this.selectdType === 'all') {
-      //   this.params = {
-      //     start: this.start,
-      //     limit: this.limit,
-      //     parentCategoryCode: this.categoryCode,
-      //     statusList: [4],
-      //     orderDir: 'asc',
-      //     orderColumn: 'order_no'
-      //   };
-      // } else {
-      //   this.params = {
-      //     start: this.start,
-      //     limit: this.limit,
-      //     categoryCode: this.selectdType,
-      //     statusList: [4],
-      //     orderDir: 'asc',
-      //     orderColumn: 'order_no'
-      //   };
-      // }
       this.loading = true;
       Promise.all([
         getBookingProPage({
@@ -175,7 +156,7 @@ export default {
           // sellType: sellType,
           parentCategoryCode: this.parentCategoryCode,
           categoryCode: this.selectdType,
-          statusList: [4, 5, 6],
+          statusList: [4],
           orderDir: 'asc',
           orderColumn: 'order_no'
         })

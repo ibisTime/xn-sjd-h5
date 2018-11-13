@@ -63,19 +63,22 @@
     <div class="footer">
       <span v-show="detail.minPrice !== detail.maxPrice">¥{{formatAmount(detail.minPrice)}}～¥{{formatAmount(detail.maxPrice)}}</span>
       <span v-show="detail.minPrice === detail.maxPrice">¥{{formatAmount(detail.minPrice)}}</span>
-      <button class="fr" @click="showPopUp">确认购买</button>
+      <button @click="showPopUp" v-if="canAdopt()">确认购买</button>
+      <button class="disabled" v-if="!canAdopt()">{{noAdoptReason}}</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
-      <div class="title">
-        <div class="title-pic">
-          <img :src="formatImg(detail.bannerPic)" alt="">
-        </div>
-        <div class="title-right">
-          <p>{{detail.scientificName}}</p>
-          <i @click="genghuan">X</i>
-          <!--<p class="kucun">库存：{{detail.presellSpecsList[choosedIndex].packCount}}{{detail.packUnit}}</p>-->
-          <p class="position"><img src="./position@2x.png">{{detail.originPlace}}</p>
+      <div>
+        <div class="title">
+          <div class="title-pic">
+            <img :src="formatImg(detail.bannerPic)" alt="">
+          </div>
+          <div class="title-right">
+            <p>{{detail.scientificName}}</p>
+            <i @click="genghuan">X</i>
+            <!--<p class="kucun">库存：{{detail.presellSpecsList[choosedIndex].packCount}}{{detail.packUnit}}</p>-->
+            <p class="position"><img src="./position@2x.png">{{detail.originPlace}}</p>
+          </div>
         </div>
       </div>
       <div class="packaging">
@@ -100,7 +103,7 @@
         </div>
       </div>
       <div class="buypart-bottom">
-        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.presellSpecsList[choosedIndex].price) * number}})</div>
+        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(formatAmount(detail.presellSpecsList[choosedIndex].price) * number * 1000)}})</div>
       </div>
     </div>
     <toast ref="toast" :text="text"></toast>
@@ -175,6 +178,17 @@ export default {
       if (this.number >= 2) {
         this.number--;
       }
+    },
+    canAdopt() {
+      if(!this.userDetail.level) {
+        this.noAdoptReason = '您未登录';
+        return false;
+      }
+      if(this.detail.totalOutput <= this.detail.nowCount) {
+        this.noAdoptReason = '无法购买';
+        return false;
+      }
+      return true;
     },
     goLogin() {
       if(this.noAdoptReason === '您未登录') {
@@ -459,6 +473,9 @@ export default {
       background: $primary-color;
       color: $color-highlight-background;
       font-size: 0.3rem;
+    }
+    .disabled {
+      background: #969998;
     }
   }
   .mask {

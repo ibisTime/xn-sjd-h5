@@ -79,7 +79,7 @@ export default {
       limit: 10,
       hasMore: true,
       originList: [],
-      deriveList: [{presellProduct: {listPic: ''}}],
+      deriveList: [],
       originStatusObj: {},
       deriveStatusObj: {},
       userDetail: {},
@@ -198,7 +198,7 @@ export default {
     this.pullUpLoad = null;
     this.loading = true;
     this.userId = getCookie('userId');
-    this.categoryCode = this.$route.query.typeCode || '';
+    this.type = +this.$route.query.type || 0;
     setTitle('我的预售资产');
     Promise.all([
       getDictList('original_group_status'),

@@ -6,7 +6,7 @@
           <div class="pro-info">
             <p><span>{{detail.productName}}</span><span>买入单价：{{formatAmount(detail.price)}}元/{{detail.unit}}</span></p>
             <p><span>可收货总数</span><span>{{detail.quantity}}{{detail.presellProduct.packUnit}}</span></p>
-            <p><span>可收货数量</span><input type="text" placeholder="请输入数量"/></p>
+            <p><span>可收货数量</span><span>{{amount}}{{detail.presellProduct.packUnit}}</span></p>
             <p>注意：填写地址后此批货物不可转让</p>
           </div>
           <div class="gray"></div>
@@ -88,7 +88,8 @@
         deleteIndex: 0,
         detail: {presellProduct: {packUnit: ''}},
         pullUpLoad: null,
-        number: 1
+        number: 1,
+        amount: 0    // 取货总数
       };
     },
     created() {
@@ -106,29 +107,18 @@
     updated() {
       this.getAddress();
     },
-    computed: {
-      // ...mapGetters([
-      //   'addressList'
-      // ])
-      /* {
-          name: '东南',
-          mobile: '18888888888',
-          province: '浙江省',
-          city: '杭州市',
-          area: '余杭区',
-          address: '仓前街道'
-        } */
-    },
     methods: {
       formatAmount(amount) {
         return formatAmount(amount);
       },
       add(item) {
         item.deliverCount++;
+        this.amountChange();
       },
       sub(item) {
         if (item.deliverCount >= 2) {
           item.deliverCount--;
+          this.amountChange();
         }
       },
       addNumber() {
@@ -161,6 +151,7 @@
         // debugger;
         if (!this.addressList.length) {
           this.addressList.push(JSON.parse(sessionStorage.getItem('tihuo-address')));
+          this.amountChange();
         } else {
           this.hasMore = false;
         }
@@ -189,6 +180,13 @@
       },
       addTihuoAddress() {
         this.go(`/tihuo-address-addedit?code=${this.code}`);
+      },
+      amountChange() {
+        // debugger;
+        this.amount = 0;
+        this.addressList[0].map((item) => {
+          this.amount += +item.deliverCount;
+        });
       },
       confirmTihuo() {
         if(this.addressList[0] && this.addressList[0].length) {

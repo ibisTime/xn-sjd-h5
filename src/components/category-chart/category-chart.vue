@@ -177,6 +177,7 @@
           justify-content: center;
           white-space: nowrap;
           overflow: hidden;
+          line-height: 0.8rem;
         }
         img {
           width: 0.18rem;

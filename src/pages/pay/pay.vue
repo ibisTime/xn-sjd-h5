@@ -45,7 +45,7 @@
             </div>
           </div>
         </div>
-        <div class="score-rules">
+        <div class="score-rules" v-if="type">
           <p>规则：</p>
           <p v-for="(item, index) in sysConfig">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
           <!--<p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>-->
@@ -93,7 +93,8 @@
         sysConfig: [],
         identifyCode: '',
         pre: false,
-        jishou: false
+        jishou: false,
+        type: ''
       };
     },
     mounted() {

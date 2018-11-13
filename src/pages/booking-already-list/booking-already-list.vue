@@ -5,7 +5,7 @@
               :data="dataList"
               :pullUpLoad="pullUpLoad">
         <div class="item" v-for="(item, index) in dataList " :key="index">
-          <div class="userPhoto" :style="getImgSyl(item.user ? item.user.photo : '')"></div>
+          <div class="userPhoto" :style="getImgSyl(item.applyUserInfo ? item.applyUserInfo.photo : '')"></div>
           <div class="info">
             <p class="name">{{item.applyUserName}}</p>
             <p class="date">{{formatDate(item.applyDatetime, 'yyyy-MM-dd')}}</p>

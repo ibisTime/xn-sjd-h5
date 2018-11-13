@@ -7,7 +7,7 @@
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
           <div class="proList">
-            <div class="item" @click="go('/consignment-hall/consignment-product-detail?buy=1&code='+item.code)" v-for="item in proList">
+            <div class="item" @click="go('/consignment-hall/consignment-product-detail?buy=1&code='+item.code)" v-for="item in proList" v-show="proList.length">
               <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
               <div class="hot-pro-text">
                 <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.productName}}</span><span class="hot-pro-title-date">{{formatDate(item.createDatetime, 'yyyy/MM/dd')}}</span></p>
@@ -21,17 +21,17 @@
         <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
       </div>
     </div>
-    <div class="footer" @click="goEChart">
+    <div class="footer" @click="goEChart" v-if="transactionInfo">
       <p>最新成交信息</p>
       <p>
-        <span>{{proList[0].productName}}/年</span>
-        <span>¥{{formatAmount(proList[0].price)}}/{{proList[0].unit}}</span>
+        <span>{{transactionInfo.productName}}/年</span>
+        <span>¥{{formatAmount(transactionInfo.price)}}/{{transactionInfo.unit}}</span>
         <span class="up-down">
-          <img src="./up@2x.png" v-if="proList[0].wave > 0">
-          <img src="./down@2x.png" v-if="proList[0].wave < 0">
-          <span>{{proList[0].wave}}</span>
+          <img src="./up@2x.png" v-if="transactionInfo.wave > 0">
+          <img src="./down@2x.png" v-if="transactionInfo.wave < 0">
+          <span>{{transactionInfo.wave}}</span>
         </span>
-        <span>{{formatDate(proList[0].createDatetime, 'yyyy/MM/dd')}}</span>
+        <span>{{formatDate(transactionInfo.createDatetime, 'yyyy/MM/dd')}}</span>
       </p>
     </div>
     <full-loading v-show="loading" :title="title"></full-loading>
@@ -80,7 +80,8 @@ export default {
       indexSub: 0,
       type: 0,
       showFlag: true,
-      flag: false
+      flag: false,
+      transactionInfo: {}
     };
   },
   methods: {
@@ -222,12 +223,22 @@ export default {
           variety: this.variety || '',
           orderColumn: this.orderColumn || '',
           orderDir: 'asc'
+        }),
+        getDeriveZichanPage({
+          start: this.start,
+          limit: this.limit,
+          status: 1,
+          type: 2,
+          variety: this.variety || '',
+          orderColumn: 'create_datetime',
+          orderDir: 'desc'
         })
-      ]).then(([res1]) => {
+      ]).then(([res1, res2]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
           this.hasMore = false;
         }
         this.proList = this.proList.concat(res1.list);
+        this.transactionInfo = res2.list[0];
         this.start++;
         this.loading = false;
       }).catch(() => { this.loading = false; });

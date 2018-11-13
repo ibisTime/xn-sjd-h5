@@ -4,7 +4,6 @@
     <div id="main" class="e-chart"></div>
     <div class="me-list" ref="description">
       <Scroll
-        :pullUpLoad="pullUpLoad"
         ref="scroll"
         :data="proList"
         :hasMore="hasMore"
@@ -16,7 +15,7 @@
             <td>{{item.productName}}</td>
             <td>{{formatAmount(item.price)}}</td>
             <td class="wave"><img src="./up@2x.png" v-if="+item.wave > 0"><img src="./down@2x.png" v-if="+item.wave < 0">{{item.wave}}</td>
-            <td>{{formatDate(item.createDatetime)}}</td>
+            <td>{{formatDate(item.claimDatetime)}}</td>
           </tr>
         </table>
       </Scroll>
@@ -50,6 +49,7 @@
         src: '',
         charts: '',
         proList: [],
+        proList2: [],
         start: 1,
         limit: 10,
         hasMore: true,
@@ -148,25 +148,33 @@
           getDeriveZichanPage({
             start: this.start,
             limit: this.limit,
-            status: 0,
+            status: 1,
             type: 2,
-            minQuantity: 0,
             variety: this.variety || '',
-            orderColumn: this.orderColumn || '',
+            orderColumn: 'claim_datetime',
+            orderDir: 'desc'
+          }),
+          getDeriveZichanPage({
+            start: this.start,
+            limit: this.limit,
+            status: 1,
+            type: 2,
+            variety: this.variety || '',
+            orderColumn: 'claim_datetime',
             orderDir: 'asc'
           })
-        ]).then(([res1]) => {
-          // debugger;
+        ]).then(([res1, res2]) => {
           if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
             this.hasMore = false;
           }
           this.proList = this.proList.concat(res1.list);
+          this.proList2 = this.proList2.concat(res2.list);
           this.start++;
-          this.proList.map((item) => {
+          res2.list.map((item) => {
             this.dataArr.push(formatAmount(item.price));
-            this.xArr.push(formatDate(item.createDatetime, 'hh:mm:ss'));
+            this.xArr.push(formatDate(item.claimDatetime, 'hh:mm:ss'));
           });
-          console.log(this.xArr);
+          console.log(this.dataArr);
           this.drawPie('main');
           this.loading = false;
         }).catch(() => { this.loading = false; });
@@ -195,7 +203,7 @@
       // this.$nextTick(function() {
       //   this.drawPie('main');
       // });
-      setTitle('我的');
+      setTitle('交易动态');
       this.getPageOrders();
     },
     components: {

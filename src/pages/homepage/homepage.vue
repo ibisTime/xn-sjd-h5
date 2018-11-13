@@ -310,7 +310,8 @@
             orderDir: 'asc',
             orderColumn: 'order_no',
             status: '1',
-            level: '1'
+            level: '1',
+            type: '0'
           })
         ]).then(([userInfo, productType]) => {
           this.loading = false;
