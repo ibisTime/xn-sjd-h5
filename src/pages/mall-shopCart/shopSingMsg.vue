@@ -38,10 +38,6 @@
 <script>
 export default {
   props: {
-    shopSingData: {
-      type: Array,
-      default: []
-    },
     shopIndex: {
       type: Number,
       default: 0
@@ -57,7 +53,8 @@ export default {
       isShopSing: false,
       shopSingNum: -1,
       selShop: '',
-      shopLen: 0
+      shopLen: 0,
+      shopSingData: []
     };
   },
   mounted() {

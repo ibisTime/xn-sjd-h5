@@ -7,7 +7,6 @@
                 :key="allIndex"
                 :shopIndex="allIndex"
                 :shopAll="isShopAll"
-                :shopSingData="shopSingData"
                 @removeShop="removeShop"
             />
         </div>
@@ -16,7 +15,7 @@
                 <span class="spl" @click.stop="shopAllFn" ref="allShop"></span>全选
             </div>
             <div class="foo-right">
-                <p>合计：<span>¥100</span> <button>结算</button></p>
+                <p>合计：<span>¥100</span> <button @click="go('/affirm-order')">结算</button></p>
             </div>
         </div>
     </div>
@@ -28,7 +27,8 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import ShopSingMsg from './shopSingMsg';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { myShopCart } from 'api/store';
 export default {
   data() {
     return {
@@ -37,20 +37,19 @@ export default {
       loadingText: '正在加载中...',
       isset: '1',
       shopAllData: [1, 2],
-      shopSingData: [{
-        num: 1
-      },
-      {
-        num: 2
-      }],
       isShopAll: false
     };
   },
   created() {
     setTitle('购物车');
-  },
-  mounted() {
-    this.loading = false;
+    Promise.all([
+      myShopCart(getUserId())
+    ]).then(([res1]) => {
+      this.loading = false;
+      console.log(res1);
+    }).catch(() => {
+      this.loading = false;
+    });
   },
   methods: {
     formatAmount(amount) {

@@ -27,7 +27,7 @@
                 <div class="shop-right">
                     <p>商品名称 <span class="fr">x1</span></p>
                     <p>规格分类：10斤装</p>
-                    <p>合计1件商品 <span class="fr">¥2480.00</span></p>
+                    <p>合计1件商品 <span class="fr price">¥2480.00</span></p>
                 </div>
             </div>
         </div>
@@ -37,10 +37,10 @@
                 <p>订单信息</p>
             </div>
             <div class="foo-con">
-                <p>订单号 <span>201910101135</span></p>
-                <p>订单金额 <span>¥1000.00</span></p>
-                <p>卖家 <span>产权方</span></p>
-                <p>支付流水号 <span>201810251136</span></p>
+                <p><span>订单号</span>201910101135</p>
+                <p><span>订单金额</span>¥1000.00</p>
+                <p><span>卖家</span>产权方</p>
+                <p><span>支付流水号</span>201810251136</p>
             </div>
         </div>
         <div class="sing-foo">
@@ -109,6 +109,10 @@ export default {
   .fr {
     float: right;
   }
+  .back-co{
+    height: 0.2rem;
+    background-color: #f5f5f5;
+  }
   .content {
     position: absolute;
     top: 0;
@@ -119,8 +123,8 @@ export default {
     background-color: #fff;
     font-family: PingFangSC-Regular;
     .sing-foo{
-        height: 0.9rem;
-        padding: 0.18rem 0;
+        height: 1rem;
+        padding: 0.2rem 0.3rem;
         display: flex;
         box-shadow: 0 -0.02rem 0 0 #EBEBEB;
         flex-direction: row-reverse;
@@ -134,6 +138,132 @@ export default {
             font-size: 0.26rem;
             color: #999;
         }
+    }
+    .det-head{
+      width: 100%;
+      height: 2.8rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      flex-direction: column;
+      font-size: 0.32rem;
+      color:  #2D2D2D;
+      font-weight: bold;
+      justify-content: center;
+      .det-img{
+        width: 1rem;
+        height: 1rem;
+        border-radius: 100%;
+        background-size: 100% 100%;
+        background-image: url('./dsh.png');
+        margin-bottom: 0.2rem;
+      }
+    }
+    .det-con{
+      height: 1.6rem;
+      padding: 0.3rem 0 0.3rem 0.2rem;
+      display: flex;
+      .con-left{
+        width: 0.9rem;
+        position: relative;
+        .l-img{
+          width: 0.6rem;
+          height: 0.6rem;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          background-image: url('./dz.png');
+          background-size: 100% 100%;
+        }
+      }
+      .con-right{
+        width: 80%;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: space-around;
+        font-size: 0.28rem;
+        color: #333;
+        span{
+          color: #999;
+        }
+      }
+    }
+    .det-list{
+      padding: 0 0.3rem;
+      .list-head{
+        height: 0.8rem;
+        line-height: 0.8rem;
+        color: #666;
+        font-size: 0.26rem;
+        background: rgba(224,187,187,0.00);
+        box-shadow: 0 0.02rem 0 0 #EBEBEB;
+      }
+      .shop-det{
+        display: flex;
+        padding: 0.32rem 0 0.3rem 0;
+        background: rgba(224,187,187,0.00);
+        box-shadow: 0 0.02rem 0 0 #EBEBEB;
+        .shop-left{
+          height: 1.6rem;
+          width: 1.6rem;
+          margin-right: 0.2rem;
+          .shop-img{
+            width: 100%;
+            height: 100%;
+            background-size: 100% 100%;
+            background-image: url('./shop.png');
+          }
+        }
+        .shop-right{
+          width: 79%;
+          display: flex;
+          flex-wrap: wrap;
+          align-content: space-around;
+          p{
+            width: 100%;
+            font-size: 0.26rem;
+            color: #999999;
+            letter-spacing: 0.002rem;
+            &:nth-of-type(1){
+              font-size: 0.32rem;
+              color: #333;
+              font-weight: 600;
+              span{
+                font-size: 0.3rem;
+                color: #999;
+              }
+            }
+            .price{
+              font-size: 0.26rem;
+              color: #333;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+    .det-foo{
+      padding-top: .32rem;
+      padding-left: 0.3rem;
+      .foo-head{
+        margin-bottom: 0.4rem;
+        font-size: 0.32rem;
+        color: #2D2D2D;
+        letter-spacing: 0.0025rem;
+      }
+      .foo-con{
+        font-size: 0.28rem;
+        color: #2D2D2D;
+        letter-spacing: 0.0022rem;
+        p{
+          margin-bottom: 0.3rem;
+          span{
+            display: inline-block;
+            width: 1.7rem;
+          }
+        }
+      }
     }
   }
 

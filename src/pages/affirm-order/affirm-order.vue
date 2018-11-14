@@ -5,25 +5,25 @@
             <div class="o-h_left">
                 <span></span>
             </div>
-            <div class="o-h_right" @click="go('my-site')">
-                <p>王大锤 <span>15083962283</span></p>
+            <div class="o-h_right" @click="go('/address')">
+                <p>{{userName}} <span>{{defaultSite.mobile}}</span></p>
                 <p class="to-r"><span class="fr"></span></p>
-                <p>北京市朝阳区蓬莱东路1001号</p>
+                <p>{{ressee}}</p>
             </div>
         </div>
         <p class="back-co"></p>
         <div class="order-con">
             <div class="con-head">
-                <p>店家名称</p>
+                <p>{{shopDet.shopName}}</p>
             </div>
             <div class="o-c_con">
                 <div class="c-c_left">
-                    <div class="c-c_img"></div>
+                    <div class="c-c_img" :style="getImgSyl(shopDet.bannerPic ? shopDet.bannerPic : '')"></div>
                 </div>
                 <div class="o-c_right">
-                    <p class="r-p1">古树名称 <span class="fr">×1</span></p>
-                    <p class="r-p2">规格分类：规格分类</p>
-                    <p class="r-p3">¥2480.00</p>
+                    <p class="r-p1">{{shopDet.commodityName}} <span class="fr">×{{shopDet.quantity}}</span></p>
+                    <p class="r-p2">规格分类：{{shopDet.specsName}}</p>
+                    <p class="r-p3">¥{{singPrice}}</p>
                 </div>
             </div>
         </div>
@@ -34,9 +34,9 @@
                     购买数量
                 </div>
                 <div class="box01-right">
-                    <span class="jian"></span>
-                    <b>1</b>
-                    <span class="jia"></span>
+                    <span class="jian" @click="minusShop"></span>
+                    <b>{{shopDet.quantity}}</b>
+                    <span class="jia" @click="addShop"></span>
                 </div> 
             </div>
             <div class="foo-box02">
@@ -44,7 +44,13 @@
                     配送方式
                 </div>
                 <div class="box02-right">
-                    <p>快递免邮 <span></span></p>
+                    <p>
+                        <select id="" v-model="dkey">
+                            <option value="">请选择-</option>
+                            <option :value="opItem.dkey" v-for="(opItem, index) in logistics" :key="index">{{opItem.dvalue}}</option>
+                        </select>
+                        <span></span>
+                    </p>
                 </div>
             </div>
             <div class="foo-box03">
@@ -52,15 +58,15 @@
                     买家留言:
                 </div>
                 <div class="box03-right">
-                    <input type="text">
+                    <input type="text" v-model="config.applyNote">
                 </div>
             </div>
         </div>
         <div class="footer">
             <div class="foo-left">
-                <p>合计：<span>¥2480.00</span></p>
+                <p>合计：<span>¥{{totalPrice}}</span></p>
             </div>
-            <div class="foo-right">
+            <div class="foo-right" @click="qrorderFn">
                 确认购买
             </div>
         </div>
@@ -72,20 +78,62 @@
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { getDictList } from 'api/general';
+import { getAddressList, getUser } from 'api/user';
+import { buyItNow } from 'api/store';
 export default {
   data() {
     return {
       loading: true,
       textMsg: '',
-      loadingText: '正在加载中...'
+      dkey: '',
+      loadingText: '正在加载中...',
+      defaultSite: {},
+      userName: '',
+      ressee: '',
+      shopDet: '',
+      setPrice: 0,
+      singPrice: 0,
+      totalPrice: 0,
+      logistics: [],
+      config: {
+        applyUser: getUserId(),
+        expressType: '',
+        specsId: '',
+        quantity: '',
+        addressCode: '',
+        applyNote: ''
+      }
     };
   },
   created() {
     setTitle('确认订单');
-  },
-  mounted() {
-    this.loading = false;
+    this.shopDet = JSON.parse(sessionStorage.getItem('shopMsg'));
+    if(!this.shopDet) {
+      this.go('/mall');
+    }
+    this.setPrice = formatAmount(this.shopDet.setPrice);
+    this.singPriceFn();
+    Promise.all([
+      getAddressList(), // 地址
+      getUser(),
+      getDictList('logistics_type')
+    ]).then(([res1, res2, res3]) => {
+      this.loading = false;
+      this.logistics = res3;
+      this.userName = res2.realName ? res2.realName : res2.nickname;
+      res1.forEach(item => {
+        if(item.isDefault === '1') {
+          this.defaultSite = item;
+        }
+      });
+      this.config.addressCode = this.defaultSite.code;
+      this.config.specsId = this.shopDet.specsId;
+      this.ressee = this.defaultSite.province + this.defaultSite.city + this.defaultSite.district + this.defaultSite.addressee;
+    }).catch(() => {
+      this.loading = false;
+    });
   },
   methods: {
     formatAmount(amount) {
@@ -100,10 +148,10 @@ export default {
     go(url) {
       this.$router.push(url);
     },
-    getImgSyl(imgs) {
+    getImgSyl(imgs, type) {
+      let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
       return {
-        // backgroundImage: `url(${formatImg(imgs)})`
-        backgroundImage: `url(${imgs})`
+        backgroundImage: `url(${pic})`
       };
     },
     addCart() {
@@ -114,6 +162,44 @@ export default {
     },
     tomore() {
       this.isAll = true;
+    },
+    minusShop() {
+      if(this.shopDet.quantity > 1) {
+        this.shopDet.quantity --;
+        this.singPriceFn();
+      }
+    },
+    addShop() {
+      this.shopDet.quantity ++;
+      this.singPriceFn();
+    },
+    singPriceFn() {
+      this.singPrice = this.setPrice * this.shopDet.quantity;
+      this.totalPrice = this.singPrice;
+    },
+    qrorderFn() {
+      this.buyItNow();
+    },
+    buyItNow() { // 下单
+      if(this.dkey === '') {
+        this.textMsg = '请选择配送方式';
+        this.$refs.toast.show();
+        return;
+      }
+      this.loading = true;
+      this.config.expressType = this.dkey;
+      this.config.quantity = this.shopDet.quantity;
+      buyItNow(this.config).then(data => {
+        this.loading = false;
+        this.textMsg = '购买成功';
+        this.$refs.toast.show();
+        sessionStorage.removeItem('shopMsg');
+        setTimeout(() => {
+          this.go('/store-order_detail');
+        }, 1500);
+      }, () => {
+        this.loading = false;
+      });
     }
   },
   components: {
@@ -184,6 +270,7 @@ export default {
                 width: 100%;
                 span{
                     color: #999;
+                    margin-left: 0.3rem;
                 }
             }
             .to-r{
@@ -299,6 +386,8 @@ export default {
             background: rgba(216,216,216,0.00);
             box-shadow: 0 0.02rem 0 0 #EBEBEB;
             .box02-right{
+                width: 30%;
+                text-align: right;
                 font-size: 0.3rem;
                 color: #2D2D2D;
                 letter-spacing: 0.0022rem;

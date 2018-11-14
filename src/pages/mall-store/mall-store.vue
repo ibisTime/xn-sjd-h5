@@ -16,29 +16,28 @@
       <div class="mall-content">
         <div class="con-head">
           <h5>所有商品<span class="fr" @click="tomore">更多</span></h5>
-          <div class="con-list">
-            <div class="con-sing" @click="toShopDet">
-              <div class="con-sing_img">
-                <div class="sing-img"></div>
-                <div class="con-txt">
-                  <h5>樟子松商品商品商品商品</h5>
-                  <div class="con-foo">
-                    <p>￥2480.00<span class="icon fr" @click.stop="addCart"></span></p>
+          <div class="ml-list">
+            <Scroll 
+              :data="hotShopList"
+              :hasMore="hasMore"
+              @pullingUp="getHotShop">
+              <div class="con-list">
+                <div class="con-sing" @click="toShopDet">
+                  <div class="con-sing_img">
+                    <div class="sing-img"></div>
+                    <div class="con-txt">
+                      <h5>樟子松商品商品商品商品</h5>
+                      <div class="con-foo">
+                        <p>￥2480.00<span class="icon fr" @click.stop="addCart"></span></p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="con-sing">
-              <div class="con-sing_img">
-                <div class="sing-img"></div>
-                <div class="con-txt">
-                  <h5>樟子松商品商品商品商品</h5>
-                  <div class="con-foo">
-                    <p>￥2480.00<span class="icon fr"></span></p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </Scroll>
+          </div>
+          <div class="mall-content">
+            <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
           </div>
         </div>
       </div>
@@ -53,8 +52,11 @@
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
+import Scroll from 'base/scroll/scroll';
+import NoResult from 'base/no-result/no-result';
 import MallShopList from '../mall-shopList/mall-shopList';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { getAllShopData } from 'api/store';
+import { formatAmount, formatImg, formatDate, setTitle, getUrlParam } from 'common/js/util';
 export default {
   // name: "home",
   data() {
@@ -63,11 +65,22 @@ export default {
       loading: true,
       textMsg: '',
       loadingText: '正在加载中...',
-      isAll: false
+      isAll: false,
+      shopCode: '',
+      start: 1,
+      config: {
+        start: 1,
+        limit: 4,
+        status: '4'
+      },
+      hasMore: true,
+      hotShopList: []
     };
   },
   created() {
     setTitle('店铺名称');
+    this.shopCode = getUrlParam('shopCode');
+    this.getHotShop();
   },
   mounted() {
     this.loading = false;
@@ -99,11 +112,23 @@ export default {
     },
     tomore() {
       this.isAll = true;
+    },
+    getHotShop() {
+      this.config.start = this.start;
+      getAllShopData(this.config).then(data => {
+        if (data.totalPage <= this.start) {
+          this.hasMore = false;
+        }
+        this.hotShopList = [...this.hotShopList, ...data.list];
+        this.start ++;
+      });
     }
   },
   components: {
     FullLoading,
     Toast,
+    Scroll,
+    NoResult,
     MallShopList
   }
 };
@@ -216,6 +241,10 @@ export default {
             color: #999999;
             letter-spacing: 0.002rem;
           }
+        }
+        .ml-list{
+          height: 5rem;
+          overflow: scroll;
         }
         .con-list{
           display: flex;

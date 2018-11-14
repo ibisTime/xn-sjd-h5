@@ -1,24 +1,24 @@
 <template>
   <div class="shop-wrapper_det">
     <div class="content">
-      <div class="shop-head">
+      <div class="shop-head" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')">
         <p class="shop-p">
-          <span class="fl fh"></span>
+          <span class="fl fh" @click="go('/mall')"></span>
           <span class="fr fx"></span>
         </p>
       </div>
       <div class="shop-conAll">
         <div class="shop-det">
-          <p class="shop-price"><span>￥1000.00</span> - <span>￥2000.00</span></p>
-          <p class="shop-msg">产品名称产品名称产品名称产品名称产品名称产品名称产品名称产品名称产品名称产品名称</p>
+          <p class="shop-price"><span>￥{{formatAmount(shopDetData.minPrice)}}</span> - <span>￥{{formatAmount(shopDetData.maxPrice)}}</span></p>
+          <p class="shop-msg">{{shopDetData.name}}</p>
           <div class="or-msg">
-            <p>快递：包邮</p>
-            <p>月销15笔</p>
-            <p>上海</p>
+            <p>快递：{{logistics[shopDetData.logistics]}}</p>
+            <p>月销{{shopDetData.monthSellCount}}笔</p>
+            <p>{{shopDetData.deliverPlace}}</p>
           </div>
         </div>
         <div class="shop-gg">
-          <p>规格：选择规格分类</p>
+          <p @click.stop="setSpecification">规格：选择规格分类</p>
         </div>
         <div class="shop-pj">
           <div class="pj-head">
@@ -26,23 +26,23 @@
           </div>
           <div class="pj-content">
             <div class="con-head">
-              <div class="u-img"></div>
-              <div class="u-name">ksy</div>
+              <div class="u-img" :style="getImgSyl(commentData[0] ? commentData[0].photo : '', 'u')"></div>
+              <div class="u-name">{{commentData[0] ? commentData[0].nickname : ''}} <span class="fr time">{{formatDate(commentDatetime)}}</span></div>
             </div>
             <div class="pj-con">
-              <p>好看又耐用。攒</p>
+              <p>{{commentData[0] ? commentData[0].content : ''}}</p>
             </div>
           </div>
         </div>
         <div class="shop-js">
           <div class="js-head">
             <p><span></span> 图文介绍</p>
-            <div class="js-img"></div>
+            <div class="description-detail" v-html="shopDetData.description" ref="description"></div>
           </div>
         </div>
         <div class="shop-foo">
           <div class="foo-left">
-            <div class="le-dp" @click="go('mall-store');">
+            <div class="le-dp" @click="go(`mall-store?shopCode=${shopCode}`);">
               <div class="dp-img"></div>
               <p>店铺</p>
             </div>
@@ -52,20 +52,20 @@
             </div>
           </div>
           <div class="foo-right">
-            <button class="add-cart" @click="istoast = true">加入购物车</button>
-            <button class="buy">立即购买</button>
+            <button class="add-cart" @click="setAddCart">加入购物车</button>
+            <button class="buy" @click="toBuy">立即购买</button>
           </div>
         </div>
       </div>
-      <div class="toast" v-show="istoast">
-        <div class="shop-toast">
+      <div class="toast" v-show="istoast" @click="istoast = false">
+        <div class="shop-toast" @click.stop>
           <div class="tos-head">
             <div class="head-left">
-              <div class="l-img"></div>
+              <div class="l-img" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')"></div>
             </div>
             <div class="head-right">
-              <p class="r-head">¥80-185 <span class="fr iconX" @click="istoast = false"></span></p>
-              <p>库存9942件</p>
+              <p class="r-head">¥{{setPrice}} <span class="fr iconX" @click="istoast = false"></span></p>
+              <p>库存{{inventory}}件</p>
               <p>选择颜色分类</p>
             </div>
           </div>
@@ -74,61 +74,250 @@
               <h5>规格分类</h5>
             </div>
             <div class="con-list">
-              <div class="sing">
-                <p>规格分类</p>
-              </div>
-              <div class="sing">
-                <p>规格分类</p>
-              </div>
-              <div class="sing">
-                <p>规格分类</p>
-              </div>
-              <div class="sing">
-                <p>规格分类</p>
+              <div class="sing" 
+                v-for="(item, index) in specsList" 
+                :key="index" 
+                @click="specsFn(index, item)" 
+                :class="{'set-index': setIndex == index}"
+              >
+                <p>{{item.name}}</p>
               </div>
             </div>
             <div class="con-foo">
               <div class="f-left">
                 数量
                 <p class="fr l-num">
-                  <span class="jian"></span> <b>1</b> <span class="jia"></span>
+                  <span class="jian" @click="minusShop"></span>&nbsp;&nbsp; <b>{{shopNum}}</b> &nbsp;&nbsp;<span class="jia" @click="addShop"></span>
                 </p>
               </div>
             </div>
           </div>
-          <div class="tos-btn">
+          <div class="tos-btn" v-show="isgm" @click="qrorderFn">
             确定
+          </div>
+          <div class="tos-btns" v-show="!isgm">
+            <div class="gwc" @click="toShopCart">
+              加入购物车
+            </div>
+            <div class="ljgm" @click="toShopOrder">
+              立即购买
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <toast ref="toast" :text="textMsg"></toast>
   </div>
 </template>
 <script>
-import { formatAmount, setTitle } from 'common/js/util';
+import { formatAmount, setTitle, getUrlParam, formatImg, formatDate, getUserId } from 'common/js/util';
+import { getDictList } from 'api/general';
+import { getShopDetail, getCommemtData, addShopCart } from 'api/store';
+import FullLoading from 'base/full-loading/full-loading';
+import Toast from 'base/toast/toast';
 export default {
   data() {
     return {
-      istoast: false
+      istoast: false,
+      loading: true,
+      isgm: true,
+      textMsg: '',
+      loadingText: '加载中...',
+      code: '',
+      shopCode: '',
+      shopDetData: {},  // 商品详情
+      logistics: {},   // 邮寄方式
+      detailDescription: '',
+      config: {      // 评论参数
+        start: 1,
+        limit: 1,
+        commodityCode: '',
+        status: 'D'
+      },
+      commentDatetime: '',
+      commentData: [],       // 评论数据
+      specsList: [],          // 产品规格
+      setPrice: '',           // 选中规格价格
+      inventory: '',           // 选中规格库存
+      setIndex: 0,            // 选中的第几个规格
+      shopNum: 1,              // 商品数量
+      addCartConfig: {            // 加入购物车参数
+        userId: getUserId(),
+        commodityCode: '',
+        commodityName: '',        // 商品名称
+        specsId: '',              // 规格编号
+        specsName: '',            // 规格名称
+        quantity: 1              // 商品数量
+      },
+      isCartType: '0',             // 无规格 0 点外购物车  1 点外立即购买
+      shopName: '',                // 店铺名称
+      bannerPic: ''
     };
   },
   created() {
     setTitle('产品详情');
+    this.code = getUrlParam('code');
+    this.shopCode = getUrlParam('shopCode');
+    this.config.commodityCode = this.code;
+    this.addCartConfig.commodityCode = this.code;
+    Promise.all([
+      getDictList('logistics_type'),  // 获取邮寄方式
+      getShopDetail(this.code),       // 获取商品详情
+      getCommemtData(this.config)     // 获取评论
+    ]).then(([res1, res2, res3]) => {
+      this.loading = false;
+      res1.forEach(item => {
+        this.logistics[item.dkey] = item.dvalue;
+      });
+      this.shopDetData = res2;
+      this.bannerPic = res2.bannerPic;
+      this.shopName = res2.shopName;
+      this.specsList = res2.specsList;
+      this.setPrice = formatAmount(this.specsList[0].price);
+      this.inventory = this.specsList[0].inventory;
+      this.detailDescription = res2.description;
+      this.commentData = res3.list;
+      this.addCartConfig.commodityName = res2.name;
+      this.addCartConfig.specsId = this.specsList[0].id;
+      this.addCartConfig.specsName = this.specsList[0].name;
+      if(res3.list[0]) {
+        this.commentDatetime = res3.list[0].commentDatetime;
+      }
+    }).catch(() => { this.loading = false; });
   },
   methods: {
     formatAmount(amount) {
       return formatAmount(amount);
     },
+    formatImg(img) {
+      return formatImg(img);
+    },
+    formatDate(time) {
+      return formatDate(time);
+    },
     go(url) {
       this.$router.push(url);
     },
-    getImgSyl(imgs) {
+    getImgSyl(imgs, type) {
+      let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
       return {
-        backgroundImage: `url(${imgs})`
+        backgroundImage: `url(${pic})`
       };
+    },
+    setAddCart() { // 外加入购物车
+      if(this.specsList.length > 1) {
+        this.istoast = true;
+        this.isgm = true;
+        this.isCartType = '0';
+      }else {
+        this.addShopCart();
+      }
+    },
+    toBuy() { // 外立即购买
+      if(this.specsList.length > 1) {
+        this.istoast = true;
+        this.isgm = true;
+        this.isCartType = '1';
+        return;
+      }
+      this.loading = true;
+      let shopMsg = {
+        ...this.addCartConfig,
+        shopName: this.shopName,
+        bannerPic: this.bannerPic,
+        setPrice: parseFloat(this.setPrice) * 1000
+      };
+      sessionStorage.setItem('shopMsg', JSON.stringify(shopMsg));
+      this.go('/affirm-order');
+    },
+    toShopCart() { // 内加入购物车
+      this.addShopCart();
+    },
+    toShopOrder() { // 内立即购买
+      this.loading = true;
+      let shopMsg = {
+        ...this.addCartConfig,
+        shopName: this.shopName,
+        bannerPic: this.bannerPic,
+        setPrice: parseFloat(this.setPrice) * 1000
+      };
+      sessionStorage.setItem('shopMsg', JSON.stringify(shopMsg));
+      this.go('/affirm-order');
+    },
+    setSpecification() { // 点击规格
+      this.istoast = true;
+      this.isgm = false;
+    },
+    specsFn(index, item) { // 选中规格
+      this.setIndex = index;
+      this.setPrice = formatAmount(item.price);
+      this.inventory = item.inventory;
+      this.addCartConfig.specsId = item.id;
+      this.addCartConfig.specsName = item.name;
+    },
+    minusShop() { // 商品减
+      if(this.shopNum > 1) {
+        this.shopNum --;
+      }
+    },
+    addShop() {  // 商品加
+      this.shopNum ++;
+    },
+    addShopCart() { // 加入购物车接口
+      this.addCartConfig.quantity = this.shopNum;
+      this.loading = true;
+      addShopCart(this.addCartConfig).then(data => {
+        this.loading = false;
+        this.textMsg = '加入购物车成功';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.go('/mall-shopCart');
+        }, 1500);
+      }, () => {
+        this.loading = false;
+      });
+    },
+    qrorderFn() { // 确认操作
+      if(this.isCartType === '0') { // 加入购物车
+        this.addShopCart();
+      }
+      if(this.isCartType === '1') {  // 立即购买
+
+      }
     }
+    // 富文本滚动
+    // _refreshScroll() {
+    //   setTimeout(() => {
+    //     this.$refs.scroll.refresh();
+    //     let imgs = this.$refs.description.getElementsByTagName('img');
+    //     for (let i = 0; i < imgs.length; i++) {
+    //       let _img = imgs[i];
+    //       if (_img.complete) {
+    //         setTimeout(() => {
+    //           this.$refs.scroll.refresh();
+    //         }, 20);
+    //         continue;
+    //       }
+    //       _img.onload = () => {
+    //         setTimeout(() => {
+    //           this.$refs.scroll.refresh();
+    //         }, 20);
+    //       };
+    //     }
+    //   }, 20);
+    // },
+    // watch: {
+    //   detailDescription() {
+    //     this._refreshScroll();
+    //   }
+    // }
   },
   mounted() {
+  },
+  components: {
+    FullLoading,
+    Toast
   }
 };
 </script>
@@ -158,8 +347,7 @@ export default {
     .shop-head{
       height: 5.3rem;
       background-image: url('./shop.png');
-      background-size: 100%;
-      background-clip: center;
+      background-size: 100% 100%;
       padding: 0.4rem 0.3rem;
       .shop-p{
         span{
@@ -246,6 +434,7 @@ export default {
               background-image: url('./shop.png');
             }
             .u-name{
+              width: 88%;
               color: #999;
               line-height: 0.6rem;
             }
@@ -268,13 +457,13 @@ export default {
               vertical-align: top;
             }
           }
-          .js-img{
-            width: 100%;
-            height: 4.2rem;
-            background-image: url('./shop.png');
-            background-size: 100%;
-            background-clip: center;
-          }
+          // .js-img{
+          //   width: 100%;
+          //   height: 4.2rem;
+          //   background-image: url('./shop.png');
+          //   background-size: 100%;
+          //   background-clip: center;
+          // }
         }
       }
       .shop-foo{
@@ -342,6 +531,15 @@ export default {
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, .7);
+    }
+    .description-detail{
+      font-size: 0.26rem;
+      line-height: 1.8;
+      padding: 0.2rem 0;
+      img{
+        max-width: 100%;
+        vertical-align: bottom;
+      }
     }
     .shop-toast{
       position: absolute;
@@ -414,6 +612,10 @@ export default {
             font-size: 0.28rem;
             margin-bottom: 0.3rem;
           }
+          .set-index{
+            color: #fff;
+            background-color: #23AD8C;
+          }
         }
       }
       .con-foo{
@@ -458,6 +660,27 @@ export default {
         border-radius: 0.1rem;
         font-size: 0.34rem;
         letter-spacing: 0.05rem;
+      }
+      .tos-btns{
+        height: 0.9rem;
+        line-height: 0.9rem;
+        width: 100%;
+        text-align: center;
+        font-size: 0.34rem;
+        letter-spacing: 0.02rem;
+        display: flex;
+        color: #fff;
+        justify-content: space-between;
+        >div{
+          width: 48%;
+          border-radius: 0.06rem;
+        }
+        .gwc{
+          background-color: #554F5B; 
+        }
+        .ljgm{
+          background-color: #23AD8C;
+        }
       }
     }
   }

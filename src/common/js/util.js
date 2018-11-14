@@ -1,5 +1,14 @@
 import {setCookie, getCookie, delCookie} from './cookie';
 
+// 获取链接入参
+export function getUrlParam(name) {
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+  let lotion = window.location.search;
+  var r = lotion.substr(1).match(reg);
+  if (r != null) return decodeURIComponent(r[2]);
+  return '';
+}
+
 // 日期格式化
 export function formatDate(date, format) {
   date = new Date(date);

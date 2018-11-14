@@ -18,28 +18,27 @@
       <div class="mall-content">
         <div class="con-head">
           <h5>热门推荐 <router-link to="/mall/mall-shopList" class="fr" @click.native="isAll = true;">更多</router-link></h5>
-          <div class="con-list">
-            <div class="con-sing" @click="toShopDet">
-              <div class="con-sing_img">
-                <div class="sing-img"></div>
-                <div class="con-txt">
-                  <h5>樟子松商品商品商品商品</h5>
-                  <div class="con-foo">
-                    <p>￥2480.00<span class="icon fr" @click.stop="addCart"></span></p>
+          <div class="shop-list">
+            <Scroll 
+              :data="hotShopList"
+              :hasMore="hasMore"
+              @pullingUp="getHotShop">
+              <div class="con-list">
+                <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, index) in hotShopList" :key="index">
+                  <div class="con-sing_img">
+                    <div class="sing-img" :style="getImgSyl(shopItem.bannerPic ? shopItem.bannerPic : '')"></div>
+                    <div class="con-txt">
+                      <h5>{{shopItem.name}}</h5>
+                      <div class="con-foo">
+                        <p>￥{{formatAmount(shopItem.minPrice)}}起<span class="icon fr" @click.stop="addCart"></span></p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="con-sing">
-              <div class="con-sing_img">
-                <div class="sing-img"></div>
-                <div class="con-txt">
-                  <h5>樟子松商品商品商品商品</h5>
-                  <div class="con-foo">
-                    <p>￥2480.00<span class="icon fr"></span></p>
-                  </div>
-                </div>
-              </div>
+            </Scroll>
+            <div class="mall-content">
+              <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
             </div>
           </div>
         </div>
@@ -56,7 +55,10 @@
 <script>
 import MFooter from 'components/m-footer/m-footer';
 import FullLoading from 'base/full-loading/full-loading';
+import Scroll from 'base/scroll/scroll';
+import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
+import { getAllShopData } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 export default {
   data() {
@@ -65,11 +67,22 @@ export default {
       loading: true,
       textMsg: '',
       loadingText: '正在加载中...',
-      isAll: false
+      isAll: false,
+      hasMore: true,
+      hotShopList: [],
+      config: {
+        start: 1,
+        limit: 4,
+        status: '4',
+        location: '1'
+      },
+      start: 1,
+      shopPrice: []
     };
   },
   created() {
     setTitle('商场');
+    this.getHotShop();
   },
   mounted() {
     this.loading = false;
@@ -87,26 +100,39 @@ export default {
     go(url) {
       this.$router.push(url);
     },
-    getImgSyl(imgs) {
+    getImgSyl(imgs, type) {
+      let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
       return {
-        // backgroundImage: `url(${formatImg(imgs)})`
-        backgroundImage: `url(${imgs})`
+        backgroundImage: `url(${pic})`
       };
     },
     addCart() {
       this.go('/mall-shopCart');
     },
-    toShopDet() {
-      this.go('/mall-shop_detail');
+    toShopDet(code, shopCode) {
+      this.go(`/mall-shop_detail?code=${code}&shopCode=${shopCode}`);
     },
     tomore() {
       this.isAll = true;
+    },
+    // 获取热门商品
+    getHotShop() {
+      this.config.start = this.start;
+      getAllShopData(this.config).then(data => {
+        if (data.totalPage <= this.start) {
+          this.hasMore = false;
+        }
+        this.hotShopList = [...this.hotShopList, ...data.list];
+        this.start ++;
+      });
     }
   },
   components: {
     MFooter,
     FullLoading,
-    Toast
+    Toast,
+    Scroll,
+    NoResult
   },
   watch: {
     '$route.path': function (newVal, oldVal) {
@@ -184,7 +210,7 @@ export default {
           input{
             font-size: 0.28rem;
             color: #999999;
-            letter-spacing: 0.002rem;
+            letter-spacing: 0.01rem;
             width: 90%;
             height: 100%;
             vertical-align: middle;
@@ -205,7 +231,7 @@ export default {
         font-family: PingFangSC-Medium;
         font-size: 0.28rem;
         color: #666666;
-        letter-spacing: 0.002rem;
+        letter-spacing: 0.01rem;
         text-align: center;
         .sing-img{
           width: 1rem;
@@ -232,18 +258,22 @@ export default {
       background-color: #fff;
       padding: 0.32rem 0.3rem 0;
       .con-head{
+        .shop-list{
+          height: 5rem;
+          overflow: scroll;
+        }
         >h5{
           margin-bottom: 0.24rem;
           font-family: PingFangSC-Semibold;
           font-size: 0.36rem;
           color: #333333;
-          letter-spacing: 0.0027rem;
+          letter-spacing: 0.01rem;
           font-weight: 600;
           a{
             font-family: PingFang-SC-Medium;
             font-size: 0.26rem;
             color: #999999;
-            letter-spacing: 0.002rem;
+            letter-spacing: 0.01rem;
           }
         }
         .con-list{
@@ -275,13 +305,13 @@ export default {
             color: #333;
             font-size: 0.32rem;
             font-weight: 600;
-            letter-spacing: 0.0025rem;
+            letter-spacing: 0.01rem;
           }
           .con-foo{
             margin-top: 0.16rem;
             font-family: DIN-Bold;
             color: #23AD8C;
-            letter-spacing: 0.0023rem;
+            letter-spacing: 0.01rem;
             line-height: 0.3rem;
             font-size: 0.3rem;
             font-weight: bold;
