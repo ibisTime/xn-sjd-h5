@@ -179,24 +179,15 @@
           this.loading = false;
         }).catch(() => { this.loading = false; });
       },
-      sendMessage(orderby, pinzhong) {
-        if(pinzhong === '全部品种') {
-          this.variety = '';
-        } else {
-          this.variety = pinzhong;
-        }
-        // switch (orderby) {
-        //   case 0: this.orderColumn = ''; break;
-        //   case 1: this.orderColumn = 'create_datetime'; break;
-        //   case 2: this.orderColumn = 'price'; break;
-        //   case 3: this.orderColumn = 'quantity'; break;
-        // }
+      sendMessage(pinzhong) {
+        // debugger;
+        this.variety = pinzhong;
         this.start = 1;
         this.limit = 10;
         this.proList = [];
-        this.getPageOrders();
         this.dataArr = [];
         this.xArr = [];
+        this.getPageOrders();
       }
     },
     mounted() {
@@ -204,7 +195,7 @@
       //   this.drawPie('main');
       // });
       setTitle('交易动态');
-      this.getPageOrders();
+      // this.getPageOrders();
     },
     components: {
       Toast,

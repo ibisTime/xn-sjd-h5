@@ -176,7 +176,9 @@ export default {
         getProductType({
           orderDir: 'asc',
           orderColumn: 'order_no',
-          status: '1'
+          statusList: [4, 5],
+          level: 1,
+          typeList: ['0', '1']
         }),
         getMessagePage({
           status: '1',

@@ -65,7 +65,7 @@ export default {
       limit: 10,
       hasMore: true,
       proList: [],
-      categorys: [],
+      categorys: [{value: '全部', key: 'all'}],
       categorysSub: [{value: '全部', key: 'all'}],
       sellTypeObj: {},
         // {value: '个人', key: '0'},
@@ -201,7 +201,10 @@ export default {
       }).catch(() => { this.loading = false; });
     },
     getPageOrders() {
-      if(this.categorysSub[this.indexSub].key === 'all') {
+      if(this.categorys[this.index].key === 'all') {
+        this.parentCategoryCode = '';
+        this.selectdType = '';
+      } else if(this.categorysSub[this.indexSub].key === 'all') {
         this.parentCategoryCode = this.categorys[this.index].key;
         this.selectdType = '';
       } else {
@@ -250,6 +253,7 @@ export default {
     Promise.all([
       getDictList('sell_type'),
       getProductType({
+        typeList: ['0', '1'],
         orderDir: 'asc',
         orderColumn: 'order_no',
         status: '1'

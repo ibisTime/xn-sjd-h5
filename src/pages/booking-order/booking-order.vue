@@ -17,7 +17,7 @@
         <ul v-if="currentList">
           <li class="item" v-for="(item, index) in currentList.data" @click="goDetail(item)">
             <div class="top">
-              <span class="item-code">{{item.sellerName}}</span>
+              <span class="item-code">{{item.code}}</span>
               <span class="item-status">{{formatStatus(item.status)}}</span>
             </div>
             <div class="info">

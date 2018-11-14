@@ -220,7 +220,7 @@
         currentIndexSub: +this.$route.query.index || 0,
         index: 0,
         indexSub: 0,
-        categorys: [],
+        categorys: [{value: '全部', key: 'all'}],
         categorysSub: [{value: '全部', key: 'all'}],
         comparisonData: {
           toUserInfo: {photo: ''},
@@ -402,7 +402,9 @@
           currentHolder: this.currentHolder,
           statusList: ['1', '2', '3']
         };
-        if(this.categorysSub[this.indexSub].key === 'all') {
+        if(this.categorys[this.index].key === 'all') {
+          this.params.parentCategoryCode = '';
+        } else if(this.categorysSub[this.indexSub].key === 'all') {
           this.params.parentCategoryCode = this.categorys[this.index].key;
         } else {
           this.params.categoryCode = this.categorysSub[this.indexSub].key;

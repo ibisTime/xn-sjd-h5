@@ -59,7 +59,7 @@ export default {
       limit: 10,
       hasMore: true,
       proList: [],
-      categorys: [],
+      categorys: [{value: '全部', key: 'all'}],
       categorysSub: [{value: '全部', key: 'all'}],
       sellTypeObj: {},
       userDetail: {},
@@ -141,7 +141,10 @@ export default {
       }).catch(() => { this.loading = false; });
     },
     getPageOrders() {
-      if(this.categorysSub[this.indexSub].key === 'all') {
+      if(this.categorys[this.index].key === 'all') {
+        this.parentCategoryCode = '';
+        this.selectdType = '';
+      } else if(this.categorysSub[this.indexSub].key === 'all') {
         this.parentCategoryCode = this.categorys[this.index].key;
         this.selectdType = '';
       } else {

@@ -70,10 +70,7 @@
           key: 3,
           value: '按数量排'
         }],
-        typeList: [{
-          key: 'all',
-          value: '全部品种'
-        }]
+        typeList: []
       };
     },
     mounted() {
@@ -123,9 +120,8 @@
       },
       getVariety() {
         getVarietyList({
-          status: 0,
-          type: 2,
-          minQuality: 0
+          status: 1,
+          type: 2
         }).then((res) => {
           res.map((item, index) => {
             this.typeList.push({
@@ -134,10 +130,12 @@
             });
           });
           this.typeText = this.typeList[0].value;
+          this.pinzhong = this.typeList[0].value;
+          this.sendMessage();
         }).catch(() => {});
       },
       sendMessage() {
-        this.$emit('sendMessage', this.orderBy, this.pinzhong);
+        this.$emit('sendMessage', this.pinzhong);
       }
     }
   };
