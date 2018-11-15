@@ -47,19 +47,19 @@
         </div>
         <div class="score-rules">
           <p>规则：</p>
-          <p v-for="(item, index) in sysConfig">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
+          <p v-for="(item, index) in sysConfig" :key="index">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
           <!--<p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>-->
           <!--<p>3.T+{{qxDay}}到账</p>-->
         </div>
       </div>
       <div class="footer">
-        <span>金额：<span>{{isPublish ? formatAmount(amount-rate.cnyAmount) : formatAmount(amount)}}</span><span>元</span></span>
+        <span>金额：<span>{{totalPrice ? isPublish ? totalPrice - formatAmount(rate.cnyAmount) : totalPrice : isPublish ? formatAmount(amount-rate.cnyAmount) : formatAmount(amount)}}</span><span>元</span></span>
         <button class="fr" @click="pay">支付</button>
       </div>
     </div>
     <confirm-input ref="confirmInput" :inpType="'password'" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast ref="toast" :text="text"></toast>
-    <full-loading v-show="loading"></full-loading>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
   </div>
 </template>
 <script>
@@ -70,16 +70,18 @@
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import FullLoading from 'base/full-loading/full-loading'; // loading
   import { getCookie } from 'common/js/cookie';
-  import { formatAmount, setTitle } from 'common/js/util';
+  import { formatAmount, setTitle, getUrlParam, getUserId } from 'common/js/util';
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore,
             getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder} from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { getSystemConfigPage } from 'api/general';
+  import { payMoreOrder, getStoreDeductible } from 'api/store';         // 商城
 
   export default {
     data() {
       return {
         loading: false,
+        loadingText: '正在载入...',
         text: '',
         // wechat: true,    // 微信支付
         alipay: false,   // 支付宝支付
@@ -93,16 +95,58 @@
         sysConfig: [],
         identifyCode: '',
         pre: false,
-        jishou: false
+        jishou: false,
+        storeCode: '',
+        storeType: '',
+        config: {          // 商城订单支付参数
+          code: '',
+          payType: '1',
+          updater: getUserId(),
+          remark: '',
+          isJfDeduct: '0'
+        },
+        totalPrice: ''        // 商品订单总额
       };
     },
     mounted() {
       setTitle('支付订单');
-      this.orderCode = this.$route.query.orderCode || '';
+      this.orderCode = this.$route.query.orderCode || getUrlParam('code');
       this.type = this.$route.query.type;
       this.pre = this.$route.query.pre;
       this.jishou = this.$route.query.jishou;
       this.userId = getCookie('userId');
+      this.totalPrice = sessionStorage.getItem('totalPrice');
+      this.storeCode = getUrlParam('code');              // 商城订单code
+      this.storeType = getUrlParam('type');
+      this.config.code = this.storeCode;
+      if(this.storeCode) {
+        this.loading = true;
+        getUserDetail({userId: this.userId}).then(data => {
+          this.userDetail = data;
+          this.loading = false;
+        });
+        getAccount({userId: this.userId}).then(data => {
+          data.list.map((item) => {
+            if(item.currency === 'CNY') {
+              this.cny = item.amount;
+            }
+            if(item.currency === 'JF') {
+              this.jf = item.amount;
+            }
+          });
+        });
+        getStoreDeductible(this.storeCode).then(data => {
+          this.rate = data;
+        }, (err) => {
+          if(err === '当前订单不是待支付状态') {
+            setTimeout(() => {
+              this.$router.push('/mall');
+            }, 1200);
+          }
+        });
+        this.getConfig();
+        return;
+      }
       if(this.pre) {
         this.getPreInitData();
       } else if(this.jishou) {
@@ -236,10 +280,12 @@
           this.wechat = false;
           this.alipay = true;
           this.balance = false;
+          this.config.payType = '3';
         } else if(index === 3) {
           this.wechat = false;
           this.alipay = false;
           this.balance = true;
+          this.config.payType = '1';
         }
       },
       updatePublish(val) {
@@ -247,18 +293,27 @@
       },
       pay() {
         this.payType = this.wechat ? '5' : this.alipay ? '3' : '1';
-        if(!this.userDetail.tradepwdFlag && this.payType === '1') {
+        if((this.payType === '1' || this.config.payType === '1') && !this.userDetail.tradepwdFlag) {
           this.text = '请先去设置支付密码';
           this.$refs.toast.show();
           setTimeout(() => {
             this.$router.push('/set-money');
           }, 1000);
         } else {
-          if(this.payType === '1') {
+          if(this.payType === '1' || this.config.payType === '1') {
             this.inputText = '支付密码';
             // this.curItem = item;
             this.$refs.confirmInput.show();
           } else {
+            if(this.storeCode && this.storeType === 'one') {
+              if(this.isPublish) {
+                this.config.isJfDeduct = '1';
+              }
+              payMoreOrder(this.config).then(data => {
+                this._alipay(data);
+              });
+              return;
+            }
             if(this.pre) {
               this.payPreOrder();
             } else if(this.jishou) {
@@ -385,6 +440,26 @@
           this.inputText = '支付密码';
           this.$refs.confirmInput.show();
         } else {
+          if(this.storeCode && this.storeType === 'one') {
+            this.loading = true;
+            this.config.tradePwd = this.pwd;
+            this.loadingText = '正在支付...';
+            if(this.isPublish) {
+              this.config.isJfDeduct = '1';
+            }
+            payMoreOrder(this.config).then(data => {
+              this.loading = false;
+              this.text = '支付成功';
+              this.$refs.toast.show();
+              sessionStorage.removeItem('totalPrice');
+              setTimeout(() => {
+                this.$router.push(`/store-order_detail?code=${this.storeCode}&type=${this.storeType}`);
+              }, 1500);
+            }, () => {
+              this.loading = false;
+            });
+            return;
+          }
           if(this.pre) {
             this.payPreOrder();
           } else if(this.jishou) {

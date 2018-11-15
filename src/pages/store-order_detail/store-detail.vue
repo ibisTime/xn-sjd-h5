@@ -16,20 +16,22 @@
             </div>
         </div>
         <p class="back-co"></p>
-        <div class="det-list">
+        <div class="sing-order" v-for="(storeItem, storeIndex) in storeList" :key="storeIndex">
+          <div class="det-list">
             <div class="list-head">
-                <p>店铺名称 <span class="fr">代收货</span></p>
+                <p>{{storeItem.shopName}} <span class="fr">{{logistics[orderDetail.expressType]}}</span></p>
             </div>
-            <div class="shop-det">
+            <div class="shop-det" v-for="(shopItem, shopIndex) in storeItem.detailList" :key="shopIndex">
                 <div class="shop-left">
-                    <div class="shop-img"></div>
+                    <div class="shop-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
                 </div>
                 <div class="shop-right">
-                    <p>商品名称 <span class="fr">x1</span></p>
-                    <p>规格分类：10斤装</p>
-                    <p>合计1件商品 <span class="fr price">¥2480.00</span></p>
+                    <p>{{shopItem.commodityName}} <span class="fr">x{{shopItem.quantity}}</span></p>
+                    <p>规格分类：{{shopItem.specsName}}</p>
+                    <p>合计{{shopItem.quantity}}件商品 <span class="fr price">¥{{formatAmount(shopItem.amount)}}</span></p>
                 </div>
             </div>
+          </div>
         </div>
         <p class="back-co"></p>
         <div class="det-foo">
@@ -37,15 +39,15 @@
                 <p>订单信息</p>
             </div>
             <div class="foo-con">
-                <p><span>订单号</span>201910101135</p>
-                <p><span>订单金额</span>¥1000.00</p>
-                <p><span>卖家</span>产权方</p>
-                <p><span>支付流水号</span>201810251136</p>
+                <p><span>订单号</span>{{orderDetail.code}}</p>
+                <p><span>订单金额</span>¥{{formatAmount(orderDetail.amount)}}</p>
+                <p><span>卖家</span>{{orderDetail.sellersName}}</p>
+                <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
             </div>
         </div>
         <div class="sing-foo">
-            <div class="foo-btn">
-                删除订单
+            <div class="foo-btn set-btn">
+              删除订单
             </div>
         </div>
     </div>
@@ -54,20 +56,40 @@
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUrlParam } from 'common/js/util';
+import { moreStoreOrder } from 'api/store';
+import { getDictList } from 'api/general';
 export default {
   data() {
     return {
       loading: true,
       textMsg: '',
-      loadingText: '正在加载中...'
+      loadingText: '正在加载中...',
+      code: '',
+      orderType: '',     // one 立即购买  more 多订单
+      storeList: [],
+      orderDetail: {},
+      logistics: {}   // 邮寄方式
     };
   },
   created() {
     setTitle('订单详情');
-  },
-  mounted() {
-    this.loading = false;
+    this.code = getUrlParam('code');
+    this.orderType = getUrlParam('type');
+    getDictList('logistics_type').then(data => {
+      data.forEach(item => {
+        this.logistics[item.dkey] = item.dvalue;
+      });
+    });
+    if(this.orderType === 'one') {
+      moreStoreOrder(this.code).then(data => {
+        this.orderDetail = data;
+        this.loading = false;
+        this.storeList = data.shopOrderList;
+      }, () => {
+        this.loading = false;
+      });
+    }
   },
   methods: {
     formatAmount(amount) {
@@ -82,9 +104,10 @@ export default {
     go(url) {
       this.$router.push(url);
     },
-    getImgSyl(imgs) {
+    getImgSyl(imgs, type) {
+      let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
       return {
-        backgroundImage: `url(${imgs})`
+        backgroundImage: `url(${pic})`
       };
     }
   },
@@ -137,6 +160,10 @@ export default {
             border-radius: 0.06rem;
             font-size: 0.26rem;
             color: #999;
+        }
+        .set-btn{
+          color: #23AD8C;
+          border: 1px solid #23AD8C;
         }
     }
     .det-head{

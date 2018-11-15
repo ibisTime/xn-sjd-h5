@@ -3,8 +3,8 @@
         <div class="shop-sing">
             <div class="sing-head">
                 <span class="spl" :class="{'sel-sp': isShopAll}" @click="setShopAll()"></span>
-                <span class="sp-name">
-                    店铺名称<b> ＞</b>
+                <span class="sp-name" @click="toStoreFn">
+                    {{this.storeSingData.shopName}}<b> ＞</b>
                 </span>
                 <span class="clr fr">
                     <p @click.stop="removeShop">删除</p>
@@ -15,16 +15,16 @@
                     <span class="spl" ref="selShop"></span>
                 </div>
                 <div class="con-right">
-                    <div class="r-left">
+                    <div class="r-left" :style="getImgSyl(singItem.commodityPhoto ? singItem.commodityPhoto : '')">
                         <div class="l-img"></div>
                     </div>
                     <div class="r-con">
-                        <div class="rr-head">商品名称 <span class="fr num">x1</span></div>
-                        <div class="rr-con">规格分类：10斤装</div>
-                        <div class="rr-price">¥2480.00 
+                        <div class="rr-head">{{singItem.commodityName}} <span class="fr num">x{{singItem.quantity}}</span></div>
+                        <div class="rr-con">规格分类：{{singItem.specsName}}</div>
+                        <div class="rr-price">¥{{formatAmount(singItem.amount)}}
                             <p class="fr bot">
                                 <span class="jian" @click.stop="minusFn(singIndex)"></span>
-                                <span>{{singItem.num}}</span>
+                                <span>{{singItem.quantity}}</span>
                                 <span class="jia" @click.stop="addFn(singIndex)"></span>
                             </p>
                         </div>
@@ -36,45 +36,87 @@
 </template>
 
 <script>
+import { formatAmount, formatImg } from 'common/js/util';
 export default {
   props: {
+    storeAllShop: {
+      type: Array,
+      default: []
+    },
+    storeSingData: {
+      type: Object,
+      default: {}
+    },
     shopIndex: {
       type: Number,
       default: 0
     },
     shopAll: {
-      type: Boolean,
-      default: false
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       isShopAll: false,
       isShopSing: false,
+      isAll: 0,
       shopSingNum: -1,
       selShop: '',
       shopLen: 0,
-      shopSingData: []
+      shopSingData: [],
+      shopPriceList: [],
+      shopTatil: [],
+      setIndexList: []
     };
+  },
+  created() {
+    this.shopSingData = this.storeSingData.cartList;
+    this.shopSingData.forEach((item, index) => {
+      this.shopPriceList[index] = item.amount / item.quantity;
+    });
   },
   mounted() {
     this.selShop = this.$refs.selShop;
   },
   methods: {
+    formatAmount(amount) {
+      return formatAmount(amount);
+    },
+    formatImg(img) {
+      return formatImg(img);
+    },
+    getImgSyl(imgs, type) {
+      let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
+      return {
+        backgroundImage: `url(${pic})`
+      };
+    },
+    go(url) {
+      this.$router.push(url);
+    },
     // 店铺选中
     setShopAll() {
       this.isShopAll = !this.isShopAll;
       if(this.isShopAll) {
-        this.selShop.forEach(item => {
+        this.selShop.forEach((item, index) => {
           item.classList.add('sel-sp');
           this.shopLen = this.selShop.length;
+          this.setIndexList.push(index);
+          this.storeAllShop[this.shopIndex].cartList[index].isSet = true;
+          this.storeAllShop[this.shopIndex].cartList[index].shopName = this.storeSingData.shopName;
         });
       }else{
-        this.selShop.forEach(item => {
+        this.selShop.forEach((item, index) => {
           item.classList.remove('sel-sp');
+          this.isAll = 1;
           this.shopLen = 0;
+          this.setIndexList = [];
+          this.storeAllShop[this.shopIndex].cartList[index].isSet = false;
         });
       }
+      this.$emit('shopTatilFn', this.storeAllShop, this.isAll, this.storeSingData.shopName);
+      this.allStoreSetFn();
     },
     // 单个选中
     setShopSing(index) {
@@ -83,28 +125,71 @@ export default {
         if(target.classList.contains('sel-sp')) {
           target.classList.remove('sel-sp');
           this.isShopAll = false;
+          this.isAll = 2;
+          this.setIndexList.splice(this.setIndexList.indexOf(index, 1));
           this.shopLen --;
+          this.shopTatil -= this.shopSingData[index].amount;
+          this.storeAllShop[this.shopIndex].cartList[index].isSet = false;
         }else {
           target.classList.add('sel-sp');
+          this.setIndexList.push(index);
           this.shopLen ++;
+          this.shopTatil += this.shopSingData[index].amount;
+          this.storeAllShop[this.shopIndex].cartList[index].isSet = true;
+          this.storeAllShop[this.shopIndex].cartList[index].shopName = this.storeSingData.shopName;
         }
         if(this.shopLen === this.selShop.length) {
           this.isShopAll = true;
         }
+        this.$emit('shopTatilFn', this.storeAllShop, this.isAll);
+        this.allStoreSetFn();
+      }
+    },
+    // 全选
+    allStoreSetFn() {
+      let setIndex = 0;
+      let allLength = 0;
+      this.storeAllShop.forEach(allItem => {
+        allItem.cartList.forEach(item => {
+          allLength++;
+          if(item.isSet) {
+            setIndex++;
+          }
+        });
+      });
+      if(setIndex === allLength) {
+        this.$emit('allStoreSetFn', '1');
       }
     },
     // 商品减
     minusFn(singIndex) {
-      if(this.shopSingData[singIndex].num > 1) {
-        this.shopSingData[singIndex].num --;
+      if(this.shopSingData[singIndex].quantity > 1) {
+        this.shopSingData[singIndex].quantity --;
+        this.shopSingData[singIndex].amount = this.shopPriceList[singIndex] * this.shopSingData[singIndex].quantity;
+        if(this.setIndexList.indexOf(singIndex) !== -1) {
+          this.shopTatil -= this.shopPriceList[singIndex];
+          this.storeAllShop[this.shopIndex].cartList[singIndex].isSet = true;
+          this.$emit('shopTatilFn', this.storeAllShop);
+        }
       }
     },
     // 商品加
     addFn(singIndex) {
-      this.shopSingData[singIndex].num ++;
+      this.shopSingData[singIndex].quantity ++;
+      this.shopSingData[singIndex].amount = this.shopPriceList[singIndex] * this.shopSingData[singIndex].quantity;
+      if(this.setIndexList.indexOf(singIndex) !== -1) {
+        this.shopTatil += this.shopPriceList[singIndex];
+        this.storeAllShop[this.shopIndex].cartList[singIndex].isSet = true;
+        this.$emit('shopTatilFn', this.storeAllShop);
+      }
     },
     removeShop() {
-      this.$emit('removeShop', this.shopIndex);
+      this.selShop = this.$refs.selShop;
+      this.shopLen = this.selShop.length;
+      this.$emit('removeShop', this.shopIndex, this.storeSingData.shopCode);
+    },
+    toStoreFn() {
+      this.go(`/mall-store?shopCode=${this.storeSingData.shopCode}`);
     }
   },
   watch: {
@@ -112,17 +197,25 @@ export default {
       this.shopAll = newVal;
       if(this.shopAll) {
         this.isShopAll = true;
-        this.selShop.forEach(item => {
+        this.selShop.forEach((item, index) => {
           item.classList.add('sel-sp');
           this.shopLen = this.selShop.length;
+          this.setIndexList.push(index);
+          this.storeAllShop[this.shopIndex].cartList[index].isSet = true;
         });
       }else {
         this.isShopAll = false;
-        this.selShop.forEach(item => {
+        this.selShop.forEach((item, index) => {
           item.classList.remove('sel-sp');
           this.shopLen = 0;
+          this.setIndexList = [];
+          this.storeAllShop[this.shopIndex].cartList[index].isSet = false;
         });
       }
+    },
+    storeSingData(newVal, oldVal) {
+      this.storeSingData = newVal;
+      this.shopSingData = newVal.cartList;
     }
   }
 };
@@ -144,8 +237,6 @@ export default {
     .sing-head{
         height: 0.8rem;
         line-height: 0.7rem;
-        background: rgba(224,187,187,0.00);
-        box-shadow: 0 0.01rem 0 0 #EBEBEB;
         font-size: 0.26rem;
         >span{
             display: inline-block;
@@ -166,9 +257,9 @@ export default {
     .sing-con{
         display: flex;
         font-size: 0.32rem;
-        margin-top: 0.3rem;
+        padding-top: 0.3rem;
         padding-bottom: 0.2rem;
-        border-bottom: 0.01rem solid #EBEBEB;
+        border-top: 0.01rem solid #EBEBEB;
         .con-left{
             height: 1.5rem;
             line-height: 1.5rem;

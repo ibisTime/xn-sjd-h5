@@ -66,7 +66,8 @@
             <div class="head-right">
               <p class="r-head">¥{{setPrice}} <span class="fr iconX" @click="istoast = false"></span></p>
               <p>库存{{inventory}}件</p>
-              <p>选择颜色分类</p>
+              <p v-if="specsList.length > 1">{{setSpecsName ? `已选 “${setSpecsName}”` : '选择颜色分类'}}</p>
+              <p v-if="specsList.length == 1">已选 “{{specsList[0].name}}”</p>
             </div>
           </div>
           <div class="tos-con">
@@ -152,7 +153,8 @@ export default {
       },
       isCartType: '0',             // 无规格 0 点外购物车  1 点外立即购买
       shopName: '',                // 店铺名称
-      bannerPic: ''
+      bannerPic: '',
+      setSpecsName: ''
     };
   },
   created() {
@@ -229,7 +231,7 @@ export default {
         setPrice: parseFloat(this.setPrice) * 1000
       };
       sessionStorage.setItem('shopMsg', JSON.stringify(shopMsg));
-      this.go('/affirm-order');
+      this.go('/affirm-order?code=' + this.code);
     },
     toShopCart() { // 内加入购物车
       this.addShopCart();
@@ -242,8 +244,9 @@ export default {
         bannerPic: this.bannerPic,
         setPrice: parseFloat(this.setPrice) * 1000
       };
-      sessionStorage.setItem('shopMsg', JSON.stringify(shopMsg));
-      this.go('/affirm-order');
+      let shopMsgList = [shopMsg];
+      sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+      this.go('/affirm-order?code=' + this.code);
     },
     setSpecification() { // 点击规格
       this.istoast = true;
@@ -255,6 +258,7 @@ export default {
       this.inventory = item.inventory;
       this.addCartConfig.specsId = item.id;
       this.addCartConfig.specsName = item.name;
+      this.setSpecsName = item.name;
     },
     minusShop() { // 商品减
       if(this.shopNum > 1) {
@@ -448,7 +452,7 @@ export default {
           p{
             font-size: 0.32rem;
             color: #333333;
-            margin-bottom: 0.28rem;
+            margin-bottom: 0.2rem;
             span{
               display: inline-block;
               width: 0.06rem;
@@ -457,13 +461,6 @@ export default {
               vertical-align: top;
             }
           }
-          // .js-img{
-          //   width: 100%;
-          //   height: 4.2rem;
-          //   background-image: url('./shop.png');
-          //   background-size: 100%;
-          //   background-clip: center;
-          // }
         }
       }
       .shop-foo{
@@ -533,9 +530,8 @@ export default {
       background-color: rgba(0, 0, 0, .7);
     }
     .description-detail{
-      font-size: 0.26rem;
+      font-size: 0.3rem;
       line-height: 1.8;
-      padding: 0.2rem 0;
       img{
         max-width: 100%;
         vertical-align: bottom;
@@ -603,7 +599,7 @@ export default {
           background: rgba(216,216,216,0.00);
           box-shadow: 0 0.01rem 0 0 #E5E5E5;
           .sing{
-            width: 32%;
+            padding: 0 0.5rem;
             text-align: center;
             height: 0.8rem;
             line-height: 0.7rem;

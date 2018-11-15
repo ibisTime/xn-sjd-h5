@@ -12,30 +12,32 @@
             </div>
         </div>
         <p class="back-co"></p>
-        <div class="order-con">
-            <div class="con-head">
-                <p>{{shopDet.shopName}}</p>
-            </div>
-            <div class="o-c_con">
-                <div class="c-c_left">
-                    <div class="c-c_img" :style="getImgSyl(shopDet.bannerPic ? shopDet.bannerPic : '')"></div>
+        <div class="sing-order" v-for="(orderItem, orderIndex) in shopMsgList" :key="orderIndex">
+            <div class="order-con">
+                <div class="con-head">
+                    <p>{{orderItem.shopName}}</p>
                 </div>
-                <div class="o-c_right">
-                    <p class="r-p1">{{shopDet.commodityName}} <span class="fr">×{{shopDet.quantity}}</span></p>
-                    <p class="r-p2">规格分类：{{shopDet.specsName}}</p>
-                    <p class="r-p3">¥{{singPrice}}</p>
+                <div class="o-c_con">
+                    <div class="c-c_left">
+                        <div class="c-c_img" :style="getImgSyl(orderItem.bannerPic ? orderItem.bannerPic : orderItem.commodityPhoto)"></div>
+                    </div>
+                    <div class="o-c_right">
+                        <p class="r-p1">{{orderItem.commodityName}} <span class="fr">×{{orderItem.quantity}}</span></p>
+                        <p class="r-p2">规格分类：{{orderItem.specsName}}</p>
+                        <p class="r-p3">¥{{singPrice ? singPrice : formatAmount(orderItem.amount)}}</p>
+                    </div>
                 </div>
             </div>
+            <p class="back-co"></p>
         </div>
-        <p class="back-co"></p>
         <div class="order-foo">
-            <div class="foo-box01">
+            <div class="foo-box01" v-if="shopMsgList.length === 1">
                 <div class="box01-left foo-left">
                     购买数量
                 </div>
                 <div class="box01-right">
                     <span class="jian" @click="minusShop"></span>
-                    <b>{{shopDet.quantity}}</b>
+                    <b>{{shopMsgList[0].quantity}}</b>
                     <span class="jia" @click="addShop"></span>
                 </div> 
             </div>
@@ -46,7 +48,7 @@
                 <div class="box02-right">
                     <p>
                         <select id="" v-model="dkey">
-                            <option value="">请选择-</option>
+                            <option value="">请选择</option>
                             <option :value="opItem.dkey" v-for="(opItem, index) in logistics" :key="index">{{opItem.dvalue}}</option>
                         </select>
                         <span></span>
@@ -58,9 +60,10 @@
                     买家留言:
                 </div>
                 <div class="box03-right">
-                    <input type="text" v-model="config.applyNote">
+                    <input type="text" v-model="applyNote">
                 </div>
             </div>
+            <p class="back-co"></p>
         </div>
         <div class="footer">
             <div class="foo-left">
@@ -78,10 +81,10 @@
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
 import { getDictList } from 'api/general';
 import { getAddressList, getUser } from 'api/user';
-import { buyItNow } from 'api/store';
+import { buyItNow, shopCartOrder } from 'api/store';
 export default {
   data() {
     return {
@@ -92,29 +95,43 @@ export default {
       defaultSite: {},
       userName: '',
       ressee: '',
-      shopDet: '',
+      shopMsgList: '',
       setPrice: 0,
       singPrice: 0,
       totalPrice: 0,
       logistics: [],
-      config: {
+      applyNote: '',
+      config: {     // 直接购买下单参数
         applyUser: getUserId(),
         expressType: '',
         specsId: '',
         quantity: '',
         addressCode: '',
         applyNote: ''
-      }
+      },
+      cartConfig: {  // 购物车下单参数
+        applyUser: getUserId(),
+        applyNote: '',
+        expressType: '',
+        cartList: [],
+        addressCode: ''
+      },
+      code: ''
     };
   },
   created() {
     setTitle('确认订单');
-    this.shopDet = JSON.parse(sessionStorage.getItem('shopMsg'));
-    if(!this.shopDet) {
+    this.code = getUrlParam('code');
+    this.shopMsgList = JSON.parse(sessionStorage.getItem('shopMsgList'));
+    this.shopMsgList.forEach(item => {
+      this.cartConfig.cartList.push(item.code);
+      this.totalPrice += item.amount;
+    });
+    this.totalPrice = formatAmount(this.totalPrice);
+    if(!this.shopMsgList) {
       this.go('/mall');
+      return;
     }
-    this.setPrice = formatAmount(this.shopDet.setPrice);
-    this.singPriceFn();
     Promise.all([
       getAddressList(), // 地址
       getUser(),
@@ -128,8 +145,13 @@ export default {
           this.defaultSite = item;
         }
       });
+      if(this.shopMsgList.length === 1) {
+        this.setPrice = formatAmount(this.shopMsgList[0].setPrice);
+        this.config.specsId = this.shopMsgList[0].specsId;
+        this.singPriceFn();
+      }
       this.config.addressCode = this.defaultSite.code;
-      this.config.specsId = this.shopDet.specsId;
+      this.cartConfig.addressCode = this.defaultSite.code;
       this.ressee = this.defaultSite.province + this.defaultSite.city + this.defaultSite.district + this.defaultSite.addressee;
     }).catch(() => {
       this.loading = false;
@@ -164,38 +186,66 @@ export default {
       this.isAll = true;
     },
     minusShop() {
-      if(this.shopDet.quantity > 1) {
-        this.shopDet.quantity --;
+      if(this.shopMsgList[0].quantity > 1) {
+        this.shopMsgList[0].quantity --;
         this.singPriceFn();
       }
     },
     addShop() {
-      this.shopDet.quantity ++;
+      this.shopMsgList[0].quantity ++;
       this.singPriceFn();
     },
     singPriceFn() {
-      this.singPrice = this.setPrice * this.shopDet.quantity;
+      this.singPrice = this.setPrice * this.shopMsgList[0].quantity;
       this.totalPrice = this.singPrice;
     },
     qrorderFn() {
-      this.buyItNow();
+      if(this.shopMsgList.length === 1) {
+        this.buyItNow();
+      }else {
+        this.shopCartOrder();
+      }
     },
-    buyItNow() { // 下单
+    buyItNow() { // 下单（单店铺）
       if(this.dkey === '') {
         this.textMsg = '请选择配送方式';
         this.$refs.toast.show();
         return;
       }
       this.loading = true;
+      this.config.applyNote = this.applyNote;
       this.config.expressType = this.dkey;
-      this.config.quantity = this.shopDet.quantity;
+      this.config.quantity = this.shopMsgList[0].quantity;
       buyItNow(this.config).then(data => {
         this.loading = false;
-        this.textMsg = '购买成功';
+        this.textMsg = '下单成功';
         this.$refs.toast.show();
-        sessionStorage.removeItem('shopMsg');
+        sessionStorage.removeItem('shopMsgList');
+        sessionStorage.setItem('totalPrice', this.totalPrice);
         setTimeout(() => {
-          this.go('/store-order_detail');
+          this.go('/pay?code=' + data.code + '&type=one');
+        }, 1500);
+      }, () => {
+        this.loading = false;
+      });
+    },
+    shopCartOrder() {   // 购物车下单
+      if(this.dkey === '') {
+        this.textMsg = '请选择配送方式';
+        this.$refs.toast.show();
+        return;
+      }
+      this.loading = true;
+      this.cartConfig.applyNote = this.applyNote;
+      this.cartConfig.expressType = this.dkey;
+      shopCartOrder(this.cartConfig).then(data => {
+        this.loading = false;
+        this.textMsg = '下单成功';
+        this.$refs.toast.show();
+        sessionStorage.removeItem('shopMsgList');
+        sessionStorage.setItem('totalPrice', this.totalPrice);
+        setTimeout(() => {
+          this.go('/pay?code=' + data.code + '&type=more');
         }, 1500);
       }, () => {
         this.loading = false;

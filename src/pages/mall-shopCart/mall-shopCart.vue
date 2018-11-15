@@ -7,7 +7,11 @@
                 :key="allIndex"
                 :shopIndex="allIndex"
                 :shopAll="isShopAll"
-                @removeShop="removeShop"
+                :storeSingData="allItem"
+                :storeAllShop="shopAllData"
+                @removeShop="removeShop"         
+                @shopTatilFn="shopTatilFn"
+                @allStoreSetFn="allStoreSetFn"
             />
         </div>
         <div class="foo-cart">
@@ -15,7 +19,7 @@
                 <span class="spl" @click.stop="shopAllFn" ref="allShop"></span>全选
             </div>
             <div class="foo-right">
-                <p>合计：<span>¥100</span> <button @click="go('/affirm-order')">结算</button></p>
+                <p>合计：<span>¥{{formatAmount(tatil)}}</span> <button @click="shopCartOrder">结算</button></p>
             </div>
         </div>
     </div>
@@ -28,7 +32,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import ShopSingMsg from './shopSingMsg';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { myShopCart } from 'api/store';
+import { myShopCart, storeRemoveFn } from 'api/store';
 export default {
   data() {
     return {
@@ -36,8 +40,10 @@ export default {
       textMsg: '',
       loadingText: '正在加载中...',
       isset: '1',
-      shopAllData: [1, 2],
-      isShopAll: false
+      shopAllData: [],
+      isShopAll: '',
+      tatil: 0,
+      isSetAll: null
     };
   },
   created() {
@@ -46,7 +52,7 @@ export default {
       myShopCart(getUserId())
     ]).then(([res1]) => {
       this.loading = false;
-      console.log(res1);
+      this.shopAllData = res1;
     }).catch(() => {
       this.loading = false;
     });
@@ -69,18 +75,67 @@ export default {
         backgroundImage: `url(${imgs})`
       };
     },
-    removeShop(shopIndex) {
-      this.shopAllData.splice(shopIndex, 1);
+    removeShop(shopIndex, shopCode) {    // 删除店铺操作
+      this.$nextTick(() => {
+        this.shopAllData.splice(shopIndex, 1);
+      });
+      this.loading = true;
+      storeRemoveFn(shopCode).then(data => {
+        this.textMsg = '删除成功';
+        this.$refs.toast.show();
+        this.loading = false;
+      }, () => {
+        this.loading = false;
+      });
     },
-    shopAllFn() {
+    shopTatilFn(storeAllShop, isAll) { // 计算总额
+      this.tatil = 0;
+      storeAllShop.forEach(allItem => {
+        allItem.cartList.forEach(item => {
+          if(item.isSet) {
+            this.tatil += item.amount;
+          }
+        });
+      });
+      if(isAll) {
+        this.$refs.allShop.classList.remove('sel-sp');
+        this.isSetAll += isAll;
+      }
+    },
+    shopAllFn() {              // 选择全选
       let shopAll = this.$refs.allShop;
+      this.tatil = 0;
       if(shopAll.classList.contains('sel-sp')) {
         shopAll.classList.remove('sel-sp');
-        this.isShopAll = false;
+        this.isShopAll = '';
       }else {
         shopAll.classList.add('sel-sp');
-        this.isShopAll = true;
+        this.isShopAll = 'true' + this.isSetAll;
+        this.shopAllData.forEach(allItem => {
+          allItem.cartList.forEach(item => {
+            this.tatil += item.amount;
+          });
+        });
       }
+    },
+    allStoreSetFn(isAllSet) { // 判断是否全部了
+      if(isAllSet) {
+        this.isShopAll = 'true';
+        this.$refs.allShop.classList.add('sel-sp');
+      }
+    },
+    shopCartOrder() {   // 去结算
+      let shopMsgList = [];
+      this.loading = true;
+      this.shopAllData.forEach(allItem => {
+        allItem.cartList.forEach(item => {
+          if(item.isSet) {
+            shopMsgList.push(item);
+          }
+        });
+      });
+      sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+      this.go('/affirm-order');
     }
   },
   components: {

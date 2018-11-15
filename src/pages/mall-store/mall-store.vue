@@ -22,13 +22,13 @@
               :hasMore="hasMore"
               @pullingUp="getHotShop">
               <div class="con-list">
-                <div class="con-sing" @click="toShopDet">
+                <div class="con-sing" @click="toShopDet" v-for="(shopItem, shopIndex) in hotShopList" :key="shopIndex">
                   <div class="con-sing_img">
-                    <div class="sing-img"></div>
+                    <div class="sing-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
                     <div class="con-txt">
-                      <h5>樟子松商品商品商品商品</h5>
+                      <h5>{{shopItem.name}}</h5>
                       <div class="con-foo">
-                        <p>￥2480.00<span class="icon fr" @click.stop="addCart"></span></p>
+                        <p>￥{{formatAmount(shopItem.minPrice)}}起<span class="icon fr" @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"></span></p>
                       </div>
                     </div>
                   </div>
@@ -43,7 +43,7 @@
       </div>
     </div>
     <MallShopList v-show="isAll" />
-    <div class="go-cart" @click.stop="addCart">
+    <div class="go-cart" @click.stop="go('/mall-shopCart')">
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
@@ -55,8 +55,8 @@ import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
 import MallShopList from '../mall-shopList/mall-shopList';
-import { getAllShopData } from 'api/store';
-import { formatAmount, formatImg, formatDate, setTitle, getUrlParam } from 'common/js/util';
+import { getAllShopData, addShopCart } from 'api/store';
+import { formatAmount, formatImg, formatDate, setTitle, getUrlParam, getUserId } from 'common/js/util';
 export default {
   // name: "home",
   data() {
@@ -74,12 +74,21 @@ export default {
         status: '4'
       },
       hasMore: true,
-      hotShopList: []
+      hotShopList: [],
+      addCartConfig: {            // 加入购物车参数
+        userId: getUserId(),
+        commodityCode: '',
+        commodityName: '',        // 商品名称
+        specsId: '',              // 规格编号
+        specsName: '',            // 规格名称
+        quantity: 1              // 商品数量
+      }
     };
   },
   created() {
     setTitle('店铺名称');
     this.shopCode = getUrlParam('shopCode');
+    this.config.shopCode = this.shopCode;
     this.getHotShop();
   },
   mounted() {
@@ -98,14 +107,25 @@ export default {
     go(url) {
       this.$router.push(url);
     },
-    getImgSyl(imgs) {
+    getImgSyl(imgs, type) {
+      let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
       return {
-        // backgroundImage: `url(${formatImg(imgs)})`
-        backgroundImage: `url(${imgs})`
+        backgroundImage: `url(${pic})`
       };
     },
-    addCart() {
-      this.go('/mall-shopCart');
+    addCart(code, name, specsId, specsName) {
+      this.loading = true;
+      this.addCartConfig.commodityCode = code;
+      this.addCartConfig.commodityName = name;
+      this.addCartConfig.specsId = specsId;
+      this.addCartConfig.specsName = specsName;
+      addShopCart(this.addCartConfig).then(data => {
+        this.textMsg = '加入购物车成功';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.go('/mall-shopCart');
+        }, 1500);
+      });
     },
     toShopDet() {
       this.go('/mall-shop_detail');
