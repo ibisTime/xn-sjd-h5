@@ -59,7 +59,7 @@
     },
     created() {
       this.pullUpLoad = null;
-      this._refreshScroll();
+      // this._refreshScroll();
     },
     methods: {
       getUserId() {
@@ -79,26 +79,26 @@
           this.$refs.toast.show();
         }
       },
-      _refreshScroll() {
-        setTimeout(() => {
-          this.$refs.scroll.refresh();
-          let imgs = this.$refs.description.getElementsByTagName('img');
-          for (let i = 0; i < imgs.length; i++) {
-            let _img = imgs[i];
-            if (_img.complete) {
-              setTimeout(() => {
-                this.$refs.scroll.refresh();
-              }, 20);
-              continue;
-            }
-            _img.onload = () => {
-              setTimeout(() => {
-                this.$refs.scroll.refresh();
-              }, 20);
-            };
-          }
-        }, 20);
-      },
+      // _refreshScroll() {
+      //   setTimeout(() => {
+      //     this.$refs.scroll.refresh();
+      //     let imgs = this.$refs.description.getElementsByTagName('img');
+      //     for (let i = 0; i < imgs.length; i++) {
+      //       let _img = imgs[i];
+      //       if (_img.complete) {
+      //         setTimeout(() => {
+      //           this.$refs.scroll.refresh();
+      //         }, 20);
+      //         continue;
+      //       }
+      //       _img.onload = () => {
+      //         setTimeout(() => {
+      //           this.$refs.scroll.refresh();
+      //         }, 20);
+      //       };
+      //     }
+      //   }, 20);
+      // },
       drawPie(id) {
         this.charts = echarts.init(document.getElementById(id));
         this.charts.setOption({
@@ -184,6 +184,7 @@
         this.variety = pinzhong;
         this.start = 1;
         this.limit = 10;
+        this.hasMore = true;
         this.proList = [];
         this.dataArr = [];
         this.xArr = [];

@@ -51,7 +51,7 @@
         <div class="proList">
           <div class="item"  v-for="item in proList" @click="go('/product-detail?code='+item.code)">
             <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-            <div class="sell-type-right">{{canAdopt(item)}}</div>
+            <div class="sell-type-right" :style="{background: item.canAdoptFlag ? '#23ad8c' : ''}">{{canAdopt(item)}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
@@ -215,13 +215,16 @@ export default {
       }).catch(() => { this.loading = false; });
     },
     canAdopt(item) {
+      item.canAdoptFlag = true;
       if(!this.userDetail.level) {
+        item.canAdoptFlag = false;
         return '您未登录';
       }
       // 专属产品
       if(item.sellType === '1') {
         // 销售类型为专属且未到认养量
         if(item.raiseCount === item.nowCount) {
+          item.canAdoptFlag = false;
           return '已被认养';
         } else {
           return '可认养';
@@ -231,9 +234,11 @@ export default {
       if(item.directType && item.directType === '1') {
         // 等级定向且用户为该等级
         if(item.raiseCount === item.nowCount) {
+          item.canAdoptFlag = false;
           return '已被认养';
         }
         if(item.directObject !== this.userDetail.level) {
+          item.canAdoptFlag = false;
           return '不可认养';
         } else {
           return '可认养';
@@ -242,9 +247,11 @@ export default {
       if(item.directType && item.directType === '2') {
         // 用户定向且是定向用户
         if(item.raiseCount === item.nowCount) {
+          item.canAdoptFlag = false;
           return '已被认养';
         }
         if(item.directObject !== this.userId) {
+          item.canAdoptFlag = false;
           return '不可认养';
         } else {
           return '可认养';
@@ -258,6 +265,7 @@ export default {
         let endTime = new Date(Date.parse(item.raiseEndDatetime));
         // 3进行比较
         if(curTime <= startTime || curTime >= endTime) {
+          item.canAdoptFlag = false;
           return '不可认养';
         } else {
           return '可认养';
@@ -267,6 +275,7 @@ export default {
       if(item.sellType === '4') {
         // 销售类型为专属且未到认养量
         if(item.raiseCount === item.nowCount) {
+          item.canAdoptFlag = false;
           return '已满标';
         } else {
           return '可认养';

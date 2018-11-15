@@ -114,7 +114,7 @@
       getAddress() {
         Promise.all([
           getWuliudanList({
-            originalGroupCode: 'OG2018111216592292877707'
+            originalGroupCode: this.code
           }).then((res) => {
             this.list = res;
           })

@@ -7,7 +7,7 @@
               :pullUpLoad="pullUpLoad">
         <div class="content">
           <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
-            {{item.treeNumber || item.code}}
+            {{item.treeNumber || item.code || item}}
           </div>
         </div>
         <no-result v-show="!(dataList && dataList.length)" title="暂无树" class="no-result-wrapper"></no-result>

@@ -24,10 +24,10 @@
           <span>产品品种</span><span>{{detail.variety}}</span>
         </div>
         <div class="item">
-          <span>预售产出产量</span><span>{{detail.totalOutput}}斤/年</span>
+          <span>预售产出产量</span><span>{{detail.totalOutput}}{{outputUnitObj[detail.outputUnit]}}/年</span>
         </div>
         <div class="item">
-          <span>单棵树产量</span><span>{{detail.singleOutput}}斤</span>
+          <span>单棵树产量</span><span>{{detail.singleOutput}}{{outputUnitObj[detail.outputUnit]}}</span>
         </div>
         <div class="item">
           <span>树木总数</span><span>{{detail.treeList.length}}</span>
@@ -76,7 +76,7 @@
           <div class="title-right">
             <p>{{detail.scientificName}}</p>
             <i @click="genghuan">X</i>
-            <!--<p class="kucun">库存：{{detail.presellSpecsList[choosedIndex].packCount}}{{detail.packUnit}}</p>-->
+            <p class="kucun">剩余产量：{{detail.totalOutput - detail.nowCount}}{{outputUnitObj[detail.outputUnit]}}</p>
             <p class="position"><img src="./position@2x.png">{{detail.originPlace}}</p>
           </div>
         </div>
@@ -85,7 +85,7 @@
         <p class="packaging-title">预售规格</p>
         <div class="select">
           <div class="select-item" v-for="(item, index) in detail.presellSpecsList" @click="chooseSpecs(index)" :key="index">
-            <span class="item-name">{{item.name}}/{{detail.packUnit}}</span>
+            <span class="item-name">{{item.name}}({{detail.packWeight}}{{outputUnitObj[detail.outputUnit]}}/{{packUnitObj[detail.packUnit]}})</span>
             <div class="item-price-isSelect">
               <span>¥{{formatAmount(item.price)}}</span>
               <img src="./choosed@2x.png" v-show="choosedIndex === index">
@@ -123,6 +123,7 @@ import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getBookingProDetail } from 'api/biz';
 import { getUserDetail } from 'api/user';
+import { getDictList } from 'api/general';
 export default {
   data() {
     return {
@@ -149,7 +150,9 @@ export default {
       banners: [],
       loop: false,
       userDetail: {},
-      noAdoptReason: ''
+      noAdoptReason: '',
+      outputUnitObj: {},
+      packUnitObj: {}
     };
   },
   methods: {
@@ -207,7 +210,12 @@ export default {
         let proCode = this.detail.code;
         let specsCode = this.detail.presellSpecsList[this.choosedIndex].code;
         let quantity = this.number;
-        if(quantity * this.detail.presellSpecsList[this.choosedIndex].packCount > this.detail.totalOutput - this.detail.nowCount) {
+        // if(quantity * this.detail.presellSpecsList[this.choosedIndex].packCount > this.detail.totalOutput - this.detail.nowCount) {
+        //   this.text = '库存不足，无法下单';
+        //   this.$refs.toast.show();
+        //   return;
+        // }
+        if(quantity * this.detail.packWeight * this.detail.presellSpecsList[this.choosedIndex].packCount > this.detail.totalOutput - this.detail.nowCount) {
           this.text = '库存不足，无法下单';
           this.$refs.toast.show();
           return;
@@ -285,8 +293,10 @@ export default {
         }),
         getUserDetail({
           userId: this.userId
-        })
-      ]).then(([res1, res2]) => {
+        }),
+        getDictList('output_unit'),
+        getDictList('pack_unit')
+      ]).then(([res1, res2, res3, res4]) => {
         this.loading = false;
         this.detail = res1;
         this.detailDescription = res1.description;
@@ -295,6 +305,12 @@ export default {
           this.loop = true;
         }
         this.userDetail = res2;
+        res3.map((item) => {
+          this.outputUnitObj[item.dkey] = item.dvalue;
+        });
+        res4.map((item) => {
+          this.packUnitObj[item.dkey] = item.dvalue;
+        });
         if(!this.isWxConfiging && !this.wxData) {
           this.getInitWXSDKConfig();
         }
@@ -303,8 +319,10 @@ export default {
       Promise.all([
         getBookingProDetail({
           code: this.code
-        })
-      ]).then(([res1]) => {
+        }),
+        getDictList('output_unit'),
+        getDictList('pack_unit')
+      ]).then(([res1, res2, res3]) => {
         this.loading = false;
         this.detail = res1;
         this.detailDescription = res1.description;
@@ -312,6 +330,12 @@ export default {
         if(this.banners.length >= 2) {
           this.loop = true;
         }
+        res2.map((item) => {
+          this.outputUnitObj[item.dkey] = item.dvalue;
+        });
+        res3.map((item) => {
+          this.packUnitObj[item.dkey] = item.dvalue;
+        });
         if(!this.isWxConfiging && !this.wxData) {
           this.getInitWXSDKConfig();
         }
@@ -524,10 +548,13 @@ export default {
         position: relative;
         overflow: hidden;
         p {
-          margin-top: 0.27rem;
+          /*margin-top: 0.27rem;*/
           font-size: $font-size-medium-x;
           line-height: 0.42rem;
           color: #333;
+        }
+        p:first-child {
+          margin-top: 0.27rem;
         }
         span {
           margin-top: 0.4rem;
@@ -536,7 +563,6 @@ export default {
         }
         i {
           width: 0.34rem;
-          line-height: 0.34rem;
           line-height: 0.34rem;
           font-size: $font-size-medium;
           text-align: center;
@@ -548,7 +574,6 @@ export default {
           right: 0;
         }
         .position {
-          margin-top: 0.27rem;
           font-size: 0.24rem;
           line-height: 0.33rem;
           color: $color-text-l;
@@ -560,6 +585,8 @@ export default {
         }
         .kucun {
           margin-top: 0;
+          font-size: 0.24rem;
+          color: gray;
         }
       }
     }

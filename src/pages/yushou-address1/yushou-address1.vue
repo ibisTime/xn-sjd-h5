@@ -4,11 +4,37 @@
       <div class="addr-scroll-wrapper">
         <scroll :data="addressList[0]" :hasMore="hasMore" :pullUpLoad="pullUpLoad">
           <div class="pro-info">
-            <p><span>{{detail.productName}}</span><span>买入单价：{{formatAmount(detail.price)}}元/{{detail.unit}}</span></p>
-            <p><span>可收货总数</span><span>{{detail.quantity}}{{detail.presellProduct.packUnit}}</span></p>
-            <p><span>可收货数量</span><span>{{amount}}{{detail.presellProduct.packUnit}}</span></p>
+            <p><span>{{detail.productName}}</span><span>买入单价：{{formatAmount(detail.price)}}元/{{packUnitObj[detail.unit]}}</span></p>
+            <p><span>可收货总数</span><span>{{+detail.quantity + +detail.receivingQuantity}}{{packUnitObj[detail.presellProduct.packUnit]}}</span></p>
+            <p><span>可收货数量</span><span>{{amount}}{{packUnitObj[detail.presellProduct.packUnit]}}</span></p>
             <p>注意：填写地址后此批货物不可转让</p>
           </div>
+          <div class="gray"></div>
+          <ul class="already-list">
+            <li v-for="(item, index) in list" :key="index" class="border-bottom-1px" v-show="list.length">
+              <div class="content">
+                <div class="content-left">
+                  <div class="info">
+                    <div class="name-mobile">
+                      <span class="name">{{item.receiver}}</span>
+                      <span class="mobile">{{item.receiverMobile}}</span>
+                    </div>
+                    <div class="number">{{item.deliverCount}}{{item.unit}}</div>
+                  </div>
+                  <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
+                </div>
+              </div>
+              <div class="opeator border-top-1px">
+                <div class="default">
+                  <!--<span class="add-address-text">收货数量</span>-->
+                </div>
+                <div class="right">
+                  <button>查看物流</button>
+                  <button class="confirm" @click="confirm(item)" v-if="item.status === '1'">确认收货</button>
+                </div>
+              </div>
+            </li>
+          </ul>
           <div class="gray"></div>
           <div class="tip">
             <div class="addButton" @click="toAddress">
@@ -61,7 +87,7 @@
         <no-result v-show="!hasMore && !addressList.length" title="您尚未添加收货地址"></no-result>
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
-      <confirm ref="confirm" text="确定删除地址吗" @confirm="_deleteAddress"></confirm>
+      <confirm ref="confirm" text="确认收货" @confirm="confirmShouhuo"></confirm>
       <toast ref="toast" :text="text"></toast>
       <router-view></router-view>
     </div>
@@ -74,7 +100,8 @@
   import Toast from 'base/toast/toast';
   import NoResult from 'base/no-result/no-result';
   import {setTitle, formatAmount} from 'common/js/util';
-  import { confirmTihuo, getOriginZichanDetail } from 'api/biz';
+  import { confirmTihuo, getOriginZichanDetail, getWuliudanList, confirmShouhuo } from 'api/biz';
+  import { getDictList } from 'api/general';
 
   export default {
     data() {
@@ -89,7 +116,9 @@
         detail: {presellProduct: {packUnit: ''}},
         pullUpLoad: null,
         number: 1,
-        amount: 0    // 取货总数
+        amount: 0,    // 取货总数
+        outputUnitObj: {},
+        packUnitObj: {}
       };
     },
     created() {
@@ -102,6 +131,8 @@
       this.currentItem = null;
       this.getAddress();
       this.getProDetail();
+      this.getAlreadyAddress();
+      this.getObjs();
       this.addressList = [];
     },
     updated() {
@@ -128,6 +159,10 @@
         if (this.number >= 2) {
           this.number--;
         }
+      },
+      confirm(item) {
+        this.currentItem = item;
+        this.$refs.confirm.show();
       },
       toAddress() {
         if(this.addressList[0]) {
@@ -182,9 +217,8 @@
         this.go(`/tihuo-address-addedit?code=${this.code}`);
       },
       amountChange() {
-        // debugger;
         this.amount = 0;
-        this.addressList[0].map((item) => {
+        this.addressList[0] && this.addressList[0].map((item) => {
           this.amount += +item.deliverCount;
         });
       },
@@ -208,6 +242,41 @@
           this.text = '请添加至少一条地址';
           this.$refs.toast.show();
         }
+      },
+      getAlreadyAddress() {
+        Promise.all([
+          getWuliudanList({
+            originalGroupCode: this.code
+          }).then((res) => {
+            this.list = res;
+          })
+        ]);
+      },
+      confirmShouhuo() {
+        confirmShouhuo({
+          code: this.currentItem.code
+        }).then((res) => {
+          if(res.isSuccess) {
+            this.text = '确认收货成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              location.reload();
+            }, 1000);
+          }
+        });
+      },
+      getObjs() {
+        Promise.all([
+          getDictList('output_unit'),
+          getDictList('pack_unit')
+        ]).then(([res1, res2]) => {
+          res1.map((item) => {
+            this.outputUnitObj[item.dkey] = item.dvalue;
+          });
+          res2.map((item) => {
+            this.packUnitObj[item.dkey] = item.dvalue;
+          });
+        });
       }
     },
     components: {
@@ -240,8 +309,125 @@
       transform: translate3d(100%, 0, 0);
     }
 
+    .already-list {
+      li {
+        position: relative;
+        @include border-bottom-1px($color-border);
+        font-size: $font-size-small;
+        background-color: #fff;
+
+        &:last-child {
+          @include border-none();
+        }
+
+        .content {
+          display: flex;
+          /*flex-direction: column;*/
+          align-items: center;
+          height: 1.6rem;
+          padding: 0 0.3rem;
+          .content-left {
+            flex: 1;
+            .info {
+              font-size: $font-size-medium-x;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              .name-mobile {
+                .name {
+                  margin-right: 0.3rem;
+                }
+                .mobile {
+                  width: 2.1rem;
+                  color: #999;
+                }
+              }
+              .number {
+                margin-right: 0.3rem;
+              }
+              span {
+                line-height: 0.42rem;
+              }
+            }
+          }
+
+          .content-right {
+            border-left: 1px solid $color-border;
+            img {
+              width: 0.36rem;
+              height: 0.36rem;
+              margin-left: 0.3rem;
+            }
+          }
+
+          .addr {
+            padding-top: 0.26rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            font-size: $font-size-medium-x;
+            color: #666;
+          }
+        }
+
+        .opeator {
+          display: flex;
+          align-items: center;
+          height: 0.9rem;
+          font-size: 0;
+          padding: 0 0.3rem;
+          @include border-top-1px($color-border);
+
+          .default {
+            flex: 1;
+
+            .icon-chose {
+              margin-left: 0.3rem;
+              display: inline-block;
+              vertical-align: middle;
+              width: 0.36rem;
+              height: 0.36rem;
+              background-size: 0.36rem;
+              @include bg-image('un-select');
+
+              &.active {
+                @include bg-image('selected');
+              }
+            }
+
+            span {
+              display: inline-block;
+              vertical-align: middle;
+              padding-left: 0.1rem;
+              line-height: 0.33rem;
+              font-size: $font-size-small;
+              color: $color-text-l;
+            }
+            .act {
+              color: $primary-color;
+            }
+          }
+
+          button {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 0.24rem;
+            padding: 0.06rem 0.25rem;
+            background: #fff;
+            border: 1px solid #979797;
+            border-radius: 0.04rem;
+            color: #666;
+          }
+
+          .delete {
+            margin-left: 0.5rem;
+            margin-right: 0.3rem;
+          }
+        }
+      }
+    }
     ul {
-      padding-bottom: 0.98rem;
+
       li {
         position: relative;
         @include border-bottom-1px($color-border);

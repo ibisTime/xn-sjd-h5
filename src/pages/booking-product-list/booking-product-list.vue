@@ -15,7 +15,7 @@
                 @pullingUp="getPageOrders">
         <div class="proList">
           <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+item.code)" v-for="item in proList">
-            <div class="sell-type-right">{{canAdopt(item)}}</div>
+            <div class="sell-type-right" :style="{background: canAdopt(item).canAdoptFlag ? '#23ad8c' : ''}">{{canAdopt(item).noAdoptReason}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
@@ -91,13 +91,19 @@ export default {
       this.$router.push(url);
     },
     canAdopt(item) {
+      item.canAdoptFlag = true;
       if(!this.userDetail.level) {
-        return '您未登录';
+        item.canAdoptFlag = false;
+        item.noAdoptReason = '您未登录';
+        return item;
       }
       if(item.totalOutput > item.nowCount) {
-        return '可购买';
+        item.noAdoptReason = '可购买';
+        return item;
       }
-      return '无法购买';
+      item.canAdoptFlag = false;
+      item.noAdoptReason = '无法购买';
+      return item;
     },
     selectCategory(index) {
       this.index = index;
