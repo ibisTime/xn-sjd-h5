@@ -1,27 +1,29 @@
 <template>
   <div class="mall-wrapper" @click.stop>
     <div class="content">
+      <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
         <div class="shop-list">
-            <ShopSingMsg 
-                v-for="(allItem, allIndex) in shopAllData" 
-                :key="allIndex"
-                :shopIndex="allIndex"
-                :shopAll="isShopAll"
-                :storeSingData="allItem"
-                :storeAllShop="shopAllData"
-                @removeShop="removeShop"         
-                @shopTatilFn="shopTatilFn"
-                @allStoreSetFn="allStoreSetFn"
-            />
+          <ShopSingMsg 
+              v-for="(allItem, allIndex) in shopAllData" 
+              :key="allIndex"
+              :shopIndex="allIndex"
+              :shopAll="isShopAll"
+              :storeSingData="allItem"
+              :storeAllShop="shopAllData"
+              @removeShop="removeShop"         
+              @shopTatilFn="shopTatilFn"
+              @allStoreSetFn="allStoreSetFn"
+          />
         </div>
-        <div class="foo-cart">
-            <div class="foo-left">
-                <span class="spl" @click.stop="shopAllFn" ref="allShop"></span>全选
-            </div>
-            <div class="foo-right">
-                <p>合计：<span>¥{{formatAmount(tatil)}}</span> <button @click="shopCartOrder">结算</button></p>
-            </div>
-        </div>
+      </Scroll>
+    </div>
+    <div class="foo-cart">
+      <div class="foo-left">
+          <span class="spl" @click.stop="shopAllFn" ref="allShop"></span>全选
+      </div>
+      <div class="foo-right">
+          <p>合计：<span>¥{{formatAmount(tatil)}}</span> <button @click="shopCartOrder">结算</button></p>
+      </div>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
@@ -30,6 +32,7 @@
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
+import Scroll from 'base/scroll/scroll';
 import ShopSingMsg from './shopSingMsg';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { myShopCart, storeRemoveFn } from 'api/store';
@@ -48,6 +51,7 @@ export default {
   },
   created() {
     setTitle('购物车');
+    this.pullUpLoad = null;
     Promise.all([
       myShopCart(getUserId())
     ]).then(([res1]) => {
@@ -141,7 +145,8 @@ export default {
   components: {
     FullLoading,
     Toast,
-    ShopSingMsg
+    ShopSingMsg,
+    Scroll
   }
 };
 </script>
@@ -174,40 +179,41 @@ export default {
     right: 0;
     overflow: auto;
     font-family: PingFang-SC-Medium;
-    .foo-cart{
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        height: 0.98rem;
-        line-height: 0.98rem;
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.28rem;
-        padding: 0 0.3rem;
-        background-color: #fff;
-        box-shadow: 0 -1px 0 0 #EBEBEB;
-        .foo-left{
-            span{
-                vertical-align: middle; 
-                margin-right: 0.16rem;
-            }
+  }
+  .foo-cart{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 0.98rem;
+    z-index: 9999;
+    line-height: 0.98rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.28rem;
+    padding: 0 0.3rem;
+    background-color: #fff;
+    box-shadow: 0 -1px 0 0 #EBEBEB;
+    .foo-left{
+        span{
+            vertical-align: middle; 
+            margin-right: 0.16rem;
         }
-        .foo-right{
-            color: #333;
-            font-size: 0.32rem;
-            span{
-                color: #23AD8C;
-                margin-right: 0.4rem;
-            }
-            button{
-                width: 1.44rem;
-                height: 0.66rem;
-                line-height: 0.66rem;
-                text-align: center;
-                border-radius: 0.1rem;
-                background-color: #23AD8C;
-                color: #fff;
-            }
+    }
+    .foo-right{
+        color: #333;
+        font-size: 0.32rem;
+        span{
+            color: #23AD8C;
+            margin-right: 0.4rem;
+        }
+        button{
+            width: 1.44rem;
+            height: 0.66rem;
+            line-height: 0.66rem;
+            text-align: center;
+            border-radius: 0.1rem;
+            background-color: #23AD8C;
+            color: #fff;
         }
     }
   }

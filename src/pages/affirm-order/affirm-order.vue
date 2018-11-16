@@ -1,77 +1,74 @@
 <template>
   <div class="mall-wrapper" @click.stop>
-    <div class="content">
-        <div class="order-head">
-            <div class="o-h_left">
-                <span></span>
-            </div>
-            <div class="o-h_right" @click="go('/address')">
-                <p>{{userName}} <span>{{defaultSite.mobile}}</span></p>
-                <p class="to-r"><span class="fr"></span></p>
-                <p>{{ressee}}</p>
-            </div>
-        </div>
-        <p class="back-co"></p>
-        <div class="sing-order" v-for="(orderItem, orderIndex) in shopMsgList" :key="orderIndex">
-            <div class="order-con">
-                <div class="con-head">
-                    <p>{{orderItem.shopName}}</p>
+    <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
+        <div class="content">
+            <div class="order-head">
+                <div class="o-h_left">
+                    <span></span>
                 </div>
-                <div class="o-c_con">
-                    <div class="c-c_left">
-                        <div class="c-c_img" :style="getImgSyl(orderItem.bannerPic ? orderItem.bannerPic : orderItem.commodityPhoto)"></div>
-                    </div>
-                    <div class="o-c_right">
-                        <p class="r-p1">{{orderItem.commodityName}} <span class="fr">×{{orderItem.quantity}}</span></p>
-                        <p class="r-p2">规格分类：{{orderItem.specsName}}</p>
-                        <p class="r-p3">¥{{singPrice ? singPrice : formatAmount(orderItem.amount)}}</p>
-                    </div>
+                <div class="o-h_right" @click="go('/address')">
+                    <p>{{defaultSite.addressee}} <span>{{defaultSite.mobile}}</span></p>
+                    <p class="to-r"><span class="fr"></span></p>
+                    <p>{{ressee}}</p>
                 </div>
             </div>
             <p class="back-co"></p>
+            <div class="sing-order" v-for="(orderItem, orderIndex) in shopMsgList" :key="orderIndex">
+                <div class="order-con">
+                    <div class="con-head">
+                        <p>{{orderItem.shopName}}</p>
+                    </div>
+                    <div class="o-c_con">
+                        <div class="c-c_left">
+                            <div class="c-c_img" :style="getImgSyl(orderItem.listPic ? orderItem.listPic : orderItem.bannerPic ? orderItem.bannerPic : orderItem.commodityPhoto)"></div>
+                        </div>
+                        <div class="o-c_right">
+                            <p class="r-p1">{{orderItem.commodityName}} <span class="fr">×{{orderItem.quantity}}</span></p>
+                            <p class="r-p2">规格分类：{{orderItem.specsName}}</p>
+                            <p class="r-p3">¥{{singPrice ? singPrice : formatAmount(orderItem.amount)}}</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="back-co"></p>
+            </div>
+            <div class="order-foo">
+                <div class="foo-box01" v-if="shopMsgList.length === 1 && this.shopMsgList[0].setPrice">
+                    <div class="box01-left foo-left">
+                        购买数量
+                    </div>
+                    <div class="box01-right">
+                        <span class="jian" @click="minusShop"></span>
+                        <b>{{shopMsgList[0].quantity}}</b>
+                        <span class="jia" @click="addShop"></span>
+                    </div> 
+                </div>
+                <div class="foo-box02">
+                    <div class="box02-left foo-left">
+                        配送方式
+                    </div>
+                    <div class="box02-right">
+                        <p>
+                            {{logistics[shopMsgList[0].logistics]}}
+                        </p>
+                    </div>
+                </div>
+                <div class="foo-box03">
+                    <div class="box03-left foo-left">
+                        买家留言:
+                    </div>
+                    <div class="box03-right">
+                        <input type="text" v-model="applyNote" placeholder="请输入留言">
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="order-foo">
-            <div class="foo-box01" v-if="shopMsgList.length === 1">
-                <div class="box01-left foo-left">
-                    购买数量
-                </div>
-                <div class="box01-right">
-                    <span class="jian" @click="minusShop"></span>
-                    <b>{{shopMsgList[0].quantity}}</b>
-                    <span class="jia" @click="addShop"></span>
-                </div> 
-            </div>
-            <div class="foo-box02">
-                <div class="box02-left foo-left">
-                    配送方式
-                </div>
-                <div class="box02-right">
-                    <p>
-                        <select id="" v-model="dkey">
-                            <option value="">请选择</option>
-                            <option :value="opItem.dkey" v-for="(opItem, index) in logistics" :key="index">{{opItem.dvalue}}</option>
-                        </select>
-                        <span></span>
-                    </p>
-                </div>
-            </div>
-            <div class="foo-box03">
-                <div class="box03-left foo-left">
-                    买家留言:
-                </div>
-                <div class="box03-right">
-                    <input type="text" v-model="applyNote">
-                </div>
-            </div>
-            <p class="back-co"></p>
+    </Scroll>
+    <div class="footer">
+        <div class="foo-left">
+            <p>合计：<span>¥{{totalPrice}}</span></p>
         </div>
-        <div class="footer">
-            <div class="foo-left">
-                <p>合计：<span>¥{{totalPrice}}</span></p>
-            </div>
-            <div class="foo-right" @click="qrorderFn">
-                确认购买
-            </div>
+        <div class="foo-right" @click="qrorderFn">
+            确认购买
         </div>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
@@ -81,6 +78,7 @@
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
+import Scroll from 'base/scroll/scroll';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
 import { getDictList } from 'api/general';
 import { getAddressList, getUser } from 'api/user';
@@ -99,7 +97,7 @@ export default {
       setPrice: 0,
       singPrice: 0,
       totalPrice: 0,
-      logistics: [],
+      logistics: {},
       applyNote: '',
       config: {     // 直接购买下单参数
         applyUser: getUserId(),
@@ -121,38 +119,47 @@ export default {
   },
   created() {
     setTitle('确认订单');
+    this.pullUpLoad = null;
     this.code = getUrlParam('code');
     this.shopMsgList = JSON.parse(sessionStorage.getItem('shopMsgList'));
-    this.shopMsgList.forEach(item => {
-      this.cartConfig.cartList.push(item.code);
-      this.totalPrice += item.amount;
-    });
-    this.totalPrice = formatAmount(this.totalPrice);
     if(!this.shopMsgList) {
       this.go('/mall');
       return;
     }
+    this.config.expressType = this.shopMsgList[0].logistics;
+    this.cartConfig.expressType = this.shopMsgList[0].logistics;
+    this.shopMsgList.forEach(item => {
+      if(item.orderCode) {
+        this.cartConfig.cartList.push(item.orderCode);
+      }else {
+        this.cartConfig.cartList.push(item.code);
+      }
+      this.totalPrice += item.amount;
+    });
+    this.totalPrice = formatAmount(this.totalPrice);
     Promise.all([
       getAddressList(), // 地址
       getUser(),
-      getDictList('logistics_type')
+      getDictList('logistics')
     ]).then(([res1, res2, res3]) => {
       this.loading = false;
-      this.logistics = res3;
-      this.userName = res2.realName ? res2.realName : res2.nickname;
+      res3.forEach(item => {
+        this.logistics[item.dkey] = item.dvalue;
+      });
+    //   this.userName = res2.realName ? res2.realName : res2.nickname;
       res1.forEach(item => {
         if(item.isDefault === '1') {
           this.defaultSite = item;
         }
       });
-      if(this.shopMsgList.length === 1) {
+      this.config.specsId = this.shopMsgList[0].specsId;
+      if(this.shopMsgList.length === 1 && this.shopMsgList[0].setPrice) {
         this.setPrice = formatAmount(this.shopMsgList[0].setPrice);
-        this.config.specsId = this.shopMsgList[0].specsId;
         this.singPriceFn();
       }
       this.config.addressCode = this.defaultSite.code;
       this.cartConfig.addressCode = this.defaultSite.code;
-      this.ressee = this.defaultSite.province + this.defaultSite.city + this.defaultSite.district + this.defaultSite.addressee;
+      this.ressee = this.defaultSite.province + this.defaultSite.city + this.defaultSite.district + this.defaultSite.detailAddress;
     }).catch(() => {
       this.loading = false;
     });
@@ -200,25 +207,19 @@ export default {
       this.totalPrice = this.singPrice;
     },
     qrorderFn() {
-      if(this.shopMsgList.length === 1) {
+      if(this.shopMsgList.length === 1 && this.shopMsgList[0].orderCode || this.shopMsgList[0].setPrice) {
         this.buyItNow();
       }else {
         this.shopCartOrder();
       }
     },
     buyItNow() { // 下单（单店铺）
-      if(this.dkey === '') {
-        this.textMsg = '请选择配送方式';
-        this.$refs.toast.show();
-        return;
-      }
       this.loading = true;
       this.config.applyNote = this.applyNote;
-      this.config.expressType = this.dkey;
       this.config.quantity = this.shopMsgList[0].quantity;
       buyItNow(this.config).then(data => {
         this.loading = false;
-        this.textMsg = '下单成功';
+        this.textMsg = '操作成功';
         this.$refs.toast.show();
         sessionStorage.removeItem('shopMsgList');
         sessionStorage.setItem('totalPrice', this.totalPrice);
@@ -230,14 +231,8 @@ export default {
       });
     },
     shopCartOrder() {   // 购物车下单
-      if(this.dkey === '') {
-        this.textMsg = '请选择配送方式';
-        this.$refs.toast.show();
-        return;
-      }
       this.loading = true;
       this.cartConfig.applyNote = this.applyNote;
-      this.cartConfig.expressType = this.dkey;
       shopCartOrder(this.cartConfig).then(data => {
         this.loading = false;
         this.textMsg = '下单成功';
@@ -254,7 +249,8 @@ export default {
   },
   components: {
     FullLoading,
-    Toast
+    Toast,
+    Scroll
   }
 };
 </script>
@@ -267,6 +263,8 @@ export default {
   left: 0;
   bottom: 0.98rem;
   width: 100%;
+  height: 100%;
+  background-color: #fff;
   .fl {
     float: left;
   }
@@ -274,13 +272,8 @@ export default {
     float: right;
   }
   .content {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     overflow: auto;
-    background-color: #fff;
+    padding-bottom: 0.2rem;
     font-family: PingFangSC-Regular;
     .back-co{
         height: 0.2rem;
@@ -475,9 +468,11 @@ export default {
             }
         }
     }
-    .footer{
+  }
+  .footer{
         position: fixed;
         bottom: 0;
+        z-index: 9999;
         width: 100%;
         height: 1.2rem;
         box-shadow: 0 -1px 0 0 #DBDBDB;
@@ -506,6 +501,5 @@ export default {
             background-color: #23AD8C;
         }
     }
-  }
 }
 </style>

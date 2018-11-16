@@ -4,10 +4,10 @@
         <div class="head-nav">
             <ul class="nav-list" @click="changStu">
                 <li><span :class="{'on': isset == '1'}">全部</span></li>
-                <li><span :class="{'on': isset == '2'}">个人</span></li>
-                <li><span :class="{'on': isset == '3'}">定向</span></li>
-                <li><span :class="{'on': isset == '4'}">集体</span></li>
-                <li><span :class="{'on': isset == '5'}">捐赠</span></li>
+                <li><span :class="{'on': isset == '2'}">分类一</span></li>
+                <li><span :class="{'on': isset == '3'}">分类二</span></li>
+                <li><span :class="{'on': isset == '4'}">分类三</span></li>
+                <li><span :class="{'on': isset == '5'}">分类四</span></li>
             </ul>
         </div>
         <div class="con-list">
@@ -20,16 +20,20 @@
                   <div class="sing-img" :style="getImgSyl(item.bannerPic ? item.bannerPic : '')"></div>
                   <div class="shop-det">
                       <h5>{{item.name}}</h5>
-                      <p>￥{{formatAmount(item.minPrice)}} 起<span class="fr icon"></span></p>
+                      <p>￥{{formatAmount(item.minPrice)}} 起
+                        <span class="fr icon" @click.stop="addCart(item.code, item.name, item.specsList[0].id, item.specsList[0].name)"></span>
+                      </p>
                   </div>
               </div>
             </div>
+            <div class="mall-content">
+              <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+            </div>
           </Scroll>
-          <div class="mall-content">
-            <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
-          </div>
         </div>
     </div>
+    <toast ref="toast" :text="textMsg"></toast>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
   </div>
 </template>
 <script>
@@ -38,15 +42,15 @@ import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
-import { getAllShopData } from 'api/store';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { getAllShopData, addShopCart } from 'api/store';
 export default {
   data() {
     return {
       loading: true,
       hasMore: true,
       textMsg: '',
-      loadingText: '正在加载中...',
+      loadingText: '正在加载...',
       isset: '1',
       start: 1,
       config: {
@@ -55,7 +59,15 @@ export default {
         status: '4',
         location: '1'
       },
-      hotShopList: []
+      hotShopList: [],
+      addCartConfig: {            // 加入购物车参数
+        userId: getUserId(),
+        commodityCode: '',
+        commodityName: '',        // 商品名称
+        specsId: '',              // 规格编号
+        specsName: '',            // 规格名称
+        quantity: 1              // 商品数量
+      }
     };
   },
   created() {
@@ -93,16 +105,16 @@ export default {
         case '全部':
           this.isset = '1';
           break;
-        case '个人':
+        case '分类一':
           this.isset = '2';
           break;
-        case '定向':
+        case '分类二':
           this.isset = '3';
           break;
-        case '集体':
+        case '分类三':
           this.isset = '4';
           break;
-        case '捐赠':
+        case '分类四':
           this.isset = '5';
           break;
       }
@@ -116,6 +128,20 @@ export default {
         }
         this.hotShopList = [...this.hotShopList, ...data.list];
         this.start ++;
+      });
+    },
+    addCart(code, name, specsId, specsName) {
+      this.loading = true;
+      this.addCartConfig.commodityCode = code;
+      this.addCartConfig.commodityName = name;
+      this.addCartConfig.specsId = specsId;
+      this.addCartConfig.specsName = specsName;
+      addShopCart(this.addCartConfig).then(data => {
+        this.textMsg = '加入购物车成功';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.go('/mall-shopCart');
+        }, 1500);
       });
     }
   },
@@ -137,6 +163,7 @@ export default {
   left: 0;
   bottom: 0.98rem;
   width: 100%;
+  height: 100%;
   .fl {
     float: left;
   }
@@ -151,11 +178,6 @@ export default {
     background-image: url('./shopCart.png');
   }
   .content {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     overflow: auto;
     background-color: #fff;
     font-family: PingFangSC-Regular;

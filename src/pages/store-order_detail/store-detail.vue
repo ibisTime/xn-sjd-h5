@@ -1,63 +1,88 @@
 <template>
   <div class="mall-wrapper" @click.stop>
-    <div class="content">
-        <div class="det-head">
-            <div class="det-img"></div>
-            <div>订单待收货</div>
-        </div>
-        <p class="back-co"></p>
-        <div class="det-con">
-            <div class="con-left">
-                <div class="l-img"></div>
-            </div>
-            <div class="con-right">
-                <p>王大锤 <span>15083962283</span></p>
-                <p>北京市朝阳区蓬莱东路1001号</p>
-            </div>
-        </div>
-        <p class="back-co"></p>
-        <div class="sing-order" v-for="(storeItem, storeIndex) in storeList" :key="storeIndex">
-          <div class="det-list">
-            <div class="list-head">
-                <p>{{storeItem.shopName}} <span class="fr">{{logistics[orderDetail.expressType]}}</span></p>
-            </div>
-            <div class="shop-det" v-for="(shopItem, shopIndex) in storeItem.detailList" :key="shopIndex">
-                <div class="shop-left">
-                    <div class="shop-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
-                </div>
-                <div class="shop-right">
-                    <p>{{shopItem.commodityName}} <span class="fr">x{{shopItem.quantity}}</span></p>
-                    <p>规格分类：{{shopItem.specsName}}</p>
-                    <p>合计{{shopItem.quantity}}件商品 <span class="fr price">¥{{formatAmount(shopItem.amount)}}</span></p>
-                </div>
+    <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
+      <div class="content">
+          <div class="det-head">
+              <div class="det-img"></div>
+              <div>{{'订单' + orderStatus[orderDetail.status]}}</div>
+          </div>
+          <p class="back-co"></p>
+          <div class="det-con">
+              <div class="con-left">
+                  <div class="l-img"></div>
+              </div>
+              <div class="con-right">
+                  <p>{{addressMsg.addressee}} <span>{{addressMsg.mobile}}</span></p>
+                  <p>{{addressMsg.province + addressMsg.city + addressMsg.district + addressMsg.detailAddress}}</p>
+              </div>
+          </div>
+          <p class="back-co"></p>
+          <!-- 多店铺订单详情 -->
+          <div class="sing-order" v-for="(storeItem, storeIndex) in storeList" :key="storeIndex" v-if="storeList">
+            <div class="det-list">
+              <div class="list-head">
+                  <p>{{storeItem.shopName}} <span class="fr">{{logistics[orderDetail.expressType]}}</span></p>
+              </div>
+              <div 
+                class="shop-det" 
+                v-for="(shopItem, shopIndex) in storeItem.detailList" 
+                :key="shopIndex"
+                @click="toShopDet(shopItem.code, shopItem.shopCode)"
+              >
+                  <div class="shop-left">
+                      <div class="shop-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
+                  </div>
+                  <div class="shop-right">
+                      <p>{{shopItem.commodityName}} <span class="fr">x{{shopItem.quantity}}</span></p>
+                      <p>规格分类：{{shopItem.specsName}}</p>
+                      <p>合计{{shopItem.quantity}}件商品 <span class="fr price">¥{{formatAmount(shopItem.amount)}}</span></p>
+                  </div>
+              </div>
             </div>
           </div>
-        </div>
-        <p class="back-co"></p>
-        <div class="det-foo">
-            <div class="foo-head">
-                <p>订单信息</p>
+          <!-- 单店铺订单详情 -->
+          <div class="sing-order" v-if="!storeList">
+            <div class="det-list">
+              <div class="list-head">
+                  <p>{{orderDetail.shopName}} <span class="fr">{{logistics[orderDetail.expressType]}}</span></p>
+              </div>
+              <div class="shop-det" @click="toShopDet(orderDetail.commodityCode, orderDetail.shopCode)">
+                  <div class="shop-left">
+                      <div class="shop-img" :style="getImgSyl(orderDetail.listPic ? orderDetail.listPic : '')"></div>
+                  </div>
+                  <div class="shop-right">
+                      <p>{{orderDetail.commodityName}} <span class="fr">x{{orderDetail.quantity}}</span></p>
+                      <p>规格分类：{{orderDetail.specsName}}</p>
+                      <p>合计{{orderDetail.quantity}}件商品 <span class="fr price">¥{{formatAmount(orderDetail.amount)}}</span></p>
+                  </div>
+              </div>
             </div>
-            <div class="foo-con">
-                <p><span>订单号</span>{{orderDetail.code}}</p>
-                <p><span>订单金额</span>¥{{formatAmount(orderDetail.amount)}}</p>
-                <p><span>卖家</span>{{orderDetail.sellersName}}</p>
-                <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
-            </div>
-        </div>
-        <div class="sing-foo">
-            <div class="foo-btn set-btn">
-              删除订单
-            </div>
-        </div>
-    </div>
+          </div>
+          <p class="back-co"></p>
+          <div class="det-foo">
+              <div class="foo-head">
+                  <p>订单信息</p>
+              </div>
+              <div class="foo-con">
+                  <p><span>订单号</span>{{orderDetail.code}}</p>
+                  <p><span>订单金额</span>¥{{formatAmount(orderDetail.amount)}}</p>
+                  <p><span>卖家</span>{{orderDetail.sellerName}}</p>
+                  <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
+              </div>
+          </div>
+          <div class="sing-foo" v-html="operHtml" @click="orderOperClick">
+              
+          </div>
+      </div>
+    </Scroll>
   </div>
 </template>
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
-import { formatAmount, formatImg, formatDate, setTitle, getUrlParam } from 'common/js/util';
-import { moreStoreOrder } from 'api/store';
+import Scroll from 'base/scroll/scroll';
+import { formatAmount, formatImg, formatDate, setTitle, getUrlParam, getUserId } from 'common/js/util';
+import { oneStoreOrder, affirmOrder } from 'api/store';
 import { getDictList } from 'api/general';
 export default {
   data() {
@@ -69,27 +94,35 @@ export default {
       orderType: '',     // one 立即购买  more 多订单
       storeList: [],
       orderDetail: {},
-      logistics: {}   // 邮寄方式
+      logistics: {},   // 邮寄方式
+      addressMsg: {},   // 地址信息
+      orderStatus: {},
+      affrimConfig: {  // 确认收货入参
+        orderCode: '',
+        receiver: getUserId(),
+        shopCode: ''
+      },
+      operHtml: ''
     };
   },
   created() {
     setTitle('订单详情');
+    this.pullUpLoad = null;
     this.code = getUrlParam('code');
     this.orderType = getUrlParam('type');
-    getDictList('logistics_type').then(data => {
+    getDictList('commodity_order_detail_status').then(data => {
+      data.forEach(item => {
+        this.orderStatus[item.dkey] = item.dvalue;
+      });
+    });
+    getDictList('logistics').then(data => {
       data.forEach(item => {
         this.logistics[item.dkey] = item.dvalue;
       });
     });
-    if(this.orderType === 'one') {
-      moreStoreOrder(this.code).then(data => {
-        this.orderDetail = data;
-        this.loading = false;
-        this.storeList = data.shopOrderList;
-      }, () => {
-        this.loading = false;
-      });
-    }
+  },
+  mounted() {
+    this.orderMessage();
   },
   methods: {
     formatAmount(amount) {
@@ -109,11 +142,77 @@ export default {
       return {
         backgroundImage: `url(${pic})`
       };
+    },
+    orderOperFn(status) { // 根据状态展示按钮
+      switch(status) {
+        case '0':
+          this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>
+                        <div class="foo-btn topay set-btn">立即付款</div>`;
+          break;
+        case '1':
+          this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>`;
+          break;
+        case '2':
+          this.operHtml = `<div class="foo-btn order-take">确认收货</div>
+                      <div class="foo-btn look-wl">查看物流</div>
+                      <div class="foo-btn after-sale">申请售后</div>`;
+          break;
+        case '3':
+          this.operHtml = `<div class="foo-btn order-pj">评价</div>`;
+          break;
+        case '4':
+          this.operHtml = ``;
+          break;
+      };
+    },
+    orderOperClick() { // 订单操作
+      let target = event.target;
+      if(target.classList.contains('change-site')) { // 修改地址
+        this.go('/address');
+      }
+      if(target.classList.contains('topay')) { // 待付款-去付款
+        let shopMsgList = [this.orderDetail];
+        sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+        this.go('/affirm-order?code=' + this.orderDetail.code);
+      }
+      if(target.classList.contains('after-sale')) { // 申请售后
+        alert('申请售后');
+      }
+      if(target.classList.contains('look-wl')) { // 查看物流
+        alert('查看物流');
+      }
+      if(target.classList.contains('order-take')) { // 确认收货
+        this.loading = true;
+        this.affrimConfig.orderCode = this.orderDetail.orderCode;
+        this.affrimConfig.shopCode = this.orderDetail.shopCode;
+        affirmOrder(this.affrimConfig).then(data => {
+          this.textMsg = '操作成功';
+          this.$refs.toast.show();
+          this.orderMessage();
+        }, () => {
+          this.loading = false;
+        });
+      }
+    },
+    toShopDet(code, shopCode) {
+      this.go(`/mall-shop_detail?code=${code}&shopCode=${shopCode}`);
+    },
+    orderMessage() {  // 获取订单信息
+      oneStoreOrder(this.code).then(data => {
+        this.orderDetail = data;
+        this.loading = false;
+        this.storeList = data.shopOrderList;   // moreStoreOrder
+        this.addressMsg = data.address;
+        this.orderOperFn(data.status);
+      }, () => {
+        this.loading = false;
+      });
     }
   },
   components: {
     FullLoading,
-    Toast
+    Toast,
+    Scroll
   }
 };
 </script>
@@ -124,7 +223,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0.98rem;
+  bottom: 0rem;
   width: 100%;
   .fl {
     float: left;
@@ -137,11 +236,6 @@ export default {
     background-color: #f5f5f5;
   }
   .content {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     overflow: auto;
     background-color: #fff;
     font-family: PingFangSC-Regular;
@@ -151,20 +245,6 @@ export default {
         display: flex;
         box-shadow: 0 -0.02rem 0 0 #EBEBEB;
         flex-direction: row-reverse;
-        .foo-btn{
-            width: 1.5rem;
-            height: 0.56rem;
-            text-align: center;
-            line-height: 0.56rem;
-            border: 0.02rem solid #979797;
-            border-radius: 0.06rem;
-            font-size: 0.26rem;
-            color: #999;
-        }
-        .set-btn{
-          color: #23AD8C;
-          border: 1px solid #23AD8C;
-        }
     }
     .det-head{
       width: 100%;
@@ -211,6 +291,9 @@ export default {
         align-content: space-around;
         font-size: 0.28rem;
         color: #333;
+        p{
+          width: 100%;
+        }
         span{
           color: #999;
         }

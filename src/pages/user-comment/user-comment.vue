@@ -1,34 +1,39 @@
 <template>
   <div class="shop-wrapper_det">
     <div class="content">
+    <Scroll 
+        :data="commentList"
+        :hasMore="hasMore"
+        @pullingUp="getCommemtDataFn">
       <div class="com-list">
-          <div class="com-singer">
+          <div class="com-singer" v-for="(item, index) in commentList" :key="index">
               <div class="sing-head">
                   <div class="s-head_left">
                       <div class="l-img"></div>
                   </div>
                   <div class="s-head_right">
-                      <p>王大锤001 <span class="fr">10分钟前</span></p>
+                      <p>{{userMsgList[index].nickname}} <span class="fr">{{formatDate(item.commentDatetime)}}</span></p>
                   </div>
               </div>
-              <div class="sing-con">
-                  <p>好看又耐用。攒</p>
-                  <div class="con-img" v-if="isCommentImg">
-                      <div></div>
-                  </div>
+              <div class="sing-con" v-html="item.content">
+                  
               </div>
               <div class="sing-foo">
                   <div class="s-foo_left">
                       <p>浏览46次</p>
                   </div>
                   <div class="s-foo_right">
-                      <p><span class="foo-pl"></span> 评论</p>
-                      <p><span class="foo-z"></span> 150</p>
+                      <p><span class="foo-pl"></span> <span class="pl">评论</span></p>
+                      <p><span class="foo-z"></span> <span class="pl">150</span></p>
                   </div>
               </div>
           </div>
       </div>
-      <div class="shop-foo">
+      <div class="mall-content">
+        <no-result v-show="!commentList.length && !hasMore" class="no-result-wrapper" title="暂无评论"></no-result>
+      </div>
+    </Scroll>
+    <div class="shop-foo">
         <div class="foo-left">
             <div class="le-dp" @click="go('mall-store');">
                 <div class="dp-img"></div>
@@ -40,83 +45,277 @@
             </div>
             </div>
             <div class="foo-right">
-            <button class="add-cart" @click="istoast = true">加入购物车</button>
-            <button class="buy">立即购买</button>
+            <button class="add-cart" @click="setAddCart">加入购物车</button>
+            <button class="buy" @click="toBuy">立即购买</button>
             </div>
         </div>
     </div>
-    <div class="toast" v-show="istoast">
-        <div class="shop-toast">
-            <div class="tos-head">
+    <div class="toast" v-show="istoast" @click="istoast = false">
+        <div class="shop-toast" @click.stop>
+        <div class="tos-head">
             <div class="head-left">
-                <div class="l-img"></div>
+            <div class="l-img" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')"></div>
             </div>
             <div class="head-right">
-                <p class="r-head">¥80-185 <span class="fr iconX" @click="istoast = false"></span></p>
-                <p>库存9942件</p>
-                <p>选择颜色分类</p>
-            </div>
-            </div>
-            <div class="tos-con">
-            <div class="con-head">
-                <h5>规格分类</h5>
-            </div>
-            <div class="con-list">
-                <div class="sing">
-                <p>规格分类</p>
-                </div>
-                <div class="sing">
-                <p>规格分类</p>
-                </div>
-                <div class="sing">
-                <p>规格分类</p>
-                </div>
-                <div class="sing">
-                <p>规格分类</p>
-                </div>
-            </div>
-            <div class="con-foo">
-                <div class="f-left">
-                数量
-                <p class="fr l-num">
-                    <span class="jian"></span> <b>1</b> <span class="jia"></span>
-                </p>
-                </div>
-            </div>
-            </div>
-            <div class="tos-btn">
-            确定
+            <p class="r-head">¥{{setPrice}} <span class="fr iconX" @click="istoast = false"></span></p>
+            <p>库存{{inventory}}件</p>
+            <p v-if="specsList.length > 1">{{setSpecsName ? `已选 “${setSpecsName}”` : '选择颜色分类'}}</p>
+            <p v-if="specsList.length == 1">已选 “{{specsList[0].name}}”</p>
             </div>
         </div>
-      </div>
+        <div class="tos-con">
+            <div class="con-head">
+            <h5>规格分类</h5>
+            </div>
+            <div class="con-list">
+            <div class="sing" 
+                v-for="(item, index) in specsList" 
+                :key="index" 
+                @click="specsFn(index, item)" 
+                :class="{'set-index': setIndex == index}"
+            >
+                <p>{{item.name}}</p>
+            </div>
+            </div>
+            <div class="con-foo">
+            <div class="f-left">
+                数量
+                <p class="fr l-num">
+                <span class="jian" @click="minusShop"></span>&nbsp;&nbsp; <b>{{shopNum}}</b> &nbsp;&nbsp;<span class="jia" @click="addShop"></span>
+                </p>
+            </div>
+            </div>
+        </div>
+        <div class="tos-btn" v-show="isgm" @click="qrorderFn">
+            确定
+        </div>
+        <div class="tos-btns" v-show="!isgm">
+            <div class="gwc" @click="toShopCart">
+            加入购物车
+            </div>
+            <div class="ljgm" @click="toShopOrder">
+            立即购买
+            </div>
+        </div>
+        </div>
+    </div>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <toast ref="toast" :text="textMsg"></toast>
   </div>
 </template>
 <script>
-import { formatAmount, setTitle } from 'common/js/util';
+import FullLoading from 'base/full-loading/full-loading';
+import Toast from 'base/toast/toast';
+import Scroll from 'base/scroll/scroll';
+import NoResult from 'base/no-result/no-result';
+import { formatAmount, setTitle, formatDate, getUrlParam, formatImg, getUserId } from 'common/js/util';
+import { getUser } from 'api/user';
+import { getShopDetail, getCommemtData, addShopCart } from 'api/store';
 export default {
   data() {
     return {
-      isCommentImg: false,
-      istoast: false
+      istoast: false,
+      loading: true,
+      isgm: true,
+      hasMore: true,
+      textMsg: '',
+      loadingText: '加载中...',
+      code: '',
+      shopCode: '',
+      shopDetData: {},  // 商品详情
+      logistics: {},   // 邮寄方式
+      detailDescription: '',
+      start: 1,
+      config: {      // 评论参数
+        start: 1,
+        limit: 1,
+        commodityCode: '',
+        status: 'D'
+      },
+      commentData: [],       // 评论数据
+      specsList: [],          // 产品规格
+      setPrice: '',           // 选中规格价格
+      inventory: '',           // 选中规格库存
+      setIndex: 0,            // 选中的第几个规格
+      shopNum: 1,              // 商品数量
+      addCartConfig: {            // 加入购物车参数
+        userId: getUserId(),
+        commodityCode: '',
+        commodityName: '',        // 商品名称
+        specsId: '',              // 规格编号
+        specsName: '',            // 规格名称
+        quantity: 1              // 商品数量
+      },
+      isCartType: '0',             // 无规格 0 点外购物车  1 点外立即购买
+      shopName: '',                // 店铺名称
+      bannerPic: '',
+      setSpecsName: '',
+      commentList: [],
+      userMsgList: []
     };
   },
   created() {
     setTitle('全部评论');
+    this.code = getUrlParam('code');
+    this.config.commodityCode = this.code;
+    this.addCartConfig.commodityCode = this.code;
+    this.getCommemtDataFn();
+    getShopDetail(this.code).then(data => {
+      this.shopDetData = data;
+      this.specsList = data.specsList;
+      this.bannerPic = data.bannerPic;
+      this.shopName = data.shopName;
+      this.setPrice = formatAmount(this.specsList[0].price);
+      this.inventory = this.specsList[0].inventory;
+      this.detailDescription = data.description;
+      this.addCartConfig.commodityName = data.name;
+      this.addCartConfig.specsId = this.specsList[0].id;
+      this.addCartConfig.specsName = this.specsList[0].name;
+    });
   },
   methods: {
+    formatDate(time) {
+      return formatDate(time);
+    },
+    formatImg(img) {
+      return formatImg(img);
+    },
     formatAmount(amount) {
       return formatAmount(amount);
     },
     go(url) {
       this.$router.push(url);
     },
-    getImgSyl(imgs) {
+    getImgSyl(imgs, type) {
+      let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
       return {
-        backgroundImage: `url(${imgs})`
+        backgroundImage: `url(${pic})`
       };
+    },
+    getCommemtDataFn() {
+      this.config.start = this.start;
+      getCommemtData(this.config).then(data => {
+        if (data.totalPage <= this.start) {
+          this.hasMore = false;
+        }
+        this.commentList = [...this.commentList, ...data.list];
+        this.start ++;
+        data.list.forEach(item => {
+          getUser(item.userId).then(res => {
+            this.userMsgList.push(res);
+          });
+        });
+        this.loading = false;
+      }, () => {
+        this.loading = false;
+      });
+    },
+    setAddCart() { // 外加入购物车
+      this.isLogin();
+      if(this.specsList.length > 1) {
+        this.istoast = true;
+        this.isgm = true;
+        this.isCartType = '0';
+      }else {
+        this.addShopCart();
+      }
+    },
+    toBuy() { // 外立即购买
+      this.isLogin();
+      if(this.specsList.length > 1) {
+        this.istoast = true;
+        this.isgm = true;
+        this.isCartType = '1';
+        return;
+      }
+      this.loading = true;
+      let shopMsg = {
+        ...this.addCartConfig,
+        shopName: this.shopName,
+        bannerPic: this.bannerPic,
+        logistics: this.shopDetData.logistics,
+        setPrice: parseFloat(this.setPrice) * 1000
+      };
+      let shopMsgList = [shopMsg];
+      sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+      this.go('/affirm-order?code=' + this.code);
+    },
+    toShopCart() { // 内加入购物车
+      this.isLogin();
+      this.addShopCart();
+    },
+    toShopOrder() { // 内立即购买
+      this.isLogin();
+      this.loading = true;
+      let shopMsg = {
+        ...this.addCartConfig,
+        shopName: this.shopName,
+        bannerPic: this.bannerPic,
+        logistics: this.shopDetData.logistics,
+        setPrice: parseFloat(this.setPrice) * 1000
+      };
+      let shopMsgList = [shopMsg];
+      sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+      this.go('/affirm-order?code=' + this.code);
+    },
+    isLogin() {
+      if(!getUserId()) {
+        this.textMsg = '请先登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.go('login');
+        }, 1500);
+        return;
+      }
+    },
+    setSpecification() { // 点击规格
+      this.istoast = true;
+      this.isgm = false;
+    },
+    specsFn(index, item) { // 选中规格
+      this.setIndex = index;
+      this.setPrice = formatAmount(item.price);
+      this.inventory = item.inventory;
+      this.addCartConfig.specsId = item.id;
+      this.addCartConfig.specsName = item.name;
+      this.setSpecsName = item.name;
+    },
+    minusShop() { // 商品减
+      if(this.shopNum > 1) {
+        this.shopNum --;
+      }
+    },
+    addShop() {  // 商品加
+      this.shopNum ++;
+    },
+    addShopCart() { // 加入购物车接口
+      this.addCartConfig.quantity = this.shopNum;
+      this.loading = true;
+      addShopCart(this.addCartConfig).then(data => {
+        this.loading = false;
+        this.textMsg = '加入购物车成功';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.go('/mall-shopCart');
+        }, 1500);
+      }, () => {
+        this.loading = false;
+      });
+    },
+    qrorderFn() { // 确认操作
+      if(this.isCartType === '0') { // 加入购物车
+        this.addShopCart();
+      }
+      if(this.isCartType === '1') {  // 立即购买
+
+      }
     }
   },
-  mounted() {
+  components: {
+    FullLoading,
+    Toast,
+    Scroll,
+    NoResult
   }
 };
 </script>
@@ -173,24 +372,6 @@ export default {
                     }
                 }
             }
-            .sing-con{
-                margin: 0.18rem 0 0.3rem 0;
-                font-size: 0.3rem;
-                color: #333333;
-                letter-spacing: 0.0025rem;
-                .con-img{
-                    display: flex;
-                    flex-wrap: wrap;
-                    div{
-                        background-size: 100% 100%;
-                        width: 2.1rem;
-                        height: 2.1rem;
-                        margin-right: 2%;
-                        margin-top: 0.2rem;
-                        background-image: url('./shop.png');
-                    }
-                }
-            }
             .sing-foo{
                 display: flex;
                 justify-content: space-between;
@@ -203,12 +384,17 @@ export default {
                     display: flex;
                     p{
                         margin-left: 0.4rem;
+                        vertical-align: middle;
                         span{
                             display: inline-block;
                             width: 0.3rem;
                             height: 0.3rem;
                             background-size: 100% 100%;
                             margin-right: 0.1rem;
+                            vertical-align: middle;
+                        }
+                        .pl{
+                            width: auto;
                         }
                         .foo-pl{
                             background-image: url('./pl.png');

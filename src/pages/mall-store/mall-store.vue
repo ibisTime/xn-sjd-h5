@@ -1,47 +1,49 @@
 <template>
   <div class="mall-wrapper" @click.stop>
-    <div class="content" v-show="!isAll">
-      <div class="mall-header">
-        <div class="head-search">
-          <h4>商铺名称</h4>
-          <p>辅助文字辅助文字辅助文字辅助文字</p>
+    <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
+      <div class="content" v-show="!isAll">
+        <div class="mall-header">
+          <div class="head-search">
+            <h4>{{name}}</h4>
+            <p>{{description}}</p>
+          </div>
         </div>
-      </div>
-      <div class="mall-list">
-        <div class="mall-single" v-for="(item, index) in mallList" :key="index">
-          <div class="sing-img"></div>
-          <p class="sing-txt">{{item}}</p>
+        <div class="mall-list">
+          <div class="mall-single" v-for="(item, index) in mallList" :key="index">
+            <div class="sing-img"></div>
+            <p class="sing-txt">{{item}}</p>
+          </div>
         </div>
-      </div>
-      <div class="mall-content">
-        <div class="con-head">
-          <h5>所有商品<span class="fr" @click="tomore">更多</span></h5>
-          <div class="ml-list">
-            <Scroll 
-              :data="hotShopList"
-              :hasMore="hasMore"
-              @pullingUp="getHotShop">
-              <div class="con-list">
-                <div class="con-sing" @click="toShopDet" v-for="(shopItem, shopIndex) in hotShopList" :key="shopIndex">
-                  <div class="con-sing_img">
-                    <div class="sing-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
-                    <div class="con-txt">
-                      <h5>{{shopItem.name}}</h5>
-                      <div class="con-foo">
-                        <p>￥{{formatAmount(shopItem.minPrice)}}起<span class="icon fr" @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"></span></p>
+        <div class="mall-content">
+          <div class="con-head">
+            <h5>所有商品<span class="fr" @click="tomore">更多</span></h5>
+            <div class="ml-list" @touchstart.stop>
+              <Scroll 
+                :data="hotShopList"
+                :hasMore="hasMore"
+                @pullingUp="getHotShop">
+                <div class="con-list">
+                  <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, shopIndex) in hotShopList" :key="shopIndex">
+                    <div class="con-sing_img">
+                      <div class="sing-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
+                      <div class="con-txt">
+                        <h5>{{shopItem.name}}</h5>
+                        <div class="con-foo">
+                          <p>￥{{formatAmount(shopItem.minPrice)}}起<span class="icon fr" @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"></span></p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Scroll>
-          </div>
-          <div class="mall-content">
-            <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+                <div class="mall-content">
+                  <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+                </div>
+              </Scroll>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Scroll>
     <MallShopList v-show="isAll" />
     <div class="go-cart" @click.stop="go('/mall-shopCart')">
     </div>
@@ -55,7 +57,7 @@ import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
 import MallShopList from '../mall-shopList/mall-shopList';
-import { getAllShopData, addShopCart } from 'api/store';
+import { getAllShopData, addShopCart, storeMsg } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUrlParam, getUserId } from 'common/js/util';
 export default {
   // name: "home",
@@ -82,13 +84,20 @@ export default {
         specsId: '',              // 规格编号
         specsName: '',            // 规格名称
         quantity: 1              // 商品数量
-      }
+      },
+      description: '',
+      name: ''
     };
   },
   created() {
     setTitle('店铺名称');
+    this.pullUpLoad = null;
     this.shopCode = getUrlParam('shopCode');
     this.config.shopCode = this.shopCode;
+    storeMsg(this.shopCode).then(data => {
+      this.description = data.description;
+      this.name = data.name;
+    });
     this.getHotShop();
   },
   mounted() {
@@ -127,8 +136,8 @@ export default {
         }, 1500);
       });
     },
-    toShopDet() {
-      this.go('/mall-shop_detail');
+    toShopDet(code, shopCode) {
+      this.go(`/mall-shop_detail?code=${code}&shopCode=${shopCode}`);
     },
     tomore() {
       this.isAll = true;
@@ -160,7 +169,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0.98rem;
+  height: 100%;
   width: 100%;
   .fl {
     float: left;
@@ -173,11 +182,6 @@ export default {
     height: 3rem;
   }
   .content {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     overflow: auto;
     font-family: PingFangSC-Regular;
 

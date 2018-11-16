@@ -1,57 +1,59 @@
 <template>
   <div class="mall-wrapper" @click.stop>
-    <div class="content" v-show="!isAll">
-      <div class="mall-header">
-        <div class="head-search">
-          <div class="search">
-            <span></span>
-            <input type="text" placeholder="搜索商品">
+    <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
+      <div class="content" v-show="!isAll">
+        <div class="mall-header">
+          <div class="head-search">
+            <div class="search">
+              <span></span>
+              <input type="text" placeholder="搜索商品">
+            </div>
           </div>
         </div>
-      </div>
-      <div class="mall-list">
-        <div class="mall-single" v-for="(item, index) in mallList" :key="index">
-          <div class="sing-img"></div>
-          <p class="sing-txt">{{item}}</p>
+        <div class="mall-list">
+          <div class="mall-single" v-for="(item, index) in mallList" :key="index">
+            <div class="sing-img"></div>
+            <p class="sing-txt">{{item}}</p>
+          </div>
         </div>
-      </div>
-      <div class="mall-content">
-        <div class="con-head">
-          <h5>热门推荐 <router-link to="/mall/mall-shopList" class="fr" @click.native="isAll = true;">更多</router-link></h5>
-          <div class="shop-list">
-            <Scroll 
-              :data="hotShopList"
-              :hasMore="hasMore"
-              @pullingUp="getHotShop">
-              <div class="con-list">
-                <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, index) in hotShopList" :key="index">
-                  <div class="con-sing_img">
-                    <div class="sing-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
-                    <div class="con-txt">
-                      <h5>{{shopItem.name}}</h5>
-                      <div class="con-foo">
-                        <p>￥{{formatAmount(shopItem.minPrice)}}起
-                          <span 
-                            class="icon fr" 
-                            @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"
-                          ></span>
-                        </p>
+        <div class="mall-content">
+          <div class="con-head">
+            <h5>热门推荐 <router-link to="/mall/mall-shopList" class="fr" @click.native="isAll = true;">更多</router-link></h5>
+            <div class="shop-list" @touchstart.stop>
+              <Scroll 
+                :data="hotShopList"
+                :hasMore="hasMore"
+                @pullingUp="getHotShop">
+                <div class="con-list">
+                  <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, index) in hotShopList" :key="index">
+                    <div class="con-sing_img">
+                      <div class="sing-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
+                      <div class="con-txt">
+                        <h5>{{shopItem.name}}</h5>
+                        <div class="con-foo">
+                          <p>￥{{formatAmount(shopItem.minPrice)}}起
+                            <span 
+                              class="icon fr" 
+                              @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"
+                            ></span>
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Scroll>
-            <div class="mall-content">
-              <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+                <div class="mall-content">
+                  <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+                </div>
+              </Scroll>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <router-view v-show="isAll"></router-view>
-    <div class="go-cart" @click.stop="go('/mall-shopCart')">
-    </div>
+      <router-view v-show="isAll"></router-view>
+      <div class="go-cart" @click.stop="toCartFn">
+      </div>
+    </Scroll>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
     <m-footer></m-footer>
@@ -71,7 +73,7 @@ export default {
       mallList: ['分类一', '分类二', '分类三', '分类四'],
       loading: true,
       textMsg: '',
-      loadingText: '正在加载中...',
+      loadingText: '正在加载...',
       isAll: false,
       hasMore: true,
       hotShopList: [],
@@ -82,6 +84,7 @@ export default {
         location: '1'
       },
       start: 1,
+      pullUpLoad: '',
       shopPrice: [],
       addCartConfig: {            // 加入购物车参数
         userId: getUserId(),
@@ -95,10 +98,8 @@ export default {
   },
   created() {
     setTitle('商场');
+    this.pullUpLoad = null;
     this.getHotShop();
-  },
-  mounted() {
-    this.loading = false;
   },
   methods: {
     formatAmount(amount) {
@@ -139,15 +140,28 @@ export default {
     tomore() {
       this.isAll = true;
     },
+    toCartFn() {
+      if(!getUserId()) {
+        this.textMsg = '请先登录';
+        setTimeout(() => {
+          this.go('/login');
+        }, 1500);
+        return;
+      }
+      this.go('/mall-shopCart');
+    },
     // 获取热门商品
     getHotShop() {
       this.config.start = this.start;
       getAllShopData(this.config).then(data => {
+        this.loading = false;
         if (data.totalPage <= this.start) {
           this.hasMore = false;
         }
         this.hotShopList = [...this.hotShopList, ...data.list];
         this.start ++;
+      }, () => {
+        this.loading = false;
       });
     }
   },
@@ -192,11 +206,6 @@ export default {
     height: 3rem;
   }
   .content {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     overflow: auto;
     font-family: PingFangSC-Regular;
 

@@ -251,3 +251,34 @@
     color: #999999 !important;
   }
 }
+.foo-btn{
+  width: 1.5rem;
+  height: 0.56rem;
+  text-align: center;
+  line-height: 0.56rem;
+  border: 0.02rem solid #979797;
+  border-radius: 0.06rem;
+  font-size: 0.26rem;
+  color: #999;
+  margin: 0 0.1rem;
+}
+.set-btn{
+  color: #23AD8C;
+  border: 1px solid #23AD8C;
+}
+.pj-con{
+  img{
+    margin-top: 0.2rem;
+    width: 80%;
+  }
+}
+.sing-con{
+  margin: 0.18rem 0 0.3rem 0;
+  font-size: 0.3rem;
+  color: #333333;
+  letter-spacing: 0.0025rem;
+  img{
+    margin-top: 0.2rem;
+    width: 80%;
+  }
+}

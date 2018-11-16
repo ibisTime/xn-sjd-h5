@@ -7,29 +7,165 @@
             <div class="pj-img">
                 <div class="img-box">
                     <div class="iup-box">
-                        <input type="file">
+                        <qiniu
+                            ref="qiniu"
+                            style="visibility: hidden;position: absolute;"
+                            :token="token" />
+                        <input type="file"
+                            :multiple="multiple"
+                            ref="fileInput"
+                            @change="fileChange($event)"
+                            accept="image/*"/>
                     </div>
-                    <div class="zp-box">
+                    <div class="zp-box" :style="getImgSyl(photos.length > 0 ? photos[0].key : '')">
                     
                     </div>
                 </div>
             </div>
             <p class="back-co"></p>
             <div class="pj-foo">
-                <div class="s-pj">
+                <div class="s-pj" @click="addAComment">
                     发表
                 </div>
             </div>
         </div>
+        <full-loading v-show="loading" :title="loadText"></full-loading>
+        <toast ref="toast" :text="text"></toast>
     </div>
 </template>
 
 <script>
+import Qiniu from 'base/qiniu/qiniu';
+import EXIF from 'exif-js';
+import { getImgData, formatImg, getUserId, getUrlParam } from 'common/js/util';
+import { addACommemt } from 'api/store';
+import { getQiniuToken } from 'api/general';
+import Toast from 'base/toast/toast';
+import FullLoading from 'base/full-loading/full-loading';
 export default {
   data() {
     return {
-      pjText: ''
+      text: '',
+      loading: false,
+      loadText: '',
+      pjText: '',
+      result: '',
+      photos: [],
+      token: '',
+      multiple: false,
+      commentConfig: {   // 评论入参
+        userId: getUserId(),
+        content: '',
+        commodityCode: ''
+      }
     };
+  },
+  mounted() {
+    this.commentConfig.commodityCode = getUrlParam('code');
+    Promise.all([
+      getQiniuToken()
+    ]).then(([res1]) => {
+      this.token = res1.uploadToken;
+    }).catch(() => {});
+  },
+  methods: {
+    getImgSyl(imgs) {
+      return {
+        backgroundImage: `url(${imgs ? formatImg(imgs) : '/static/tjtp.png'})`
+      };
+    },
+    addAComment() {
+      if(this.pjText === '' && this.photos.length === 0) {
+        this.text = '请输入文字或上传图片';
+        this.$refs.toast.show();
+        return;
+      }
+      this.loading = true;
+      let conText = `<p>${this.pjText}</p>`;
+      let conImg = `<img src="${formatImg(this.photos[0].key)}" />`;
+      this.commentConfig.content = conText + conImg;
+      addACommemt(this.commentConfig).then(data => {
+        this.loading = false;
+        this.text = '评论成功';
+        this.$refs.toast.show();
+        this.$router.push('user-comment?code=' + this.commentConfig.commodityCode);
+      }, () => {
+        this.loading = false;
+      });
+    },
+    /**
+     * 从相册中选择图片
+     * */
+    fileChange(e) {
+      let files;
+      if (e.dataTransfer) {
+        files = e.dataTransfer.files;
+      } else if (e.target) {
+        files = e.target.files;
+      }
+      let self = this;
+      let file = files[0];
+      let orientation;
+      EXIF.getData(file, function() {
+        orientation = EXIF.getTag(this, 'Orientation');
+      });
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        getImgData(file.type, this.result, orientation, function(data) {
+          let _url = URL.createObjectURL(file);
+          let item = {
+            preview: data,
+            ok: false,
+            type: file.type,
+            key: _url.split('/').pop() + '.' + file.name.split('.').pop()
+          };
+          self.loading = true;
+          self.uploadPhoto(data, item.key).then(() => {
+            item = {
+              ...item,
+              ok: true
+            };
+            if(item.ok === true) {
+              self.photos = [item];
+            }
+            self.updatePhotos(item);
+          }).catch(err => {
+            self.onUploadError(err);
+          });
+          self.$refs.fileInput.value = null;
+        });
+      };
+      reader.readAsDataURL(file);
+    },
+    /**
+     * 图片上传完成后更新photos
+     * */
+    updatePhotos(item) {
+      for (let i = 0; i < this.photos.length; i++) {
+        if (this.photos[i].key === item.key) {
+          this.photos.splice(i, 1, item);
+          break;
+        }
+      }
+      this.loading = false;
+    },
+    uploadPhoto(base64, key) {
+      return this.$refs.qiniu.uploadByBase64(base64, key);
+    },
+    /**
+     * 处理图片上传错误事件
+     * @param error 错误信息
+     */
+    onUploadError(error) {
+      this.text = (error.body && error.body.error) || `${error.message}:10M` || '图片上传出错';
+      this.$refs.toast.show();
+      this.loading = false;
+    }
+  },
+  components: {
+    Qiniu,
+    Toast,
+    FullLoading
   }
 };
 </script>
@@ -88,9 +224,11 @@ export default {
             left: 0;
             top: 0;
             z-index: 1;
-            background-image: url('./tjtp.png');
             background-size: 100% 100%;
         }
+    }
+    .pj-img{
+      padding: 0.2rem 0;
     }
     .pj-foo{
         margin-top: 1.16rem;

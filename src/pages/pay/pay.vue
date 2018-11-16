@@ -305,7 +305,7 @@
             // this.curItem = item;
             this.$refs.confirmInput.show();
           } else {
-            if(this.storeCode && this.storeType === 'one') {
+            if(this.storeCode) {
               if(this.isPublish) {
                 this.config.isJfDeduct = '1';
               }
@@ -440,7 +440,7 @@
           this.inputText = '支付密码';
           this.$refs.confirmInput.show();
         } else {
-          if(this.storeCode && this.storeType === 'one') {
+          if(this.storeCode) {
             this.loading = true;
             this.config.tradePwd = this.pwd;
             this.loadingText = '正在支付...';
@@ -453,7 +453,7 @@
               this.$refs.toast.show();
               sessionStorage.removeItem('totalPrice');
               setTimeout(() => {
-                this.$router.push(`/store-order_detail?code=${this.storeCode}&type=${this.storeType}`);
+                this.$router.push(`/store-order`);
               }, 1500);
             }, () => {
               this.loading = false;

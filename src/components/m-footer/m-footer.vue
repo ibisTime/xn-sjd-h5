@@ -67,7 +67,7 @@
     border-top: 1px solid #dedede;
     background: #fff;
     color: $color-text-l;
-    z-index: 1000;
+    z-index: 10000;
 
     .foot-item {
       position: relative;

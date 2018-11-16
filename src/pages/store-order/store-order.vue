@@ -10,52 +10,90 @@
                 <li><span :class="{'on': isset == '5'}">待评价</span></li>
             </ul>
         </div>
-        <div class="order-list">
-            <div class="order-sing">
-                <div class="sing-head">
-                    <div class="head-dp">
-                        店铺名称 >
-                        <span class="fr">待付款</span>
+        <div class="main">
+            <Scroll 
+                :data="orderList"
+                :hasMore="hasMore"
+                @pullingUp="morePageOrderFn">
+                <div class="order-list">
+                    <div 
+                        class="order-sing" 
+                        v-for="(orderItem, orderIndex) in orderList" 
+                        :key="orderIndex"
+                    >
+                        <div class="sing-head">
+                            <div class="head-dp" @click="go(`/mall-store?shopCode=${orderItem.shopCode}`)">
+                                {{orderItem.shopName}} >
+                                <span class="fr">{{orderStatus[orderItem.status]}}</span>
+                            </div>
+                        </div>
+                        <div class="sing-con" @click="toOrderDet(orderItem.code)">
+                            <div class="s-con_left">
+                                <div class="l-img"  :style="getImgSyl(orderItem.listPic ? orderItem.listPic : '')"></div>
+                            </div>
+                            <div class="s-con_right">
+                                <p>{{orderItem.commodityName}} <span class="fr">x{{orderItem.quantity}}</span></p>
+                                <p>规格分类：{{orderItem.specsName}}</p>
+                                <p>合计{{orderItem.quantity}}件商品 <span class="fr sp-b">¥{{formatAmount(orderItem.amount)}}</span></p>
+                            </div>
+                        </div>
+                        <div class="sing-foo" v-html="operHtmlList[orderIndex]" @click="orderOperClick(orderIndex)">
+                        </div>
                     </div>
                 </div>
-                <div class="sing-con">
-                    <div class="s-con_left">
-                        <div class="l-img"></div>
-                    </div>
-                    <div class="s-con_right">
-                        <p>商品名称 <span class="fr">x1</span></p>
-                        <p>规格分类：10斤装</p>
-                        <p>合计1件商品 <span class="fr sp-b">¥2480.00</span></p>
-                    </div>
+                <div class="mall-content">
+                    <no-result v-show="!orderList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
                 </div>
-                <div class="sing-foo">
-                    <div class="foo-btn">
-                        删除订单
-                    </div>
-                </div>
-            </div>
+            </Scroll>
         </div>
     </div>
+    <toast ref="toast" :text="textMsg"></toast>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
   </div>
 </template>
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { onePageOrder, affirmOrder } from 'api/store';
+import { getDictList } from 'api/general';
+import Scroll from 'base/scroll/scroll';
+import NoResult from 'base/no-result/no-result';
 export default {
   data() {
     return {
       loading: true,
+      hasMore: true,
       textMsg: '',
-      loadingText: '正在加载中...',
-      isset: '1'
+      loadingText: '正在加载...',
+      isset: '1',
+      start: 1,
+      orderConfig: {
+        start: 1,
+        limit: 8,
+        status: '',
+        orderDir: 'desc',
+        orderColumn: 'update_datetime',
+        applyUser: getUserId()
+      },
+      affrimConfig: {  // 确认收货入参
+        orderCode: '',
+        receiver: getUserId(),
+        shopCode: ''
+      },
+      orderList: [],
+      orderStatus: {},
+      operHtmlList: ''
     };
   },
   created() {
     setTitle('商品订单');
-  },
-  mounted() {
-    this.loading = false;
+    getDictList('commodity_order_detail_status').then(data => {
+      data.forEach(item => {
+        this.orderStatus[item.dkey] = item.dvalue;
+      });
+    });
+    this.morePageOrderFn();
   },
   methods: {
     formatAmount(amount) {
@@ -70,9 +108,10 @@ export default {
     go(url) {
       this.$router.push(url);
     },
-    getImgSyl(imgs) {
+    getImgSyl(imgs, type) {
+      let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
       return {
-        backgroundImage: `url(${imgs})`
+        backgroundImage: `url(${pic})`
       };
     },
     changStu() {
@@ -80,25 +119,128 @@ export default {
       switch(target.innerText) {
         case '全部':
           this.isset = '1';
+          this.orderConfig.status = '';
+          this.start = 1;
+          this.orderList = [];
+          this.morePageOrderFn();
           break;
         case '待付款':
           this.isset = '2';
+          this.orderConfig.status = '0';
+          this.start = 1;
+          this.orderList = [];
+          this.morePageOrderFn();
           break;
         case '待发货':
           this.isset = '3';
+          this.orderConfig.status = '1';
+          this.start = 1;
+          this.orderList = [];
+          this.morePageOrderFn();
           break;
         case '待收货':
           this.isset = '4';
+          this.orderConfig.status = '2';
+          this.start = 1;
+          this.orderList = [];
+          this.morePageOrderFn();
           break;
         case '待评价':
           this.isset = '5';
+          this.orderConfig.status = '3';
+          this.start = 1;
+          this.orderList = [];
+          this.morePageOrderFn();
           break;
       }
+    },
+    orderOperFn(status) { // 根据状态展示按钮
+      switch(status) {
+        case '0':
+          this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>
+                        <div class="foo-btn topay set-btn">立即付款</div>`;
+          break;
+        case '1':
+          this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>`;
+          break;
+        case '2':
+          this.operHtml = `<div class="foo-btn order-take">确认收货</div>
+                      <div class="foo-btn look-wl">查看物流</div>
+                      <div class="foo-btn after-sale">申请售后</div>`;
+          break;
+        case '3':
+          this.operHtml = `<div class="foo-btn order-pj">评价</div>`;
+          break;
+        case '4':
+          this.operHtml = `<div class="foo-btn order-pj">已完成</div>`;
+          break;
+      };
+      this.operHtmlList.push(this.operHtml);
+    },
+    orderOperClick(index) { // 订单操作
+      let target = event.target;
+      if(target.classList.contains('change-site')) { // 修改地址
+        this.go('/address');
+      }
+      if(target.classList.contains('topay')) { // 待付款-去付款
+        let shopMsgList = [this.orderList[index]];
+        sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+        this.go('/affirm-order?code=' + this.orderList[index].code);
+      }
+      if(target.classList.contains('after-sale')) { // 申请售后
+        alert('申请售后');
+      }
+      if(target.classList.contains('look-wl')) { // 查看物流
+        alert('查看物流');
+      }
+      if(target.classList.contains('order-pj')) { // 发表评论
+        this.loading = true;
+        this.go('/user-pj?code=' + this.orderList[index].commodityCode);
+      }
+      if(target.classList.contains('order-take')) { // 确认收货
+        this.loading = true;
+        this.affrimConfig.orderCode = this.orderList[index].orderCode;
+        this.affrimConfig.shopCode = this.orderList[index].shopCode;
+        this.affrimConfig.code = this.orderList[index].code;
+        affirmOrder(this.affrimConfig).then(data => {
+          this.textMsg = '操作成功';
+          this.$refs.toast.show();
+          this.orderConfig.status = '2';
+          this.start = 1;
+          this.orderList = [];
+          this.morePageOrderFn();
+        }, () => {
+          this.loading = false;
+        });
+      }
+    },
+    morePageOrderFn() {  // 获取订单
+      this.orderConfig.start = this.start;
+      onePageOrder(this.orderConfig).then(data => {
+        this.operHtmlList = [];
+        this.loading = false;
+        if (data.totalPage <= this.start) {
+          this.hasMore = false;
+        }
+        this.orderList = [...this.orderList, ...data.list];
+        this.start ++;
+        for(let i = 0, len = this.orderList.length; i < len; i++) {
+          this.orderOperFn(this.orderList[i].status);
+        }
+      }, () => {
+        this.loading = false;
+      });
+    },
+    toOrderDet(orderCode) {
+      this.loading = true;
+      this.go(`/store-order_detail?code=${orderCode}`);
     }
   },
   components: {
     FullLoading,
-    Toast
+    Toast,
+    Scroll,
+    NoResult
   }
 };
 </script>
@@ -109,7 +251,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0.98rem;
+  bottom: 0rem;
   width: 100%;
   .fl {
     float: left;
@@ -153,6 +295,11 @@ export default {
             }
         }
     }
+    .main{
+        height: 13rem;
+        overflow: scroll;
+        padding-bottom: 2rem;
+    }
     .order-sing{
         margin-bottom: 0.2rem;
         padding: 0 0.3rem;
@@ -169,6 +316,7 @@ export default {
             height: 2.1rem;
             padding: 0 0.3rem;
             display: flex;
+            align-items: center;
             .s-con_left{
                 width: 1.6rem;
                 height: 1.6rem;

@@ -138,6 +138,8 @@ const storeOrder = () => import('@/pages/store-order/store-order');
 const userPj = () => import('@/pages/user-pj/user-pj');
 // 订单详情
 const storeOrderDetail = () => import('@/pages/store-order_detail/store-detail');
+// 商场消息
+const storeMessage = () => import('@/pages/storeMessage/storeMessage');
 // 公告
 const Notices = () => import('@/pages/notices/notices');
 // 公告详情
@@ -448,6 +450,10 @@ export default new Router({
     {
       path: '/store-order_detail',
       component: storeOrderDetail
+    },
+    {
+      path: '/store-message',
+      component: storeMessage
     },
     {
       path: '/money',

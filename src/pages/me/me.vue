@@ -67,6 +67,22 @@
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="white"></div>
+        <div class="item" @click="go('/mall-shopCart')">
+          <img src="./cart.png" class="me-list-icon">
+          <span>我的购物车</span>
+          <img src="./more@2x.png" class="fr more">
+        </div>
+        <div class="item" @click="go('/store-order')">
+          <img src="./order@2x.png" class="me-list-icon">
+          <span>我的商场订单</span>
+          <img src="./more@2x.png" class="fr more">
+        </div>
+        <!-- <div class="item" @click="go('/store-message')">
+          <img src="./message.png" class="me-list-icon">
+          <span>我的商场消息</span>
+          <img src="./more@2x.png" class="fr more">
+        </div> -->
+        <div class="white"></div>
         <div class="item" @click="go('/my-article')">
           <img src="./article@2x.png" class="me-list-icon">
           <span>我的文章</span>

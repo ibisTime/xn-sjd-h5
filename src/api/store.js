@@ -43,6 +43,16 @@ export function moreStoreOrder(code) {
   });
 }
 
+// 分页查订单（多店铺）
+export function morePageOrder(config) {
+  return fetch(629725, config);
+}
+
+// 分页查订单（单店铺）
+export function onePageOrder(config) {
+  return fetch(629735, config);
+}
+
 // 支付订单（多店铺）
 export function payMoreOrder(config) {
   return fetch(629721, config);
@@ -55,9 +65,21 @@ export function storeRemoveFn(shopCode) {
   });
 }
 
+// 查店铺信息
+export function storeMsg(code) {
+  return fetch(630307, {
+    code
+  });
+}
+
 // 购物车下单
 export function shopCartOrder(config) {
   return fetch(629713, config);
+}
+
+// 确认收货
+export function affirmOrder(config) {
+  return fetch(629731, config);
 }
 
 /**
@@ -68,6 +90,11 @@ export function getStoreDeductible(code) {
   return fetch(629728, {
     code
   });
+}
+
+// 发表评论
+export function addACommemt(config) {
+  return fetch(629750, config);
 }
 
 // 分页查评论
