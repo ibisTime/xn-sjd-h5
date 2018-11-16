@@ -2,7 +2,7 @@
   <div class="consignment-hall-wrapper">
     <category-sjd-consignment @sendMessage="sendMessage"></category-sjd-consignment>
     <div class="content">
-      <div class="hot" v-show="proList.length">
+      <div class="hot" v-show="proList.length" :style="{bottom: transactionInfo ? '1.3rem' : '0'}">
         <Scroll :data="proList"
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
@@ -81,7 +81,7 @@ export default {
       type: 0,
       showFlag: true,
       flag: false,
-      transactionInfo: {}
+      transactionInfo: null
     };
   },
   methods: {

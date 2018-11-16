@@ -1,8 +1,5 @@
 import {setCookie, getCookie, delCookie} from './cookie';
-// import PIC_PREFIX from './../../../dist/config';
-// import { getdomain } from ''
 import fetch from 'common/js/fetch';
-// import { getConfig } from 'api/general';
 
 // 日期格式化
 export function formatDate(date, format) {

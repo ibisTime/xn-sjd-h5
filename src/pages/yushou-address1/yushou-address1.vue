@@ -55,7 +55,7 @@
             </div>
           </div>
           <div class="gray"></div>
-          <ul>
+          <ul class="choosed-address">
             <li v-for="(item, index) in addressList[0]" :key="index" class="border-bottom-1px" v-show="addressList[0].length">
               <div class="content">
                 <div class="content-left">
@@ -296,7 +296,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
+    bottom: 0.98rem;
     width: 100%;
     height: 100%;
     background: $color-background;
@@ -425,6 +425,9 @@
           }
         }
       }
+    }
+    .choosed-address {
+      padding-bottom: 0.98rem;
     }
     ul {
 

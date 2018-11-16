@@ -50,9 +50,16 @@
         </div>
         <div class="proList">
           <div class="item"  v-for="item in proList" @click="go('/product-detail?code='+item.code)">
-            <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-            <div class="sell-type-right" :style="{background: item.canAdoptFlag ? '#23ad8c' : ''}">{{canAdopt(item)}}</div>
-            <img :src="formatImg(item.listPic)" class="hot-pro-img">
+            <div class="item-top">
+              <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
+              <div class="sell-type-right" :style="{background: canAdopt(item).canAdoptFlag ? '#23ad8c' : ''}">{{canAdopt(item).noAdoptReason}}</div>
+              <img :src="formatImg(item.listPic)" class="hot-pro-img">
+              <div class="prograss-bar" v-if="item.sellType === '3' || item.sellType === '4'">
+                <div class="nowCount" :style="{width: getWidth(item)+'%'}"></div>
+                <div class="totalCount"></div>
+                <div class="prograss-text"><span>{{item.nowCount}}/{{item.raiseCount}}</span></div>
+              </div>
+            </div>
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
               <p class="hot-pro-introduction">{{formatDate(item.updateDatetime, 'yyyy-MM-dd')}}</p>
@@ -124,6 +131,9 @@ export default {
     formatDate(date, format) {
       return formatDate(date, format);
     },
+    getWidth(item) {
+      return (item.nowCount / item.raiseCount) * 100;
+    },
     // 签到
     action() {
       let userId = getCookie('userId');
@@ -176,7 +186,7 @@ export default {
         getProductType({
           orderDir: 'asc',
           orderColumn: 'order_no',
-          statusList: [4, 5],
+          status: 1,
           level: 1,
           typeList: ['0', '1']
         }),
@@ -218,44 +228,50 @@ export default {
       item.canAdoptFlag = true;
       if(!this.userDetail.level) {
         item.canAdoptFlag = false;
-        return '您未登录';
+        item.noAdoptReason = '您未登录';
+        return item;
       }
       // 专属产品
       if(item.sellType === '1') {
         // 销售类型为专属且未到认养量
         if(item.raiseCount === item.nowCount) {
           item.canAdoptFlag = false;
-          return '已被认养';
+          item.noAdoptReason = '已被认养';
         } else {
-          return '可认养';
+          item.noAdoptReason = '可认养';
         }
+        return item;
       }
       // 定向产品
       if(item.directType && item.directType === '1') {
         // 等级定向且用户为该等级
         if(item.raiseCount === item.nowCount) {
           item.canAdoptFlag = false;
-          return '已被认养';
+          item.noAdoptReason = '已被认养';
+          return item;
         }
         if(item.directObject !== this.userDetail.level) {
           item.canAdoptFlag = false;
-          return '不可认养';
+          item.noAdoptReason = '不可认养';
         } else {
-          return '可认养';
+          item.noAdoptReason = '可认养';
         }
+        return item;
       }
       if(item.directType && item.directType === '2') {
         // 用户定向且是定向用户
         if(item.raiseCount === item.nowCount) {
           item.canAdoptFlag = false;
-          return '已被认养';
+          item.noAdoptReason = '已被认养';
+          return item;
         }
         if(item.directObject !== this.userId) {
           item.canAdoptFlag = false;
-          return '不可认养';
+          item.noAdoptReason = '不可认养';
         } else {
-          return '可认养';
+          item.noAdoptReason = '可认养';
         }
+        return item;
       }
       // 捐赠产品
       if(item.sellType === '3') {
@@ -266,20 +282,22 @@ export default {
         // 3进行比较
         if(curTime <= startTime || curTime >= endTime) {
           item.canAdoptFlag = false;
-          return '不可认养';
+          item.noAdoptReason = '不可认养';
         } else {
-          return '可认养';
+          item.noAdoptReason = '可认养';
         }
+        return item;
       }
       // 专属产品
       if(item.sellType === '4') {
         // 销售类型为专属且未到认养量
         if(item.raiseCount === item.nowCount) {
           item.canAdoptFlag = false;
-          return '已满标';
+          item.noAdoptReason = '已满标';
         } else {
-          return '可认养';
+          item.noAdoptReason = '可认养';
         }
+        return item;
       }
     },
     getUserDetail() {
@@ -569,37 +587,68 @@ export default {
           border-radius: 0.04rem;
           display: inline-block;
           position: relative;
-          .sell-type {
-            position: absolute;
-            left: 0;
-            top: 0;
-            background: #F7B524;
-            /*opacity: 0.5;*/
-            padding: 0 0.1rem;
-            height: 0.4rem;
-            font-size: 0.24rem;
-            line-height: 0.4rem;
-            text-align: center;
-            color: $color-highlight-background;
-            border-radius: 0.05rem;
-          }
-          .sell-type-right {
-            position: absolute;
-            right: 0;
-            top: 0;
-            background: #969998;
-            /*opacity: 0.5;*/
-            padding: 0 0.1rem;
-            height: 0.4rem;
-            font-size: 0.24rem;
-            line-height: 0.4rem;
-            text-align: center;
-            color: $color-highlight-background;
-            border-radius: 0.05rem;
-          }
-          .hot-pro-img {
-            height: 3.3rem;
-            width: 100%;
+          .item-top {
+            position: relative;
+            .sell-type {
+              position: absolute;
+              left: 0;
+              top: 0;
+              background: #F7B524;
+              /*opacity: 0.5;*/
+              padding: 0 0.1rem;
+              height: 0.4rem;
+              font-size: 0.24rem;
+              line-height: 0.4rem;
+              text-align: center;
+              color: $color-highlight-background;
+              border-radius: 0.05rem;
+            }
+            .sell-type-right {
+              position: absolute;
+              right: 0;
+              top: 0;
+              background: #969998;
+              /*opacity: 0.5;*/
+              padding: 0 0.1rem;
+              height: 0.4rem;
+              font-size: 0.24rem;
+              line-height: 0.4rem;
+              text-align: center;
+              color: $color-highlight-background;
+              border-radius: 0.05rem;
+            }
+            .hot-pro-img {
+              height: 3.3rem;
+              width: 100%;
+            }
+            .prograss-bar {
+              width: 100%;
+              height: 0.5rem;
+              border: 1px solid;
+              position: absolute;
+              bottom: 0;
+              .nowCount {
+                display: inline-block;
+                background: #23AD8C;
+                height: 100%;
+                max-width: 100%;
+              }
+              .totalCount {
+                display: inline;
+              }
+              .prograss-text {
+                font-size: 0.24rem;
+                color: black;
+                position: absolute;
+                top: 0;
+                width: 100%;
+                text-align: center;
+                height: 100%;
+                span {
+                  line-height: 0.5rem;
+                }
+              }
+            }
           }
           .hot-pro-text {
             padding: 0 0.2rem;

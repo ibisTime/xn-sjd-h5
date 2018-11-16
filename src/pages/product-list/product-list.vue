@@ -274,7 +274,7 @@ export default {
       getProductType({
         orderDir: 'asc',
         orderColumn: 'order_no',
-        statusList: [4, 5],
+        status: 1,
         typeList: ['0', '1']
       })
     ]).then(([res1, res2]) => {
