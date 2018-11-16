@@ -51,9 +51,9 @@
         </div>
       </div>
       <router-view v-show="isAll"></router-view>
-      <div class="go-cart" @click.stop="toCartFn">
-      </div>
     </Scroll>
+    <div class="go-cart" @click.stop="toCartFn">
+    </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
     <m-footer></m-footer>

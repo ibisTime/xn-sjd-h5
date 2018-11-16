@@ -164,12 +164,12 @@ export default {
           this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>`;
           break;
         case '2':
-          this.operHtml = `<div class="foo-btn order-take">确认收货</div>
-                      <div class="foo-btn look-wl">查看物流</div>
-                      <div class="foo-btn after-sale">申请售后</div>`;
+          this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
+                      <div class="foo-btn look-wl set-btn">查看物流</div>
+                      <div class="foo-btn after-sale set-btn">申请售后</div>`;
           break;
         case '3':
-          this.operHtml = `<div class="foo-btn order-pj">评价</div>`;
+          this.operHtml = `<div class="foo-btn order-pj set-btn">评价</div>`;
           break;
         case '4':
           this.operHtml = `<div class="foo-btn order-pj">已完成</div>`;

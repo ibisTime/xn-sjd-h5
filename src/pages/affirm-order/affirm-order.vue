@@ -264,6 +264,7 @@ export default {
   bottom: 0.98rem;
   width: 100%;
   height: 100%;
+  padding-bottom: 1rem;
   background-color: #fff;
   .fl {
     float: left;

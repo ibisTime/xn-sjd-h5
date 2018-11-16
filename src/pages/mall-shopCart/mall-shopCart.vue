@@ -15,6 +15,9 @@
               @allStoreSetFn="allStoreSetFn"
           />
         </div>
+        <div class="mall-content">
+          <no-result v-show="!shopAllData.length && !hasMore" class="no-result-wrapper" title="暂无商品"></no-result>
+        </div>
       </Scroll>
     </div>
     <div class="foo-cart">
@@ -31,6 +34,7 @@
 </template>
 <script>
 import FullLoading from 'base/full-loading/full-loading';
+import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import ShopSingMsg from './shopSingMsg';
@@ -40,6 +44,7 @@ export default {
   data() {
     return {
       loading: true,
+      hasMore: false,
       textMsg: '',
       loadingText: '正在加载中...',
       isset: '1',
@@ -146,7 +151,8 @@ export default {
     FullLoading,
     Toast,
     ShopSingMsg,
-    Scroll
+    Scroll,
+    NoResult
   }
 };
 </script>

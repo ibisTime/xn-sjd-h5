@@ -23,10 +23,6 @@
       },
       uploadUrl: {
         type: String,
-<<<<<<< HEAD
-=======
-        // default: 'http://up-z2.qiniu.com'
->>>>>>> f2e8c08bbe0a9d5ed82aea628dad0061e70c9604
         default: 'http://up-z0.qiniup.com'
       },
       token: {
