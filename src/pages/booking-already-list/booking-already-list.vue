@@ -1,19 +1,18 @@
 <template>
   <div class="adopt-list-wrapper">
-    <!--<m-header class="cate-header" title="已认养名单"></m-header>-->
     <div class="adopt-list">
       <scroll ref="scroll"
               :data="dataList"
               :pullUpLoad="pullUpLoad">
-        <div class="item" v-for="(item, index) in dataList " @click="goUserHome(item)" :key="index">
-          <div class="userPhoto" :style="getImgSyl(item.user ? item.user.photo : '')"></div>
+        <div class="item" v-for="(item, index) in dataList " :key="index">
+          <div class="userPhoto" :style="getImgSyl(item.applyUserInfo ? item.applyUserInfo.photo : '')"></div>
           <div class="info">
             <p class="name">{{item.applyUserName}}</p>
             <p class="date">{{formatDate(item.applyDatetime, 'yyyy-MM-dd')}}</p>
           </div>
           <span class="price">¥{{formatAmount(item.price)}} x{{item.quantity}}</span>
         </div>
-        <no-result v-show="!(dataList && dataList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+        <no-result v-show="!(dataList && dataList.length)" title="暂无预售名单" class="no-result-wrapper"></no-result>
       </Scroll>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
@@ -22,11 +21,10 @@
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
-  import MHeader from 'components/m-header/m-header';
   import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
+  import {formatAmount, formatDate, formatImg, setTitle} from 'common/js/util';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
   import { getBookingAlreadyList } from 'api/biz';
 
@@ -41,17 +39,7 @@
       };
     },
     mounted() {
-      let history = this.$route.query.history || false;
-      let type = this.$route.query.type || '';
-      if(history) {
-        setTitle('历史认养人');
-      } else {
-        if(type && type === '3') {
-          setTitle('已捐赠名单');
-        } else {
-          setTitle('已认养名单');
-        }
-      }
+      setTitle('已预售名单');
       this.getInitData();
     },
     methods: {
@@ -75,21 +63,6 @@
       go(url) {
         this.$router.push(url);
       },
-      goUserHome(item) {
-        if(getUserId()) {
-          if(item.currentHolder === getUserId()) {
-            this.go(`/homepage`);
-          } else {
-            this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
-          }
-        } else {
-          this.toastText = '您未登录';
-          this.$refs.toast.show();
-          setTimeout(() => {
-            this.$router.push('/login');
-          }, 1000);
-        }
-      },
       formatAmount(amount) {
         return formatAmount(amount);
       },
@@ -108,7 +81,6 @@
     },
     components: {
       Scroll,
-      MHeader,
       NoResult,
       FullLoading,
       Toast

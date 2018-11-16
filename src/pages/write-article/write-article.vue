@@ -149,14 +149,28 @@
       },
       // 发布文章
       fabu() {
+        // debugger;
         this.setting = true;
         let photoArr = [];
         this.photos.map((item) => {
           photoArr.push(item.key);
         });
+        if(!this.title) {
+          this.text = '请填写标题';
+          this.$refs.toast.show();
+          this.setting = false;
+          return;
+        }
+        if(!this.context) {
+          this.text = '请填写内容';
+          this.$refs.toast.show();
+          this.setting = false;
+          return;
+        }
         if(!photoArr.length) {
           this.text = '文章必须包含至少一张图片';
           this.$refs.toast.show();
+          this.setting = false;
           return;
         }
         let photo = photoArr.join('||');
@@ -187,11 +201,6 @@
               this.loading = false;
               this.setting = false;
             });
-          } else {
-            if(!this.context) {
-              this.text = '请填写内容';
-              this.$refs.toast.show();
-            }
           }
         });
       },

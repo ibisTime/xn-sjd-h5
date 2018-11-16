@@ -1,4 +1,5 @@
 import {setCookie, getCookie, delCookie} from './cookie';
+import fetch from 'common/js/fetch';
 
 // 获取链接入参
 export function getUrlParam(name) {
@@ -67,6 +68,27 @@ export function isUnDefined(value) {
 }
 
 // 格式化图片地址
+// export function formatImg(imgs, suffix = '?imageMogr2/auto-orient') {
+//   if(!imgs) {
+//     return '';
+//   }
+//   getdomain('qiniu_domain').then((res) => {
+//     let img = imgs.split(/\|\|/)[0];
+//
+//     if (!/^http|^data:image/i.test(img)) {
+//       let index = img.indexOf('?imageMogr2');
+//       if (index !== -1) {
+//         suffix = img.substr(index);
+//         img = img.substr(0, index);
+//       }
+//       img = sessionStorage.getItem('url') + '/' + encodeURIComponent(img) + suffix;
+//     }
+//     console.log(img);
+//     return img;
+//   });
+// }
+
+// // 格式化图片地址
 export function formatImg(imgs, suffix = '?imageMogr2/auto-orient') {
   if(!imgs) {
     return '';
@@ -83,7 +105,23 @@ export function formatImg(imgs, suffix = '?imageMogr2/auto-orient') {
   }
   return img;
 }
-
+export function getdomain(ckey) {
+  return fetch(630047, {
+    ckey: 'qiniu_domain'
+  });
+}
+// // 根据ckey获取系统参数
+// export function getSystemConfigCkey(ckey) {
+//   if (getSystemConfigCkey[ckey]) {
+//     return Promise.resolve(getSystemConfigCkey[ckey]);
+//   }
+//   return fetch(630047, {
+//     ckey
+//   }).then((data) => {
+//     getSystemConfigCkey[ckey] = data;
+//     return Promise.resolve(data);
+//   });
+// }
 // 格式化头像
 export function formatAvatar(img, suffix = '?imageMogr2/auto-orient') {
   if (!img) {

@@ -2,15 +2,15 @@
   <div class="consignment-hall-wrapper">
     <category-sjd-consignment @sendMessage="sendMessage"></category-sjd-consignment>
     <div class="content">
-      <div class="hot" v-show="proList.length">
+      <div class="hot" v-show="proList.length" :style="{bottom: transactionInfo ? '1.3rem' : '0'}">
         <Scroll :data="proList"
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
           <div class="proList">
-            <div class="item" @click="go('/consignment-hall/consignment-product-detail?buy=1&code='+item.code)" v-for="item in proList">
+            <div class="item" @click="go('/consignment-hall/consignment-product-detail?buy=1&code='+item.code)" v-for="item in proList" v-show="proList.length">
               <img :src="formatImg(item.presellProduct.listPic)" class="hot-pro-img">
               <div class="hot-pro-text">
-                <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.productName}}</span><span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span></p>
+                <p class="hot-pro-title"><span class="hot-pro-title-name">{{item.productName}}</span><span class="hot-pro-title-date">{{formatDate(item.createDatetime, 'yyyy/MM/dd')}}</span></p>
                 <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">可售数量：{{item.quantity}}</span></p>
               </div>
             </div>
@@ -21,18 +21,19 @@
         <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
       </div>
     </div>
-    <!--<div class="footer" @click="goEChart">-->
-      <!--<p>最新成交信息</p>-->
-      <!--<p>-->
-        <!--<span>苹果树/年</span>-->
-        <!--<span>¥2480.00/棵</span>-->
-        <!--<span class="up-down">-->
-          <!--<img src="./up@2x.png">-->
-          <!--<span>24</span>-->
-        <!--</span>-->
-        <!--<span>2018/10/28</span>-->
-      <!--</p>-->
-    <!--</div>-->
+    <div class="footer" @click="goEChart" v-if="transactionInfo">
+      <p>最新成交信息</p>
+      <p>
+        <span>{{transactionInfo.productName}}/年</span>
+        <span>¥{{formatAmount(transactionInfo.price)}}/{{transactionInfo.unit}}</span>
+        <span class="up-down">
+          <img src="./up@2x.png" v-if="transactionInfo.wave > 0">
+          <img src="./down@2x.png" v-if="transactionInfo.wave < 0">
+          <span>{{transactionInfo.wave}}</span>
+        </span>
+        <span>{{formatDate(transactionInfo.createDatetime, 'yyyy/MM/dd')}}</span>
+      </p>
+    </div>
     <full-loading v-show="loading" :title="title"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <router-view></router-view>
@@ -79,7 +80,8 @@ export default {
       indexSub: 0,
       type: 0,
       showFlag: true,
-      flag: false
+      flag: false,
+      transactionInfo: null
     };
   },
   methods: {
@@ -92,8 +94,8 @@ export default {
     formatAmount(amount) {
       return formatAmount(amount);
     },
-    formatDate(date) {
-      return formatDate(date, 'yyyy-MM-dd');
+    formatDate(date, format) {
+      return formatDate(date, format);
     },
     formatImg(img) {
       return formatImg(img);
@@ -221,15 +223,22 @@ export default {
           variety: this.variety || '',
           orderColumn: this.orderColumn || '',
           orderDir: 'asc'
+        }),
+        getDeriveZichanPage({
+          start: this.start,
+          limit: this.limit,
+          status: 1,
+          type: 2,
+          variety: this.variety || '',
+          orderColumn: 'create_datetime',
+          orderDir: 'desc'
         })
-      ]).then(([res1]) => {
+      ]).then(([res1, res2]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
           this.hasMore = false;
         }
-        res1.list.map(function () {
-          res1.applyDatetime = formatDate(res1.applyDatetime);
-        });
         this.proList = this.proList.concat(res1.list);
+        this.transactionInfo = res2.list[0];
         this.start++;
         this.loading = false;
       }).catch(() => { this.loading = false; });
@@ -339,7 +348,7 @@ export default {
       background: $color-highlight-background;
       position: absolute;
       top: 0.8rem;
-      bottom: 0;
+      bottom: 1.3rem;
       left: 0;
       right: 0;
       overflow: auto;

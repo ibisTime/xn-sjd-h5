@@ -3,7 +3,7 @@
     <!--<div class="check-in-wrapper"></div>-->
     <div class="consignment-category">
       <div class="type">
-        <div @click="showOrder"><span>{{orderText}}</span><img :src="getOrderImg()"/></div>
+        <!--<div @click="showOrder"><span>{{orderText}}</span><img :src="getOrderImg()"/></div>-->
         <div @click="showType"><span>{{typeText}}</span><img :src="getTypeImg()"/></div>
         <!--<div class="my-consignment" @click="go('/consignment-hall/my-consignment')">我的寄售订单</div>-->
       </div>
@@ -70,10 +70,7 @@
           key: 3,
           value: '按数量排'
         }],
-        typeList: [{
-          key: 'all',
-          value: '全部品种'
-        }]
+        typeList: []
       };
     },
     mounted() {
@@ -123,9 +120,8 @@
       },
       getVariety() {
         getVarietyList({
-          status: 0,
-          type: 2,
-          minQuality: 0
+          status: 1,
+          type: 2
         }).then((res) => {
           res.map((item, index) => {
             this.typeList.push({
@@ -134,10 +130,12 @@
             });
           });
           this.typeText = this.typeList[0].value;
+          this.pinzhong = this.typeList[0].value;
+          this.sendMessage();
         }).catch(() => {});
       },
       sendMessage() {
-        this.$emit('sendMessage', this.orderBy, this.pinzhong);
+        this.$emit('sendMessage', this.pinzhong);
       }
     }
   };
@@ -168,7 +166,7 @@
         align-items: center;
         border-bottom: 1px solid $color-border;
         div {
-          width: 50%;
+          width: 100%;
           font-size: 0.3rem;
           color: #666;
           letter-spacing: 0.25px;
@@ -177,6 +175,7 @@
           justify-content: center;
           white-space: nowrap;
           overflow: hidden;
+          line-height: 0.8rem;
         }
         img {
           width: 0.18rem;

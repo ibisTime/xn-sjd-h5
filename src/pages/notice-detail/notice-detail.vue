@@ -3,7 +3,7 @@
     <div class="content">
       <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
         <div class="title">{{detail.title}}</div>
-        <p class="prop"><span class="date">{{formatDate(detail.createDatetime)}}</span></p>
+        <p class="prop"><span class="date">{{formatDate(detail.publishDatetime)}}</span></p>
         <div class="context">{{detail.content}}</div>
       </Scroll>
     </div>

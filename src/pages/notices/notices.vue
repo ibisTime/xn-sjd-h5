@@ -7,7 +7,7 @@
         @pullingUp="getList">
         <div class="item" @click="go('/notice-detail?code=' + item.code)" v-for="item in list" v-show="list.length">
           <div class="info">
-            <p class="top"><span class="name">{{cut(item.title,6)}}</span><span class="status">{{formatDate(item.createDatetime)}}</span></p>
+            <p class="top"><span class="name">{{cut(item.title,6)}}</span><span class="status">{{formatDate(item.publishDatetime)}}</span></p>
             <p class="date">{{cut(item.content, 14)}}</p>
           </div>
         </div>

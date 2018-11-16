@@ -17,14 +17,17 @@
         <ul v-if="currentList">
           <li class="item" v-for="(item, index) in currentList.data" @click="goDetail(item)">
             <div class="top">
-              <span class="item-code">{{item.sellerName}}</span>
+              <span class="item-code">{{item.code}}</span>
               <span class="item-status">{{formatStatus(item.status)}}</span>
             </div>
             <div class="info">
               <div class="imgWrap" :style="getImgSyl(item.presellProduct.listPic)"></div>
               <div class="text">
                 <p class="title"><span class="title-title">{{item.presellProduct.name}}</span><span class="title-number">x{{item.quantity}}</span></p>
-                <p class="position">预售规格：{{item.specsName}}</p>
+                <p class="position">
+                  <span>预售规格：{{item.specsName}}</span>
+                  <span>¥{{formatAmount(item.price)}}</span>
+                </p>
                 <div class="props"><span class="duration">合计{{item.quantity}}件商品</span><span class="price">¥{{formatAmount(item.amount)}}</span></div>
               </div>
             </div>
@@ -457,6 +460,8 @@
               line-height: 0.33rem;
               color: #999;
               margin-bottom: 0.25rem;
+              display: flex;
+              justify-content: space-between;
             }
             .props {
               font-size: $font-size-small;

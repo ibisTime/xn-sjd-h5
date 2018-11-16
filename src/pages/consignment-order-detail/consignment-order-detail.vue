@@ -14,7 +14,7 @@
           <!--<Scroll :pullUpLoad="pullUpLoad">-->
             <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+detail.productCode)">
               <div class="top">
-                <span class="item-code">{{detail.sellerName}}</span>
+                <span class="item-code">{{detail.code}}</span>
                 <span class="item-status">{{statusObj[detail.status]}}</span>
               </div>
               <div class="info">

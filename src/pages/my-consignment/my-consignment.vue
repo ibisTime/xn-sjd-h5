@@ -21,7 +21,7 @@
                   <span class="hot-pro-title-date">{{originStatusObj[item.status]}}</span>
                 </p>
                 <p class="hot-pro-middle"><span class="hot-pro-bottom-number">转让中:{{item.presellQuantity}}</span><span class="hot-pro-bottom-number">提货中:{{item.receivingQuantity}}</span></p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">库存：{{item.quantity}}{{item.presellProduct.packUnit}}</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">库存：{{item.quantity}}{{packUnitObj[item.presellProduct.packUnit]}}</span></p>
               </div>
             </div>
           </div>
@@ -79,7 +79,7 @@ export default {
       limit: 10,
       hasMore: true,
       originList: [],
-      deriveList: [{presellProduct: {listPic: ''}}],
+      deriveList: [],
       originStatusObj: {},
       deriveStatusObj: {},
       userDetail: {},
@@ -89,7 +89,8 @@ export default {
       currentIndexSub: +this.$route.query.index || 0,
       index: 0,
       indexSub: 0,
-      type: 0
+      type: 0,
+      packUnitObj: {}
     };
   },
   methods: {
@@ -198,17 +199,21 @@ export default {
     this.pullUpLoad = null;
     this.loading = true;
     this.userId = getCookie('userId');
-    this.categoryCode = this.$route.query.typeCode || '';
+    this.type = +this.$route.query.type || 0;
     setTitle('我的预售资产');
     Promise.all([
       getDictList('original_group_status'),
-      getDictList('derive_group_status')
-    ]).then(([res1, res2]) => {
+      getDictList('derive_group_status'),
+      getDictList('pack_unit')
+    ]).then(([res1, res2, res3]) => {
       res1.map((item) => {
         this.originStatusObj[item.dkey] = item.dvalue;
       });
       res2.map((item) => {
         this.deriveStatusObj[item.dkey] = item.dvalue;
+      });
+      res3.map((item) => {
+        this.packUnitObj[item.dkey] = item.dvalue;
       });
       this.loading = false;
       this.getPageOrders();

@@ -45,7 +45,7 @@
             </div>
           </div>
         </div>
-        <div class="score-rules">
+        <div class="score-rules" v-if="type">
           <p>规则：</p>
           <p v-for="(item, index) in sysConfig" :key="index">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
           <!--<p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>-->
@@ -105,7 +105,8 @@
           remark: '',
           isJfDeduct: '0'
         },
-        totalPrice: ''        // 商品订单总额
+        totalPrice: '',        // 商品订单总额
+        type: ''
       };
     },
     mounted() {

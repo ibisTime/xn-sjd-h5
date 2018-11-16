@@ -15,7 +15,7 @@
                 @pullingUp="getPageOrders">
         <div class="proList">
           <div class="item" @click="go('/booking-product-list/booking-product-detail?code='+item.code)" v-for="item in proList">
-            <div class="sell-type-right">{{canAdopt(item)}}</div>
+            <div class="sell-type-right" :style="{background: canAdopt(item).canAdoptFlag ? '#23ad8c' : ''}">{{canAdopt(item).noAdoptReason}}</div>
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
@@ -59,7 +59,7 @@ export default {
       limit: 10,
       hasMore: true,
       proList: [],
-      categorys: [],
+      categorys: [{value: '全部', key: 'all'}],
       categorysSub: [{value: '全部', key: 'all'}],
       sellTypeObj: {},
       userDetail: {},
@@ -91,13 +91,19 @@ export default {
       this.$router.push(url);
     },
     canAdopt(item) {
+      item.canAdoptFlag = true;
       if(!this.userDetail.level) {
-        return '您未登录';
+        item.canAdoptFlag = false;
+        item.noAdoptReason = '您未登录';
+        return item;
       }
       if(item.totalOutput > item.nowCount) {
-        return '可购买';
+        item.noAdoptReason = '可购买';
+        return item;
       }
-      return '无法购买';
+      item.canAdoptFlag = false;
+      item.noAdoptReason = '无法购买';
+      return item;
     },
     selectCategory(index) {
       this.index = index;
@@ -141,32 +147,16 @@ export default {
       }).catch(() => { this.loading = false; });
     },
     getPageOrders() {
-      if(this.categorysSub[this.indexSub].key === 'all') {
+      if(this.categorys[this.index].key === 'all') {
+        this.parentCategoryCode = '';
+        this.selectdType = '';
+      } else if(this.categorysSub[this.indexSub].key === 'all') {
         this.parentCategoryCode = this.categorys[this.index].key;
         this.selectdType = '';
       } else {
         this.parentCategoryCode = '';
         this.selectdType = this.categorysSub[this.indexSub].key;
       }
-      // if(this.selectdType === 'all') {
-      //   this.params = {
-      //     start: this.start,
-      //     limit: this.limit,
-      //     parentCategoryCode: this.categoryCode,
-      //     statusList: [4],
-      //     orderDir: 'asc',
-      //     orderColumn: 'order_no'
-      //   };
-      // } else {
-      //   this.params = {
-      //     start: this.start,
-      //     limit: this.limit,
-      //     categoryCode: this.selectdType,
-      //     statusList: [4],
-      //     orderDir: 'asc',
-      //     orderColumn: 'order_no'
-      //   };
-      // }
       this.loading = true;
       Promise.all([
         getBookingProPage({
@@ -175,7 +165,7 @@ export default {
           // sellType: sellType,
           parentCategoryCode: this.parentCategoryCode,
           categoryCode: this.selectdType,
-          statusList: [4, 5, 6],
+          statusList: [4],
           orderDir: 'asc',
           orderColumn: 'order_no'
         })

@@ -2,15 +2,8 @@
   <transition name="slide">
     <div class="address-list-wrapper">
       <div class="addr-scroll-wrapper">
-        <scroll :data="addressList[0]" :hasMore="hasMore" :pullUpLoad="pullUpLoad">
-          <div class="pro-info">
-            <p><span>{{detail.productName}}</span><span>买入单价：{{formatAmount(detail.price)}}元/{{packUnitObj[detail.unit]}}</span></p>
-            <p><span>可收货总数</span><span>{{+detail.quantity + +detail.receivingQuantity}}{{packUnitObj[detail.presellProduct.packUnit]}}</span></p>
-            <p><span>可收货数量</span><span>{{amount}}{{packUnitObj[detail.presellProduct.packUnit]}}</span></p>
-            <p>注意：填写地址后此批货物不可转让</p>
-          </div>
-          <div class="gray"></div>
-          <ul class="already-list">
+        <scroll :data="list" :hasMore="hasMore" :pullUpLoad="pullUpLoad">
+          <ul>
             <li v-for="(item, index) in list" :key="index" class="border-bottom-1px" v-show="list.length">
               <div class="content">
                 <div class="content-left">
@@ -35,53 +28,10 @@
               </div>
             </li>
           </ul>
-          <div class="gray"></div>
-          <div class="tip">
-            <div class="addButton" @click="toAddress">
-              <div class="addButton-inner">
-                <img src="./add-border@2x.png">
-                <span class="add-address-text">添加地址</span>
-              </div>
-            </div>
-            <div class="opeator border-top-1px">
-              <div class="default">
-                <span class="add-address-text">收货数量</span>
-              </div>
-              <div class="right">
-                <img class="diamonds right-item" @click="addNumber" src="./add@2x.png">
-                <input class="num right-item" v-model="number" type="number">
-                <img class="diamonds right-item" @click="subNumber" src="./sub@2x.png">
-              </div>
-            </div>
-          </div>
-          <div class="gray"></div>
-          <ul class="choosed-address">
-            <li v-for="(item, index) in addressList[0]" :key="index" class="border-bottom-1px" v-show="addressList[0].length">
-              <div class="content">
-                <div class="content-left">
-                  <div class="info"><span class="name">{{item.receiver}}</span><span class="mobile">{{item.receiverMobile}}</span></div>
-                  <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
-                </div>
-                <div class="content-right" @click="deleteItem(item, index)">
-                  <img src="./delete@2x.png">
-                </div>
-              </div>
-              <div class="opeator border-top-1px">
-                <div class="default">
-                  <span class="add-address-text">收货数量</span>
-                </div>
-                <div class="right">
-                  <img class="diamonds right-item" @click="add(item)" src="./add@2x.png">
-                  <input class="num right-item" v-model="item.deliverCount" type="number">
-                  <img class="diamonds right-item" @click="sub(item)" src="./sub@2x.png">
-                </div>
-              </div>
-            </li>
-          </ul>
         </scroll>
-        <div class="footer">
-          <button class="two" @click="confirmTihuo">确认提货</button>
-        </div>
+        <!--<div class="footer">-->
+          <!--<button class="two" @click="confirmTihuo">确认提货</button>-->
+        <!--</div>-->
       </div>
       <div class="no-result-wrapper">
         <no-result v-show="!hasMore && !addressList.length" title="您尚未添加收货地址"></no-result>
@@ -101,7 +51,6 @@
   import NoResult from 'base/no-result/no-result';
   import {setTitle, formatAmount} from 'common/js/util';
   import { confirmTihuo, getOriginZichanDetail, getWuliudanList, confirmShouhuo } from 'api/biz';
-  import { getDictList } from 'api/general';
 
   export default {
     data() {
@@ -115,27 +64,13 @@
         deleteIndex: 0,
         detail: {presellProduct: {packUnit: ''}},
         pullUpLoad: null,
-        number: 1,
-        amount: 0,    // 取货总数
-        outputUnitObj: {},
-        packUnitObj: {}
+        number: 1
       };
     },
     created() {
-      let clear = this.$route.query.clear;
-      if(clear) {
-        sessionStorage.removeItem('tihuo-address');
-      }
-      setTitle('提货');
+      setTitle('提货详情');
       this.code = this.$route.query.code;
       this.currentItem = null;
-      this.getAddress();
-      this.getProDetail();
-      this.getAlreadyAddress();
-      this.getObjs();
-      this.addressList = [];
-    },
-    updated() {
       this.getAddress();
     },
     methods: {
@@ -144,12 +79,10 @@
       },
       add(item) {
         item.deliverCount++;
-        this.amountChange();
       },
       sub(item) {
         if (item.deliverCount >= 2) {
           item.deliverCount--;
-          this.amountChange();
         }
       },
       addNumber() {
@@ -159,10 +92,6 @@
         if (this.number >= 2) {
           this.number--;
         }
-      },
-      confirm(item) {
-        this.currentItem = item;
-        this.$refs.confirm.show();
       },
       toAddress() {
         if(this.addressList[0]) {
@@ -183,13 +112,13 @@
         this.$router.push(url);
       },
       getAddress() {
-        // debugger;
-        if (!this.addressList.length) {
-          this.addressList.push(JSON.parse(sessionStorage.getItem('tihuo-address')));
-          this.amountChange();
-        } else {
-          this.hasMore = false;
-        }
+        Promise.all([
+          getWuliudanList({
+            originalGroupCode: this.code
+          }).then((res) => {
+            this.list = res;
+          })
+        ]);
       },
       shouldGetData() {
         if (/\/address/.test(this.$route.path) || this.$route.path === '/yushou-address') {
@@ -216,12 +145,6 @@
       addTihuoAddress() {
         this.go(`/tihuo-address-addedit?code=${this.code}`);
       },
-      amountChange() {
-        this.amount = 0;
-        this.addressList[0] && this.addressList[0].map((item) => {
-          this.amount += +item.deliverCount;
-        });
-      },
       confirmTihuo() {
         if(this.addressList[0] && this.addressList[0].length) {
           this.loadingFlag = true;
@@ -243,14 +166,9 @@
           this.$refs.toast.show();
         }
       },
-      getAlreadyAddress() {
-        Promise.all([
-          getWuliudanList({
-            originalGroupCode: this.code
-          }).then((res) => {
-            this.list = res;
-          })
-        ]);
+      confirm(item) {
+        this.currentItem = item;
+        this.$refs.confirm.show();
       },
       confirmShouhuo() {
         confirmShouhuo({
@@ -263,19 +181,6 @@
               location.reload();
             }, 1000);
           }
-        });
-      },
-      getObjs() {
-        Promise.all([
-          getDictList('output_unit'),
-          getDictList('pack_unit')
-        ]).then(([res1, res2]) => {
-          res1.map((item) => {
-            this.outputUnitObj[item.dkey] = item.dvalue;
-          });
-          res2.map((item) => {
-            this.packUnitObj[item.dkey] = item.dvalue;
-          });
         });
       }
     },
@@ -296,7 +201,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0.98rem;
+    bottom: 0;
     width: 100%;
     height: 100%;
     background: $color-background;
@@ -309,7 +214,8 @@
       transform: translate3d(100%, 0, 0);
     }
 
-    .already-list {
+    ul {
+      padding-bottom: 0.98rem;
       li {
         position: relative;
         @include border-bottom-1px($color-border);
@@ -344,120 +250,6 @@
               }
               .number {
                 margin-right: 0.3rem;
-              }
-              span {
-                line-height: 0.42rem;
-              }
-            }
-          }
-
-          .content-right {
-            border-left: 1px solid $color-border;
-            img {
-              width: 0.36rem;
-              height: 0.36rem;
-              margin-left: 0.3rem;
-            }
-          }
-
-          .addr {
-            padding-top: 0.26rem;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            font-size: $font-size-medium-x;
-            color: #666;
-          }
-        }
-
-        .opeator {
-          display: flex;
-          align-items: center;
-          height: 0.9rem;
-          font-size: 0;
-          padding: 0 0.3rem;
-          @include border-top-1px($color-border);
-
-          .default {
-            flex: 1;
-
-            .icon-chose {
-              margin-left: 0.3rem;
-              display: inline-block;
-              vertical-align: middle;
-              width: 0.36rem;
-              height: 0.36rem;
-              background-size: 0.36rem;
-              @include bg-image('un-select');
-
-              &.active {
-                @include bg-image('selected');
-              }
-            }
-
-            span {
-              display: inline-block;
-              vertical-align: middle;
-              padding-left: 0.1rem;
-              line-height: 0.33rem;
-              font-size: $font-size-small;
-              color: $color-text-l;
-            }
-            .act {
-              color: $primary-color;
-            }
-          }
-
-          button {
-            display: inline-block;
-            vertical-align: middle;
-            font-size: 0.24rem;
-            padding: 0.06rem 0.25rem;
-            background: #fff;
-            border: 1px solid #979797;
-            border-radius: 0.04rem;
-            color: #666;
-          }
-
-          .delete {
-            margin-left: 0.5rem;
-            margin-right: 0.3rem;
-          }
-        }
-      }
-    }
-    .choosed-address {
-      padding-bottom: 0.98rem;
-    }
-    ul {
-
-      li {
-        position: relative;
-        @include border-bottom-1px($color-border);
-        font-size: $font-size-small;
-        background-color: #fff;
-
-        &:last-child {
-          @include border-none();
-        }
-
-        .content {
-          display: flex;
-          /*flex-direction: column;*/
-          align-items: center;
-          height: 1.6rem;
-          padding: 0 0.3rem;
-          .content-left {
-            flex: 1;
-            .info {
-              font-size: $font-size-medium-x;
-              display: flex;
-              .name {
-                margin-right: 0.3rem;
-              }
-              .mobile {
-                width: 2.1rem;
-                color: #999;
               }
               span {
                 line-height: 0.42rem;
@@ -639,24 +431,13 @@
       }
     }
     .right {
-      flex: 1;
       display: table-cell;
       vertical-align: middle;
-      text-align: center;
-      .right-item {
-        float: right;
-        text-align: center;
-        line-height: 0.5rem;
-      }
-      .diamonds {
-        width: 0.36rem;
-        height: 0.36rem;
-      }
-      .num {
-        width: 0.9rem;
-        font-size: $font-size-medium-x;
-        color: #333;
-        height: 0.36rem;
+      text-align: right;
+      .confirm {
+        color: $primary-color;
+        border-color: $primary-color;
+        margin-left: 0.2rem;
       }
     }
     .tip {
@@ -690,7 +471,6 @@
         @include border-top-1px($color-border);
 
         .default {
-          flex: 1;
 
           .add-address-text {
             color: #b3b3b3;

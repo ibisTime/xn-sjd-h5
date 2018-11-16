@@ -182,6 +182,8 @@ const TihuoAddressAddedit = () => import('@/pages/tihuo-address-addedit/tihuo-ad
 const ConsignmentOrder = () => import('@/pages/consignment-order/consignment-order');
 // 寄售订单详情
 const ConsignmentOrderDetail = () => import('@/pages/consignment-order-detail/consignment-order-detail');
+// 提货详情
+const TihuoXiangqing = () => import('@/pages/tihuo-xiangqing/tihuo-xiangqing');
 export default new Router({
   routes: [
     {
@@ -593,6 +595,10 @@ export default new Router({
     {
       path: '/consignment-product-detail',
       component: ConsignmentProductDetail
+    },
+    {
+      path: '/tihuo-xiangqing',
+      component: TihuoXiangqing
     }
   ],
   mode: 'history',
