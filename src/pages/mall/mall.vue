@@ -10,12 +10,19 @@
             </div>
           </div>
         </div>
-        <div class="mall-list">
-          <div class="mall-single" v-for="(item, index) in mallList" :key="index">
-            <div class="sing-img"></div>
-            <p class="sing-txt">{{item}}</p>
+        <!-- <category-scroll 
+          :currentIndex="currentIndex"
+          :categorys="shopTypeData"
+          @select="selectCategory" 
+        ></category-scroll> -->
+        <Scroll ref="scroll" :freeScroll="true" :pullUpLoad="pullUpLoad" :eventPassthrough="'horizontal'">
+          <div class="mall-list">
+            <div class="mall-single" v-for="(item, index) in shopTypeData" :key="index" @click="getTypeData(item.code)">
+              <div class="sing-img" :style="getImgSyl(item.pic ? item.pic : '')"></div>
+              <p class="sing-txt">{{item.name}}</p>
+            </div>
           </div>
-        </div>
+        </Scroll>
         <div class="mall-content">
           <div class="con-head">
             <h5>热门推荐 <router-link to="/mall/mall-shopList" class="fr" @click.native="isAll = true;">更多</router-link></h5>
@@ -63,15 +70,16 @@
 import MFooter from 'components/m-footer/m-footer';
 import FullLoading from 'base/full-loading/full-loading';
 import Scroll from 'base/scroll/scroll';
+import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
-import { getAllShopData, addShopCart } from 'api/store';
+import { getAllShopData, addShopCart, getShopType } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 export default {
   data() {
     return {
-      mallList: ['分类一', '分类二', '分类三', '分类四'],
       loading: true,
+      currentIndex: 0,
       textMsg: '',
       loadingText: '正在加载...',
       isAll: false,
@@ -81,7 +89,9 @@ export default {
         start: 1,
         limit: 4,
         status: '4',
-        location: '1'
+        location: '1',
+        orderColumn: 'update_datetime',
+        orderDir: 'desc'
       },
       start: 1,
       pullUpLoad: '',
@@ -93,13 +103,26 @@ export default {
         specsId: '',              // 规格编号
         specsName: '',            // 规格名称
         quantity: 1              // 商品数量
-      }
+      },
+      shopTypeConfig: {          // 商品类别参数
+        start: 1,
+        limit: 10,
+        level: 1,
+        status: 1,
+        type: 2,
+        orderColumn: 'order_no',
+        orderDir: 'desc'
+      },
+      shopTypeData: []
     };
   },
   created() {
     setTitle('商场');
     this.pullUpLoad = null;
     this.getHotShop();
+    getShopType(this.shopTypeConfig).then(data => {
+      this.shopTypeData = data.list;
+    });
   },
   methods: {
     formatAmount(amount) {
@@ -119,6 +142,18 @@ export default {
       return {
         backgroundImage: `url(${pic})`
       };
+    },
+    getTypeData(code) {
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
+    },
+    selectCategory(index) {
+      this.currentIndex = index;
+      this.$refs.scroll.scrollTo(0, 0);
+      if (!this.currentList.data.length && this.currentList.hasMore) {
+        this.getPageOrders();
+      }
     },
     addCart(code, name, specsId, specsName) {
       this.loading = true;
@@ -170,7 +205,8 @@ export default {
     FullLoading,
     Toast,
     Scroll,
-    NoResult
+    NoResult,
+    CategoryScroll
   },
   watch: {
     '$route.path': function (newVal, oldVal) {
@@ -255,12 +291,13 @@ export default {
     .mall-list{
       background-color: #fff;
       width: 100%;
-      padding: 0.44rem 0 0.56rem;
-      display: flex;
-      justify-content: space-between;
+      padding: 0.24rem 0 0.36rem;
       margin-bottom: 0.2rem;
+      white-space: nowrap;
+      overflow-x: scroll;
       .mall-single{
-        width: 24%;
+        width: 25%;
+        display: inline-block;
         font-family: PingFangSC-Medium;
         font-size: 0.28rem;
         color: #666666;
@@ -269,21 +306,9 @@ export default {
         .sing-img{
           width: 1rem;
           height: 1rem;
-          background-size: 100%;
+          background-size: 100% 100%;
           margin: 0 auto;
           margin-bottom: 0.22rem;
-        }
-        &:nth-of-type(1) .sing-img{
-          background-image: url('./fl1.png');
-        }
-        &:nth-of-type(2) .sing-img{
-          background-image: url('./fl2.png');
-        }
-        &:nth-of-type(3) .sing-img{
-          background-image: url('./fl3.png');
-        }
-        &:nth-of-type(4) .sing-img{
-          background-image: url('./fl4.png');
         }
       }
     }
@@ -299,7 +324,7 @@ export default {
           margin-bottom: 0.24rem;
           font-family: PingFangSC-Semibold;
           font-size: 0.36rem;
-          color: #333333;
+          color: #666;
           letter-spacing: 0.01rem;
           font-weight: 600;
           a{
@@ -326,8 +351,7 @@ export default {
             width: 100%;
             height: 2.3rem;
             margin-bottom: 0.2rem;
-            background-clip: center;
-            background-size: 100%;
+            background-size: 100% 100%;
             background-image: url('./shop.png');
           }
           .con-txt{
@@ -364,8 +388,8 @@ export default {
     position: fixed;
     bottom: 1.3rem;
     right: 0.3rem;
-    width: 1rem;
-    height: 1rem;
+    width: 1.3rem;
+    height: 1.3rem;
     background-image: url('./1.png');
     background-size: 100% 100%;
   }

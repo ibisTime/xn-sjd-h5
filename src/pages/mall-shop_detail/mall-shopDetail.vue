@@ -2,12 +2,15 @@
   <div class="shop-wrapper_det">
     <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
       <div class="content">
-        <div class="shop-head" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')">
-          <p class="shop-p">
-            <span class="fl fh" @click="go('/mall')"></span>
-            <span class="fr fx"></span>
-          </p>
+        <div class="slider-wrapper">
+          <slider :loop="loop">
+            <div class="home-slider" v-for="(item, index) in bannerPic" :key="index">
+              <a :href="'javascript:void(0)'" :style="getImgSyl(item ? item : '')"></a>
+            </div>
+          </slider>
         </div>
+        <!-- <div class="shop-head">
+        </div> -->
         <div class="shop-conAll">
           <div class="shop-det">
             <p class="shop-price"><span>￥{{formatAmount(shopDetData.minPrice)}}</span> - <span>￥{{formatAmount(shopDetData.maxPrice)}}</span></p>
@@ -21,7 +24,7 @@
           <div class="shop-gg">
             <p @click.stop="setSpecification">规格：选择规格分类</p>
           </div>
-          <div class="shop-pj">
+          <div class="shop-pj" v-if="commentData.length > 0">
             <div class="pj-head">
               <p>评价 <span class="fr pj-all" @click="toComment">查看全部 ></span></p>
             </div>
@@ -42,64 +45,64 @@
             </div>
           </div>
         </div>
-        <div class="toast" v-show="istoast" @click="istoast = false">
-          <div class="shop-toast" @click.stop>
-            <div class="tos-head">
-              <div class="head-left">
-                <div class="l-img" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')"></div>
-              </div>
-              <div class="head-right">
-                <p class="r-head">¥{{setPrice}} <span class="fr iconX" @click="istoast = false"></span></p>
-                <p>库存{{inventory}}件</p>
-                <p v-if="specsList.length > 1">{{setSpecsName ? `已选 “${setSpecsName}”` : '选择颜色分类'}}</p>
-                <p v-if="specsList.length == 1">已选 “{{specsList[0].name}}”</p>
-              </div>
+      </div>
+    </Scroll>
+    <div class="toast" v-show="istoast" @click="istoast = false">
+      <div class="shop-toast" @click.stop>
+        <div class="tos-head">
+          <div class="head-left">
+            <div class="l-img" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')"></div>
+          </div>
+          <div class="head-right">
+            <p class="r-head">¥{{setPrice}} <span class="fr iconX" @click="istoast = false"></span></p>
+            <p>库存{{inventory}}件</p>
+            <p v-if="specsList.length > 1">{{setSpecsName ? `已选 “${setSpecsName}”` : '请选择商品规格'}}</p>
+            <p v-if="specsList.length == 1">已选 “{{specsList[0].name}}”</p>
+          </div>
+        </div>
+        <div class="tos-con">
+          <div class="con-head">
+            <h5>规格分类</h5>
+          </div>
+          <div class="con-list">
+            <div class="sing" 
+              v-for="(item, index) in specsList" 
+              :key="index" 
+              @click="specsFn(index, item)" 
+              :class="{'set-index': setIndex == index}"
+            >
+              <p>{{item.name}}</p>
             </div>
-            <div class="tos-con">
-              <div class="con-head">
-                <h5>规格分类</h5>
-              </div>
-              <div class="con-list">
-                <div class="sing" 
-                  v-for="(item, index) in specsList" 
-                  :key="index" 
-                  @click="specsFn(index, item)" 
-                  :class="{'set-index': setIndex == index}"
-                >
-                  <p>{{item.name}}</p>
-                </div>
-              </div>
-              <div class="con-foo">
-                <div class="f-left">
-                  数量
-                  <p class="fr l-num">
-                    <span class="jian" @click="minusShop"></span>&nbsp;&nbsp; <b>{{shopNum}}</b> &nbsp;&nbsp;<span class="jia" @click="addShop"></span>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="tos-btn" v-show="isgm" @click="qrorderFn">
-              确定
-            </div>
-            <div class="tos-btns" v-show="!isgm">
-              <div class="gwc" @click="toShopCart">
-                加入购物车
-              </div>
-              <div class="ljgm" @click="toShopOrder">
-                立即购买
-              </div>
+          </div>
+          <div class="con-foo">
+            <div class="f-left">
+              数量
+              <p class="fr l-num">
+                <span class="jian" @click="minusShop"></span>&nbsp;&nbsp; <b>{{shopNum}}</b> &nbsp;&nbsp;<span class="jia" @click="addShop"></span>
+              </p>
             </div>
           </div>
         </div>
+        <div class="tos-btn" v-show="isgm" @click="qrorderFn">
+          确定
+        </div>
+        <div class="tos-btns" v-show="!isgm">
+          <div class="gwc" @click="toShopCart">
+            加入购物车
+          </div>
+          <div class="ljgm" @click="toShopOrder">
+            立即购买
+          </div>
+        </div>
       </div>
-    </Scroll>
+    </div>
     <div class="shop-foo">
       <div class="foo-left">
         <div class="le-dp" @click="go(`mall-store?shopCode=${shopCode}`);">
           <div class="dp-img"></div>
           <p>店铺</p>
         </div>
-        <div class="le-kf">
+        <div class="le-kf" @click="go(`/store-msgdet`)">
           <div class="kf-img"></div>
           <p>客服</p>
         </div>
@@ -120,17 +123,20 @@ import { getShopDetail, getCommemtData, addShopCart } from 'api/store';
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
+import Slider from 'base/slider/slider';
 export default {
   data() {
     return {
       istoast: false,
       loading: true,
       isgm: true,
+      loop: false,
       textMsg: '',
       loadingText: '加载中...',
       code: '',
       shopCode: '',
       shopDetData: {},  // 商品详情
+      bannerPic: [],
       logistics: {},   // 邮寄方式
       detailDescription: '',
       config: {      // 评论参数
@@ -156,7 +162,6 @@ export default {
       },
       isCartType: '0',             // 无规格 0 点外购物车  1 点外立即购买
       shopName: '',                // 店铺名称
-      bannerPic: '',
       setSpecsName: ''
     };
   },
@@ -177,11 +182,15 @@ export default {
         this.logistics[item.dkey] = item.dvalue;
       });
       this.shopDetData = res2;
-      this.bannerPic = res2.bannerPic;
+      this.bannerPic = res2.bannerPic.split('||');
+      if(this.bannerPic.length > 1) {
+        this.loop = true;
+      }
       this.shopName = res2.shopName;
       this.specsList = res2.specsList;
       this.setPrice = formatAmount(this.specsList[0].price);
       this.inventory = this.specsList[0].inventory;
+      this.setSpecsName = this.specsList[0].name;
       this.detailDescription = res2.description;
       this.commentData = res3.list;
       this.addCartConfig.commodityName = res2.name;
@@ -287,13 +296,14 @@ export default {
     minusShop() { // 商品减
       if(this.shopNum > 1) {
         this.shopNum --;
+        this.addCartConfig.quantity = this.shopNum;
       }
     },
     addShop() {  // 商品加
       this.shopNum ++;
+      this.addCartConfig.quantity = this.shopNum;
     },
     addShopCart() { // 加入购物车接口
-      this.addCartConfig.quantity = this.shopNum;
       this.loading = true;
       addShopCart(this.addCartConfig).then(data => {
         this.loading = false;
@@ -311,7 +321,7 @@ export default {
         this.addShopCart();
       }
       if(this.isCartType === '1') {  // 立即购买
-
+        this.toShopOrder();
       }
     }
     // 富文本滚动
@@ -346,7 +356,8 @@ export default {
   components: {
     FullLoading,
     Toast,
-    Scroll
+    Scroll,
+    Slider
   }
 };
 </script>
@@ -369,25 +380,28 @@ export default {
   .content {
     overflow: auto;
     font-family: PingFangSC-Regular;
+    .slider-wrapper {
+      background: $color-highlight-background;
+      height: 5rem;
+      width: 100%;
+      overflow: hidden;
+      .home-slider {
+        height: 100%;
+      }
+      a {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+      }
+    }
     .shop-head{
       height: 5.3rem;
       background-image: url('./shop.png');
       background-size: 100% 100%;
       padding: 0.4rem 0.3rem;
-      .shop-p{
-        span{
-          display: inline-block;
-          width: 0.5rem;
-          height: 0.5rem;
-          background-size: 100%;
-        }
-        .fh{
-          background-image: url('./fh.png');
-        }
-        .fx{
-          background-image: url('./fx.png');
-        }
-      }
     }
     .shop-conAll{
       padding: 0 0 1.31rem;
@@ -485,15 +499,6 @@ export default {
         }
       }
     }
-    .toast{
-      position: fixed;
-      z-index: 99;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, .7);
-    }
     .description-detail{
       font-size: 0.3rem;
       line-height: 1.8;
@@ -502,146 +507,155 @@ export default {
         vertical-align: bottom;
       }
     }
-    .shop-toast{
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 60%;
-      padding: 0.3rem 0.3rem 0.1rem;
-      background-color: #fff;
-      .tos-head{
+  }
+  .toast{
+    position: fixed;
+    z-index: 99;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .7);
+  }
+  .shop-toast{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60%;
+    padding: 0.3rem 0.3rem 0.1rem;
+    background-color: #fff;
+    .tos-head{
+      display: flex;
+      margin-bottom: 0.3rem;
+      .l-img{
+        width: 1.6rem;
+        height: 1.6rem;
+        margin-right: 0.24rem;
+        background-image: url('./shop.png');
+        background-size: 100% 100%;
+      }
+      .head-right{
         display: flex;
-        margin-bottom: 0.3rem;
-        .l-img{
-          width: 1.6rem;
-          height: 1.6rem;
-          margin-right: 0.24rem;
-          background-image: url('./shop.png');
-          background-size: 100% 100%;
-        }
-        .head-right{
-          display: flex;
+        width: 100%;
+        align-content: space-between;
+        flex-wrap: wrap;
+        position: relative;
+        font-family: PingFang-SC-Medium;
+        font-size: 0.26rem;
+        color: #999999;
+        letter-spacing: 0.002rem;
+        >p{
           width: 100%;
-          align-content: space-between;
-          flex-wrap: wrap;
-          position: relative;
+        }
+        .r-head{
+          color: #23AD8C;
+          font-size: 0.3rem;
+          .iconX{
+            width: 0.34rem;
+            height: 0.34rem;
+            margin-top: -0.1rem;
+            display: inline-block;
+            background-image: url('./x.png');
+            background-size: 100% 100%;
+          }
+        }
+      }
+    }
+    .tos-con{
+      padding-top: 0.3rem;
+      .con-head{
+        margin-bottom: 0.3rem;
+        h5{
           font-family: PingFang-SC-Medium;
-          font-size: 0.26rem;
-          color: #999999;
-          letter-spacing: 0.002rem;
-          >p{
-            width: 100%;
-          }
-          .r-head{
-            color: #23AD8C;
-            font-size: 0.3rem;
-            .iconX{
-              width: 0.34rem;
-              height: 0.34rem;
-              margin-top: -0.1rem;
-              display: inline-block;
-              background-image: url('./x.png');
-              background-size: 100% 100%;
-            }
-          }
+          font-size: 0.32rem;
+          color: #333333;
+          letter-spacing: 0.0025rem;
         }
       }
-      .tos-con{
-        padding-top: 0.3rem;
-        .con-head{
-          margin-bottom: 0.3rem;
-          h5{
-            font-family: PingFang-SC-Medium;
-            font-size: 0.32rem;
-            color: #333333;
-            letter-spacing: 0.0025rem;
-          }
-        }
-        .con-list{
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;
-          background: rgba(216,216,216,0.00);
-          box-shadow: 0 0.01rem 0 0 #E5E5E5;
-          .sing{
-            padding: 0 0.5rem;
-            text-align: center;
-            height: 0.8rem;
-            line-height: 0.7rem;
-            color: #666;
-            background-color: #EBEBEB;
-            font-size: 0.28rem;
-            margin-bottom: 0.3rem;
-          }
-          .set-index{
-            color: #fff;
-            background-color: #23AD8C;
-          }
-        }
-      }
-      .con-foo{
-        height: 1.1rem;
-        line-height: 1.1rem;
+      .con-list{
+        display: flex;
+        flex-wrap: wrap;
         background: rgba(216,216,216,0.00);
         box-shadow: 0 0.01rem 0 0 #E5E5E5;
-        margin-bottom: 0.65rem;
-        .f-left{
-          font-family: PingFang-SC-Heavy;
-          font-size: 0.32rem;
-          color: #333;
-          letter-spacing: 0.002rem;
-          .l-num{
-            span{
-              vertical-align: middle;
-              display: inline-block;
-              width: 0.36rem;
-              height: 0.36rem;
-              font-size: 0.26rem;
-              background-size: 100% 100%;
-            }
-            b{
-              vertical-align: middle;
-            }
-            .jian{
-              background-image: url('./jian.png');
-            }
-            .jia{
-              background-image: url('./jia.png');
-            }
+        .sing{
+          padding: 0 0.5rem;
+          margin: 0 0.2rem;
+          text-align: center;
+          height: 0.8rem;
+          line-height: 0.7rem;
+          color: #666;
+          background-color: #EBEBEB;
+          font-size: 0.28rem;
+          margin-bottom: 0.3rem;
+        }
+        .set-index{
+          color: #fff;
+          background-color: #23AD8C;
+        }
+      }
+    }
+    .con-foo{
+      height: 1.1rem;
+      line-height: 1.1rem;
+      background: rgba(216,216,216,0.00);
+      box-shadow: 0 0.01rem 0 0 #E5E5E5;
+      margin-bottom: 0.45rem;
+      .f-left{
+        font-family: PingFang-SC-Heavy;
+        font-size: 0.32rem;
+        color: #333;
+        letter-spacing: 0.002rem;
+        .l-num{
+          span{
+            vertical-align: middle;
+            display: inline-block;
+            width: 0.36rem;
+            height: 0.36rem;
+            font-size: 0.26rem;
+            background-size: 100% 100%;
+          }
+          b{
+            vertical-align: middle;
+          }
+          .jian{
+            background-image: url('./jian.png');
+          }
+          .jia{
+            background-image: url('./jia.png');
           }
         }
       }
-      .tos-btn{
-        height: 0.9rem;
-        line-height: 0.9rem;
-        width: 100%;
-        background-color: #23AD8C;
-        color: #fff;
-        text-align: center;
-        border-radius: 0.1rem;
-        font-size: 0.34rem;
-        letter-spacing: 0.05rem;
+    }
+    .tos-btn{
+      height: 0.9rem;
+      line-height: 0.9rem;
+      width: 100%;
+      background-color: #23AD8C;
+      color: #fff;
+      text-align: center;
+      border-radius: 0.1rem;
+      font-size: 0.34rem;
+      letter-spacing: 0.05rem;
+    }
+    .tos-btns{
+      height: 0.9rem;
+      line-height: 0.9rem;
+      width: 100%;
+      text-align: center;
+      font-size: 0.34rem;
+      letter-spacing: 0.02rem;
+      display: flex;
+      color: #fff;
+      justify-content: space-between;
+      >div{
+        width: 48%;
+        border-radius: 0.06rem;
       }
-      .tos-btns{
-        height: 0.9rem;
-        line-height: 0.9rem;
-        width: 100%;
-        text-align: center;
-        font-size: 0.34rem;
-        letter-spacing: 0.02rem;
-        display: flex;
-        color: #fff;
-        justify-content: space-between;
-        >div{
-          width: 48%;
-          border-radius: 0.06rem;
-        }
-        .gwc{
-          background-color: #554F5B; 
-        }
-        .ljgm{
-          background-color: #23AD8C;
-        }
+      .gwc{
+        background-color: #554F5B; 
+      }
+      .ljgm{
+        background-color: #23AD8C;
       }
     }
   }

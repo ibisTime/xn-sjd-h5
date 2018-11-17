@@ -85,6 +85,10 @@
       hasMore: {
         type: Boolean,
         default: true
+      },
+      eventPassthrough: {
+        type: String,
+        default: ''
       }
     },
     data() {
@@ -115,7 +119,8 @@
           scrollbar: this.scrollbar,
           pullUpLoad: this.pullUpLoad,
           startY: this.startY,
-          freeScroll: this.freeScroll
+          freeScroll: this.freeScroll,
+          eventPassthrough: this.eventPassthrough
         };
 
         this.scroll = new BScroll(this.$refs.wrapper, options);

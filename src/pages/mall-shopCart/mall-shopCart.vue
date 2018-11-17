@@ -4,6 +4,7 @@
       <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
         <div class="shop-list">
           <ShopSingMsg 
+              v-if="shopAllData.length > 0"
               v-for="(allItem, allIndex) in shopAllData" 
               :key="allIndex"
               :shopIndex="allIndex"
@@ -143,6 +144,12 @@ export default {
           }
         });
       });
+      if(shopMsgList.length === 0) {
+        this.loading = false;
+        this.textMsg = '请选择商品';
+        this.$refs.toast.show();
+        return;
+      }
       sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
       this.go('/affirm-order');
     }

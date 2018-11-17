@@ -82,7 +82,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import { formatAmount, formatImg, formatDate, setTitle, getUrlParam, getUserId } from 'common/js/util';
-import { oneStoreOrder, affirmOrder } from 'api/store';
+import { oneStoreOrder, affirmOrder, removeMoreOrder } from 'api/store';
 import { getDictList } from 'api/general';
 export default {
   data() {
@@ -98,7 +98,7 @@ export default {
       addressMsg: {},   // 地址信息
       orderStatus: {},
       affrimConfig: {  // 确认收货入参
-        orderCode: '',
+        code: '',
         receiver: getUserId(),
         shopCode: ''
       },
@@ -147,6 +147,7 @@ export default {
       switch(status) {
         case '0':
           this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>
+                        <div class="foo-btn remove set-btn">取消订单</div>
                         <div class="foo-btn topay set-btn">立即付款</div>`;
           break;
         case '1':
@@ -154,11 +155,11 @@ export default {
           break;
         case '2':
           this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
-                      <div class="foo-btn look-wl set-btn">查看物流</div>
-                      <div class="foo-btn after-sale set-btn">申请售后</div>`;
+                      <div class="foo-btn look-wl set-btn">查看物流</div>`;
           break;
         case '3':
-          this.operHtml = `<div class="foo-btn order-pj set-btn">评价</div>`;
+          this.operHtml = `<div class="foo-btn order-pj set-btn">评价</div>
+                      <div class="foo-btn after-sale set-btn">申请售后</div>`;
           break;
         case '4':
           this.operHtml = ``;
@@ -170,20 +171,36 @@ export default {
       if(target.classList.contains('change-site')) { // 修改地址
         this.go('/address');
       }
+      if(target.classList.contains('remove')) { // 取消订单
+        this.loading = true;
+        this.loadingText = '';
+        removeMoreOrder({
+          updater: getUserId(),
+          code: this.orderDetail.orderCode
+        }).then(data => {
+          this.textMsg = '已取消订单';
+          this.$refs.toast.show();
+          this.loading = false;
+          this.loadingText = '正在加载...';
+        }, () => {
+          this.loadingText = '正在加载...';
+          this.loading = false;
+        });
+      }
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderDetail];
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
         this.go('/affirm-order?code=' + this.orderDetail.code);
       }
       if(target.classList.contains('after-sale')) { // 申请售后
-        alert('申请售后');
+        this.go('/after-sale?code=' + this.orderDetail.code);
       }
       if(target.classList.contains('look-wl')) { // 查看物流
         alert('查看物流');
       }
       if(target.classList.contains('order-take')) { // 确认收货
         this.loading = true;
-        this.affrimConfig.orderCode = this.orderDetail.orderCode;
+        this.affrimConfig.code = this.orderDetail.code;
         this.affrimConfig.shopCode = this.orderDetail.shopCode;
         affirmOrder(this.affrimConfig).then(data => {
           this.textMsg = '操作成功';

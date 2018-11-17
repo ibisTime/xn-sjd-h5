@@ -9,11 +9,11 @@
           </div>
         </div>
         <div class="mall-list">
-          <div class="mall-single" v-for="(item, index) in mallList" :key="index">
-            <div class="sing-img"></div>
-            <p class="sing-txt">{{item}}</p>
+            <div class="mall-single" v-for="(item, index) in shopTypeData" :key="index" @click="getTypeData(item.code)">
+              <div class="sing-img" :style="getImgSyl(item.pic ? item.pic : '')"></div>
+              <p class="sing-txt">{{item.name}}</p>
+            </div>
           </div>
-        </div>
         <div class="mall-content">
           <div class="con-head">
             <h5>所有商品<span class="fr" @click="tomore">更多</span></h5>
@@ -57,7 +57,7 @@ import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
 import MallShopList from '../mall-shopList/mall-shopList';
-import { getAllShopData, addShopCart, storeMsg } from 'api/store';
+import { getAllShopData, addShopCart, storeMsg, getShopType } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUrlParam, getUserId } from 'common/js/util';
 export default {
   // name: "home",
@@ -86,7 +86,17 @@ export default {
         quantity: 1              // 商品数量
       },
       description: '',
-      name: ''
+      name: '',
+      shopTypeConfig: {          // 商品类别参数
+        start: 1,
+        limit: 10,
+        level: 1,
+        status: 1,
+        type: 2,
+        orderColumn: 'order_no',
+        orderDir: 'desc'
+      },
+      shopTypeData: []
     };
   },
   created() {
@@ -94,6 +104,9 @@ export default {
     this.pullUpLoad = null;
     this.shopCode = getUrlParam('shopCode');
     this.config.shopCode = this.shopCode;
+    getShopType(this.shopTypeConfig).then(data => {
+      this.shopTypeData = data.list;
+    });
     storeMsg(this.shopCode).then(data => {
       this.description = data.description;
       this.name = data.name;
@@ -121,6 +134,11 @@ export default {
       return {
         backgroundImage: `url(${pic})`
       };
+    },
+    getTypeData(code) {
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
     },
     addCart(code, name, specsId, specsName) {
       this.loading = true;
@@ -197,7 +215,7 @@ export default {
         left: 0;
         top: 0;
         width: 100%;
-        height: 1.5rem;
+        min-height: 1.5rem;
         background-color: rgba(0, 0, 0, .5);
         padding: 0.3rem 0 0.35rem 0.3rem;
         font-family: PingFang-SC-Medium;

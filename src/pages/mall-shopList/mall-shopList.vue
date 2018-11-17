@@ -3,11 +3,10 @@
     <div class="content">
         <div class="head-nav">
             <ul class="nav-list" @click="changStu">
-                <li><span :class="{'on': isset == '1'}">全部</span></li>
-                <li><span :class="{'on': isset == '2'}">分类一</span></li>
-                <li><span :class="{'on': isset == '3'}">分类二</span></li>
-                <li><span :class="{'on': isset == '4'}">分类三</span></li>
-                <li><span :class="{'on': isset == '5'}">分类四</span></li>
+                <li><span :class="{'on': isset === -1}" :data-type="-1">全部</span></li>
+                <li v-for="(item, index) in shopTypeData" :key="index">
+                  <span :class="{'on': isset === index}" :data-type="index" :data-code="item.code">{{item.name}}</span>
+                </li>
             </ul>
         </div>
         <div class="con-list">
@@ -43,7 +42,7 @@ import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { getAllShopData, addShopCart } from 'api/store';
+import { getAllShopData, addShopCart, getShopType } from 'api/store';
 export default {
   data() {
     return {
@@ -51,7 +50,7 @@ export default {
       hasMore: true,
       textMsg: '',
       loadingText: '正在加载...',
-      isset: '1',
+      isset: -1,
       start: 1,
       config: {
         start: 1,
@@ -67,12 +66,25 @@ export default {
         specsId: '',              // 规格编号
         specsName: '',            // 规格名称
         quantity: 1              // 商品数量
-      }
+      },
+      shopTypeConfig: {          // 商品类别参数
+        start: 1,
+        limit: 10,
+        level: 1,
+        status: 1,
+        type: 2,
+        orderColumn: 'order_no',
+        orderDir: 'desc'
+      },
+      shopTypeData: []
     };
   },
   created() {
     setTitle('全部商品');
     this.getHotShop();
+    getShopType(this.shopTypeConfig).then(data => {
+      this.shopTypeData = data.list;
+    });
   },
   mounted() {
     this.loading = false;
@@ -101,22 +113,19 @@ export default {
     },
     changStu() {
       let target = event.target;
-      switch(target.innerText) {
-        case '全部':
-          this.isset = '1';
-          break;
-        case '分类一':
-          this.isset = '2';
-          break;
-        case '分类二':
-          this.isset = '3';
-          break;
-        case '分类三':
-          this.isset = '4';
-          break;
-        case '分类四':
-          this.isset = '5';
-          break;
+      let type = target.getAttribute('data-type');
+      let code = target.getAttribute('data-code');
+      this.isset = Number(type);
+      if(this.isset > -1) {
+        this.config.parentCategoryCode = code;
+        this.hotShopList = [];
+        this.start = 1;
+        this.getHotShop();
+      }else {
+        delete this.config.parentCategoryCode;
+        this.hotShopList = [];
+        this.start = 1;
+        this.getHotShop();
       }
     },
     // 获取热门商品
@@ -188,10 +197,10 @@ export default {
         font-size: 0.32rem;
         .nav-list{
             display: flex;
-            justify-content: space-between;
+            margin-right: 0.1rem;
             padding-bottom: 0.1rem;
             li{
-                width: 20%;
+                width: 25%;
                 text-align: center;
                 span{
                     padding-bottom: 0.08rem;

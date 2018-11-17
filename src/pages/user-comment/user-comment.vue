@@ -20,11 +20,11 @@
               </div>
               <div class="sing-foo">
                   <div class="s-foo_left">
-                      <p>浏览46次</p>
+                      <p class="hidden">浏览46次</p>
                   </div>
                   <div class="s-foo_right">
                       <p><span class="foo-pl"></span> <span class="pl">评论</span></p>
-                      <p><span class="foo-z"></span> <span class="pl">150</span></p>
+                      <p class="hidden"><span class="foo-z"></span> <span class="pl">150</span></p>
                   </div>
               </div>
           </div>
@@ -128,7 +128,7 @@ export default {
       start: 1,
       config: {      // 评论参数
         start: 1,
-        limit: 1,
+        limit: 6,
         commodityCode: '',
         status: 'D'
       },
@@ -326,13 +326,16 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0.98rem;
+    bottom: 0rem;
     width: 100%;
     .fl {
         float: left;
     }
     .fr {
         float: right;
+    }
+    .hidden{
+        display: none;
     }
     .content {
         position: absolute;

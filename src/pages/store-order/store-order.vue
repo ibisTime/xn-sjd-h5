@@ -55,7 +55,7 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { onePageOrder, affirmOrder } from 'api/store';
+import { onePageOrder, affirmOrder, removeMoreOrder } from 'api/store';
 import { getDictList } from 'api/general';
 import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
@@ -158,6 +158,7 @@ export default {
       switch(status) {
         case '0':
           this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>
+                        <div class="foo-btn remove set-btn">取消订单</div>
                         <div class="foo-btn topay set-btn">立即付款</div>`;
           break;
         case '1':
@@ -165,11 +166,11 @@ export default {
           break;
         case '2':
           this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
-                      <div class="foo-btn look-wl set-btn">查看物流</div>
-                      <div class="foo-btn after-sale set-btn">申请售后</div>`;
+                      <div class="foo-btn look-wl set-btn">查看物流</div>`;
           break;
         case '3':
-          this.operHtml = `<div class="foo-btn order-pj set-btn">评价</div>`;
+          this.operHtml = `<div class="foo-btn order-pj set-btn">评价</div>
+                      <div class="foo-btn after-sale set-btn">申请售后</div>`;
           break;
         case '4':
           this.operHtml = `<div class="foo-btn order-pj">已完成</div>`;
@@ -182,13 +183,29 @@ export default {
       if(target.classList.contains('change-site')) { // 修改地址
         this.go('/address');
       }
+      if(target.classList.contains('remove')) { // 取消订单
+        this.loading = true;
+        this.loadingText = '';
+        removeMoreOrder({
+          updater: getUserId(),
+          code: this.orderList[index].orderCode
+        }).then(data => {
+          this.textMsg = '已取消订单';
+          this.$refs.toast.show();
+          this.loading = false;
+          this.loadingText = '正在加载...';
+        }, () => {
+          this.loadingText = '正在加载...';
+          this.loading = false;
+        });
+      }
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderList[index]];
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
         this.go('/affirm-order?code=' + this.orderList[index].code);
       }
       if(target.classList.contains('after-sale')) { // 申请售后
-        alert('申请售后');
+        this.go('/after-sale?code=' + this.orderList[index].code);
       }
       if(target.classList.contains('look-wl')) { // 查看物流
         alert('查看物流');
@@ -199,7 +216,7 @@ export default {
       }
       if(target.classList.contains('order-take')) { // 确认收货
         this.loading = true;
-        this.affrimConfig.orderCode = this.orderList[index].orderCode;
+        // this.affrimConfig.code = this.orderList[index].orderCode;
         this.affrimConfig.shopCode = this.orderList[index].shopCode;
         this.affrimConfig.code = this.orderList[index].code;
         affirmOrder(this.affrimConfig).then(data => {

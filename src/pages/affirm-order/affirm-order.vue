@@ -20,7 +20,7 @@
                     </div>
                     <div class="o-c_con">
                         <div class="c-c_left">
-                            <div class="c-c_img" :style="getImgSyl(orderItem.listPic ? orderItem.listPic : orderItem.bannerPic ? orderItem.bannerPic : orderItem.commodityPhoto)"></div>
+                            <div class="c-c_img" :style="getImgSyl(orderItem.listPic ? orderItem.listPic : orderItem.bannerPic ? orderItem.bannerPic[0] : orderItem.commodityPhoto)"></div>
                         </div>
                         <div class="o-c_right">
                             <p class="r-p1">{{orderItem.commodityName}} <span class="fr">×{{orderItem.quantity}}</span></p>

@@ -24,7 +24,7 @@
             </div>
             <p class="back-co"></p>
             <div class="pj-foo">
-                <div class="s-pj" @click="addAComment">
+                <div class="s-pj" @click.stop="addAComment">
                     发表
                 </div>
             </div>
@@ -82,7 +82,10 @@ export default {
       }
       this.loading = true;
       let conText = `<p>${this.pjText}</p>`;
-      let conImg = `<img src="${formatImg(this.photos[0].key)}" />`;
+      let conImg = '';
+      if(this.photos.length !== 0) {
+        conImg = `<img src="${formatImg(this.photos[0].key)}" />`;
+      }
       this.commentConfig.content = conText + conImg;
       addACommemt(this.commentConfig).then(data => {
         this.loading = false;

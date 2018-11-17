@@ -1,5 +1,10 @@
 import fetch from 'common/js/fetch';
 
+// 获取商品分类
+export function getShopType(config) {
+  return fetch(629005, config);
+}
+
 // 获取全部商品
 export function getAllShopData(config) {
   return fetch(629706, config);
@@ -58,6 +63,11 @@ export function payMoreOrder(config) {
   return fetch(629721, config);
 }
 
+// 取消订单（多店铺）
+export function removeMoreOrder(config) {
+  return fetch(629722, config);
+}
+
 // 根据店铺删购物车
 export function storeRemoveFn(shopCode) {
   return fetch(629714, {
@@ -80,6 +90,36 @@ export function shopCartOrder(config) {
 // 确认收货
 export function affirmOrder(config) {
   return fetch(629731, config);
+}
+
+// 退款
+export function refundMoney(config) {
+  return fetch(629771, config);
+}
+
+// 退货
+export function salesReturn(config) {
+  return fetch(629770, config);
+}
+
+// 分页查消息
+export function storeMessage(config) {
+  return fetch(629785, config);
+}
+
+// 发送消息
+export function sendMessage(config) {
+  return fetch(629780, config);
+}
+
+// 阅读消息
+export function readMessage(config) {
+  return fetch(629782, config);
+}
+
+// 回复消息
+export function replyMessage(config) {
+  return fetch(629781, config);
 }
 
 /**

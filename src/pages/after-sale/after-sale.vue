@@ -2,18 +2,18 @@
     <div class="sale-wallper">
         <div class="content">
             <div class="sale-head">
-                <div class="sale-jtk">
+                <div class="sale-jtk" @click="setSaleFn('0')">
                     <div class="jtk-left sale-left">
-                        <p></p>
+                        <p :style="{'background-image': setIndex == '0' ? `url('/static/yxz.png')` : ''}"></p>
                     </div>
                     <div class="jtk-right sale-right">
                         <h5>仅退款</h5>
                         <p>卖家未发货或与卖家协商同意前提下</p>
                     </div>
                 </div>
-                <div class="sale-thtk">
+                <div class="sale-thtk" @click="setSaleFn('1')">
                     <div class="thtk-left sale-left">
-                        <p></p>
+                        <p :style="{'background-image': setIndex == '1' ? `url('/static/yxz.png')` : ''}"></p>
                     </div>
                     <div class="thtk-right sale-right">
                         <h5>退货退款</h5>
@@ -22,33 +22,41 @@
                 </div>
             </div>
             <p class="back-co"></p>
-            <div class="sale-con">
+            <div class="sale-con" v-show="isset">
                 <div class="sale-box01">
                     <div class="box-left">
                         <p>退款金额</p>
                     </div>
                     <div class="box-right">
-                        <input type="text" placeholder="请输入金额">
+                        <input type="text" placeholder="请输入金额" v-model="refundAmount">
                     </div>
                 </div>
-                <div class="sale-box01">
+                <div class="sale-box01" v-show="setIndex === '1'">
                     <div class="box-left">
                         <p>物流公司</p>
                     </div>
                     <div class="box-right">
-                        <input type="text" placeholder="请输入物流公司">
+                        <input type="text" placeholder="请输入物流公司" v-model="salesConfig.logisticsCompany">
                     </div>
                 </div>
-                <div class="sale-box01">
+                <div class="sale-box01" v-show="setIndex === '1'">
                     <div class="box-left">
                         <p>物流单号</p>
                     </div>
                     <div class="box-right">
-                        <input type="text" placeholder="请输入物流单号">
+                        <input type="text" placeholder="请输入物流单号" v-model="salesConfig.logisticsNumber">
+                    </div>
+                </div>
+                <div class="sale-box01" v-show="setIndex === '1'">
+                    <div class="box-left">
+                        <p>发货人</p>
+                    </div>
+                    <div class="box-right">
+                        <input type="text" placeholder="请输入发货人" v-model="salesConfig.deliver">
                     </div>
                 </div>
             </div>
-            <div class="sale-foo">
+            <div class="sale-foo" v-show="isset" @click="afterSale">
                 提交
             </div>
         </div>
@@ -60,17 +68,35 @@
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
+import { refundMoney, salesReturn } from 'api/store';
 export default {
   data() {
     return {
       loading: true,
+      isset: false,
+      setIndex: '',
       textMsg: '',
-      loadingText: '正在加载中...'
+      loadingText: '正在加载中...',
+      salesConfig: { // 退货参数
+        orderDetailCode: '',   // 订单明细编号
+        logisticsCompany: '',    // 物流公司
+        logisticsNumber: '',    // 物流单号
+        refundAmount: '',    // 退款金额
+        deliver: ''    // 发货人
+      },
+      refundConfig: {  // 退款入参
+        orderDetailCode: '',
+        refundAmount: '',
+        applyUser: getUserId()
+      },
+      refundAmount: '',
+      orderDetailCode: ''
     };
   },
   created() {
     setTitle('售后');
+    this.orderDetailCode = getUrlParam('code');
   },
   mounted() {
     this.loading = false;
@@ -93,8 +119,49 @@ export default {
         backgroundImage: `url(${imgs})`
       };
     },
-    tomore() {
-      this.isAll = true;
+    setSaleFn(index) {
+      if(index === this.setIndex) {
+        this.setIndex = '';
+        this.isset = false;
+        return;
+      }
+      this.refundAmount = '';
+      this.setIndex = index;
+      this.isset = true;
+    },
+    afterSale() {
+      switch(this.setIndex) {
+        case '0': // 退款
+          this.loading = true;
+          this.refundConfig.refundAmount = this.refundAmount * 1000;
+          this.refundConfig.orderDetailCode = this.orderDetailCode;
+          refundMoney(this.refundConfig).then(data => {
+            this.loading = false;
+            this.textMsg = '申请成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.go('/mall');
+            }, 1500);
+          }, () => {
+            this.loading = false;
+          });
+          break;
+        case '1': // 退货
+          this.loading = true;
+          this.salesConfig.refundAmount = this.refundAmount * 1000;
+          this.salesConfig.orderDetailCode = this.orderDetailCode;
+          salesReturn(this.salesConfig).then(data => {
+            this.loading = false;
+            this.textMsg = '申请成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.go('/mall');
+            }, 1500);
+          }, () => {
+            this.loading = false;
+          });
+          break;
+      }
     }
   },
   components: {
@@ -110,7 +177,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  bottom: 0.98rem;
+  bottom: 0;
   width: 100%;
   .fl {
     float: left;
@@ -148,6 +215,7 @@ export default {
                     width: 0.36rem;
                     height: 0.36rem;
                     border-radius: 100%;
+                    background-size: 100% 100%;
                     border: 0.02rem solid #CCCCCC;
                 }
             }
@@ -192,9 +260,9 @@ export default {
         }
     }
     .sale-foo{
-        margin-top: 1.4rem;
-        height: 1rem;
-        line-height: 1rem;
+        margin-top: 0.6rem;
+        height: 0.9rem;
+        line-height: 0.9rem;
         text-align: center;
         font-size: 0.36rem;
         color: #fff;
