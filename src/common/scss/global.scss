@@ -282,3 +282,28 @@
     width: 80%;
   }
 }
+
+.mall-list{
+  background-color: #fff;
+  width: 100%;
+  padding: 0.24rem 0 0.36rem;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow-x: scroll;
+  color: #666666;
+  .mall-single{
+    width: 25%;
+    display: inline-block;
+    font-family: PingFangSC-Medium;
+    font-size: 0.28rem;
+    letter-spacing: 0.01rem;
+    text-align: center;
+    .sing-img{
+      width: 1rem;
+      height: 1rem;
+      background-size: 100% 100%;
+      margin: 0 auto;
+      margin-bottom: 0.22rem;
+    }
+  }
+}

@@ -10,24 +10,20 @@
             </div>
           </div>
         </div>
-        <!-- <category-scroll 
-          :currentIndex="currentIndex"
-          :categorys="shopTypeData"
-          @select="selectCategory" 
-        ></category-scroll> -->
-        <Scroll ref="scroll" :freeScroll="true" :pullUpLoad="pullUpLoad" :eventPassthrough="'horizontal'">
-          <div class="mall-list">
-            <div class="mall-single" v-for="(item, index) in shopTypeData" :key="index" @click="getTypeData(item.code)">
-              <div class="sing-img" :style="getImgSyl(item.pic ? item.pic : '')"></div>
-              <p class="sing-txt">{{item.name}}</p>
-            </div>
-          </div>
-        </Scroll>
+
+        <div class="mall-list">
+          <category-scroll
+            :Type="'mall'"
+            :currentIndex="currentIndex"
+            :categorys="shopTypeData"
+            @select="selectCategory"
+          ></category-scroll>
+        </div>
         <div class="mall-content">
           <div class="con-head">
             <h5>热门推荐 <router-link to="/mall/mall-shopList" class="fr" @click.native="isAll = true;">更多</router-link></h5>
             <div class="shop-list" @touchstart.stop>
-              <Scroll 
+              <Scroll
                 :data="hotShopList"
                 :hasMore="hasMore"
                 @pullingUp="getHotShop">
@@ -39,8 +35,8 @@
                         <h5>{{shopItem.name}}</h5>
                         <div class="con-foo">
                           <p>￥{{formatAmount(shopItem.minPrice)}}起
-                            <span 
-                              class="icon fr" 
+                            <span
+                              class="icon fr"
                               @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"
                             ></span>
                           </p>
@@ -121,7 +117,14 @@ export default {
     this.pullUpLoad = null;
     this.getHotShop();
     getShopType(this.shopTypeConfig).then(data => {
-      this.shopTypeData = data.list;
+      data.list.map((item, index) => {
+        this.shopTypeData.push({
+          key: index,
+          value: item.name,
+          code: item.code,
+          pic: item.pic
+        });
+      });
     });
   },
   methods: {
@@ -151,9 +154,10 @@ export default {
     selectCategory(index) {
       this.currentIndex = index;
       this.$refs.scroll.scrollTo(0, 0);
-      if (!this.currentList.data.length && this.currentList.hasMore) {
-        this.getPageOrders();
-      }
+      this.config.parentCategoryCode = this.shopTypeData[index].code;
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
     },
     addCart(code, name, specsId, specsName) {
       this.loading = true;
@@ -285,30 +289,6 @@ export default {
             vertical-align: middle;
             margin-left: -0.2rem;
           }
-        }
-      }
-    }
-    .mall-list{
-      background-color: #fff;
-      width: 100%;
-      padding: 0.24rem 0 0.36rem;
-      margin-bottom: 0.2rem;
-      white-space: nowrap;
-      overflow-x: scroll;
-      .mall-single{
-        width: 25%;
-        display: inline-block;
-        font-family: PingFangSC-Medium;
-        font-size: 0.28rem;
-        color: #666666;
-        letter-spacing: 0.01rem;
-        text-align: center;
-        .sing-img{
-          width: 1rem;
-          height: 1rem;
-          background-size: 100% 100%;
-          margin: 0 auto;
-          margin-bottom: 0.22rem;
         }
       }
     }

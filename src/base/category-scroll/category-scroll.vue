@@ -9,7 +9,11 @@
         class="category-item"
         :class="{active: index===currentIndex}"
         :style="_getItemColor(index)">
-        {{item.value}}
+        <div class="mall-single" v-if="Type === 'mall'">
+          <div class="sing-img" :style="getImgSyl(item.pic ? item.pic : '')"></div>
+          <p class="sing-txt">{{item.value}}</p>
+        </div>
+        {{Type === 'mall' ? "" : item.value}}
       </div>
     </div>
   </div>
@@ -17,6 +21,7 @@
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
+  import { formatImg } from 'common/js/util';
 
   export default {
     props: {
@@ -39,6 +44,10 @@
       bgColor: {
         type: String,
         default: ''
+      },
+      Type: {
+        type: String,
+        default: ''
       }
     },
     mounted() {
@@ -57,6 +66,15 @@
       });
     },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
+      getImgSyl(imgs, type) {
+        let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
+        return {
+          backgroundImage: `url(${pic})`
+        };
+      },
       _selectItem(e, index) {
         if (!e._constructed) {
           return;
