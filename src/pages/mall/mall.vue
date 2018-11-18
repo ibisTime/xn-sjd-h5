@@ -6,7 +6,7 @@
           <div class="head-search">
             <div class="search">
               <span></span>
-              <input type="text" placeholder="搜索商品">
+              <input type="text" placeholder="搜索商品" v-model="shopName" @keyup="searchShop">
             </div>
           </div>
         </div>
@@ -56,6 +56,7 @@
       <router-view v-show="isAll"></router-view>
     </Scroll>
     <div class="go-cart" @click.stop="toCartFn">
+      <p v-if="iscart"></p>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
@@ -69,8 +70,8 @@ import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
-import { getAllShopData, addShopCart, getShopType } from 'api/store';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { getAllShopData, addShopCart, getShopType, myShopCart } from 'api/store';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
 export default {
   data() {
     return {
@@ -107,13 +108,20 @@ export default {
         status: 1,
         type: 2,
         orderColumn: 'order_no',
-        orderDir: 'desc'
+        orderDir: 'asc'
       },
-      shopTypeData: []
+      shopTypeData: [],
+      shopName: '',
+      iscart: false,
+      shopCode: ''
     };
   },
   created() {
     setTitle('商场');
+    this.shopCode = getUrlParam('code');
+    if(this.shopCode) {
+      this.isAll = true;
+    }
     this.pullUpLoad = null;
     this.getHotShop();
     getShopType(this.shopTypeConfig).then(data => {
@@ -126,6 +134,13 @@ export default {
         });
       });
     });
+    if(getUserId()) {
+      myShopCart(getUserId()).then(data => {
+        if(data.length > 0) {
+          this.iscart = true;
+        }
+      });
+    }
   },
   methods: {
     formatAmount(amount) {
@@ -146,6 +161,14 @@ export default {
         backgroundImage: `url(${pic})`
       };
     },
+    searchShop() {
+      if(event.keyCode === 13) {
+        this.config.name = this.shopName;
+        this.start = 1;
+        this.hotShopList = [];
+        this.getHotShop();
+      }
+    },
     getTypeData(code) {
       this.start = 1;
       this.hotShopList = [];
@@ -153,7 +176,6 @@ export default {
     },
     selectCategory(index) {
       this.currentIndex = index;
-      this.$refs.scroll.scrollTo(0, 0);
       this.config.parentCategoryCode = this.shopTypeData[index].code;
       this.start = 1;
       this.hotShopList = [];
@@ -166,11 +188,14 @@ export default {
       this.addCartConfig.specsId = specsId;
       this.addCartConfig.specsName = specsName;
       addShopCart(this.addCartConfig).then(data => {
+        this.loading = false;
         this.textMsg = '加入购物车成功';
         this.$refs.toast.show();
-        setTimeout(() => {
-          this.go('/mall-shopCart');
-        }, 1500);
+        // setTimeout(() => {
+        //   this.go('/mall-shopCart');
+        // }, 1500);
+      }, () => {
+        this.loading = false;
       });
     },
     toShopDet(code, shopCode) {
@@ -199,6 +224,10 @@ export default {
         }
         this.hotShopList = [...this.hotShopList, ...data.list];
         this.start ++;
+        if(this.config.name) {
+          delete this.config.name;
+          this.shopName = '';
+        }
       }, () => {
         this.loading = false;
       });
@@ -372,6 +401,15 @@ export default {
     height: 1.3rem;
     background-image: url('./1.png');
     background-size: 100% 100%;
+    p{
+      width: 0.2rem;
+      height: .2rem;
+      border-radius: 100%;
+      background-color: red;
+      position: absolute;
+      top: 0.1rem;
+      right: 0.2rem;
+    }
   }
 }
 </style>

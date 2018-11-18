@@ -3,15 +3,15 @@
     <div class="content">
       <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
         <div class="shop-list">
-          <ShopSingMsg 
+          <ShopSingMsg
               v-if="shopAllData.length > 0"
-              v-for="(allItem, allIndex) in shopAllData" 
+              v-for="(allItem, allIndex) in shopAllData"
               :key="allIndex"
               :shopIndex="allIndex"
               :shopAll="isShopAll"
               :storeSingData="allItem"
               :storeAllShop="shopAllData"
-              @removeShop="removeShop"         
+              @removeShop="removeShop"
               @shopTatilFn="shopTatilFn"
               @allStoreSetFn="allStoreSetFn"
           />
@@ -30,7 +30,8 @@
       </div>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
-    <toast ref="toast" :text="textMsg"></toast>
+    <toast ref="toast" :text="textMsg">
+    </toast>
   </div>
 </template>
 <script>
@@ -208,7 +209,7 @@ export default {
     box-shadow: 0 -1px 0 0 #EBEBEB;
     .foo-left{
         span{
-            vertical-align: middle; 
+            vertical-align: middle;
             margin-right: 0.16rem;
         }
     }

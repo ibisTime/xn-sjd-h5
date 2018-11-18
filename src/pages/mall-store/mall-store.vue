@@ -7,18 +7,21 @@
             <h4>{{name}}</h4>
             <p>{{description}}</p>
           </div>
+          <div class="mall-cont"></div>
         </div>
         <div class="mall-list">
-            <div class="mall-single" v-for="(item, index) in shopTypeData" :key="index" @click="getTypeData(item.code)">
-              <div class="sing-img" :style="getImgSyl(item.pic ? item.pic : '')"></div>
-              <p class="sing-txt">{{item.name}}</p>
-            </div>
+          <category-scroll
+            :Type="'mall'"
+            :currentIndex="currentIndex"
+            :categorys="shopTypeData"
+            @select="selectCategory"
+          ></category-scroll>
           </div>
         <div class="mall-content">
           <div class="con-head">
             <h5>所有商品<span class="fr" @click="tomore">更多</span></h5>
             <div class="ml-list" @touchstart.stop>
-              <Scroll 
+              <Scroll
                 :data="hotShopList"
                 :hasMore="hasMore"
                 @pullingUp="getHotShop">
@@ -44,8 +47,9 @@
         </div>
       </div>
     </Scroll>
-    <MallShopList v-show="isAll" />
+    <!--<MallShopList v-show="isAll" />-->
     <div class="go-cart" @click.stop="go('/mall-shopCart')">
+      <p v-if="iscart"></p>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
@@ -55,16 +59,17 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
+import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import MallShopList from '../mall-shopList/mall-shopList';
-import { getAllShopData, addShopCart, storeMsg, getShopType } from 'api/store';
+import { getAllShopData, addShopCart, storeMsg, getShopType, myShopCart } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUrlParam, getUserId } from 'common/js/util';
 export default {
   // name: "home",
   data() {
     return {
-      mallList: ['分类一', '分类二', '分类三', '分类四'],
       loading: true,
+      currentIndex: 0,
       textMsg: '',
       loadingText: '正在加载中...',
       isAll: false,
@@ -94,22 +99,35 @@ export default {
         status: 1,
         type: 2,
         orderColumn: 'order_no',
-        orderDir: 'desc'
+        orderDir: 'asc'
       },
-      shopTypeData: []
+      shopTypeData: [],
+      iscart: false
     };
   },
   created() {
-    setTitle('店铺名称');
     this.pullUpLoad = null;
     this.shopCode = getUrlParam('shopCode');
     this.config.shopCode = this.shopCode;
     getShopType(this.shopTypeConfig).then(data => {
-      this.shopTypeData = data.list;
+      data.list.map((item, index) => {
+        this.shopTypeData.push({
+          key: index,
+          value: item.name,
+          code: item.code,
+          pic: item.pic
+        });
+      });
     });
     storeMsg(this.shopCode).then(data => {
       this.description = data.description;
       this.name = data.name;
+      setTitle(this.name);
+    });
+    myShopCart(getUserId()).then(data => {
+      if(data.length > 0) {
+        this.iscart = true;
+      }
     });
     this.getHotShop();
   },
@@ -147,18 +165,28 @@ export default {
       this.addCartConfig.specsId = specsId;
       this.addCartConfig.specsName = specsName;
       addShopCart(this.addCartConfig).then(data => {
+        this.loading = false;
         this.textMsg = '加入购物车成功';
         this.$refs.toast.show();
-        setTimeout(() => {
-          this.go('/mall-shopCart');
-        }, 1500);
+        // setTimeout(() => {
+        //   this.go('/mall-shopCart');
+        // }, 1500);
+      }, () => {
+        this.loading = false;
       });
     },
     toShopDet(code, shopCode) {
       this.go(`/mall-shop_detail?code=${code}&shopCode=${shopCode}`);
     },
     tomore() {
-      this.isAll = true;
+      this.go('/mall/mall-shopList?code=' + this.shopCode);
+    },
+    selectCategory(index) {
+      this.currentIndex = index;
+      this.config.parentCategoryCode = this.shopTypeData[index].code;
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
     },
     getHotShop() {
       this.config.start = this.start;
@@ -176,7 +204,8 @@ export default {
     Toast,
     Scroll,
     NoResult,
-    MallShopList
+    MallShopList,
+    CategoryScroll
   }
 };
 </script>
@@ -205,15 +234,14 @@ export default {
 
     .mall-header{
       width: 100%;
-      height: 4.3rem;
-      margin: 0 auto;
-      position: relative;
-      background-image: url('./banner.png');
-      background-size: 100% 100%;
+      .mall-cont{
+        height: 3.8rem;
+        margin: 0 auto;
+        position: relative;
+        background-image: url('./banner.png');
+        background-size: 100% 100%;
+      }
       .head-search{
-        position: absolute;
-        left: 0;
-        top: 0;
         width: 100%;
         min-height: 1.5rem;
         background-color: rgba(0, 0, 0, .5);
@@ -222,47 +250,12 @@ export default {
         color: #FFFFFF;
         h4{
             font-size: 0.34rem;
-            letter-spacing: 0.0.027rem;
+            letter-spacing: 0.0027rem;
             margin-bottom: 0.12rem;
         }
         p{
             font-size: 0.26rem;
             letter-spacing: 0.002rem;
-        }
-      }
-    }
-    .mall-list{
-      background-color: #fff;
-      width: 100%;
-      padding: 0.44rem 0 0.56rem;
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.2rem;
-      .mall-single{
-        width: 24%;
-        font-family: PingFangSC-Medium;
-        font-size: 0.28rem;
-        color: #666666;
-        letter-spacing: 0.002rem;
-        text-align: center;
-        .sing-img{
-          width: 1rem;
-          height: 1rem;
-          background-size: 100%;
-          margin: 0 auto;
-          margin-bottom: 0.22rem;
-        }
-        &:nth-of-type(1) .sing-img{
-          background-image: url('./fl1.png');
-        }
-        &:nth-of-type(2) .sing-img{
-          background-image: url('./fl2.png');
-        }
-        &:nth-of-type(3) .sing-img{
-          background-image: url('./fl3.png');
-        }
-        &:nth-of-type(4) .sing-img{
-          background-image: url('./fl4.png');
         }
       }
     }
@@ -305,8 +298,7 @@ export default {
             width: 100%;
             height: 2.3rem;
             margin-bottom: 0.2rem;
-            background-clip: center;
-            background-size: 100%;
+            background-size: 100% 100%;
             background-image: url('./shop.png');
           }
           .con-txt{
@@ -343,10 +335,19 @@ export default {
     position: fixed;
     bottom: 1.3rem;
     right: 0.3rem;
-    width: 1rem;
-    height: 1rem;
+    width: 1.3rem;
+    height: 1.3rem;
     background-image: url('./1.png');
     background-size: 100% 100%;
+    p{
+      width: 0.2rem;
+      height: .2rem;
+      border-radius: 100%;
+      background-color: red;
+      position: absolute;
+      top: 0.1rem;
+      right: 0.2rem;
+    }
   }
 }
 </style>

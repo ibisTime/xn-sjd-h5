@@ -2,21 +2,20 @@
   <div class="mall-wrapper" @click.stop>
     <div class="content">
         <div class="head-nav">
-            <ul class="nav-list" @click="changStu">
-                <li><span :class="{'on': isset === -1}" :data-type="-1">全部</span></li>
-                <li v-for="(item, index) in shopTypeData" :key="index">
-                  <span :class="{'on': isset === index}" :data-type="index" :data-code="item.code">{{item.name}}</span>
-                </li>
-            </ul>
+          <category-scroll
+            :currentIndex="currentIndex"
+            :categorys="shopTypeData"
+            @select="selectCategory"
+          ></category-scroll>
         </div>
         <div class="con-list">
-          <Scroll 
+          <Scroll
             :data="hotShopList"
             :hasMore="hasMore"
             @pullingUp="getHotShop">
             <div class="shop-list">
               <div class="shop-singer" @click="toShopDet(item.code, item.shopCode)" v-for="(item, index) in hotShopList" :key="index">
-                  <div class="sing-img" :style="getImgSyl(item.bannerPic ? item.bannerPic : '')"></div>
+                  <div class="sing-img" :style="getImgSyl(item.listPic ? item.listPic : '')"></div>
                   <div class="shop-det">
                       <h5>{{item.name}}</h5>
                       <p>￥{{formatAmount(item.minPrice)}} 起
@@ -40,14 +39,16 @@ import MFooter from 'components/m-footer/m-footer';
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
+import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
 import { getAllShopData, addShopCart, getShopType } from 'api/store';
 export default {
   data() {
     return {
       loading: true,
       hasMore: true,
+      currentIndex: 0,
       textMsg: '',
       loadingText: '正在加载...',
       isset: -1,
@@ -74,16 +75,27 @@ export default {
         status: 1,
         type: 2,
         orderColumn: 'order_no',
-        orderDir: 'desc'
+        orderDir: 'asc'
       },
-      shopTypeData: []
+      shopTypeData: [{key: '0', value: '全部', code: ''}],
+      shopCode: ''
     };
   },
   created() {
     setTitle('全部商品');
+    this.shopCode = getUrlParam('code');
+    if(this.shopCode) {
+      this.config.shopCode = this.shopCode;
+    }
     this.getHotShop();
     getShopType(this.shopTypeConfig).then(data => {
-      this.shopTypeData = data.list;
+      data.list.map((item, index) => {
+        this.shopTypeData.push({
+          key: index,
+          value: item.name,
+          code: item.code
+        });
+      });
     });
   },
   mounted() {
@@ -128,6 +140,13 @@ export default {
         this.getHotShop();
       }
     },
+    selectCategory(index) {
+      this.currentIndex = index;
+      this.config.parentCategoryCode = this.shopTypeData[index].code;
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
+    },
     // 获取热门商品
     getHotShop() {
       this.config.start = this.start;
@@ -146,11 +165,14 @@ export default {
       this.addCartConfig.specsId = specsId;
       this.addCartConfig.specsName = specsName;
       addShopCart(this.addCartConfig).then(data => {
+        this.loading = false;
         this.textMsg = '加入购物车成功';
         this.$refs.toast.show();
-        setTimeout(() => {
-          this.go('/mall-shopCart');
-        }, 1500);
+        // setTimeout(() => {
+        //   this.go('/mall-shopCart');
+        // }, 1500);
+      }, () => {
+        this.loading = false;
       });
     }
   },
@@ -159,7 +181,8 @@ export default {
     FullLoading,
     Toast,
     Scroll,
-    NoResult
+    NoResult,
+    CategoryScroll
   }
 };
 </script>
@@ -233,8 +256,7 @@ export default {
             .sing-img{
                 height: 2.3rem;
                 background-image: url('./shop.png');
-                background-size: 100%;
-                background-clip: center;
+                background-size: 100% 100%;
                 margin-bottom: 0.3rem;
             }
             .shop-det{

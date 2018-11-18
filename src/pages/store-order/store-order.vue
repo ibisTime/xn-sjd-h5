@@ -2,29 +2,28 @@
   <div class="mall-wrapper" @click.stop>
     <div class="content">
         <div class="head-nav">
-            <ul class="nav-list" @click="changStu">
-                <li><span :class="{'on': isset == '1'}">全部</span></li>
-                <li><span :class="{'on': isset == '2'}">待付款</span></li>
-                <li><span :class="{'on': isset == '3'}">待发货</span></li>
-                <li><span :class="{'on': isset == '4'}">待收货</span></li>
-                <li><span :class="{'on': isset == '5'}">待评价</span></li>
-            </ul>
+          <category-scroll
+            :currentIndex="currentIndex"
+            :categorys="orderTypeList"
+            @select="selectCategory"
+          ></category-scroll>
         </div>
         <div class="main">
-            <Scroll 
+            <Scroll
                 :data="orderList"
                 :hasMore="hasMore"
                 @pullingUp="morePageOrderFn">
                 <div class="order-list">
-                    <div 
-                        class="order-sing" 
-                        v-for="(orderItem, orderIndex) in orderList" 
+                    <div
+                        class="order-sing"
+                        v-for="(orderItem, orderIndex) in orderList"
                         :key="orderIndex"
                     >
                         <div class="sing-head">
                             <div class="head-dp" @click="go(`/mall-store?shopCode=${orderItem.shopCode}`)">
                                 {{orderItem.shopName}} >
                                 <span class="fr">{{orderStatus[orderItem.status]}}</span>
+                                <span class="fr time">{{formatDate(orderItem.applyDatetime)}}</span>
                             </div>
                         </div>
                         <div class="sing-con" @click="toOrderDet(orderItem.code)">
@@ -58,12 +57,14 @@ import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common
 import { onePageOrder, affirmOrder, removeMoreOrder } from 'api/store';
 import { getDictList } from 'api/general';
 import Scroll from 'base/scroll/scroll';
+import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 export default {
   data() {
     return {
       loading: true,
       hasMore: true,
+      currentIndex: 0,
       textMsg: '',
       loadingText: '正在加载...',
       isset: '1',
@@ -83,7 +84,16 @@ export default {
       },
       orderList: [],
       orderStatus: {},
-      operHtmlList: ''
+      operHtmlList: '',
+      orderTypeList: [
+        {key: 0, value: '全部'},
+        {key: 1, value: '待付款'},
+        {key: 2, value: '待发货'},
+        {key: 3, value: '待收货'},
+        {key: 4, value: '待评价'},
+        {key: 5, value: '已完成'},
+        {key: 6, value: '已取消'}
+      ]
     };
   },
   created() {
@@ -114,45 +124,16 @@ export default {
         backgroundImage: `url(${pic})`
       };
     },
-    changStu() {
-      let target = event.target;
-      switch(target.innerText) {
-        case '全部':
-          this.isset = '1';
-          this.orderConfig.status = '';
-          this.start = 1;
-          this.orderList = [];
-          this.morePageOrderFn();
-          break;
-        case '待付款':
-          this.isset = '2';
-          this.orderConfig.status = '0';
-          this.start = 1;
-          this.orderList = [];
-          this.morePageOrderFn();
-          break;
-        case '待发货':
-          this.isset = '3';
-          this.orderConfig.status = '1';
-          this.start = 1;
-          this.orderList = [];
-          this.morePageOrderFn();
-          break;
-        case '待收货':
-          this.isset = '4';
-          this.orderConfig.status = '2';
-          this.start = 1;
-          this.orderList = [];
-          this.morePageOrderFn();
-          break;
-        case '待评价':
-          this.isset = '5';
-          this.orderConfig.status = '3';
-          this.start = 1;
-          this.orderList = [];
-          this.morePageOrderFn();
-          break;
+    selectCategory(index) {
+      this.currentIndex = index;
+      if(index === 0) {
+        this.orderConfig.status = '';
+      }else {
+        this.orderConfig.status = index - 1;
       }
+      this.start = 1;
+      this.orderList = [];
+      this.morePageOrderFn();
     },
     orderOperFn(status) { // 根据状态展示按钮
       switch(status) {
@@ -175,6 +156,9 @@ export default {
         case '4':
           this.operHtml = `<div class="foo-btn order-pj">已完成</div>`;
           break;
+        case '5':
+          this.operHtml = `<div class="foo-btn order-pj">已取消</div>`;
+          break;
       };
       this.operHtmlList.push(this.operHtml);
     },
@@ -188,12 +172,15 @@ export default {
         this.loadingText = '';
         removeMoreOrder({
           updater: getUserId(),
-          code: this.orderList[index].orderCode
+          code: this.orderList[index].code
         }).then(data => {
           this.textMsg = '已取消订单';
           this.$refs.toast.show();
           this.loading = false;
           this.loadingText = '正在加载...';
+          this.start = 1;
+          this.orderList = [];
+          this.morePageOrderFn();
         }, () => {
           this.loadingText = '正在加载...';
           this.loading = false;
@@ -257,7 +244,8 @@ export default {
     FullLoading,
     Toast,
     Scroll,
-    NoResult
+    NoResult,
+    CategoryScroll
   }
 };
 </script>
@@ -328,6 +316,9 @@ export default {
             line-height: 0.8rem;
             font-size: 0.26rem;
             color: #666;
+          .time{
+            margin-right: 0.2rem;
+          }
         }
         .sing-con{
             height: 2.1rem;

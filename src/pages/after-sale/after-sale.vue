@@ -17,7 +17,7 @@
                     </div>
                     <div class="thtk-right sale-right">
                         <h5>退货退款</h5>
-                        <p>卖家已发货，需要退换货物</p>
+                        <p>卖家已发货，需要退货物</p>
                     </div>
                 </div>
             </div>
@@ -69,7 +69,7 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
-import { refundMoney, salesReturn } from 'api/store';
+import { refundMoney, salesReturn, oneStoreOrder } from 'api/store';
 export default {
   data() {
     return {
@@ -97,9 +97,12 @@ export default {
   created() {
     setTitle('售后');
     this.orderDetailCode = getUrlParam('code');
-  },
-  mounted() {
-    this.loading = false;
+    oneStoreOrder(this.orderDetailCode).then(data => {
+      this.loading = false;
+      this.refundAmount = formatAmount(data.amount);
+    }, () => {
+      this.loading = false;
+    });
   },
   methods: {
     formatAmount(amount) {
@@ -125,7 +128,6 @@ export default {
         this.isset = false;
         return;
       }
-      this.refundAmount = '';
       this.setIndex = index;
       this.isset = true;
     },
@@ -133,7 +135,7 @@ export default {
       switch(this.setIndex) {
         case '0': // 退款
           this.loading = true;
-          this.refundConfig.refundAmount = this.refundAmount * 1000;
+          this.refundConfig.refundAmount = parseFloat(this.refundAmount) * 1000;
           this.refundConfig.orderDetailCode = this.orderDetailCode;
           refundMoney(this.refundConfig).then(data => {
             this.loading = false;
@@ -148,7 +150,7 @@ export default {
           break;
         case '1': // 退货
           this.loading = true;
-          this.salesConfig.refundAmount = this.refundAmount * 1000;
+          this.salesConfig.refundAmount = parseFloat(this.refundAmount) * 1000;
           this.salesConfig.orderDetailCode = this.orderDetailCode;
           salesReturn(this.salesConfig).then(data => {
             this.loading = false;

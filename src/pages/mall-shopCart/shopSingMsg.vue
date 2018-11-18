@@ -67,7 +67,8 @@ export default {
       shopSingData: [],
       shopPriceList: [],
       shopTatil: [],
-      setIndexList: []
+      setIndexList: [],
+      setCode: ''
     };
   },
   created() {
@@ -186,7 +187,7 @@ export default {
     removeShop() {
       this.selShop = this.$refs.selShop;
       this.shopLen = this.selShop.length;
-      this.$emit('removeShop', this.shopIndex, this.storeSingData.shopCode);
+      this.$emit('removeShop', this.shopIndex, this.storeSingData.shopCode, this.setCode);
     },
     toStoreFn() {
       this.go(`/mall-store?shopCode=${this.storeSingData.shopCode}`);
@@ -277,7 +278,7 @@ export default {
             }
             .r-con{
                 display: flex;
-                align-content: space-between; 
+                align-content: space-between;
                 flex-wrap: wrap;
                 >div{
                     width: 100%;

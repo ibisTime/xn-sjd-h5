@@ -23,9 +23,9 @@
               <div class="list-head">
                   <p>{{storeItem.shopName}} <span class="fr">{{logistics[orderDetail.expressType]}}</span></p>
               </div>
-              <div 
-                class="shop-det" 
-                v-for="(shopItem, shopIndex) in storeItem.detailList" 
+              <div
+                class="shop-det"
+                v-for="(shopItem, shopIndex) in storeItem.detailList"
                 :key="shopIndex"
                 @click="toShopDet(shopItem.code, shopItem.shopCode)"
               >
@@ -64,6 +64,7 @@
                   <p>订单信息</p>
               </div>
               <div class="foo-con">
+                  <p><span>下单时间</span>{{formatDate(orderDetail.applyDatetime)}}</p>
                   <p><span>订单号</span>{{orderDetail.code}}</p>
                   <p><span>订单金额</span>¥{{formatAmount(orderDetail.amount)}}</p>
                   <p><span>卖家</span>{{orderDetail.sellerName}}</p>
@@ -71,10 +72,12 @@
               </div>
           </div>
           <div class="sing-foo" v-html="operHtml" @click="orderOperClick">
-              
+
           </div>
       </div>
     </Scroll>
+
+    <toast ref="toast" :text="textMsg"></toast>
   </div>
 </template>
 <script>
@@ -176,12 +179,13 @@ export default {
         this.loadingText = '';
         removeMoreOrder({
           updater: getUserId(),
-          code: this.orderDetail.orderCode
+          code: this.orderDetail.code
         }).then(data => {
           this.textMsg = '已取消订单';
           this.$refs.toast.show();
           this.loading = false;
           this.loadingText = '正在加载...';
+          this.orderMessage();
         }, () => {
           this.loadingText = '正在加载...';
           this.loading = false;
