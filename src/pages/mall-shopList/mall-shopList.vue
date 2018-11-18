@@ -57,7 +57,9 @@ export default {
         start: 1,
         limit: 8,
         status: '4',
-        location: '1'
+        location: '1',
+        orderColumn: 'update_datetime',
+        orderDir: 'asc'
       },
       hotShopList: [],
       addCartConfig: {            // 加入购物车参数
@@ -156,6 +158,9 @@ export default {
         }
         this.hotShopList = [...this.hotShopList, ...data.list];
         this.start ++;
+        if(this.config.parentCategoryCode) {
+          delete this.config.parentCategoryCode;
+        }
       });
     },
     addCart(code, name, specsId, specsName) {

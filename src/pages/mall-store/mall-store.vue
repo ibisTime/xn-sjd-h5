@@ -78,7 +78,9 @@ export default {
       config: {
         start: 1,
         limit: 4,
-        status: '4'
+        status: '4',
+        orderColumn: 'update_datetime',
+        orderDir: 'asc'
       },
       hasMore: true,
       hotShopList: [],
@@ -196,6 +198,9 @@ export default {
         }
         this.hotShopList = [...this.hotShopList, ...data.list];
         this.start ++;
+        if(this.config.parentCategoryCode) {
+          delete this.config.parentCategoryCode;
+        }
       });
     }
   },

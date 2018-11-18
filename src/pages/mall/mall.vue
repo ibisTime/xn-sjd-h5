@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <div class="mall-list">
+        <div class="mall-list" @click.stop>
           <category-scroll
             :Type="'mall'"
             :currentIndex="currentIndex"
@@ -88,7 +88,7 @@ export default {
         status: '4',
         location: '1',
         orderColumn: 'update_datetime',
-        orderDir: 'desc'
+        orderDir: 'asc'
       },
       start: 1,
       pullUpLoad: '',
@@ -224,6 +224,9 @@ export default {
         }
         this.hotShopList = [...this.hotShopList, ...data.list];
         this.start ++;
+        if(this.config.parentCategoryCode) {
+          delete this.config.parentCategoryCode;
+        }
         if(this.config.name) {
           delete this.config.name;
           this.shopName = '';

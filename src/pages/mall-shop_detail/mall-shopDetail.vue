@@ -34,7 +34,7 @@
                 <div class="u-name">{{commentData[0] ? commentData[0].nickname : ''}} <span class="fr time">{{commentDatetime? formatDate(commentDatetime) : ''}}</span></div>
               </div>
               <div class="pj-con" v-html="commentData[0] ? commentData[0].content : ''">
-                
+
               </div>
             </div>
           </div>
@@ -65,10 +65,10 @@
             <h5>规格分类</h5>
           </div>
           <div class="con-list">
-            <div class="sing" 
-              v-for="(item, index) in specsList" 
-              :key="index" 
-              @click="specsFn(index, item)" 
+            <div class="sing"
+              v-for="(item, index) in specsList"
+              :key="index"
+              @click="specsFn(index, item)"
               :class="{'set-index': setIndex == index}"
             >
               <p>{{item.name}}</p>
@@ -519,9 +519,9 @@ export default {
   }
   .shop-toast{
     position: absolute;
-    bottom: 0;
+    bottom: 0rem;
     width: 100%;
-    height: 60%;
+    min-height: 60%;
     padding: 0.3rem 0.3rem 0.1rem;
     background-color: #fff;
     .tos-head{
@@ -652,7 +652,7 @@ export default {
         border-radius: 0.06rem;
       }
       .gwc{
-        background-color: #554F5B; 
+        background-color: #554F5B;
       }
       .ljgm{
         background-color: #23AD8C;

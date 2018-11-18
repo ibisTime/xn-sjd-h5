@@ -1,7 +1,7 @@
 <template>
     <div class="msg-wrapper">
         <div class="content">
-            <Scroll 
+            <Scroll
                 :data="storeMsgData"
                 :hasMore="hasMore"
                 @pullingUp="storeMsgFn">
@@ -12,7 +12,7 @@
                     </li>
                 </ul>
                 <div class="mall-content">
-                  <no-result v-show="!storeMsgData.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+                  <no-result v-show="!storeMsgData.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无消息"></no-result>
                 </div>
             </Scroll>
         </div>
