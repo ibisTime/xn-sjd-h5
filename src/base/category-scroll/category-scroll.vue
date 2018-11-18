@@ -120,7 +120,7 @@
         for (let i = 0; i < this.categorys.length; i++) {
           width += cates[i].clientWidth;
         }
-        this.$refs.categoryGroup.style.width = width + 1 + 'px';
+        this.$refs.categoryGroup.style.width = width + 20 + 'px';
         if (this.scroll) {
           setTimeout(() => {
             this.scroll.refresh();

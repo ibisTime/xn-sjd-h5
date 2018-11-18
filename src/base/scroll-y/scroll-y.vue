@@ -1,5 +1,6 @@
 <template>
   <div class="rollScreen_container" id ="rollScreen_container">
+    <img src="./bulletin@2x.png">
     <ul class="rollScreen_list" :style = {transform:transform} :class="{rollScreen_list_unanim:num===0}">
       <li class="rollScreen_once" v-for="(item,index) in contentArr" :key=index>
         <span>{{item.content}}</span>
@@ -53,13 +54,22 @@
   };
 </script>
 
-<style>
+<style lang="scss" scoped>
   .rollScreen_container{
-    display: inline-block;
+    /*display: inline-block;*/
+    display: flex;
+    align-items: baseline;
     position:relative;
     overflow: hidden;
     height: 0.7rem;
     width: 100%;
+    background: #fdf4f3;
+    padding: 0 0.3rem;
+    img {
+      width: 0.6rem;
+      height: 0.25rem;
+      margin-right: 0.11rem;
+    }
   }
   .rollScreen_list{
     transition: 1s linear;
@@ -70,8 +80,9 @@
   .rollScreen_once {
     height: 0.7rem;
     font-size: 0.24rem;
-    background: #f0f9f6;
-    padding: 0.24rem 0.3rem;
+    /*background: #f0f9f6;*/
+    background: #fdf4f3;
+    padding: 0.24rem 0.3rem 0.24rem 0.2rem;
     line-height: 0.33rem;
   }
 </style>

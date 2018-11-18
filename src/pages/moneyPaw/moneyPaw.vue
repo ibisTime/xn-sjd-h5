@@ -20,7 +20,7 @@
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
-            <input type="password" class="item-input" name="moneyPaw" v-validate="'required'" v-model="moneyPaw" placeholder="请输入支付密码">
+            <input type="password" class="item-input" name="moneyPaw" v-validate="'required|min:6'" v-model="moneyPaw" placeholder="请输入支付密码(至少6个字符）">
             <span v-show="errors.has('moneyPaw')" class="error-tip">{{errors.first('moneyPaw')}}</span>
           </div>
         </div>

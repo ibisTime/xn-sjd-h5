@@ -2,7 +2,7 @@
   <div class="home-wrapper">
     <!--<m-header class="cate-header" title="首页" :showBack="showBack" actText="签到" @action="action"></m-header>-->
     <div class="content">
-      <Scroll :pullUpLoad="pullUpLoad">
+      <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
         <div class="slider-wrapper">
           <slider :loop="loop">
             <div class="home-slider" v-for="item in banners" :key="item.code">
@@ -20,11 +20,17 @@
           </div>
           <div class="more" @click="go('/notices')">更多</div>
         </div>
-        <div class="icons">
-          <div class="icon-item" @click="goProList(item)" v-for="item in proType">
-            <img :src="formatImg(item.pic)">
-            <p>{{item.name}}</p>
-          </div>
+        <div class="mall-list">
+          <!--<div class="icon-item" @click="goProList(item)" v-for="item in proType">-->
+            <!--<img :src="formatImg(item.pic)">-->
+            <!--<p>{{item.name}}</p>-->
+          <!--</div>-->
+          <category-scroll
+            :Type="'mall'"
+            :currentIndex="currentIndex"
+            :categorys="proType"
+            @select="selectCategory"
+          ></category-scroll>
         </div>
         <div class="emotion-article" @click="go('/emotion-channel')">
           <img src="./emotion@2x.png">
@@ -90,6 +96,7 @@ import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import CheckIn from 'base/check-in/check-in';
 import ScrollY from 'base/scroll-y/scroll-y';
+import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getBanner, getDictList } from 'api/general';
@@ -103,15 +110,16 @@ export default {
       title: '正在加载...',
       loading: true,
       toastText: '',
-      currentList: [],
+      currentIndex: 0,
       hasMore: false,
       text: '',
       showBack: false,
       proList: [],
+      proType: [],
       showCheckIn: false,
       pullUpLoad: null,
       banners: [],
-      proType: [],
+      // proType: [],
       loop: false,
       noticeList: [],
       bulletinList: [],
@@ -162,8 +170,14 @@ export default {
     go(url) {
       this.$router.push(url);
     },
+    selectCategory(index) {
+      this.currentIndex = index;
+      this.$refs.scroll.scrollTo(0, 0);
+      this.goProList(this.proType[index]);
+    },
     goProList(item) {
-      if(item.name === '果树预售') {
+      console.log(item);
+      if(item.value === '果树预售') {
         this.go('/booking-product-list?typeCode=' + item.code);
       } else {
         this.go('/product-list?typeCode=' + item.code);
@@ -211,11 +225,19 @@ export default {
           this.loop = true;
         }
         this.proList = res2.list;
-        res3.map((item) => {
-          if(!item.parentCode) {
-            this.proType.push(item);
-          }
+        res3.map((item, index) => {
+          this.proType.push({
+            key: index,
+            value: item.name,
+            code: item.code,
+            pic: item.pic
+          });
         });
+        // res3.map((item) => {
+        //   if(!item.parentCode) {
+        //     this.proType.push(item);
+        //   }
+        // });
         this.noticeList = res4.list.slice(0, 1);
         this.bulletinList = res5.list;
         this.loading = false;
@@ -332,7 +354,8 @@ export default {
     NoResult,
     MHeader,
     CheckIn,
-    Scroll
+    Scroll,
+    CategoryScroll
   }
 };
 </script>
