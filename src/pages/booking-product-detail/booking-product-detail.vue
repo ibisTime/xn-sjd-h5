@@ -1,6 +1,5 @@
 <template>
   <div class="product-detail-wrapper">
-    <!--<m-header class="cate-header" title="产品详情"></m-header>-->
     <div class="content">
       <Scroll ref='scroll' :pullUpLoad="pullUpLoad">
         <div class="slider-wrapper">
@@ -55,9 +54,6 @@
           <div class="description-detail rich-text-description" v-html="detailDescription" ref="description"></div>
         </div>
       </div>
-      <!--<div class="mall-content">-->
-        <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
-      <!--</div>-->
       </Scroll>
     </div>
     <div class="footer">
@@ -183,6 +179,15 @@ export default {
       }
     },
     canAdopt() {
+      let curTime = new Date();
+      // 2把字符串格式转换为日期类
+      let startTime = new Date(Date.parse(this.detail.adoptStartDatetime));
+      let endTime = new Date(Date.parse(this.detail.adoptEndDatetime));
+      // 3进行比较
+      if(curTime <= startTime || curTime >= endTime) {
+        this.noAdoptReason = '当前不在预售期内';
+        return false;
+      }
       if(!this.userDetail.level) {
         this.noAdoptReason = '您未登录';
         return false;

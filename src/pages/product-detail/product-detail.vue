@@ -248,6 +248,32 @@ export default {
         let proCode = this.detail.code;
         let specsCode = this.detail.productSpecsList[this.choosedIndex].code;
         let quantity = this.number;
+        // 判断是否在认养期内 **********************
+        if(this.detail.sellType !== '3') {
+          // 非捐赠，判断认养时间
+          let curTime = new Date();
+          // 2把字符串格式转换为日期类
+          let startTime = new Date(Date.parse(this.detail.productSpecsList[this.choosedIndex].startDatetime));
+          let endTime = new Date(Date.parse(this.detail.productSpecsList[this.choosedIndex].endDatetime));
+          // 3进行比较
+          if(curTime <= startTime || curTime >= endTime) {
+            this.text = '当前不在您选择的规格的认养期内';
+            this.$refs.toast.show();
+            return;
+          }
+        } else {
+          // 捐赠产品判断募集时间
+          let curTime = new Date();
+          // 2把字符串格式转换为日期类
+          let startTime = new Date(Date.parse(this.detail.productSpecsList[this.choosedIndex].raiseStartDatetime));
+          let endTime = new Date(Date.parse(this.detail.productSpecsList[this.choosedIndex].raiseEndDatetime));
+          // 3进行比较
+          if(curTime <= startTime || curTime >= endTime) {
+            this.text = '当前不在该捐赠产品的募集期内';
+            this.$refs.toast.show();
+            return;
+          }
+        }
         if(this.detail.sellType !== '4') {
           let type = this.detail.sellType;
           this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);

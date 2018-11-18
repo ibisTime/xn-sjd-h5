@@ -94,7 +94,7 @@ export function formatImg(imgs, suffix = '?imageMogr2/auto-orient') {
     return '';
   }
   let img = imgs.split(/\|\|/)[0];
-
+  let PIC_PREFIX = 'http://image.o2lin.com/';
   if (!/^http|^data:image/i.test(img)) {
     let index = img.indexOf('?imageMogr2');
     if (index !== -1) {

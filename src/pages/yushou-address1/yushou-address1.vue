@@ -88,6 +88,7 @@
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
       <confirm ref="confirm" text="确认收货" @confirm="confirmShouhuo"></confirm>
+      <confirm ref="confirmDelete" text="确认删除" @confirm="_deleteAddress"></confirm>
       <toast ref="toast" :text="text"></toast>
       <router-view></router-view>
     </div>
@@ -202,7 +203,7 @@
       deleteItem(item, index) {
         this.currentItem = item;
         this.deleteIndex = index;
-        this.$refs.confirm.show();
+        this.$refs.confirmDelete.show();
       },
       _deleteAddress() {
         if (this.currentItem) {
@@ -211,6 +212,7 @@
           this.addressList[0] = tempArr;
           sessionStorage.setItem('tihuo-address', JSON.stringify(this.addressList[0]));
           this.addressList.push(JSON.parse(sessionStorage.getItem('tihuo-address')));
+          this.amountChange();
         }
       },
       addTihuoAddress() {

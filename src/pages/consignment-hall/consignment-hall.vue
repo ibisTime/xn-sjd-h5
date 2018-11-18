@@ -222,7 +222,7 @@ export default {
           minQuantity: 0,
           variety: this.variety || '',
           orderColumn: this.orderColumn || '',
-          orderDir: 'asc'
+          orderDir: this.orderDir || 'asc'
         }),
         getDeriveZichanPage({
           start: this.start,
@@ -257,10 +257,10 @@ export default {
         this.variety = pinzhong;
       }
       switch (orderby) {
-        case 0: this.orderColumn = ''; break;
-        case 1: this.orderColumn = 'create_datetime'; break;
-        case 2: this.orderColumn = 'price'; break;
-        case 3: this.orderColumn = 'quantity'; break;
+        case 0: this.orderColumn = ''; this.orderDir = ''; break;
+        case 1: this.orderColumn = 'create_datetime'; this.orderDir = 'desc'; break;
+        case 2: this.orderColumn = 'price'; this.orderDir = ''; break;
+        case 3: this.orderColumn = 'quantity'; this.orderDir = 'desc'; break;
       }
       this.start = 1;
       this.limit = 10;

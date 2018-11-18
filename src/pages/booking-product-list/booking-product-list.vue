@@ -92,6 +92,16 @@ export default {
     },
     canAdopt(item) {
       item.canAdoptFlag = true;
+      let curTime = new Date();
+      // 2把字符串格式转换为日期类
+      let startTime = new Date(Date.parse(item.adoptStartDatetime));
+      let endTime = new Date(Date.parse(item.adoptEndDatetime));
+      // 3进行比较
+      if(curTime <= startTime || curTime >= endTime) {
+        item.canAdoptFlag = false;
+        item.noAdoptReason = '不在预售期内';
+        return item;
+      }
       if(!this.userDetail.level) {
         item.canAdoptFlag = false;
         item.noAdoptReason = '您未登录';
