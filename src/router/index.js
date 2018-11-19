@@ -191,6 +191,7 @@ export default new Router({
     {
       path: '/',
       redirect: '/home'
+      // component: Home
     },
     {
       path: '/login',
@@ -607,11 +608,11 @@ export default new Router({
       component: TihuoXiangqing
     }
   ],
-  mode: 'history',
-  scrollBehavior(to, from, savedPosition) { // vue滚动行为
-    return {
-      x: 0,
-      y: 0
-    };
-  }
+  mode: 'hash'
+  // scrollBehavior(to, from, savedPosition) { // vue滚动行为
+  //   return {
+  //     x: 0,
+  //     y: 0
+  //   };
+  // }
 });

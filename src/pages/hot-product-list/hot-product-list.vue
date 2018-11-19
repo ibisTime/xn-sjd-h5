@@ -240,7 +240,7 @@ export default {
           // sellType: sellType,
           parentCategoryCode: this.parentCategoryCode,
           categoryCode: this.selectdType,
-          statusList: [4, 5],
+          statusList: [4, 5, 6],
           location: '1',
           orderDir: 'asc',
           orderColumn: 'order_no'
