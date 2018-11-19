@@ -29,7 +29,7 @@
         <no-result v-show="!hasMore && !addressList.length" title="您尚未添加收货地址"></no-result>
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
-      <confirm ref="confirm" text="确定删除地址吗" @confirm="_deleteAddress"></confirm>
+      <confirm ref="confirm" :text="comText" @confirm="_deleteAddress"></confirm>
       <toast ref="toast" text="删除成功"></toast>
       <router-view></router-view>
     </div>
@@ -56,7 +56,8 @@
         addressList: [],
         deleteIndex: 0,
         storeOrder: '',    // 商品订单进入
-        isokIndex: 0
+        isokIndex: 0,
+        comText: '确定删除地址吗'
       };
     },
     created() {
@@ -147,6 +148,7 @@
         this.$refs.confirm.show();
       },
       _deleteAddress() {
+        this.comText = '确定删除地址吗';
         if (this.currentItem) {
           this.loadingText = '删除中...';
           this.loadingFlag = true;
@@ -163,6 +165,7 @@
       },
       setStoreRess(index, item) { // 商城选择地址
         if(this.storeOrder) {
+          // this.comText = '确认使用该地址吗？';
           this.isokIndex = index;
           sessionStorage.setItem('isokIndex', index);
           sessionStorage.setItem('setRess', JSON.stringify(item));

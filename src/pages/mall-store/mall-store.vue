@@ -184,11 +184,8 @@ export default {
       this.go('/mall/mall-shopList?code=' + this.shopCode);
     },
     selectCategory(index) {
-      this.currentIndex = index;
-      this.config.parentCategoryCode = this.shopTypeData[index].code;
-      this.start = 1;
-      this.hotShopList = [];
-      this.getHotShop();
+      let storeTypeCode = this.shopTypeData[index].code;
+      this.go('/mall/mall-shopList?storeTypeCode=' + storeTypeCode + '&typeIndex=' + index + '&code=' + this.shopCode);
     },
     getHotShop() {
       this.config.start = this.start;

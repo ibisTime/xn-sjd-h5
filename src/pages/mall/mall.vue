@@ -175,11 +175,9 @@ export default {
       this.getHotShop();
     },
     selectCategory(index) {
-      this.currentIndex = index;
-      this.config.parentCategoryCode = this.shopTypeData[index].code;
-      this.start = 1;
-      this.hotShopList = [];
-      this.getHotShop();
+      let storeTypeCode = this.shopTypeData[index].code;
+      this.go('/mall/mall-shopList?storeTypeCode=' + storeTypeCode + '&typeIndex=' + index);
+      this.isAll = true;
     },
     addCart(code, name, specsId, specsName) {
       if(!getUserId()) {
