@@ -18,7 +18,7 @@
                             accept="image/*"/>
                     </div>
                     <div class="zp-box" :style="getImgSyl(photos.length > 0 ? photos[0].key : '')">
-                    
+
                     </div>
                 </div>
             </div>
@@ -37,7 +37,7 @@
 <script>
 import Qiniu from 'base/qiniu/qiniu';
 import EXIF from 'exif-js';
-import { getImgData, formatImg, getUserId, getUrlParam } from 'common/js/util';
+import { getImgData, formatImg, getUserId } from 'common/js/util';
 import { addACommemt } from 'api/store';
 import { getQiniuToken } from 'api/general';
 import Toast from 'base/toast/toast';
@@ -61,7 +61,7 @@ export default {
     };
   },
   mounted() {
-    this.commentConfig.commodityCode = getUrlParam('code');
+    this.commentConfig.commodityCode = this.$route.query.code;
     Promise.all([
       getQiniuToken()
     ]).then(([res1]) => {

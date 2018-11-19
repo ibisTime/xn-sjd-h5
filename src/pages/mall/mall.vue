@@ -71,7 +71,7 @@ import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
 import { getAllShopData, addShopCart, getShopType, myShopCart } from 'api/store';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 export default {
   data() {
     return {
@@ -110,7 +110,7 @@ export default {
         orderColumn: 'order_no',
         orderDir: 'asc'
       },
-      shopTypeData: [],
+      shopTypeData: [{key: 0, value: '全部', pic: '/static/allmall.png', code: ''}],
       shopName: '',
       iscart: false,
       shopCode: ''
@@ -118,7 +118,7 @@ export default {
   },
   created() {
     setTitle('商场');
-    this.shopCode = getUrlParam('code');
+    this.shopCode = this.$route.query.shopCode;
     if(this.shopCode) {
       this.isAll = true;
     }

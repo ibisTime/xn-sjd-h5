@@ -63,7 +63,7 @@ import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import MallShopList from '../mall-shopList/mall-shopList';
 import { getAllShopData, addShopCart, storeMsg, getShopType, myShopCart } from 'api/store';
-import { formatAmount, formatImg, formatDate, setTitle, getUrlParam, getUserId } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 export default {
   // name: "home",
   data() {
@@ -109,7 +109,7 @@ export default {
   },
   created() {
     this.pullUpLoad = null;
-    this.shopCode = getUrlParam('shopCode');
+    this.shopCode = this.$route.query.shopCode;
     this.config.shopCode = this.shopCode;
     getShopType(this.shopTypeConfig).then(data => {
       data.list.map((item, index) => {

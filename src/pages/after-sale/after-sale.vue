@@ -68,7 +68,7 @@
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { refundMoney, salesReturn, oneStoreOrder } from 'api/store';
 export default {
   data() {
@@ -96,7 +96,7 @@ export default {
   },
   created() {
     setTitle('售后');
-    this.orderDetailCode = getUrlParam('code');
+    this.orderDetailCode = this.$route.query.code;
     oneStoreOrder(this.orderDetailCode).then(data => {
       this.loading = false;
       this.refundAmount = formatAmount(data.amount);

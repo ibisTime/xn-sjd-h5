@@ -117,7 +117,7 @@
   </div>
 </template>
 <script>
-import { formatAmount, setTitle, getUrlParam, formatImg, formatDate, getUserId } from 'common/js/util';
+import { formatAmount, setTitle, formatImg, formatDate, getUserId } from 'common/js/util';
 import { getDictList } from 'api/general';
 import { getShopDetail, getCommemtData, addShopCart } from 'api/store';
 import FullLoading from 'base/full-loading/full-loading';
@@ -168,8 +168,8 @@ export default {
   created() {
     setTitle('产品详情');
     this.pullUpLoad = null;
-    this.code = getUrlParam('code');
-    this.shopCode = getUrlParam('shopCode');
+    this.code = this.$route.query.code;
+    this.shopCode = this.$route.query.shopCode;
     this.config.commodityCode = this.code;
     this.addCartConfig.commodityCode = this.code;
     Promise.all([

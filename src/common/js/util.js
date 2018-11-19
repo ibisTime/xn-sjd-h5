@@ -154,7 +154,7 @@ export function formatAmount(amount, len = 2) {
     return '0';
   }
   // amount = (+amount / 1000).toString();
-  amount = parseInt(+amount / 10) / 100;
+  amount = parseFloat(+amount / 10) / 100;
   // num=parseInt(num*100)/100;
   // let reg = new RegExp('(\\.\\d{' + len + 1 + '})\\d*', 'ig');
   // amount = +amount.replace(reg, '$1');

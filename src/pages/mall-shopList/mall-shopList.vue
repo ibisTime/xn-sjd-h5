@@ -41,7 +41,7 @@ import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getAllShopData, addShopCart, getShopType } from 'api/store';
 export default {
   data() {
@@ -85,7 +85,7 @@ export default {
   },
   created() {
     setTitle('全部商品');
-    this.shopCode = getUrlParam('code');
+    this.shopCode = this.$route.query.code;
     if(this.shopCode) {
       this.config.shopCode = this.shopCode;
     }

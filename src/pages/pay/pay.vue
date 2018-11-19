@@ -70,7 +70,7 @@
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import FullLoading from 'base/full-loading/full-loading'; // loading
   import { getCookie } from 'common/js/cookie';
-  import { formatAmount, setTitle, getUrlParam, getUserId } from 'common/js/util';
+  import { formatAmount, setTitle, getUserId } from 'common/js/util';
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore,
             getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder} from 'api/biz';
   import { getUserDetail } from 'api/user';
@@ -111,14 +111,14 @@
     },
     mounted() {
       setTitle('支付订单');
-      this.orderCode = this.$route.query.orderCode || getUrlParam('code');
+      this.orderCode = this.$route.query.orderCode || this.$route.query.code;
       this.type = this.$route.query.type;
       this.pre = this.$route.query.pre;
       this.jishou = this.$route.query.jishou;
       this.userId = getCookie('userId');
       this.totalPrice = sessionStorage.getItem('totalPrice');
-      this.storeCode = getUrlParam('code');              // 商城订单code
-      this.storeType = getUrlParam('type');
+      this.storeCode = this.$route.query.code;             // 商城订单code
+      this.storeType = this.$route.query.type;
       this.config.code = this.storeCode;
       if(this.storeCode) {
         this.loading = true;

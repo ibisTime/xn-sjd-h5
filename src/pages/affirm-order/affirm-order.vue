@@ -6,10 +6,10 @@
                 <div class="o-h_left">
                     <span></span>
                 </div>
-                <div class="o-h_right" @click="go('/address')">
+                <div class="o-h_right" @click="toRess">
                     <p>{{defaultSite.addressee}} <span>{{defaultSite.mobile}}</span></p>
                     <p class="to-r"><span class="fr"></span></p>
-                    <p>{{ressee}}</p>
+                    <p>{{ressee ? ressee : '还没有收货地址哦'}}</p>
                 </div>
             </div>
             <p class="back-co"></p>
@@ -25,7 +25,7 @@
                         <div class="o-c_right">
                             <p class="r-p1">{{orderItem.commodityName}} <span class="fr">×{{orderItem.quantity}}</span></p>
                             <p class="r-p2">规格分类：{{orderItem.specsName}}</p>
-                            <p class="r-p3">¥{{singPrice ? singPrice : formatAmount(orderItem.amount)}}</p>
+                            <p class="r-p3">¥{{setPrice ? setPrice : formatAmount(orderItem.amount / orderItem.quantity)}}</p>
                         </div>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
                         <span class="jian" @click="minusShop"></span>
                         <b>{{shopMsgList[0].quantity}}</b>
                         <span class="jia" @click="addShop"></span>
-                    </div> 
+                    </div>
                 </div>
                 <div class="foo-box02">
                     <div class="box02-left foo-left">
@@ -79,7 +79,7 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId, getUrlParam } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getDictList } from 'api/general';
 import { getAddressList, getUser } from 'api/user';
 import { buyItNow, shopCartOrder } from 'api/store';
@@ -114,13 +114,16 @@ export default {
         cartList: [],
         addressCode: ''
       },
-      code: ''
+      code: '',
+      setRess: ''
     };
   },
   created() {
     setTitle('确认订单');
     this.pullUpLoad = null;
-    this.code = getUrlParam('code');
+    this.code = this.$route.query.code;
+    sessionStorage.removeItem('storetype');
+    this.setRess = JSON.parse(sessionStorage.getItem('setRess'));
     this.shopMsgList = JSON.parse(sessionStorage.getItem('shopMsgList'));
     if(!this.shopMsgList) {
       this.go('/mall');
@@ -149,7 +152,7 @@ export default {
     //   this.userName = res2.realName ? res2.realName : res2.nickname;
       res1.forEach(item => {
         if(item.isDefault === '1') {
-          this.defaultSite = item;
+          this.defaultSite = this.setRess || item;
         }
       });
       this.config.specsId = this.shopMsgList[0].specsId;
@@ -182,6 +185,10 @@ export default {
       return {
         backgroundImage: `url(${pic})`
       };
+    },
+    toRess() {
+      this.go('/address');
+      sessionStorage.setItem('storetype', 'store');
     },
     addCart() {
       this.go('/mall-shopCart');
@@ -219,7 +226,7 @@ export default {
       this.config.quantity = this.shopMsgList[0].quantity;
       buyItNow(this.config).then(data => {
         this.loading = false;
-        this.textMsg = '操作成功';
+        this.textMsg = '下单成功';
         this.$refs.toast.show();
         sessionStorage.removeItem('shopMsgList');
         sessionStorage.setItem('totalPrice', this.totalPrice);
@@ -394,7 +401,7 @@ export default {
             font-size: 0.3rem;
             color: #2D2D2D;
             letter-spacing: 0.0022rem;
-        } 
+        }
         .foo-box01{
             height: 1.2rem;
             display: flex;

@@ -5,18 +5,21 @@
       <div class="addr-scroll-wrapper">
         <scroll :data="addressList" :hasMore="hasMore">
           <ul>
-            <li v-for="(item, index) in addressList" :key="index" class="border-bottom-1px">
+            <li v-for="(item, index) in addressList" :key="index" class="border-bottom-1px" @click="setStoreRess(index, item)">
               <div class="content">
+                <img src="./ok.png" class="okimg" alt="" v-show="isokIndex === index">
                 <div class="info"><span class="name">{{item.addressee}}</span><span class="mobile">{{item.mobile}}</span></div>
                 <div class="addr">{{item.province}} {{item.city}} {{item.district}} {{item.detailAddress}}</div>
               </div>
               <div class="opeator border-top-1px">
-                <div class="default" @click.stop="setDefault(item, index)">
+                <div class="default" @click.stop="setDefault(item, index)" v-show="!storeOrder">
                   <i class="icon-chose" :class="item.isDefault === '1' ? 'active' : ''"></i>
                   <span>设为默认地址</span>
                 </div>
-                <button class="edit" @click.stop="goEdit(item)">编辑</button>
-                <button class="delete" @click.stop="deleteItem(item, index)">删除</button>
+                <div :class="{'sto' : storeOrder}">
+                  <button class="edit" @click.stop="goEdit(item)">编辑</button>
+                  <button class="delete" @click.stop="deleteItem(item, index)">删除</button>
+                </div>
               </div>
             </li>
           </ul>
@@ -51,12 +54,16 @@
         loadingFlag: false,
         loadingText: '',
         addressList: [],
-        deleteIndex: 0
+        deleteIndex: 0,
+        storeOrder: '',    // 商品订单进入
+        isokIndex: 0
       };
     },
     created() {
+      this.storeOrder = sessionStorage.getItem('storetype');
       this.currentItem = null;
       this.getAddress();
+      this.isokIndex = Number(sessionStorage.getItem('isokIndex'));
     },
     updated() {
       this.getAddress();
@@ -76,7 +83,7 @@
     },
     methods: {
       action() {
-        sessionStorage.clear('ressCode');
+        sessionStorage.removeItem('ressCode');
         this.go('/address-addedit');
       },
       go(url) {
@@ -153,6 +160,13 @@
             this.loadingFlag = false;
           });
         }
+      },
+      setStoreRess(index, item) { // 商城选择地址
+        if(this.storeOrder) {
+          this.isokIndex = index;
+          sessionStorage.setItem('isokIndex', index);
+          sessionStorage.setItem('setRess', JSON.stringify(item));
+        }
       }
     },
     components: {
@@ -185,7 +199,9 @@
     &.slide-enter, &.slide-leave-to {
       transform: translate3d(100%, 0, 0);
     }
-
+    .sto{
+      padding-left: 0.2rem;
+    }
     ul {
       li {
         position: relative;
@@ -203,7 +219,14 @@
           justify-content: center;
           height: 1.6rem;
           padding: 0 0.3rem;
-
+          position: relative;
+          .okimg{
+            position: absolute;
+            top: 0.7rem;
+            right: 0.3rem;
+            width: 0.6rem;
+            height: 0.6rem;
+          }
           .info {
             font-size: $font-size-medium-x;
             display: flex;

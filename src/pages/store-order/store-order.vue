@@ -166,6 +166,7 @@ export default {
       let target = event.target;
       if(target.classList.contains('change-site')) { // 修改地址
         this.go('/address');
+        sessionStorage.setItem('storetype', 'store');
       }
       if(target.classList.contains('remove')) { // 取消订单
         this.loading = true;
@@ -189,7 +190,7 @@ export default {
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderList[index]];
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-        this.go('/affirm-order?code=' + this.orderList[index].code);
+        this.go('/pay?code=' + this.orderList[index].code + '&type=one');
       }
       if(target.classList.contains('after-sale')) { // 申请售后
         this.go('/after-sale?code=' + this.orderList[index].code);

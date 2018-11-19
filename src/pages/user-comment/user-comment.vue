@@ -1,7 +1,7 @@
 <template>
   <div class="shop-wrapper_det">
     <div class="content">
-    <Scroll 
+    <Scroll
         :data="commentList"
         :hasMore="hasMore"
         @pullingUp="getCommemtDataFn">
@@ -9,22 +9,22 @@
           <div class="com-singer" v-for="(item, index) in commentList" :key="index">
               <div class="sing-head">
                   <div class="s-head_left">
-                      <div class="l-img"></div>
+                      <div class="l-img" :style="getImgSyl(userMsgList[index].photo ? userMsgList[index].photo : '', 'u')"></div>
                   </div>
                   <div class="s-head_right">
                       <p>{{userMsgList[index].nickname}} <span class="fr">{{formatDate(item.commentDatetime)}}</span></p>
                   </div>
               </div>
               <div class="sing-con" v-html="item.content">
-                  
+
               </div>
               <div class="sing-foo">
                   <div class="s-foo_left">
                       <p class="hidden">浏览46次</p>
                   </div>
                   <div class="s-foo_right">
-                      <p><span class="foo-pl"></span> <span class="pl">评论</span></p>
-                      <p class="hidden"><span class="foo-z"></span> <span class="pl">150</span></p>
+                    <p @click="startComment(index)"><span class="foo-pl"></span> <span class="pl">评论</span></p>
+                    <p class="hidden"><span class="foo-z"></span> <span class="pl">150</span></p>
                   </div>
               </div>
           </div>
@@ -33,71 +33,72 @@
         <no-result v-show="!commentList.length && !hasMore" class="no-result-wrapper" title="暂无评论"></no-result>
       </div>
     </Scroll>
-    <div class="shop-foo">
-        <div class="foo-left">
-            <div class="le-dp" @click="go('mall-store');">
-                <div class="dp-img"></div>
-                <p>店铺</p>
-            </div>
-            <div class="le-kf">
-                <div class="kf-img"></div>
-                <p>客服</p>
-            </div>
-            </div>
-            <div class="foo-right">
-            <button class="add-cart" @click="setAddCart">加入购物车</button>
-            <button class="buy" @click="toBuy">立即购买</button>
-            </div>
-        </div>
-    </div>
-    <div class="toast" v-show="istoast" @click="istoast = false">
-        <div class="shop-toast" @click.stop>
-        <div class="tos-head">
-            <div class="head-left">
-            <div class="l-img" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')"></div>
-            </div>
-            <div class="head-right">
-            <p class="r-head">¥{{setPrice}} <span class="fr iconX" @click="istoast = false"></span></p>
-            <p>库存{{inventory}}件</p>
-            <p v-if="specsList.length > 1">{{setSpecsName ? `已选 “${setSpecsName}”` : '选择颜色分类'}}</p>
-            <p v-if="specsList.length == 1">已选 “{{specsList[0].name}}”</p>
-            </div>
-        </div>
-        <div class="tos-con">
-            <div class="con-head">
-            <h5>规格分类</h5>
-            </div>
-            <div class="con-list">
-            <div class="sing" 
-                v-for="(item, index) in specsList" 
-                :key="index" 
-                @click="specsFn(index, item)" 
-                :class="{'set-index': setIndex == index}"
-            >
-                <p>{{item.name}}</p>
-            </div>
-            </div>
-            <div class="con-foo">
-            <div class="f-left">
-                数量
-                <p class="fr l-num">
-                <span class="jian" @click="minusShop"></span>&nbsp;&nbsp; <b>{{shopNum}}</b> &nbsp;&nbsp;<span class="jia" @click="addShop"></span>
-                </p>
-            </div>
-            </div>
-        </div>
-        <div class="tos-btn" v-show="isgm" @click="qrorderFn">
-            确定
-        </div>
-        <div class="tos-btns" v-show="!isgm">
-            <div class="gwc" @click="toShopCart">
-            加入购物车
-            </div>
-            <div class="ljgm" @click="toShopOrder">
-            立即购买
-            </div>
-        </div>
-        </div>
+      <p class="foo_hidden" ref="iup_p"><input type="text" ref="sendIup" v-model="sendComConfig.content" @keyup="sendComment"></p>
+    <!--<div class="shop-foo">-->
+        <!--<div class="foo-left">-->
+            <!--<div class="le-dp" @click="go('mall-store');">-->
+                <!--<div class="dp-img"></div>-->
+                <!--<p>店铺</p>-->
+            <!--</div>-->
+            <!--<div class="le-kf">-->
+                <!--<div class="kf-img"></div>-->
+                <!--<p>客服</p>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="foo-right">-->
+            <!--<button class="add-cart" @click="setAddCart">加入购物车</button>-->
+            <!--<button class="buy" @click="toBuy">立即购买</button>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+    <!--<div class="toast" v-show="istoast" @click="istoast = false">-->
+        <!--<div class="shop-toast" @click.stop>-->
+        <!--<div class="tos-head">-->
+            <!--<div class="head-left">-->
+            <!--<div class="l-img" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')"></div>-->
+            <!--</div>-->
+            <!--<div class="head-right">-->
+            <!--<p class="r-head">¥{{setPrice}} <span class="fr iconX" @click="istoast = false"></span></p>-->
+            <!--<p>库存{{inventory}}件</p>-->
+            <!--<p v-if="specsList.length > 1">{{setSpecsName ? `已选 “${setSpecsName}”` : '选择颜色分类'}}</p>-->
+            <!--<p v-if="specsList.length == 1">已选 “{{specsList[0].name}}”</p>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="tos-con">-->
+            <!--<div class="con-head">-->
+            <!--<h5>规格分类</h5>-->
+            <!--</div>-->
+            <!--<div class="con-list">-->
+            <!--<div class="sing"-->
+                <!--v-for="(item, index) in specsList"-->
+                <!--:key="index"-->
+                <!--@click="specsFn(index, item)"-->
+                <!--:class="{'set-index': setIndex == index}"-->
+            <!--&gt;-->
+                <!--<p>{{item.name}}</p>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="con-foo">-->
+            <!--<div class="f-left">-->
+                <!--数量-->
+                <!--<p class="fr l-num">-->
+                <!--<span class="jian" @click="minusShop"></span>&nbsp;&nbsp; <b>{{shopNum}}</b> &nbsp;&nbsp;<span class="jia" @click="addShop"></span>-->
+                <!--</p>-->
+            <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="tos-btn" v-show="isgm" @click="qrorderFn">-->
+            <!--确定-->
+        <!--</div>-->
+        <!--<div class="tos-btns" v-show="!isgm">-->
+            <!--<div class="gwc" @click="toShopCart">-->
+            <!--加入购物车-->
+            <!--</div>-->
+            <!--<div class="ljgm" @click="toShopOrder">-->
+            <!--立即购买-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
@@ -108,9 +109,9 @@ import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
-import { formatAmount, setTitle, formatDate, getUrlParam, formatImg, getUserId } from 'common/js/util';
+import { formatAmount, setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
 import { getUser } from 'api/user';
-import { getShopDetail, getCommemtData, addShopCart } from 'api/store';
+import { getShopDetail, getCommemtData, addShopCart, addACommemt } from 'api/store';
 export default {
   data() {
     return {
@@ -151,12 +152,19 @@ export default {
       bannerPic: '',
       setSpecsName: '',
       commentList: [],
-      userMsgList: []
+      userMsgList: [],
+      sendComConfig: {
+        userId: getUserId(),
+        content: '',       // 评论内容
+        commodityCode: '',  // 商品编号
+        parentCode: '',  // 被评论编号
+        parentUserId: ''  //  被评论id
+      }
     };
   },
   created() {
     setTitle('全部评论');
-    this.code = getUrlParam('code');
+    this.code = this.$route.query.code;
     this.config.commodityCode = this.code;
     this.addCartConfig.commodityCode = this.code;
     this.getCommemtDataFn();
@@ -192,6 +200,17 @@ export default {
         backgroundImage: `url(${pic})`
       };
     },
+    startComment(index) {
+      let iup = this.$refs.sendIup;
+      this.$refs.iup_p.style.opacity = 1;
+      this.$refs.iup_p.style.display = 'block';
+      iup.focus();
+    },
+    sendComment() {
+      if(event.keyCode === 13) {
+        addACommemt().then(data => {});
+      }
+    },
     getCommemtDataFn() {
       this.config.start = this.start;
       getCommemtData(this.config).then(data => {
@@ -210,54 +229,54 @@ export default {
         this.loading = false;
       });
     },
-    setAddCart() { // 外加入购物车
-      this.isLogin();
-      if(this.specsList.length > 1) {
-        this.istoast = true;
-        this.isgm = true;
-        this.isCartType = '0';
-      }else {
-        this.addShopCart();
-      }
-    },
-    toBuy() { // 外立即购买
-      this.isLogin();
-      if(this.specsList.length > 1) {
-        this.istoast = true;
-        this.isgm = true;
-        this.isCartType = '1';
-        return;
-      }
-      this.loading = true;
-      let shopMsg = {
-        ...this.addCartConfig,
-        shopName: this.shopName,
-        bannerPic: this.bannerPic,
-        logistics: this.shopDetData.logistics,
-        setPrice: parseFloat(this.setPrice) * 1000
-      };
-      let shopMsgList = [shopMsg];
-      sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-      this.go('/affirm-order?code=' + this.code);
-    },
-    toShopCart() { // 内加入购物车
-      this.isLogin();
-      this.addShopCart();
-    },
-    toShopOrder() { // 内立即购买
-      this.isLogin();
-      this.loading = true;
-      let shopMsg = {
-        ...this.addCartConfig,
-        shopName: this.shopName,
-        bannerPic: this.bannerPic,
-        logistics: this.shopDetData.logistics,
-        setPrice: parseFloat(this.setPrice) * 1000
-      };
-      let shopMsgList = [shopMsg];
-      sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-      this.go('/affirm-order?code=' + this.code);
-    },
+    // setAddCart() { // 外加入购物车
+    //   this.isLogin();
+    //   if(this.specsList.length > 1) {
+    //     this.istoast = true;
+    //     this.isgm = true;
+    //     this.isCartType = '0';
+    //   }else {
+    //     this.addShopCart();
+    //   }
+    // },
+    // toBuy() { // 外立即购买
+    //   this.isLogin();
+    //   if(this.specsList.length > 1) {
+    //     this.istoast = true;
+    //     this.isgm = true;
+    //     this.isCartType = '1';
+    //     return;
+    //   }
+    //   this.loading = true;
+    //   let shopMsg = {
+    //     ...this.addCartConfig,
+    //     shopName: this.shopName,
+    //     bannerPic: this.bannerPic,
+    //     logistics: this.shopDetData.logistics,
+    //     setPrice: parseFloat(this.setPrice) * 1000
+    //   };
+    //   let shopMsgList = [shopMsg];
+    //   sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+    //   this.go('/affirm-order?code=' + this.code);
+    // },
+    // toShopCart() { // 内加入购物车
+    //   this.isLogin();
+    //   this.addShopCart();
+    // },
+    // toShopOrder() { // 内立即购买
+    //   this.isLogin();
+    //   this.loading = true;
+    //   let shopMsg = {
+    //     ...this.addCartConfig,
+    //     shopName: this.shopName,
+    //     bannerPic: this.bannerPic,
+    //     logistics: this.shopDetData.logistics,
+    //     setPrice: parseFloat(this.setPrice) * 1000
+    //   };
+    //   let shopMsgList = [shopMsg];
+    //   sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+    //   this.go('/affirm-order?code=' + this.code);
+    // },
     isLogin() {
       if(!getUserId()) {
         this.textMsg = '请先登录';
@@ -384,8 +403,8 @@ export default {
                     letter-spacing: 0.2px;
                 }
                 .s-foo_right{
-                    display: flex;
-                    p{
+                  display: flex;
+                  p{
                         margin-left: 0.4rem;
                         vertical-align: middle;
                         span{
@@ -465,6 +484,20 @@ export default {
                 }
             }
         }
+    }
+    .foo_hidden{
+      display: none;
+      opacity: 0;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      hieght: 0.6rem;
+      border: 0.01rem solid #ccc;
+      input{
+        width: 100%;
+        height: 100%;
+        padding: 0.1rem 0.2rem;
+      }
     }
     .toast{
         position: fixed;

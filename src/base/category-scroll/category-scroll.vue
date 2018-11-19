@@ -10,7 +10,7 @@
         :class="{active: index===currentIndex}"
         :style="_getItemColor(index)">
         <div class="mall-single" v-if="Type === 'mall'">
-          <div class="sing-img" :style="getImgSyl(item.pic ? item.pic : '')"></div>
+          <div class="sing-img" :style="getImgSyl(item.pic ? item.pic : '', 'store')"></div>
           <p class="sing-txt">{{item.value}}</p>
         </div>
         {{Type === 'mall' ? "" : item.value}}
@@ -50,6 +50,11 @@
         default: ''
       }
     },
+    data() {
+      return {
+        portIndex: 0
+      };
+    },
     mounted() {
       setTimeout(() => {
         this._setSliderWidth();
@@ -70,7 +75,7 @@
         return formatImg(img);
       },
       getImgSyl(imgs, type) {
-        let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
+        let pic = imgs ? formatImg(imgs) : type === 'store' ? 'static/avatar@2x.png' : 'static/allmall.png';
         return {
           backgroundImage: `url(${pic})`
         };
@@ -80,7 +85,13 @@
           return;
         }
         this.scroll.scrollToElement(this.$refs.cate[index], 200, true);
-        this.$emit('select', index);
+        if(this.portIndex === 0) {
+          this.$emit('select', index);
+          setTimeout(() => {
+            this.portIndex = 0;
+          }, 500);
+        }
+        this.portIndex ++;
       },
       _getGroupBgColor() {
         if (this.bgColor) {

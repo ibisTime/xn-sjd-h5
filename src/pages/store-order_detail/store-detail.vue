@@ -7,13 +7,13 @@
               <div>{{'订单' + orderStatus[orderDetail.status]}}</div>
           </div>
           <p class="back-co"></p>
-          <div class="det-con">
+          <div class="det-con" @click="toRess">
               <div class="con-left">
                   <div class="l-img"></div>
               </div>
               <div class="con-right">
-                  <p>{{addressMsg.addressee}} <span>{{addressMsg.mobile}}</span></p>
-                  <p>{{addressMsg.province + addressMsg.city + addressMsg.district + addressMsg.detailAddress}}</p>
+                  <p>{{addressMsg ? addressMsg.addressee : ''}} <span>{{addressMsg ? addressMsg.mobile : ''}}</span></p>
+                  <p>{{addressMsg ? addressMsg.province + addressMsg.city + addressMsg.district + addressMsg.detailAddress : '还未选择地址哦'}}</p>
               </div>
           </div>
           <p class="back-co"></p>
@@ -84,7 +84,7 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
-import { formatAmount, formatImg, formatDate, setTitle, getUrlParam, getUserId } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { oneStoreOrder, affirmOrder, removeMoreOrder } from 'api/store';
 import { getDictList } from 'api/general';
 export default {
@@ -105,14 +105,16 @@ export default {
         receiver: getUserId(),
         shopCode: ''
       },
-      operHtml: ''
+      operHtml: '',
+      setRess: ''
     };
   },
   created() {
     setTitle('订单详情');
+    this.setRess = JSON.parse(sessionStorage.getItem('setRess'));
     this.pullUpLoad = null;
-    this.code = getUrlParam('code');
-    this.orderType = getUrlParam('type');
+    this.code = this.$route.query.code;
+    this.orderType = this.$route.query.type;
     getDictList('commodity_order_detail_status').then(data => {
       data.forEach(item => {
         this.orderStatus[item.dkey] = item.dvalue;
@@ -126,6 +128,7 @@ export default {
   },
   mounted() {
     this.orderMessage();
+    sessionStorage.removeItem('storetype');
   },
   methods: {
     formatAmount(amount) {
@@ -146,6 +149,10 @@ export default {
         backgroundImage: `url(${pic})`
       };
     },
+    toRess() {
+      this.go('/address');
+      sessionStorage.setItem('storetype', 'store');
+    },
     orderOperFn(status) { // 根据状态展示按钮
       switch(status) {
         case '0':
@@ -165,14 +172,17 @@ export default {
                       <div class="foo-btn after-sale set-btn">申请售后</div>`;
           break;
         case '4':
-          this.operHtml = ``;
+          this.operHtml = `<div class="foo-btn order-pj">已完成</div>`;
+          break;
+        case '5':
+          this.operHtml = `<div class="foo-btn order-pj">已取消</div>`;
           break;
       };
     },
     orderOperClick() { // 订单操作
       let target = event.target;
       if(target.classList.contains('change-site')) { // 修改地址
-        this.go('/address');
+        this.toRess();
       }
       if(target.classList.contains('remove')) { // 取消订单
         this.loading = true;
@@ -223,7 +233,7 @@ export default {
         this.orderDetail = data;
         this.loading = false;
         this.storeList = data.shopOrderList;   // moreStoreOrder
-        this.addressMsg = data.address;
+        this.addressMsg = this.setRess || data.address;
         this.orderOperFn(data.status);
       }, () => {
         this.loading = false;

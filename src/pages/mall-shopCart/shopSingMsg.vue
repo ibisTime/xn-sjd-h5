@@ -21,7 +21,7 @@
                     <div class="r-con">
                         <div class="rr-head">{{singItem.commodityName}} <span class="fr num">x{{singItem.quantity}}</span></div>
                         <div class="rr-con">规格分类：{{singItem.specsName}}</div>
-                        <div class="rr-price">¥{{formatAmount(singItem.amount)}}
+                        <div class="rr-price">¥{{formatAmount(shopPriceList[singIndex])}}
                             <p class="fr bot">
                                 <span class="jian" @click.stop="minusFn(singIndex)"></span>
                                 <span>{{singItem.quantity}}</span>
