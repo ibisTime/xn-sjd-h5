@@ -18,7 +18,7 @@
               <div class="sing-con" v-html="item.content">
 
               </div>
-              <div class="sing-foo">
+              <div class="sing-foo hidden">
                   <div class="s-foo_left">
                       <p class="hidden">浏览46次</p>
                   </div>
@@ -367,7 +367,7 @@ export default {
         float: right;
     }
     .hidden{
-        display: none;
+        display: none !important;
     }
     .content {
         position: absolute;

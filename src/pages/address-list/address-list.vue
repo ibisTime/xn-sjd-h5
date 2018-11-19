@@ -145,10 +145,10 @@
       deleteItem(item, index) {
         this.currentItem = item;
         this.deleteIndex = index;
+        this.comText = '确定删除地址吗';
         this.$refs.confirm.show();
       },
       _deleteAddress() {
-        this.comText = '确定删除地址吗';
         if (this.currentItem) {
           this.loadingText = '删除中...';
           this.loadingFlag = true;
@@ -162,10 +162,12 @@
             this.loadingFlag = false;
           });
         }
+        if(this.storeOrder) {}
       },
       setStoreRess(index, item) { // 商城选择地址
         if(this.storeOrder) {
-          // this.comText = '确认使用该地址吗？';
+          this.comText = '确认使用该地址吗？';
+          this.$refs.confirm.show();
           this.isokIndex = index;
           sessionStorage.setItem('isokIndex', index);
           sessionStorage.setItem('setRess', JSON.stringify(item));
