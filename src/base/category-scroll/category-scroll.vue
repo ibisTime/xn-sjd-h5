@@ -75,7 +75,7 @@
         return formatImg(img);
       },
       getImgSyl(imgs, type) {
-        let pic = imgs ? formatImg(imgs) : type === 'store' ? 'static/avatar@2x.png' : 'static/allmall.png';
+        let pic = imgs ? formatImg(imgs) : type === 'store' ? 'static/allmall.png' : '';
         return {
           backgroundImage: `url(${pic})`
         };

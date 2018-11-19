@@ -110,7 +110,7 @@ export default {
         orderColumn: 'order_no',
         orderDir: 'asc'
       },
-      shopTypeData: [{key: 0, value: '全部', pic: '/static/allmall.png', code: ''}],
+      shopTypeData: [{key: 0, value: '全部', pic: '', code: ''}],
       shopName: '',
       iscart: false,
       shopCode: ''
@@ -118,7 +118,7 @@ export default {
   },
   created() {
     setTitle('商场');
-    this.shopCode = this.$route.query.shopCode;
+    this.shopCode = this.$route.query.code;
     if(this.shopCode) {
       this.isAll = true;
     }
@@ -182,6 +182,9 @@ export default {
       this.getHotShop();
     },
     addCart(code, name, specsId, specsName) {
+      if(!getUserId()) {
+        this.go('login');
+      }
       this.loading = true;
       this.addCartConfig.commodityCode = code;
       this.addCartConfig.commodityName = name;

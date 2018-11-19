@@ -103,7 +103,7 @@ export default {
         orderColumn: 'order_no',
         orderDir: 'asc'
       },
-      shopTypeData: [],
+      shopTypeData: [{key: 0, value: '全部', pic: '', code: ''}],
       iscart: false
     };
   },

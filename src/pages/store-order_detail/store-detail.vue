@@ -172,10 +172,10 @@ export default {
                       <div class="foo-btn after-sale set-btn">申请售后</div>`;
           break;
         case '4':
-          this.operHtml = `<div class="foo-btn order-pj">已完成</div>`;
+          this.operHtml = `<div class="foo-btn">已完成</div>`;
           break;
         case '5':
-          this.operHtml = `<div class="foo-btn order-pj">已取消</div>`;
+          this.operHtml = `<div class="foo-btn">已取消</div>`;
           break;
       };
     },
@@ -204,7 +204,7 @@ export default {
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderDetail];
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-        this.go('/affirm-order?code=' + this.orderDetail.code);
+        this.go('/pay?code=' + this.orderDetail.orderCode + '&type=one');
       }
       if(target.classList.contains('after-sale')) { // 申请售后
         this.go('/after-sale?code=' + this.orderDetail.code);
@@ -223,6 +223,10 @@ export default {
         }, () => {
           this.loading = false;
         });
+      }
+      if(target.classList.contains('order-pj')) { // 发表评论
+        this.loading = true;
+        this.go('/user-pj?code=' + this.orderDetail.commodityCode + '&toCode=' + this.orderDetail.code);
       }
     },
     toShopDet(code, shopCode) {

@@ -23,17 +23,21 @@
                       <p class="hidden">浏览46次</p>
                   </div>
                   <div class="s-foo_right">
-                    <p @click="startComment(index)"><span class="foo-pl"></span> <span class="pl">评论</span></p>
+                    <p @click="startComment(index, parentCode, userId)"><span class="foo-pl"></span> <span class="pl">评论</span></p>
                     <p class="hidden"><span class="foo-z"></span> <span class="pl">150</span></p>
                   </div>
               </div>
           </div>
+         <p></p>
       </div>
       <div class="mall-content">
         <no-result v-show="!commentList.length && !hasMore" class="no-result-wrapper" title="暂无评论"></no-result>
       </div>
     </Scroll>
-      <p class="foo_hidden" ref="iup_p"><input type="text" ref="sendIup" v-model="sendComConfig.content" @keyup="sendComment"></p>
+      <p class="foo_hidden" ref="iup_p">
+        <input type="text" ref="sendIup" v-model="sendComConfig.content">
+        <span @click="sendComment">发送</span>
+      </p>
     <!--<div class="shop-foo">-->
         <!--<div class="foo-left">-->
             <!--<div class="le-dp" @click="go('mall-store');">-->
@@ -167,6 +171,7 @@ export default {
     this.code = this.$route.query.code;
     this.config.commodityCode = this.code;
     this.addCartConfig.commodityCode = this.code;
+    this.sendComConfig.commodityCode = this.code;
     this.getCommemtDataFn();
     getShopDetail(this.code).then(data => {
       this.shopDetData = data;
@@ -200,15 +205,23 @@ export default {
         backgroundImage: `url(${pic})`
       };
     },
-    startComment(index) {
+    startComment(index, parentCode, userId) {
       let iup = this.$refs.sendIup;
       this.$refs.iup_p.style.opacity = 1;
       this.$refs.iup_p.style.display = 'block';
+      this.sendComConfig.parentCode = parentCode;
+      this.sendComConfig.parentUserId = userId;
       iup.focus();
     },
     sendComment() {
-      if(event.keyCode === 13) {
-        addACommemt().then(data => {});
+      if(this.sendComConfig.content === '') {
+        this.textMsg = '请输入评价内容';
+        this.$refs.toast.show();
+        return;
+      }else {
+        addACommemt(this.sendComConfig).then(data => {
+          console.log(data);
+        });
       }
     },
     getCommemtDataFn() {
@@ -491,12 +504,32 @@ export default {
       position: fixed;
       left: 0;
       bottom: 0;
-      hieght: 0.6rem;
-      border: 0.01rem solid #ccc;
+      hieght: 0.9rem;
+      padding: 0.1rem 0.2rem;
+      background-color: #fafafa;
+      font-size: 0.3rem;
+      color: #333;
+      width: 100%;
       input{
-        width: 100%;
+        width: 75%;
         height: 100%;
-        padding: 0.1rem 0.2rem;
+        padding: 0.1rem;
+        border: 0.01rem solid #d6d6d6;
+        -webkit-border-radius: 0.08rem;
+        -moz-border-radius: 0.08rem;
+        border-radius: 0.08rem;
+      }
+      span{
+        display: inline-block;
+        width: 22%;
+        height: 0.5rem;
+        line-height: 0.5rem;
+        text-align: center;
+        color: #fff;
+        background-color: #23AD8C;
+        -webkit-border-radius: 0.08rem;
+        -moz-border-radius: 0.08rem;
+        border-radius: 0.08rem;
       }
     }
     .toast{

@@ -190,7 +190,7 @@ export default {
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderList[index]];
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-        this.go('/pay?code=' + this.orderList[index].code + '&type=one');
+        this.go('/pay?code=' + this.orderList[index].orderCode + '&type=one');
       }
       if(target.classList.contains('after-sale')) { // 申请售后
         this.go('/after-sale?code=' + this.orderList[index].code);
@@ -200,7 +200,7 @@ export default {
       }
       if(target.classList.contains('order-pj')) { // 发表评论
         this.loading = true;
-        this.go('/user-pj?code=' + this.orderList[index].commodityCode);
+        this.go('/user-pj?code=' + this.orderList[index].commodityCode + '&toCode=' + this.orderList[index].code);
       }
       if(target.classList.contains('order-take')) { // 确认收货
         this.loading = true;
@@ -210,7 +210,9 @@ export default {
         affirmOrder(this.affrimConfig).then(data => {
           this.textMsg = '操作成功';
           this.$refs.toast.show();
-          this.orderConfig.status = '2';
+          if(this.currentIndex !== 0) {
+            this.orderConfig.status = '2';
+          }
           this.start = 1;
           this.orderList = [];
           this.morePageOrderFn();

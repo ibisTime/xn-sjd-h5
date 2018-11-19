@@ -57,11 +57,13 @@ export default {
         userId: getUserId(),
         content: '',
         commodityCode: ''
-      }
+      },
+      toCode: ''
     };
   },
   mounted() {
     this.commentConfig.commodityCode = this.$route.query.code;
+    this.toCode = this.$route.query.toCode;
     Promise.all([
       getQiniuToken()
     ]).then(([res1]) => {
@@ -91,7 +93,7 @@ export default {
         this.loading = false;
         this.text = '评论成功';
         this.$refs.toast.show();
-        this.$router.push('user-comment?code=' + this.commentConfig.commodityCode);
+        this.$router.push('/store-order_detail?code=' + this.toCode);
       }, () => {
         this.loading = false;
       });
