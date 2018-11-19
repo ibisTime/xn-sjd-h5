@@ -23,7 +23,7 @@
               <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
               <div class="sell-type-right" :style="{background: canAdopt(item).canAdoptFlag ? '#23ad8c' : ''}">{{canAdopt(item).noAdoptReason}}</div>
               <img :src="formatImg(item.listPic)" class="hot-pro-img">
-              <div class="prograss-bar" v-if="item.sellType === '3' || item.sellType === '4'">
+              <div class="prograss-bar" v-if="item.sellType === '4'">
                 <div class="nowCount" :style="{width: getWidth(item)+'%'}"></div>
                 <div class="totalCount"></div>
                 <div class="prograss-text"><span>{{item.nowCount}}/{{item.raiseCount}}</span></div>
