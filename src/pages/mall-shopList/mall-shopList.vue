@@ -57,7 +57,7 @@ export default {
         start: 1,
         limit: 8,
         status: '4',
-        orderColumn: 'update_datetime',
+        orderColumn: 'order_no',
         orderDir: 'asc'
       },
       hotShopList: [],
@@ -88,7 +88,7 @@ export default {
     setTitle('全部商品');
     this.storeTypeCode = this.$route.query.storeTypeCode;
     this.typeIndex = this.$route.query.typeIndex;
-    this.currentIndex = Number(this.typeIndex) || 0;
+    this.currentIndex = Number(this.typeIndex) + 1 || 0;
     this.shopCode = this.$route.query.code;
     if(this.shopCode) {
       this.config.shopCode = this.shopCode;

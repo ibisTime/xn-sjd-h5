@@ -24,7 +24,7 @@ export function addShopCart(config) {
 
 // 列表查我的购物车
 export function myShopCart(userId) {
-  return fetch(629712, {
+  return fetch(629715, {
     userId
   });
 }
@@ -55,11 +55,16 @@ export function morePageOrder(config) {
 
 // 分页查订单（单店铺）
 export function onePageOrder(config) {
-  return fetch(629735, config);
+  return fetch(629725, config);
 }
 
-// 支付订单（多店铺）
+// 支付订单（购物车下单支付）
 export function payMoreOrder(config) {
+  return fetch(629714, config);
+}
+
+// 支付订单（立即购买下单支付、订单支付）
+export function payOneOrder(config) {
   return fetch(629721, config);
 }
 
@@ -72,6 +77,13 @@ export function removeMoreOrder(config) {
 export function storeRemoveFn(shopCode) {
   return fetch(629714, {
     shopCode
+  });
+}
+
+// 单件商品删除
+export function shopRemoveFn(codeList) {
+  return fetch(629711, {
+    codeList
   });
 }
 
@@ -89,7 +101,7 @@ export function shopCartOrder(config) {
 
 // 确认收货
 export function affirmOrder(config) {
-  return fetch(629731, config);
+  return fetch(629724, config);
 }
 
 // 退款
@@ -132,9 +144,16 @@ export function getStoreDeductible(code) {
   });
 }
 
+// 组合订单积分抵扣
+export function getMoreDeductible(code) {
+  return fetch(629717, {
+    code
+  });
+}
+
 // 发表评论
 export function addACommemt(config) {
-  return fetch(629750, config);
+  return fetch(629730, config);
 }
 
 // 分页查评论

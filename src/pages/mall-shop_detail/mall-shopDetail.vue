@@ -102,7 +102,7 @@
           <div class="dp-img"></div>
           <p>店铺</p>
         </div>
-        <div class="le-kf" @click="go(`/store-msgdet`)">
+        <div class="le-kf" @click="go(`/store-service?user2=${shopDetData.sellUserId}`)">
           <div class="kf-img"></div>
           <p>客服</p>
         </div>
@@ -309,9 +309,7 @@ export default {
         this.loading = false;
         this.textMsg = '加入购物车成功';
         this.$refs.toast.show();
-        setTimeout(() => {
-          this.go('/mall-shopCart');
-        }, 1500);
+        this.istoast = false;
       }, () => {
         this.loading = false;
       });

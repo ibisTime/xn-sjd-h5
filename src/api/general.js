@@ -154,8 +154,10 @@ export function getConfig(ckey) {
 }
 
 // 获取banner
-export function getBanner() {
-  return fetch(630506, {});
+export function getBanner(config) {
+  return fetch(630506, {
+    ...config
+  });
 }
 
 // 列表查寻数据字典

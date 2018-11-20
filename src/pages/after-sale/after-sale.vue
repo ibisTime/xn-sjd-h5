@@ -21,14 +21,15 @@
                     </div>
                 </div>
             </div>
-            <p class="back-co"></p>
+            <p class="back-co" v-show="isset"></p>
             <div class="sale-con" v-show="isset">
                 <div class="sale-box01">
                     <div class="box-left">
                         <p>退款金额</p>
                     </div>
                     <div class="box-right">
-                        <input type="text" placeholder="请输入金额" v-model="refundAmount">
+                      <input name="money" v-validate="'required'" type="text" placeholder="请输入金额" v-model="refundAmount">
+                      <span v-show="errors.has('money')" class="error-tip">{{errors.first('money')}}</span>
                     </div>
                 </div>
                 <div class="sale-box01" v-show="setIndex === '1'">
@@ -36,7 +37,8 @@
                         <p>物流公司</p>
                     </div>
                     <div class="box-right">
-                        <input type="text" placeholder="请输入物流公司" v-model="salesConfig.logisticsCompany">
+                      <input name="company" v-validate="'required'" type="text" placeholder="请输入物流公司" v-model="salesConfig.logisticsCompany">
+                      <span v-show="errors.has('company')" class="error-tip">{{errors.first('company')}}</span>
                     </div>
                 </div>
                 <div class="sale-box01" v-show="setIndex === '1'">
@@ -44,7 +46,8 @@
                         <p>物流单号</p>
                     </div>
                     <div class="box-right">
-                        <input type="text" placeholder="请输入物流单号" v-model="salesConfig.logisticsNumber">
+                      <input name="logistics" v-validate="'required'" type="text" placeholder="请输入物流单号" v-model="salesConfig.logisticsNumber">
+                      <span v-show="errors.has('logistics')" class="error-tip">{{errors.first('logistics')}}</span>
                     </div>
                 </div>
                 <div class="sale-box01" v-show="setIndex === '1'">
@@ -52,7 +55,8 @@
                         <p>发货人</p>
                     </div>
                     <div class="box-right">
-                        <input type="text" placeholder="请输入发货人" v-model="salesConfig.deliver">
+                      <input name="deliver" v-validate="'required'" type="text" placeholder="请输入发货人" v-model="salesConfig.deliver">
+                      <span v-show="errors.has('deliver')" class="error-tip">{{errors.first('deliver')}}</span>
                     </div>
                 </div>
             </div>
@@ -91,12 +95,14 @@ export default {
         applyUser: getUserId()
       },
       refundAmount: '',
-      orderDetailCode: ''
+      orderDetailCode: '',
+      toCode: ''
     };
   },
   created() {
     setTitle('售后');
     this.orderDetailCode = this.$route.query.code;
+    this.toCode = this.$route.query.toCode;
     oneStoreOrder(this.orderDetailCode).then(data => {
       this.loading = false;
       this.refundAmount = formatAmount(data.amount);
@@ -157,7 +163,7 @@ export default {
             this.textMsg = '申请成功';
             this.$refs.toast.show();
             setTimeout(() => {
-              this.go('/mall');
+              this.go('/store-order_detail?code=' + this.toCode);
             }, 1500);
           }, () => {
             this.loading = false;
@@ -187,6 +193,9 @@ export default {
   .fr {
     float: right;
   }
+  .error-tip{
+    color: red;
+  }
   .content {
     position: absolute;
     top: 0;
@@ -195,13 +204,13 @@ export default {
     right: 0;
     overflow: auto;
     background-color: #fff;
-    padding: 0 0.3rem;
     font-family: PingFangSC-Regular;
     .back-co{
         height: 0.2rem;
         background-color: #f5f5f5;
     }
     .sale-head{
+      padding: 0 0.3rem;
         >div{
             height: 1.8rem;
             padding: 0.3rem 0;
@@ -243,6 +252,7 @@ export default {
 
     }
     .sale-con{
+      padding: 0 0.3rem;
         >div{
             height: 1.2rem;
             padding: 0.38rem 0;
@@ -262,14 +272,15 @@ export default {
         }
     }
     .sale-foo{
-        margin-top: 0.6rem;
-        height: 0.9rem;
-        line-height: 0.9rem;
-        text-align: center;
-        font-size: 0.36rem;
-        color: #fff;
-        background-color: #23AD8C;
-        border-radius: 0.12rem;
+      padding: 0 0.3rem;
+      margin-top: 0.6rem;
+      height: 0.9rem;
+      line-height: 0.9rem;
+      text-align: center;
+      font-size: 0.36rem;
+      color: #fff;
+      background-color: #23AD8C;
+      border-radius: 0.12rem;
     }
   }
 }

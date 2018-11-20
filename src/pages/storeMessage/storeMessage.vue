@@ -6,7 +6,7 @@
                 :hasMore="hasMore"
                 @pullingUp="storeMsgFn">
                 <ul class="msg-list">
-                    <li v-for="(item, index) in storeMsgData" :key="index" @click="$router.push(`/store-msgdet`)">
+                    <li v-for="(item, index) in storeMsgData" :key="index" @click="$router.push(`/store-service?user2=${item.user1}`)">
                         <h5>{{item.user1Nickname}} <span class="fr time">{{formatDate(item.createDatetime)}}</span></h5>
                         <p>{{item.messageList[0].content}}</p>
                     </li>

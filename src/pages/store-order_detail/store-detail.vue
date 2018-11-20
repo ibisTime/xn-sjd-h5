@@ -18,43 +18,27 @@
           </div>
           <p class="back-co"></p>
           <!-- 多店铺订单详情 -->
-          <div class="sing-order" v-for="(storeItem, storeIndex) in storeList" :key="storeIndex" v-if="storeList">
+          <div class="sing-order">
             <div class="det-list">
               <div class="list-head">
-                  <p>{{storeItem.shopName}} <span class="fr">{{logistics[orderDetail.expressType]}}</span></p>
+                  <p>{{orderDetail.sellersName}} <span class="fr">{{logistics[orderDetail.expressType]}}</span></p>
               </div>
-              <div
-                class="shop-det"
-                v-for="(shopItem, shopIndex) in storeItem.detailList"
-                :key="shopIndex"
-                @click="toShopDet(shopItem.code, shopItem.shopCode)"
-              >
+              <div v-for="(storeItem, storeIndex) in storeList" :key="storeIndex">
+                <div
+                  class="shop-det"
+                  @click="toShopDet(storeItem.commodityCode, storeItem.shopCode)"
+                >
                   <div class="shop-left">
-                      <div class="shop-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
+                    <div class="shop-img" :style="getImgSyl(storeItem.listPic ? storeItem.listPic : '')"></div>
                   </div>
                   <div class="shop-right">
-                      <p>{{shopItem.commodityName}} <span class="fr">x{{shopItem.quantity}}</span></p>
-                      <p>规格分类：{{shopItem.specsName}}</p>
-                      <p>合计{{shopItem.quantity}}件商品 <span class="fr price">¥{{formatAmount(shopItem.amount)}}</span></p>
+                    <p>{{storeItem.commodityName}} <span class="fr">x{{storeItem.quantity}}</span></p>
+                    <p>规格分类：{{storeItem.specsName}}</p>
+                    <p>合计{{storeItem.quantity}}件商品 <span class="fr price">¥{{formatAmount(storeItem.amount)}}</span></p>
                   </div>
-              </div>
-            </div>
-          </div>
-          <!-- 单店铺订单详情 -->
-          <div class="sing-order" v-if="!storeList">
-            <div class="det-list">
-              <div class="list-head">
-                  <p>{{orderDetail.shopName}} <span class="fr">{{logistics[orderDetail.expressType]}}</span></p>
-              </div>
-              <div class="shop-det" @click="toShopDet(orderDetail.commodityCode, orderDetail.shopCode)">
-                  <div class="shop-left">
-                      <div class="shop-img" :style="getImgSyl(orderDetail.listPic ? orderDetail.listPic : '')"></div>
-                  </div>
-                  <div class="shop-right">
-                      <p>{{orderDetail.commodityName}} <span class="fr">x{{orderDetail.quantity}}</span></p>
-                      <p>规格分类：{{orderDetail.specsName}}</p>
-                      <p>合计{{orderDetail.quantity}}件商品 <span class="fr price">¥{{formatAmount(orderDetail.amount)}}</span></p>
-                  </div>
+                </div>
+                <div class="s-foo" v-if="ispj" v-html="wcOperHtml[storeIndex]" @click="orderOperClick(storeItem)">
+                </div>
               </div>
             </div>
           </div>
@@ -67,11 +51,11 @@
                   <p><span>下单时间</span>{{formatDate(orderDetail.applyDatetime)}}</p>
                   <p><span>订单号</span>{{orderDetail.code}}</p>
                   <p><span>订单金额</span>¥{{formatAmount(orderDetail.amount)}}</p>
-                  <p><span>卖家</span>{{orderDetail.sellerName}}</p>
+                  <p><span>卖家</span>{{orderDetail.sellersName}}</p>
                   <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
               </div>
           </div>
-          <div class="sing-foo" v-html="operHtml" @click="orderOperClick">
+          <div class="sing-foo" v-show="!ispj" v-html="operHtml" @click="orderOperClick">
 
           </div>
       </div>
@@ -85,7 +69,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { oneStoreOrder, affirmOrder, removeMoreOrder } from 'api/store';
+import { moreStoreOrder, affirmOrder, removeMoreOrder } from 'api/store';
 import { getDictList } from 'api/general';
 export default {
   data() {
@@ -106,16 +90,28 @@ export default {
         shopCode: ''
       },
       operHtml: '',
-      setRess: ''
+      wcOperHtml: [],
+      ispj: false,
+      isRess: true,
+      setRess: '',
+      statusDetList: []
     };
   },
   created() {
     setTitle('订单详情');
-    this.setRess = JSON.parse(sessionStorage.getItem('setRess'));
     this.pullUpLoad = null;
+    this.setRess = JSON.parse(sessionStorage.getItem('setRess'));
     this.code = this.$route.query.code;
     this.orderType = this.$route.query.type;
     getDictList('commodity_order_detail_status').then(data => {
+      data.forEach(item => {
+        this.statusDetList.push({
+          key: item.dkey,
+          value: item.dvalue
+        });
+      });
+    });
+    getDictList('commodity_cnavigate_status').then(data => {
       data.forEach(item => {
         this.orderStatus[item.dkey] = item.dvalue;
       });
@@ -150,8 +146,11 @@ export default {
       };
     },
     toRess() {
-      this.go('/address');
-      sessionStorage.setItem('storetype', 'store');
+      if(this.isRess) {
+        this.go('/address');
+        sessionStorage.setItem('toBank', '/store-order_detail?code=' + this.code);
+        sessionStorage.setItem('storetype', 'store');
+      }
     },
     orderOperFn(status) { // 根据状态展示按钮
       switch(status) {
@@ -168,8 +167,7 @@ export default {
                       <div class="foo-btn look-wl set-btn">查看物流</div>`;
           break;
         case '3':
-          this.operHtml = `<div class="foo-btn order-pj set-btn">评价</div>
-                      <div class="foo-btn after-sale set-btn">申请售后</div>`;
+          this.operHtml = `<div class="foo-btn">待完成</div>`;
           break;
         case '4':
           this.operHtml = `<div class="foo-btn">已完成</div>`;
@@ -179,7 +177,7 @@ export default {
           break;
       };
     },
-    orderOperClick() { // 订单操作
+    orderOperClick(storeItem) { // 订单操作
       let target = event.target;
       if(target.classList.contains('change-site')) { // 修改地址
         this.toRess();
@@ -204,10 +202,10 @@ export default {
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderDetail];
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-        this.go('/pay?code=' + this.orderDetail.orderCode + '&type=one');
+        this.go('/pay?code=' + this.orderDetail.code + '&type=one');
       }
       if(target.classList.contains('after-sale')) { // 申请售后
-        this.go('/after-sale?code=' + this.orderDetail.code);
+        this.go('/after-sale?code=' + storeItem.code + '&toCode=' + this.orderDetail.code);
       }
       if(target.classList.contains('look-wl')) { // 查看物流
         alert('查看物流');
@@ -226,19 +224,51 @@ export default {
       }
       if(target.classList.contains('order-pj')) { // 发表评论
         this.loading = true;
-        this.go('/user-pj?code=' + this.orderDetail.commodityCode + '&toCode=' + this.orderDetail.code);
+        this.go('/user-pj?code=' + storeItem.code + '&toCode=' + this.orderDetail.code);
       }
     },
     toShopDet(code, shopCode) {
       this.go(`/mall-shop_detail?code=${code}&shopCode=${shopCode}`);
     },
     orderMessage() {  // 获取订单信息
-      oneStoreOrder(this.code).then(data => {
+      moreStoreOrder(this.code).then(data => {
         this.orderDetail = data;
         this.loading = false;
-        this.storeList = data.shopOrderList;   // moreStoreOrder
-        this.addressMsg = this.setRess || data.address;
-        this.orderOperFn(data.status);
+        this.storeList = data.detailList;   // moreStoreOrder
+        if(this.isRess) {
+          this.addressMsg = this.setRess || data.address;
+        }else {
+          this.addressMsg = data.address;
+        }
+        if(data.status === '3' || data.status === '4') {
+          this.ispj = true;
+          data.detailList.forEach((item, index) => {
+            switch(item.status) {
+              case '0':
+                this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn after-sale set-btn">申请售后</div>`);
+                break;
+              case '1':
+                this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
+                break;
+              case '2':
+                this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
+                break;
+              case '3':
+                this.wcOperHtml.push(`<div class="foo-btn">售后完成</div>`);
+                break;
+            }
+            if(item.status === '0') {
+
+            }else {
+
+            }
+          });
+        }else {
+          this.orderOperFn(data.status);
+        }
+        if(Number(data.status) > 1) {
+          this.isRess = false;
+        }
       }, () => {
         this.loading = false;
       });
@@ -248,6 +278,9 @@ export default {
     FullLoading,
     Toast,
     Scroll
+  },
+  beforeDestroy() {
+    sessionStorage.removeItem('setRess');
   }
 };
 </script>
@@ -280,6 +313,13 @@ export default {
         display: flex;
         box-shadow: 0 -0.02rem 0 0 #EBEBEB;
         flex-direction: row-reverse;
+    }
+    .s-foo{
+      height: 1rem;
+      padding: 0.2rem 0.3rem;
+      display: flex;
+      box-shadow: 0 0.02rem 0 0 #EBEBEB;
+      flex-direction: row-reverse;
     }
     .det-head{
       width: 100%;
@@ -348,7 +388,6 @@ export default {
         display: flex;
         padding: 0.32rem 0 0.3rem 0;
         background: rgba(224,187,187,0.00);
-        box-shadow: 0 0.02rem 0 0 #EBEBEB;
         .shop-left{
           height: 1.6rem;
           width: 1.6rem;

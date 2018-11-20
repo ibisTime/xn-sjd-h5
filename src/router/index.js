@@ -142,6 +142,8 @@ const storeOrderDetail = () => import('@/pages/store-order_detail/store-detail')
 const storeMessage = () => import('@/pages/storeMessage/storeMessage');
 // 商场消息详情
 const storeMsgDet = () => import('@/pages/store-msg-det/storeMsgDet');
+// 商场会话
+const storeService = () => import('@/pages/service/service');
 // 公告
 const Notices = () => import('@/pages/notices/notices');
 // 公告详情
@@ -463,6 +465,10 @@ export default new Router({
     {
       path: '/store-msgdet',
       component: storeMsgDet
+    },
+    {
+      path: '/store-service',
+      component: storeService
     },
     {
       path: '/money',

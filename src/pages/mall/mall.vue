@@ -1,8 +1,16 @@
 <template>
   <div class="mall-wrapper" @click.stop>
-    <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
+    <Scroll
+      :data="hotShopList"
+      :hasMore="hasMore"
+      @pullingUp="getHotShop">
       <div class="content" v-show="!isAll">
         <div class="mall-header">
+          <slider v-if="banners.length" :loop="loop">
+            <div class="home-slider" v-for="item in banners" :key="item.code">
+              <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
+            </div>
+          </slider>
           <div class="head-search">
             <div class="search">
               <span></span>
@@ -22,11 +30,7 @@
         <div class="mall-content">
           <div class="con-head">
             <h5>热门推荐 <router-link to="/mall/mall-shopList" class="fr" @click.native="isAll = true;">更多</router-link></h5>
-            <div class="shop-list" @touchstart.stop>
-              <Scroll
-                :data="hotShopList"
-                :hasMore="hasMore"
-                @pullingUp="getHotShop">
+            <div class="shop-list">
                 <div class="con-list">
                   <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, index) in hotShopList" :key="index">
                     <div class="con-sing_img">
@@ -48,7 +52,6 @@
                 <div class="mall-content">
                   <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
                 </div>
-              </Scroll>
             </div>
           </div>
         </div>
@@ -67,15 +70,18 @@
 import MFooter from 'components/m-footer/m-footer';
 import FullLoading from 'base/full-loading/full-loading';
 import Scroll from 'base/scroll/scroll';
+import Slider from 'base/slider/slider';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
 import { getAllShopData, addShopCart, getShopType, myShopCart } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { getBanner } from 'api/general';
 export default {
   data() {
     return {
       loading: true,
+      loop: true,
       currentIndex: 0,
       textMsg: '',
       loadingText: '正在加载...',
@@ -87,7 +93,7 @@ export default {
         limit: 4,
         status: '4',
         location: '1',
-        orderColumn: 'update_datetime',
+        orderColumn: 'order_no',
         orderDir: 'asc'
       },
       start: 1,
@@ -110,19 +116,27 @@ export default {
         orderColumn: 'order_no',
         orderDir: 'asc'
       },
-      shopTypeData: [{key: 0, value: '全部', pic: '', code: ''}],
+      shopTypeData: [],    // {key: 0, value: '全部', pic: '', code: ''}
       shopName: '',
       iscart: false,
-      shopCode: ''
+      shopCode: '',
+      banners: []
     };
   },
   created() {
     setTitle('商场');
     this.shopCode = this.$route.query.code;
+    let href = location.href;
+    if(href.indexOf('mall-shopList') !== -1) {
+      this.isAll = true;
+    }
     if(this.shopCode) {
       this.isAll = true;
     }
     this.pullUpLoad = null;
+    getBanner({type: 6}).then(data => {
+      this.banners = data;
+    });
     this.getHotShop();
     getShopType(this.shopTypeConfig).then(data => {
       data.list.map((item, index) => {
@@ -230,7 +244,6 @@ export default {
         }
         if(this.config.name) {
           delete this.config.name;
-          this.shopName = '';
         }
       }, () => {
         this.loading = false;
@@ -243,7 +256,8 @@ export default {
     Toast,
     Scroll,
     NoResult,
-    CategoryScroll
+    CategoryScroll,
+    Slider
   },
   watch: {
     '$route.path': function (newVal, oldVal) {
@@ -281,7 +295,6 @@ export default {
   .content {
     overflow: auto;
     font-family: PingFangSC-Regular;
-
     .mall-header{
       width: 100%;
       height: 3.7rem;
@@ -289,6 +302,17 @@ export default {
       position: relative;
       background-image: url('./banner.png');
       background-size: 100% 100%;
+      .home-slider {
+        height: 100%;
+      }
+      a {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+      }
       .head-search{
         position: absolute;
         left: 0;
@@ -330,7 +354,7 @@ export default {
       padding: 0.32rem 0.3rem 0;
       .con-head{
         .shop-list{
-          height: 5rem;
+          /*height: 5rem;*/
           overflow: scroll;
         }
         >h5{

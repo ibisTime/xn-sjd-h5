@@ -45,7 +45,7 @@ import Toast from 'base/toast/toast';
 import { setTitle, getUserId, formatDate, isUnDefined, formatImg } from 'common/js/util';
 import fetch from 'common/js/fetch';
 import { getUser } from 'api/user';
-import { readMessage } from 'api/store';
+import { readMessage, replyMessage } from 'api/store';
 
 export default {
   data() {
@@ -57,16 +57,21 @@ export default {
       list: [],
       avatar: '',
       showNewMsg: false,
-      sendConfig: {
-        user1: getUserId(),
-        user2: '',       // 他人（客服）
+      readConfig: {
+        userId: getUserId(),
+        code: ''
+      },
+      replyConfig: {
+        code: '',
         content: '',
-        type: '0'
-      }
+        userId: getUserId()
+      },
+      user2: ''
     };
   },
   created() {
     setTitle('客服');
+    this.user2 = this.$route.query.user2;
     this.pullUpLoad = null;
     this.probeType = 3;
     this.listenScroll = true;
@@ -84,13 +89,15 @@ export default {
   },
   methods: {
     scroll() {
-      var elmEnd = this.$refs.item[this.$refs.item.length - 1];
-      let rect = elmEnd.getBoundingClientRect();
-      let top = rect.top + rect.height;
-      let maxTop = this.$refs.followWrapper.clientHeight -
-        this.$refs.talkBtm.offsetHeight;
-      if (top <= maxTop) {
-        this.showNewMsg = false;
+      if(this.$refs.item) {
+        var elmEnd = this.$refs.item[this.$refs.item.length - 1];
+        let rect = elmEnd.getBoundingClientRect();
+        let top = rect.top + rect.height;
+        let maxTop = this.$refs.followWrapper.clientHeight -
+          this.$refs.talkBtm.offsetHeight;
+        if (top <= maxTop) {
+          this.showNewMsg = false;
+        }
       }
     },
     newMsgClick() {
@@ -99,17 +106,17 @@ export default {
     },
     // 查询消息
     getPageMsg() {
-      return fetch(629785, { start: 1, limit: 1, user1: getUserId() }).then((data) => {
+      return fetch(629785, { start: 1, limit: 1, user1: getUserId(), user2: this.user2 }).then((data) => {
         if (data.list.length) {
           this.code = data.list[0].code;
         }
         if (this.loading) {
-          this.list = data.list[0].questionsList;
+          this.list = data.list[0].messageList;
         }
         // 第一次加载无需判断
         if (!this.loading && this.$refs.item.length &&
-          data.list[0].questionsList.length !== this.list.length) {
-          this.list = data.list[0].questionsList;
+          data.list[0].messageList.length !== this.list.length) {
+          this.list = data.list[0].messageList;
           setTimeout(() => {
             var elmEnd = this.$refs.item[this.$refs.item.length - 1];
             let rect = elmEnd.getBoundingClientRect();
@@ -123,7 +130,9 @@ export default {
             }
           }, 20); // 20
         }
-        this.readMessage();
+        if(this.code) {
+          this.readMessage();
+        }
       }).catch(() => {});
     },
     // 定时刷新数据
@@ -143,10 +152,18 @@ export default {
         this.$refs.toast.show();
         return;
       }
-      if (!this.code) {
-        this.createTalk().then(() => {
-          this._sendMsg();
-        }).catch(() => {});
+      if (this.code) {
+        this.replyConfig.code = this.code;
+        this.replyConfig.content = this.msg;
+        this.list.push({
+          id: new Date().valueOf(),
+          userId: getUserId(),
+          content: this.msg,
+          createDatetime: new Date()
+        });
+        this.scrollToBottom();
+        this.msg = '';
+        replyMessage(this.replyConfig).then(data => {});
       } else {
         this._sendMsg();
       }
@@ -162,17 +179,14 @@ export default {
         createDatetime: new Date()
       });
       this.scrollToBottom();
-      fetch(640102, {
-        code: this.code,
+      fetch(629780, {
+        type: '1',
         user1: getUserId(),
+        user2: this.user2,
         content: msg
-      }).then(() => {}).catch(() => {});
-    },
-    // 创建会话
-    createTalk() {
-      return fetch(640100, { user1: getUserId(), type: 'cq' }).then((data) => {
+      }).then((data) => {
         this.code = data.code;
-      });
+      }).catch(() => {});
     },
     // 滚动到底部
     scrollToBottom(time = 300) {
@@ -189,9 +203,8 @@ export default {
       return userId === getUserId();
     },
     readMessage() {
-      readMessage(this.sendConfig).then((res) => {
-        // alert(JSON.stringify(res));
-      });
+      this.readConfig.code = this.code;
+      readMessage(this.readConfig).then((res) => {});
     }
   },
   beforeDestroy() {
@@ -216,12 +229,12 @@ export default {
     bottom: 0.98rem;
     width: 100%;
     background-color: #F0F0F0;
-    .scroll {
+    .scroll{
       padding-top: 0.4rem;
     }
     .item-time {
-      padding-bottom: 30px;
-      padding-top: 30px;
+      padding-bottom: 0.3rem;
+      padding-top: 0.5rem;
       text-align: center;
       font-size: 0;
       span {

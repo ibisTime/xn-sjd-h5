@@ -29,8 +29,8 @@
         <no-result v-show="!hasMore && !addressList.length" title="您尚未添加收货地址"></no-result>
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
-      <confirm ref="confirm" :text="comText" @confirm="_deleteAddress"></confirm>
-      <toast ref="toast" text="删除成功"></toast>
+      <confirm ref="confirm" :text="comText" @confirm="_deleteAddress" @cancel="cancelRess"></confirm>
+      <toast ref="toast" :text="text"></toast>
       <router-view></router-view>
     </div>
   </transition>
@@ -50,21 +50,25 @@
   export default {
     data() {
       return {
+        text: '删除成功',
         hasMore: true,
         loadingFlag: false,
         loadingText: '',
         addressList: [],
         deleteIndex: 0,
         storeOrder: '',    // 商品订单进入
-        isokIndex: 0,
-        comText: '确定删除地址吗'
+        isokIndex: -1,
+        setIndex: 0,
+        comText: '确定删除地址吗',
+        toBank: ''    // 回商城地址
       };
     },
     created() {
       this.storeOrder = sessionStorage.getItem('storetype');
       this.currentItem = null;
       this.getAddress();
-      this.isokIndex = Number(sessionStorage.getItem('isokIndex'));
+      this.isokIndex = Number(sessionStorage.getItem('isokIndex') || this.isokIndex);
+      this.toBank = sessionStorage.getItem('toBank');
     },
     updated() {
       this.getAddress();
@@ -148,6 +152,13 @@
         this.comText = '确定删除地址吗';
         this.$refs.confirm.show();
       },
+      cancelRess() {
+        if(this.storeOrder) {
+          this.isokIndex = this.isokIndex || 0;
+          sessionStorage.removeItem('setRess');
+          return;
+        }
+      },
       _deleteAddress() {
         if (this.currentItem) {
           this.loadingText = '删除中...';
@@ -158,18 +169,33 @@
             //   code: this.currentItem.code
             // });
             this.addressList.splice(this.deleteIndex, 1);
+            if(this.deleteIndex === this.isokIndex) {
+              sessionStorage.removeItem('isokIndex');
+              sessionStorage.removeItem('setRess');
+            }else if(this.isokIndex > this.deleteIndex) {
+              this.isokIndex--;
+            }
           }).catch(() => {
             this.loadingFlag = false;
           });
+          return;
         }
-        if(this.storeOrder) {}
+        if(this.storeOrder) {
+          this.isokIndex = this.setIndex;
+          sessionStorage.setItem('isokIndex', this.isokIndex);
+          this.text = '操作成功';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.go(this.toBank);
+          }, 1000);
+          return;
+        }
       },
       setStoreRess(index, item) { // 商城选择地址
         if(this.storeOrder) {
           this.comText = '确认使用该地址吗？';
           this.$refs.confirm.show();
-          this.isokIndex = index;
-          sessionStorage.setItem('isokIndex', index);
+          this.setIndex = index;
           sessionStorage.setItem('setRess', JSON.stringify(item));
         }
       }
@@ -181,6 +207,9 @@
       FullLoading,
       NoResult,
       MHeader
+    },
+    beforeDestroy() {
+      sessionStorage.removeItem('isokIndex');
     }
   };
 </script>

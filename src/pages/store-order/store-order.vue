@@ -21,19 +21,23 @@
                     >
                         <div class="sing-head">
                             <div class="head-dp" @click="go(`/mall-store?shopCode=${orderItem.shopCode}`)">
-                                {{orderItem.shopName}} >
+                                {{orderItem.sellersName}} >
                                 <span class="fr">{{orderStatus[orderItem.status]}}</span>
                                 <span class="fr time">{{formatDate(orderItem.applyDatetime)}}</span>
                             </div>
                         </div>
-                        <div class="sing-con" @click="toOrderDet(orderItem.code)">
+                        <div
+                          class="sing-con"
+                          @click="toOrderDet(orderItem.code)"
+                          v-for="(shopItem, shopIndex) in orderItem.detailList"
+                        >
                             <div class="s-con_left">
-                                <div class="l-img"  :style="getImgSyl(orderItem.listPic ? orderItem.listPic : '')"></div>
+                                <div class="l-img"  :style="getImgSyl(shopItem ? shopItem.listPic : '')"></div>
                             </div>
                             <div class="s-con_right">
-                                <p>{{orderItem.commodityName}} <span class="fr">x{{orderItem.quantity}}</span></p>
-                                <p>规格分类：{{orderItem.specsName}}</p>
-                                <p>合计{{orderItem.quantity}}件商品 <span class="fr sp-b">¥{{formatAmount(orderItem.amount)}}</span></p>
+                                <p>{{shopItem.commodityName}} <span class="fr">x{{shopItem.quantity}}</span></p>
+                                <p>规格分类：{{shopItem.specsName}}</p>
+                                <p>合计{{shopItem.quantity}}件商品 <span class="fr sp-b">¥{{formatAmount(shopItem.amount)}}</span></p>
                             </div>
                         </div>
                         <div class="sing-foo" v-html="operHtmlList[orderIndex]" @click="orderOperClick(orderIndex)">
@@ -86,21 +90,19 @@ export default {
       orderStatus: {},
       operHtmlList: '',
       orderTypeList: [
-        {key: 0, value: '全部'},
-        {key: 1, value: '待付款'},
-        {key: 2, value: '待发货'},
-        {key: 3, value: '待收货'},
-        {key: 4, value: '待评价'},
-        {key: 5, value: '已完成'},
-        {key: 6, value: '已取消'}
+        {key: 0, value: '全部'}
       ]
     };
   },
   created() {
     setTitle('商品订单');
-    getDictList('commodity_order_detail_status').then(data => {
-      data.forEach(item => {
+    getDictList('commodity_cnavigate_status').then(data => {
+      data.forEach((item, index) => {
         this.orderStatus[item.dkey] = item.dvalue;
+        this.orderTypeList.push({
+          key: index + 1,
+          value: item.dvalue
+        });
       });
     });
     this.morePageOrderFn();
@@ -150,8 +152,7 @@ export default {
                       <div class="foo-btn look-wl set-btn">查看物流</div>`;
           break;
         case '3':
-          this.operHtml = `<div class="foo-btn order-pj set-btn">评价</div>
-                      <div class="foo-btn after-sale set-btn">申请售后</div>`;
+          this.operHtml = `<div class="foo-btn order-pj">待完成</div>`;
           break;
         case '4':
           this.operHtml = `<div class="foo-btn order-pj">已完成</div>`;
@@ -166,6 +167,7 @@ export default {
       let target = event.target;
       if(target.classList.contains('change-site')) { // 修改地址
         this.go('/address');
+        sessionStorage.setItem('toBank', '/store-order');
         sessionStorage.setItem('storetype', 'store');
       }
       if(target.classList.contains('remove')) { // 取消订单

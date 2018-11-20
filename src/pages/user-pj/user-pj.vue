@@ -37,7 +37,7 @@
 <script>
 import Qiniu from 'base/qiniu/qiniu';
 import EXIF from 'exif-js';
-import { getImgData, formatImg, getUserId } from 'common/js/util';
+import { getImgData, formatImg, getUserId, setTitle } from 'common/js/util';
 import { addACommemt } from 'api/store';
 import { getQiniuToken } from 'api/general';
 import Toast from 'base/toast/toast';
@@ -56,13 +56,16 @@ export default {
       commentConfig: {   // 评论入参
         userId: getUserId(),
         content: '',
-        commodityCode: ''
+        code: ''
       },
       toCode: ''
     };
   },
+  created() {
+    setTitle('发表评论');
+  },
   mounted() {
-    this.commentConfig.commodityCode = this.$route.query.code;
+    this.commentConfig.code = this.$route.query.code;
     this.toCode = this.$route.query.toCode;
     Promise.all([
       getQiniuToken()

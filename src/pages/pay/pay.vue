@@ -75,7 +75,7 @@
             getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder} from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { getSystemConfigPage } from 'api/general';
-  import { payMoreOrder, getStoreDeductible } from 'api/store';         // 商城
+  import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible } from 'api/store';         // 商城
 
   export default {
     data() {
@@ -105,21 +105,29 @@
           remark: '',
           isJfDeduct: '0'
         },
+        moreConfig: {    // 购物车下单支付参数
+          payGroup: '',
+          payType: '1',
+          tradePwd: '',
+          isJfDeduct: '',
+          remark: ''
+        },
         totalPrice: '',        // 商品订单总额
         type: ''
       };
     },
     mounted() {
       setTitle('支付订单');
-      this.orderCode = this.$route.query.orderCode || this.$route.query.code;
+      this.orderCode = this.$route.query.orderCode;
       this.type = this.$route.query.type;
       this.pre = this.$route.query.pre;
       this.jishou = this.$route.query.jishou;
       this.userId = getCookie('userId');
       this.totalPrice = sessionStorage.getItem('totalPrice');
       this.storeCode = this.$route.query.code;             // 商城订单code
-      this.storeType = this.$route.query.type;
+      this.storeType = this.$route.query.storeType;
       this.config.code = this.storeCode;
+      this.moreConfig.payGroup = this.storeCode;
       if(this.storeCode) {
         this.loading = true;
         getUserDetail({userId: this.userId}).then(data => {
@@ -136,15 +144,15 @@
             }
           });
         });
-        getStoreDeductible(this.storeCode).then(data => {
-          this.rate = data;
-        }, (err) => {
-          if(err === '当前订单不是待支付状态') {
-            setTimeout(() => {
-              this.$router.push('/mall');
-            }, 1200);
-          }
-        });
+        if(this.storeType === 'more') {
+          getMoreDeductible(this.storeCode).then(data => {
+            this.rate = data;
+          }, () => {});
+        }else {
+          getStoreDeductible(this.storeCode).then(data => {
+            this.rate = data;
+          }, () => {});
+        }
         this.getConfig();
         return;
       }
@@ -277,16 +285,20 @@
           this.wechat = true;
           this.alipay = false;
           this.balance = false;
+          this.config.payType = '5';
+          this.moreConfig.payType = '5';
         } else if(index === 2) {
           this.wechat = false;
           this.alipay = true;
           this.balance = false;
           this.config.payType = '3';
+          this.moreConfig.payType = '3';
         } else if(index === 3) {
           this.wechat = false;
           this.alipay = false;
           this.balance = true;
           this.config.payType = '1';
+          this.moreConfig.payType = '1';
         }
       },
       updatePublish(val) {
@@ -294,14 +306,14 @@
       },
       pay() {
         this.payType = this.wechat ? '5' : this.alipay ? '3' : '1';
-        if((this.payType === '1' || this.config.payType === '1') && !this.userDetail.tradepwdFlag) {
+        if((this.payType === '1' || this.config.payType === '1' || this.moreConfig.payType === '1') && !this.userDetail.tradepwdFlag) {
           this.text = '请先去设置支付密码';
           this.$refs.toast.show();
           setTimeout(() => {
             this.$router.push('/set-money');
           }, 1000);
         } else {
-          if(this.payType === '1' || this.config.payType === '1') {
+          if(this.payType === '1' || this.config.payType === '1' || this.moreConfig.payType === '1') {
             this.inputText = '支付密码';
             // this.curItem = item;
             this.$refs.confirmInput.show();
@@ -309,10 +321,17 @@
             if(this.storeCode) {
               if(this.isPublish) {
                 this.config.isJfDeduct = '1';
+                this.moreConfig.isJfDeduct = '1';
               }
-              payMoreOrder(this.config).then(data => {
-                this._alipay(data);
-              });
+              if(this.storeType === 'more') {
+                payMoreOrder(this.moreConfig).then(data => {
+                  this._alipay(data);
+                });
+              }else {
+                payOneOrder(this.config).then(data => {
+                  this._alipay(data);
+                });
+              }
               return;
             }
             if(this.pre) {
@@ -411,6 +430,7 @@
       _alipay(res) {
         this.text = '正在跳转支付宝...';
         this.$refs.toast.show();
+        sessionStorage.removeItem('shopMsgList');
         setTimeout(() => {
           location.href = res.signOrder;
         }, 1000);
@@ -444,21 +464,49 @@
           if(this.storeCode) {
             this.loading = true;
             this.config.tradePwd = this.pwd;
+            this.moreConfig.tradePwd = this.pwd;
             this.loadingText = '正在支付...';
             if(this.isPublish) {
               this.config.isJfDeduct = '1';
+              this.moreConfig.isJfDeduct = '1';
             }
-            payMoreOrder(this.config).then(data => {
-              this.loading = false;
-              this.text = '支付成功';
-              this.$refs.toast.show();
-              sessionStorage.removeItem('totalPrice');
-              setTimeout(() => {
-                this.$router.push(`/store-order`);
-              }, 1500);
-            }, () => {
-              this.loading = false;
-            });
+            if(this.storeType === 'more') {
+              payMoreOrder(this.moreConfig).then(data => {
+                this.loading = false;
+                this.text = '支付成功';
+                this.$refs.toast.show();
+                sessionStorage.removeItem('totalPrice');
+                sessionStorage.removeItem('shopMsgList');
+                setTimeout(() => {
+                  this.$router.push(`/store-order`);
+                }, 1500);
+              }, (err) => {
+                this.loading = false;
+                if(err === '当前订单不是待支付状态') {
+                  setTimeout(() => {
+                    this.$router.push('/mall');
+                  }, 1200);
+                }
+              });
+            }else {
+              payOneOrder(this.config).then(data => {
+                this.loading = false;
+                this.text = '支付成功';
+                this.$refs.toast.show();
+                sessionStorage.removeItem('totalPrice');
+                sessionStorage.removeItem('shopMsgList');
+                setTimeout(() => {
+                  this.$router.push(`/store-order`);
+                }, 1500);
+              }, (err) => {
+                this.loading = false;
+                if(err === '当前订单不是待支付状态') {
+                  setTimeout(() => {
+                    this.$router.push('/mall');
+                  }, 1200);
+                }
+              });
+            }
             return;
           }
           if(this.pre) {

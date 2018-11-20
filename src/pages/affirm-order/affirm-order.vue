@@ -8,17 +8,17 @@
                 </div>
                 <div class="o-h_right" @click="toRess">
                     <p>{{defaultSite.addressee}} <span>{{defaultSite.mobile}}</span></p>
-                    <p class="to-r"><span class="fr"></span></p>
-                    <p>{{ressee ? ressee : '还没有收货地址哦'}}</p>
+                    <p class="to-r">{{ressee ? '' : '还没有收货地址哦'}}<span class="fr" v-show="ressee"></span></p>
+                    <p>{{ressee ? ressee : ''}}</p>
                 </div>
             </div>
             <p class="back-co"></p>
-            <div class="sing-order" v-for="(orderItem, orderIndex) in shopMsgList" :key="orderIndex">
+            <div class="sing-order">
                 <div class="order-con">
                     <div class="con-head">
-                        <p>{{orderItem.shopName}}</p>
+                        <p>{{shopMsgList[0].shopName}}</p>
                     </div>
-                    <div class="o-c_con">
+                    <div class="o-c_con" v-for="(orderItem, orderIndex) in shopMsgList" :key="orderIndex">
                         <div class="c-c_left">
                             <div class="c-c_img" :style="getImgSyl(orderItem.listPic ? orderItem.listPic : orderItem.bannerPic ? orderItem.bannerPic[0] : orderItem.commodityPhoto)"></div>
                         </div>
@@ -188,6 +188,7 @@ export default {
     },
     toRess() {
       this.go('/address');
+      sessionStorage.setItem('toBank', '/affirm-order?code=' + this.code);
       sessionStorage.setItem('storetype', 'store');
     },
     addCart() {
@@ -228,10 +229,9 @@ export default {
         this.loading = false;
         this.textMsg = '下单成功';
         this.$refs.toast.show();
-        sessionStorage.removeItem('shopMsgList');
         sessionStorage.setItem('totalPrice', this.totalPrice);
         setTimeout(() => {
-          this.go('/pay?code=' + data.code + '&type=one');
+          this.go('/pay?code=' + data.code + '&storeType=one');
         }, 1500);
       }, () => {
         this.loading = false;
@@ -244,10 +244,9 @@ export default {
         this.loading = false;
         this.textMsg = '下单成功';
         this.$refs.toast.show();
-        sessionStorage.removeItem('shopMsgList');
         sessionStorage.setItem('totalPrice', this.totalPrice);
         setTimeout(() => {
-          this.go('/pay?code=' + data.code + '&type=more');
+          this.go('/pay?code=' + data.code + '&storeType=more');
         }, 1500);
       }, () => {
         this.loading = false;

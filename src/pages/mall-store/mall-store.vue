@@ -1,6 +1,9 @@
 <template>
   <div class="mall-wrapper" @click.stop>
-    <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
+    <Scroll
+      :data="hotShopList"
+      :hasMore="hasMore"
+      @pullingUp="getHotShop">
       <div class="content" v-show="!isAll">
         <div class="mall-header">
           <div class="head-search">
@@ -20,11 +23,7 @@
         <div class="mall-content">
           <div class="con-head">
             <h5>所有商品<span class="fr" @click="tomore">更多</span></h5>
-            <div class="ml-list" @touchstart.stop>
-              <Scroll
-                :data="hotShopList"
-                :hasMore="hasMore"
-                @pullingUp="getHotShop">
+            <div class="ml-list">
                 <div class="con-list">
                   <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, shopIndex) in hotShopList" :key="shopIndex">
                     <div class="con-sing_img">
@@ -41,7 +40,6 @@
                 <div class="mall-content">
                   <no-result v-show="!hotShopList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
                 </div>
-              </Scroll>
             </div>
           </div>
         </div>
@@ -79,7 +77,7 @@ export default {
         start: 1,
         limit: 4,
         status: '4',
-        orderColumn: 'update_datetime',
+        orderColumn: 'order_no',
         orderDir: 'asc'
       },
       hasMore: true,
@@ -103,7 +101,7 @@ export default {
         orderColumn: 'order_no',
         orderDir: 'asc'
       },
-      shopTypeData: [{key: 0, value: '全部', pic: '', code: ''}],
+      shopTypeData: [],   // {key: '0', value: '全部', code: ''}
       iscart: false
     };
   },
@@ -280,7 +278,6 @@ export default {
           }
         }
         .ml-list{
-          height: 5rem;
           overflow: scroll;
         }
         .con-list{

@@ -11,7 +11,7 @@
                 </span>
             </div>
             <div class="sing-con" v-for="(singItem, singIndex) in shopSingData" :key="singIndex">
-                <div class="con-left" @click.stop="setShopSing(singIndex)">
+                <div class="con-left" @click.stop="setShopSing(singIndex, singItem)">
                     <span class="spl" ref="selShop"></span>
                 </div>
                 <div class="con-right">
@@ -37,6 +37,7 @@
 
 <script>
 import { formatAmount, formatImg } from 'common/js/util';
+import { shopRemoveFn } from 'api/store';
 export default {
   props: {
     storeAllShop: {
@@ -68,7 +69,8 @@ export default {
       shopPriceList: [],
       shopTatil: [],
       setIndexList: [],
-      setCode: ''
+      setCode: '',
+      codeList: []
     };
   },
   created() {
@@ -120,21 +122,23 @@ export default {
       this.allStoreSetFn();
     },
     // 单个选中
-    setShopSing(index) {
+    setShopSing(index, singData) {
       let target = event.target;
       if(target.tagName === 'SPAN') {
-        if(target.classList.contains('sel-sp')) {
+        if(target.classList.contains('sel-sp')) {  // 取消选中
           target.classList.remove('sel-sp');
           this.isShopAll = false;
           this.isAll = 2;
+          this.codeList.splice(index, 1);
           this.setIndexList.splice(this.setIndexList.indexOf(index, 1));
           this.shopLen --;
           this.shopTatil -= this.shopSingData[index].amount;
           this.storeAllShop[this.shopIndex].cartList[index].isSet = false;
-        }else {
+        }else { // 选中
           target.classList.add('sel-sp');
           this.setIndexList.push(index);
           this.shopLen ++;
+          this.codeList.push(singData.commodityCode);
           this.shopTatil += this.shopSingData[index].amount;
           this.storeAllShop[this.shopIndex].cartList[index].isSet = true;
           this.storeAllShop[this.shopIndex].cartList[index].shopName = this.storeSingData.shopName;
@@ -144,6 +148,7 @@ export default {
         }
         this.$emit('shopTatilFn', this.storeAllShop, this.isAll);
         this.allStoreSetFn();
+        console.log(this.codeList);
       }
     },
     // 全选
@@ -185,6 +190,7 @@ export default {
       }
     },
     removeShop() {
+      shopRemoveFn(this.codeList).then(data => {});
       this.selShop = this.$refs.selShop;
       this.shopLen = this.selShop.length;
       this.$emit('removeShop', this.shopIndex, this.storeSingData.shopCode, this.setCode);
