@@ -80,14 +80,18 @@
       <div class="packaging">
         <p class="packaging-title">预售规格</p>
         <div class="select">
-          <div class="select-item" v-for="(item, index) in detail.presellSpecsList" @click="chooseSpecs(index)" :key="index">
-            <span class="item-name">{{item.name}}({{detail.packWeight}}{{outputUnitObj[detail.outputUnit]}}/{{packUnitObj[detail.packUnit]}})</span>
-            <div class="item-price-isSelect">
-              <span>¥{{formatAmount(item.price)}}</span>
-              <img src="./choosed@2x.png" v-show="choosedIndex === index">
-              <img src="./unchoosed@2x.png" v-show="choosedIndex !== index">
+          <Scroll
+            :pullUpLoad="pullUpLoad"
+          >
+            <div class="select-item" v-for="(item, index) in detail.presellSpecsList" @click="chooseSpecs(index)" :key="index">
+              <span class="item-name">{{item.name}}({{detail.packWeight}}{{outputUnitObj[detail.outputUnit]}}/{{packUnitObj[detail.packUnit]}})</span>
+              <div class="item-price-isSelect">
+                <span>¥{{formatAmount(item.price)}}</span>
+                <img src="./choosed@2x.png" v-show="choosedIndex === index">
+                <img src="./unchoosed@2x.png" v-show="choosedIndex !== index">
+              </div>
             </div>
-          </div>
+          </Scroll>
         </div>
       </div>
       <div class="number">
@@ -215,11 +219,6 @@ export default {
         let proCode = this.detail.code;
         let specsCode = this.detail.presellSpecsList[this.choosedIndex].code;
         let quantity = this.number;
-        // if(quantity * this.detail.presellSpecsList[this.choosedIndex].packCount > this.detail.totalOutput - this.detail.nowCount) {
-        //   this.text = '库存不足，无法下单';
-        //   this.$refs.toast.show();
-        //   return;
-        // }
         if(quantity * this.detail.packWeight * this.detail.presellSpecsList[this.choosedIndex].packCount > this.detail.totalOutput - this.detail.nowCount) {
           this.text = '库存不足，无法下单';
           this.$refs.toast.show();
@@ -600,6 +599,7 @@ export default {
       border-bottom: 1px solid #eee;
       margin: 0.3rem;
       overflow: scroll;
+      position: relative;
       .packaging-title {
         font-size: $font-size-medium-x;
         line-height: 0.42rem;
@@ -612,6 +612,12 @@ export default {
         color: #333;
       }
       .select {
+        position: absolute;
+        top: 0.42rem;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: auto;
         /*padding: 0 0.1rem;*/
         .select-item {
           display: flex;
