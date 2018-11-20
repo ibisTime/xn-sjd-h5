@@ -70,18 +70,22 @@
         <div class="title-right">
           <p>{{detail.scientificName}}</p>
           <i @click="genghuan">X</i>
-          <p class="position"><img src="./position@2x.png">{{detail.province}}{{detail.city}}{{detail.area}}</p>
+          <p class="position"><img src="./position@2x.png">{{detail.originPlace}}</p>
         </div>
       </div>
       <div class="packaging">
         <p class="packaging-title">认养规格</p>
         <div class="select">
-          <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">
-            <span v-show="detail.sellType !== '3'">{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>
-            <span v-show="detail.sellType === '3'">{{item.name}}：价格：¥{{formatAmount(item.price)}}</span>
-            <img src="./choosed@2x.png" v-show="choosedIndex === index">
-            <img src="./unchoosed@2x.png" v-show="choosedIndex !== index">
-          </div>
+          <Scroll
+            :pullUpLoad="pullUpLoad"
+          >
+            <div class="select-item" v-for="(item, index) in detail.productSpecsList" @click="chooseSpecs(index)" :key="index">
+              <span v-show="detail.sellType !== '3'">{{item.name}}：{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}至{{formatDate(item.endDatetime, 'yyyy-MM-dd')}}</span>
+              <span v-show="detail.sellType === '3'">{{item.name}}：价格：¥{{formatAmount(item.price)}}</span>
+              <img src="./choosed@2x.png" v-show="choosedIndex === index">
+              <img src="./unchoosed@2x.png" v-show="choosedIndex !== index">
+            </div>
+          </Scroll>
         </div>
       </div>
       <div class="number">
@@ -145,7 +149,9 @@ export default {
       banners: [],
       loop: false,
       userDetail: {},
-      noAdoptReason: ''
+      noAdoptReason: '',
+      freeScroll: true,
+      click: false
     };
   },
   methods: {
@@ -570,7 +576,7 @@ export default {
     bottom: 0;
     background-color: #fff;
     display: none;
-    z-index: 9;
+    /*z-index: 9;*/
     &.show {
       display: block;
     }
@@ -610,7 +616,6 @@ export default {
         i {
           width: 0.34rem;
           line-height: 0.34rem;
-          line-height: 0.34rem;
           font-size: $font-size-medium;
           text-align: center;
           color: #333;
@@ -637,6 +642,7 @@ export default {
       border-bottom: 1px solid #eee;
       margin: 0.3rem;
       overflow: scroll;
+      position: relative;
       .packaging-title {
         font-size: $font-size-medium-x;
         line-height: 0.42rem;
@@ -649,6 +655,13 @@ export default {
         color: #333;
       }
       .select {
+        position: absolute;
+        top: 0.42rem;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: auto;
+        /*height: 2rem;*/
         .select-item {
           display: flex;
           align-items: center;
