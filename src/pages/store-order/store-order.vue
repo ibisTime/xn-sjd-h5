@@ -166,7 +166,7 @@ export default {
     orderOperClick(index) { // 订单操作
       let target = event.target;
       if(target.classList.contains('change-site')) { // 修改地址
-        this.go('/address');
+        this.go('/address?shopCode=' + this.orderList[index].code);
         sessionStorage.setItem('toBank', '/store-order');
         sessionStorage.setItem('storetype', 'store');
       }

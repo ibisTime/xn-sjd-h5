@@ -46,6 +46,7 @@
   // import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
   import {deleteAddress, getAddressList, setDefaultAddress} from 'api/user';
   // import {mapGetters, mapMutations, mapActions} from 'vuex';
+  import { changeOrderRess } from 'api/store';
 
   export default {
     data() {
@@ -60,11 +61,14 @@
         isokIndex: -1,
         setIndex: 0,
         comText: '确定删除地址吗',
-        toBank: ''    // 回商城地址
+        toBank: '',    // 回商城地址
+        setRessCode: '',
+        shopCode: ''
       };
     },
     created() {
       this.storeOrder = sessionStorage.getItem('storetype');
+      this.shopCode = this.$route.query.shopCode;
       this.currentItem = null;
       this.getAddress();
       this.isokIndex = Number(sessionStorage.getItem('isokIndex') || this.isokIndex);
@@ -183,11 +187,24 @@
         if(this.storeOrder) {
           this.isokIndex = this.setIndex;
           sessionStorage.setItem('isokIndex', this.isokIndex);
-          this.text = '操作成功';
-          this.$refs.toast.show();
-          setTimeout(() => {
-            this.go(this.toBank);
-          }, 1000);
+          if(this.shopCode) {
+            changeOrderRess({
+              code: this.shopCode,
+              addressCode: this.setRessCode
+            }).then(data => {
+              this.text = '操作成功';
+              this.$refs.toast.show();
+              setTimeout(() => {
+                this.go(this.toBank);
+              }, 1000);
+            });
+          }else {
+            this.text = '操作成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.go(this.toBank);
+            }, 1000);
+          }
           return;
         }
       },
@@ -196,6 +213,7 @@
           this.comText = '确认使用该地址吗？';
           this.$refs.confirm.show();
           this.setIndex = index;
+          this.setRessCode = item.code;
           sessionStorage.setItem('setRess', JSON.stringify(item));
         }
       }

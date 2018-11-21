@@ -99,6 +99,11 @@ export function shopCartOrder(config) {
   return fetch(629713, config);
 }
 
+// 修改地址
+export function changeOrderRess(config) {
+  return fetch(629800, config);
+}
+
 // 确认收货
 export function affirmOrder(config) {
   return fetch(629724, config);

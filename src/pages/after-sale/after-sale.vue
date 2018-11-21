@@ -140,6 +140,11 @@ export default {
     afterSale() {
       switch(this.setIndex) {
         case '0': // 退款
+          if(this.refundAmount === '') {
+            this.textMsg = '请填写完整';
+            this.$refs.toast.show();
+            return;
+          }
           this.loading = true;
           this.refundConfig.refundAmount = parseFloat(this.refundAmount) * 1000;
           this.refundConfig.orderDetailCode = this.orderDetailCode;
@@ -148,13 +153,18 @@ export default {
             this.textMsg = '申请成功';
             this.$refs.toast.show();
             setTimeout(() => {
-              this.go('/mall');
+              this.go('/store-order_detail?code=' + this.toCode);
             }, 1500);
           }, () => {
             this.loading = false;
           });
           break;
         case '1': // 退货
+          if(this.refundAmount === '' || this.salesConfig.logisticsCompany === '' || this.salesConfig.logisticsNumber === '') {
+            this.textMsg = '请填写完整';
+            this.$refs.toast.show();
+            return;
+          }
           this.loading = true;
           this.salesConfig.refundAmount = parseFloat(this.refundAmount) * 1000;
           this.salesConfig.orderDetailCode = this.orderDetailCode;
@@ -272,7 +282,7 @@ export default {
         }
     }
     .sale-foo{
-      padding: 0 0.3rem;
+      margin: 0 0.3rem;
       margin-top: 0.6rem;
       height: 0.9rem;
       line-height: 0.9rem;
