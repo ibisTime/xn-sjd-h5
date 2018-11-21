@@ -100,7 +100,7 @@ export default {
   created() {
     setTitle('订单详情');
     this.pullUpLoad = null;
-    this.setRess = JSON.parse(sessionStorage.getItem('setRess'));
+    // this.setRess = JSON.parse(sessionStorage.getItem('setRess'));
     this.code = this.$route.query.code;
     this.orderType = this.$route.query.type;
     getDictList('commodity_order_detail_status').then(data => {
@@ -147,7 +147,7 @@ export default {
     },
     toRess() {
       if(this.isRess) {
-        this.go('/address');
+        this.go('/address?shopCode=' + this.orderDetail.code);
         sessionStorage.setItem('toBank', '/store-order_detail?code=' + this.code);
         sessionStorage.setItem('storetype', 'store');
       }
@@ -236,7 +236,7 @@ export default {
         this.loading = false;
         this.storeList = data.detailList;   // moreStoreOrder
         if(this.isRess) {
-          this.addressMsg = this.setRess || data.address;
+          this.addressMsg = data.address;
         }else {
           this.addressMsg = data.address;
         }
