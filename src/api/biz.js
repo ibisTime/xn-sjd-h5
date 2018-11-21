@@ -698,3 +698,10 @@ export function confirmShouhuo(data) {
     ...data
   });
 }
+
+// 预售订单积分抵扣金额
+export function preOrderScore(data) {
+  return fetch(629429, {
+    ...data
+  });
+}

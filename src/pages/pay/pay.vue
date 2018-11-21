@@ -37,7 +37,7 @@
           </div>
         </div>
         <div class="gray"></div>
-        <div class="score" v-show="!pre && !jishou">
+        <div class="score" v-show="!jishou">
           <p>积分抵扣</p>
           <div class="info-item">使用{{formatAmount(rate.jfAmount)}}积分抵扣{{formatAmount(rate.cnyAmount)}}元（剩余{{formatAmount(jf)}}积分）
             <div class="label">
@@ -72,7 +72,7 @@
   import { getCookie } from 'common/js/cookie';
   import { formatAmount, setTitle, getUserId } from 'common/js/util';
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore,
-            getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder} from 'api/biz';
+            getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder, preOrderScore} from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { getSystemConfigPage } from 'api/general';
   import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible } from 'api/store';         // 商城
@@ -238,8 +238,9 @@
             userId: this.userId
           }),
           getUserDetail({userId: this.userId}),
+          preOrderScore({ code: this.orderCode }),
           this.getConfig()
-        ]).then(([res1, res2, res3]) => {
+        ]).then(([res1, res2, res3, res4]) => {
           this.identifyCode = res1.identifyCode;
           this.amount = res1.amount;
           res2.list.map((item) => {
@@ -251,6 +252,7 @@
             }
           });
           this.userDetail = res3;
+          this.rate = res4;
           this.loading = false;
         }).catch(() => { this.loading = false; });
       },
@@ -391,9 +393,11 @@
       // 支付预售订单
       payPreOrder() {
         this.loading = true;
+        let isJfDeduct = this.isPublish ? 1 : 0;
         payPreOrder({
           code: this.orderCode,
           payType: this.payType,
+          isJfDeduct: isJfDeduct,
           tradePwd: this.pwd || ''
         }).then((res) => {
           this.loading = false;

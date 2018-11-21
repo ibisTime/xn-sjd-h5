@@ -289,7 +289,6 @@ export default {
     this.code = this.$route.query.code;
     this.loading = true;
     setTitle('预售详情');
-    // console.log(2);
     if(this.userId) {
       Promise.all([
         getBookingProDetail({

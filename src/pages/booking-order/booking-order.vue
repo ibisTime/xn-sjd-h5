@@ -28,7 +28,7 @@
                   <span>预售规格：{{item.specsName}}</span>
                   <span>¥{{formatAmount(item.price)}}</span>
                 </p>
-                <div class="props"><span class="duration">合计{{item.quantity}}件商品</span><span class="price">¥{{formatAmount(item.amount)}}</span></div>
+                <div class="props"><span class="duration">合计{{item.quantity}}件商品</span><span class="price" v-show="!item.jfDeductAmount">¥{{formatAmount(item.amount)}}</span><span class="price" v-show="item.jfDeductAmount">¥{{formatAmount(item.payAmount)}}+{{formatAmount(item.jfDeductAmount)}}积分</span></div>
               </div>
             </div>
             <div class="clearfix btns" v-show="showBtns(item.status)">
