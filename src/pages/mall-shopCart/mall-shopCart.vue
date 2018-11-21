@@ -14,7 +14,8 @@
               @removeShop="removeShop"
               @shopTatilFn="shopTatilFn"
               @allStoreSetFn="allStoreSetFn"
-          />
+          >
+          </ShopSingMsg>
         </div>
         <div class="mall-content">
           <no-result v-show="!shopAllData.length && !hasMore" class="no-result-wrapper" title="暂无商品"></no-result>
@@ -41,7 +42,7 @@ import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import ShopSingMsg from './shopSingMsg';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { myShopCart, storeRemoveFn } from 'api/store';
+import { myShopCart, shopRemoveFn, storeRemoveFn } from 'api/store';
 export default {
   data() {
     return {
@@ -53,20 +54,14 @@ export default {
       shopAllData: [],
       isShopAll: '',
       tatil: 0,
-      isSetAll: null
+      isSetAll: null,
+      codeList: []
     };
   },
   created() {
     setTitle('购物车');
     this.pullUpLoad = null;
-    Promise.all([
-      myShopCart(getUserId())
-    ]).then(([res1]) => {
-      this.loading = false;
-      this.shopAllData = res1;
-    }).catch(() => {
-      this.loading = false;
-    });
+    this.getCartData();
   },
   methods: {
     formatAmount(amount) {
@@ -86,21 +81,49 @@ export default {
         backgroundImage: `url(${imgs})`
       };
     },
-    removeShop(shopIndex, shopCode) {    // 删除店铺操作
-      this.$nextTick(() => {
-        this.shopAllData.splice(shopIndex, 1);
-      });
-      this.loading = true;
-      storeRemoveFn(shopCode).then(data => {
-        this.textMsg = '删除成功';
-        this.$refs.toast.show();
+    getCartData() {
+      myShopCart(getUserId()).then(data => {
         this.loading = false;
-      }, () => {
-        this.loading = false;
+        this.tatil = 0;
+        let shopAll = this.$refs.allShop;
+        shopAll.classList.remove('sel-sp');
+        this.isShopAll = '';
+        this.shopAllData = data;
       });
     },
-    shopTatilFn(storeAllShop, isAll) { // 计算总额
+    removeShop(shopIndex, shopCode, shopName) {    // 删除店铺操作
+      let setCodeList = new Set();
+      this.codeList.forEach((item, index) => {
+        if(item.shopName === shopName) {
+          setCodeList.add(item.shopCode);
+        }
+      });
+      setCodeList = [...setCodeList];
+      if(setCodeList.length > 0) {
+        this.loading = true;
+        shopRemoveFn(setCodeList).then(data => {
+          this.textMsg = '删除成功';
+          this.$refs.toast.show();
+          this.getCartData();
+        });
+        return;
+      }
+      if(shopCode) {
+        storeRemoveFn(shopCode).then(data => {
+          this.textMsg = '删除成功';
+          this.$refs.toast.show();
+          this.getCartData();
+        }, () => {
+          this.loading = false;
+        });
+        return;
+      }
+    },
+    shopTatilFn(storeAllShop, isAll, codeList) { // 计算总额
       this.tatil = 0;
+      if(codeList) {
+        this.codeList = [...this.codeList, ...codeList];
+      }
       storeAllShop.forEach(allItem => {
         allItem.cartList.forEach(item => {
           if(item.isSet) {

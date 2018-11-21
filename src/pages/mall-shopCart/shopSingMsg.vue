@@ -1,43 +1,43 @@
 <template>
     <div>
-        <div class="shop-sing">
-            <div class="sing-head">
-                <span class="spl" :class="{'sel-sp': isShopAll}" @click="setShopAll()"></span>
-                <span class="sp-name" @click="toStoreFn">
-                    {{this.storeSingData.shopName}}<b> ＞</b>
-                </span>
-                <span class="clr fr">
-                    <p @click.stop="removeShop">删除</p>
-                </span>
-            </div>
-            <div class="sing-con" v-for="(singItem, singIndex) in shopSingData" :key="singIndex">
-                <div class="con-left" @click.stop="setShopSing(singIndex, singItem)">
-                    <span class="spl" ref="selShop"></span>
-                </div>
-                <div class="con-right">
-                    <div class="r-left" :style="getImgSyl(singItem.commodityPhoto ? singItem.commodityPhoto : '')">
-                        <div class="l-img"></div>
-                    </div>
-                    <div class="r-con">
-                        <div class="rr-head">{{singItem.commodityName}} <span class="fr num">x{{singItem.quantity}}</span></div>
-                        <div class="rr-con">规格分类：{{singItem.specsName}}</div>
-                        <div class="rr-price">¥{{formatAmount(shopPriceList[singIndex])}}
-                            <p class="fr bot">
-                                <span class="jian" @click.stop="minusFn(singIndex)"></span>
-                                <span>{{singItem.quantity}}</span>
-                                <span class="jia" @click.stop="addFn(singIndex)"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div class="shop-sing">
+        <div class="sing-head">
+              <span class="spl" :class="{'sel-sp': isShopAll}" @click="setShopAll()"></span>
+              <span class="sp-name" @click="toStoreFn">
+                  {{this.storeSingData.shopName}}<b> ＞</b>
+              </span>
+              <span class="clr fr">
+                  <p @click.stop="removeShop">删除</p>
+              </span>
+          </div>
+        <div class="sing-con" v-for="(singItem, singIndex) in shopSingData" :key="singIndex">
+              <div class="con-left" @click.stop="setShopSing(singIndex, singItem)">
+                  <span class="spl" ref="selShop"></span>
+              </div>
+              <div class="con-right">
+                  <div class="r-left" :style="getImgSyl(singItem.commodityPhoto ? singItem.commodityPhoto : '')">
+                      <div class="l-img"></div>
+                  </div>
+                  <div class="r-con">
+                      <div class="rr-head">{{singItem.commodityName}} <span class="fr num">x{{singItem.quantity}}</span></div>
+                      <div class="rr-con">规格分类：{{singItem.specsName}}</div>
+                      <div class="rr-price">¥{{formatAmount(shopPriceList[singIndex])}}
+                          <p class="fr bot">
+                              <span class="jian" @click.stop="minusFn(singIndex)"></span>
+                              <span>{{singItem.quantity}}</span>
+                              <span class="jia" @click.stop="addFn(singIndex)"></span>
+                          </p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <p class="back-co"></p>
     </div>
 </template>
 
 <script>
 import { formatAmount, formatImg } from 'common/js/util';
-import { shopRemoveFn } from 'api/store';
 export default {
   props: {
     storeAllShop: {
@@ -69,7 +69,6 @@ export default {
       shopPriceList: [],
       shopTatil: [],
       setIndexList: [],
-      setCode: '',
       codeList: []
     };
   },
@@ -138,17 +137,20 @@ export default {
           target.classList.add('sel-sp');
           this.setIndexList.push(index);
           this.shopLen ++;
-          this.codeList.push(singData.commodityCode);
           this.shopTatil += this.shopSingData[index].amount;
           this.storeAllShop[this.shopIndex].cartList[index].isSet = true;
           this.storeAllShop[this.shopIndex].cartList[index].shopName = this.storeSingData.shopName;
+          let shopMsg = JSON.parse(JSON.stringify({
+            shopName: singData.shopName,
+            shopCode: singData.code
+          }));
+          this.codeList.push(shopMsg);
         }
         if(this.shopLen === this.selShop.length) {
           this.isShopAll = true;
         }
-        this.$emit('shopTatilFn', this.storeAllShop, this.isAll);
+        this.$emit('shopTatilFn', this.storeAllShop, this.isAll, this.codeList);
         this.allStoreSetFn();
-        console.log(this.codeList);
       }
     },
     // 全选
@@ -189,11 +191,14 @@ export default {
         this.$emit('shopTatilFn', this.storeAllShop);
       }
     },
-    removeShop() {
-      shopRemoveFn(this.codeList).then(data => {});
+    removeShop() { // 选中删除
       this.selShop = this.$refs.selShop;
       this.shopLen = this.selShop.length;
-      this.$emit('removeShop', this.shopIndex, this.storeSingData.shopCode, this.setCode);
+      let storeCode = '';
+      if(this.isShopAll) {
+        storeCode = this.storeSingData.shopCode;
+      }
+      this.$emit('removeShop', this.shopIndex, storeCode, this.storeSingData.shopName);
     },
     toStoreFn() {
       this.go(`/mall-store?shopCode=${this.storeSingData.shopCode}`);
@@ -221,8 +226,23 @@ export default {
       }
     },
     storeSingData(newVal, oldVal) {
+      this.selShop.forEach((item, index) => {
+        item.classList.remove('sel-sp');
+        this.shopLen = 0;
+        this.setIndexList = [];
+      });
       this.storeSingData = newVal;
       this.shopSingData = newVal.cartList;
+      this.isShopAll = false;
+      this.isShopSing = false;
+      this.isAll = 0;
+      this.shopSingNum = -1;
+      this.selShop = this.$refs.selShop;
+      this.codeList = [];
+      this.shopTatil = [];
+      this.shopSingData.forEach((item, index) => {
+        this.shopPriceList[index] = item.amount / item.quantity;
+      });
     }
   }
 };
@@ -238,12 +258,16 @@ export default {
 .fr {
     float: right;
 }
+.back-co{
+  height: 0.2rem;
+  background-color: #f5f5f5;
+}
 .shop-sing{
     padding: 0 0.3rem 0.3rem;
     background-color: #fff;
     .sing-head{
         height: 0.8rem;
-        line-height: 0.7rem;
+        line-height: 0.9rem;
         font-size: 0.26rem;
         >span{
             display: inline-block;

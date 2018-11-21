@@ -75,7 +75,7 @@ export function removeMoreOrder(config) {
 
 // 根据店铺删购物车
 export function storeRemoveFn(shopCode) {
-  return fetch(629714, {
+  return fetch(629712, {
     shopCode
   });
 }

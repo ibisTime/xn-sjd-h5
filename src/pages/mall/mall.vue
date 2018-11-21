@@ -195,7 +195,9 @@ export default {
     },
     addCart(code, name, specsId, specsName) {
       if(!getUserId()) {
-        this.go('login');
+        this.textMsg = '请先登录';
+        this.$refs.toast.show();
+        return;
       }
       this.loading = true;
       this.addCartConfig.commodityCode = code;
@@ -222,9 +224,7 @@ export default {
     toCartFn() {
       if(!getUserId()) {
         this.textMsg = '请先登录';
-        setTimeout(() => {
-          this.go('/login');
-        }, 1500);
+        this.$refs.toast.show();
         return;
       }
       this.go('/mall-shopCart');

@@ -38,71 +38,6 @@
         <input type="text" ref="sendIup" v-model="sendComConfig.content">
         <span @click="sendComment">发送</span>
       </p>
-    <!--<div class="shop-foo">-->
-        <!--<div class="foo-left">-->
-            <!--<div class="le-dp" @click="go('mall-store');">-->
-                <!--<div class="dp-img"></div>-->
-                <!--<p>店铺</p>-->
-            <!--</div>-->
-            <!--<div class="le-kf">-->
-                <!--<div class="kf-img"></div>-->
-                <!--<p>客服</p>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="foo-right">-->
-            <!--<button class="add-cart" @click="setAddCart">加入购物车</button>-->
-            <!--<button class="buy" @click="toBuy">立即购买</button>-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</div>-->
-    <!--<div class="toast" v-show="istoast" @click="istoast = false">-->
-        <!--<div class="shop-toast" @click.stop>-->
-        <!--<div class="tos-head">-->
-            <!--<div class="head-left">-->
-            <!--<div class="l-img" :style="getImgSyl(shopDetData.bannerPic ? shopDetData.bannerPic : '')"></div>-->
-            <!--</div>-->
-            <!--<div class="head-right">-->
-            <!--<p class="r-head">¥{{setPrice}} <span class="fr iconX" @click="istoast = false"></span></p>-->
-            <!--<p>库存{{inventory}}件</p>-->
-            <!--<p v-if="specsList.length > 1">{{setSpecsName ? `已选 “${setSpecsName}”` : '选择颜色分类'}}</p>-->
-            <!--<p v-if="specsList.length == 1">已选 “{{specsList[0].name}}”</p>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="tos-con">-->
-            <!--<div class="con-head">-->
-            <!--<h5>规格分类</h5>-->
-            <!--</div>-->
-            <!--<div class="con-list">-->
-            <!--<div class="sing"-->
-                <!--v-for="(item, index) in specsList"-->
-                <!--:key="index"-->
-                <!--@click="specsFn(index, item)"-->
-                <!--:class="{'set-index': setIndex == index}"-->
-            <!--&gt;-->
-                <!--<p>{{item.name}}</p>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--<div class="con-foo">-->
-            <!--<div class="f-left">-->
-                <!--数量-->
-                <!--<p class="fr l-num">-->
-                <!--<span class="jian" @click="minusShop"></span>&nbsp;&nbsp; <b>{{shopNum}}</b> &nbsp;&nbsp;<span class="jia" @click="addShop"></span>-->
-                <!--</p>-->
-            <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="tos-btn" v-show="isgm" @click="qrorderFn">-->
-            <!--确定-->
-        <!--</div>-->
-        <!--<div class="tos-btns" v-show="!isgm">-->
-            <!--<div class="gwc" @click="toShopCart">-->
-            <!--加入购物车-->
-            <!--</div>-->
-            <!--<div class="ljgm" @click="toShopOrder">-->
-            <!--立即购买-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
@@ -242,54 +177,6 @@ export default {
         this.loading = false;
       });
     },
-    // setAddCart() { // 外加入购物车
-    //   this.isLogin();
-    //   if(this.specsList.length > 1) {
-    //     this.istoast = true;
-    //     this.isgm = true;
-    //     this.isCartType = '0';
-    //   }else {
-    //     this.addShopCart();
-    //   }
-    // },
-    // toBuy() { // 外立即购买
-    //   this.isLogin();
-    //   if(this.specsList.length > 1) {
-    //     this.istoast = true;
-    //     this.isgm = true;
-    //     this.isCartType = '1';
-    //     return;
-    //   }
-    //   this.loading = true;
-    //   let shopMsg = {
-    //     ...this.addCartConfig,
-    //     shopName: this.shopName,
-    //     bannerPic: this.bannerPic,
-    //     logistics: this.shopDetData.logistics,
-    //     setPrice: parseFloat(this.setPrice) * 1000
-    //   };
-    //   let shopMsgList = [shopMsg];
-    //   sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-    //   this.go('/affirm-order?code=' + this.code);
-    // },
-    // toShopCart() { // 内加入购物车
-    //   this.isLogin();
-    //   this.addShopCart();
-    // },
-    // toShopOrder() { // 内立即购买
-    //   this.isLogin();
-    //   this.loading = true;
-    //   let shopMsg = {
-    //     ...this.addCartConfig,
-    //     shopName: this.shopName,
-    //     bannerPic: this.bannerPic,
-    //     logistics: this.shopDetData.logistics,
-    //     setPrice: parseFloat(this.setPrice) * 1000
-    //   };
-    //   let shopMsgList = [shopMsg];
-    //   sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-    //   this.go('/affirm-order?code=' + this.code);
-    // },
     isLogin() {
       if(!getUserId()) {
         this.textMsg = '请先登录';

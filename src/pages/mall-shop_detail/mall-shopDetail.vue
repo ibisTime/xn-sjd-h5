@@ -24,16 +24,16 @@
           <div class="shop-gg">
             <p @click.stop="setSpecification">规格：选择规格分类</p>
           </div>
-          <div class="shop-pj" v-if="commentData.length > 0">
+          <div class="shop-pj" v-if="commentData">
             <div class="pj-head">
               <p>评价 <span class="fr pj-all" @click="toComment">查看全部 ></span></p>
             </div>
             <div class="pj-content">
               <div class="con-head">
-                <div class="u-img" :style="getImgSyl(commentData[0] ? commentData[0].photo : '', 'u')"></div>
-                <div class="u-name">{{commentData[0] ? commentData[0].nickname : ''}} <span class="fr time">{{commentDatetime? formatDate(commentDatetime) : ''}}</span></div>
+                <div class="u-img" :style="getImgSyl(commentData ? commentData.photo : '', 'u')"></div>
+                <div class="u-name">{{commentData ? commentData.nickname : ''}} <span class="fr time">{{commentDatetime? formatDate(commentDatetime) : ''}}</span></div>
               </div>
-              <div class="pj-con" v-html="commentData[0] ? commentData[0].content : ''">
+              <div class="pj-con" v-html="commentData ? commentData.content : ''">
 
               </div>
             </div>
@@ -119,6 +119,7 @@
 <script>
 import { formatAmount, setTitle, formatImg, formatDate, getUserId } from 'common/js/util';
 import { getDictList } from 'api/general';
+import { getUser } from 'api/user';
 import { getShopDetail, getCommemtData, addShopCart } from 'api/store';
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
@@ -192,11 +193,14 @@ export default {
       this.inventory = this.specsList[0].inventory;
       this.setSpecsName = this.specsList[0].name;
       this.detailDescription = res2.description;
-      this.commentData = res3.list;
       this.addCartConfig.commodityName = res2.name;
       this.addCartConfig.specsId = this.specsList[0].id;
       this.addCartConfig.specsName = this.specsList[0].name;
       if(res3.list[0]) {
+        getUser(res3.list[0].userId).then(res => {
+          this.commentData = res3.list[0];
+          this.commentData.photo = res.photo;
+        });
         this.commentDatetime = res3.list[0].commentDatetime;
       }
     }).catch(() => { this.loading = false; });

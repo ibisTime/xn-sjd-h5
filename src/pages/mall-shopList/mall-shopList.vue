@@ -171,21 +171,26 @@ export default {
       });
     },
     addCart(code, name, specsId, specsName) {
-      this.loading = true;
-      this.addCartConfig.commodityCode = code;
-      this.addCartConfig.commodityName = name;
-      this.addCartConfig.specsId = specsId;
-      this.addCartConfig.specsName = specsName;
-      addShopCart(this.addCartConfig).then(data => {
-        this.loading = false;
-        this.textMsg = '加入购物车成功';
+      if(getUserId()) {
+        this.loading = true;
+        this.addCartConfig.commodityCode = code;
+        this.addCartConfig.commodityName = name;
+        this.addCartConfig.specsId = specsId;
+        this.addCartConfig.specsName = specsName;
+        addShopCart(this.addCartConfig).then(data => {
+          this.loading = false;
+          this.textMsg = '加入购物车成功';
+          this.$refs.toast.show();
+          // setTimeout(() => {
+          //   this.go('/mall-shopCart');
+          // }, 1500);
+        }, () => {
+          this.loading = false;
+        });
+      }else {
+        this.textMsg = '请先登录';
         this.$refs.toast.show();
-        // setTimeout(() => {
-        //   this.go('/mall-shopCart');
-        // }, 1500);
-      }, () => {
-        this.loading = false;
-      });
+      }
     }
   },
   components: {

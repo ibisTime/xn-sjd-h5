@@ -46,7 +46,7 @@
       </div>
     </Scroll>
     <!--<MallShopList v-show="isAll" />-->
-    <div class="go-cart" @click.stop="go('/mall-shopCart')">
+    <div class="go-cart" @click.stop="goCart">
       <p v-if="iscart"></p>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
@@ -124,11 +124,13 @@ export default {
       this.name = data.name;
       setTitle(this.name);
     });
-    myShopCart(getUserId()).then(data => {
-      if(data.length > 0) {
-        this.iscart = true;
-      }
-    });
+    if(getUserId()) {
+      myShopCart(getUserId()).then(data => {
+        if(data.length > 0) {
+          this.iscart = true;
+        }
+      });
+    }
     this.getHotShop();
   },
   mounted() {
@@ -159,21 +161,26 @@ export default {
       this.getHotShop();
     },
     addCart(code, name, specsId, specsName) {
-      this.loading = true;
-      this.addCartConfig.commodityCode = code;
-      this.addCartConfig.commodityName = name;
-      this.addCartConfig.specsId = specsId;
-      this.addCartConfig.specsName = specsName;
-      addShopCart(this.addCartConfig).then(data => {
-        this.loading = false;
-        this.textMsg = '加入购物车成功';
+      if(getUserId()) {
+        this.loading = true;
+        this.addCartConfig.commodityCode = code;
+        this.addCartConfig.commodityName = name;
+        this.addCartConfig.specsId = specsId;
+        this.addCartConfig.specsName = specsName;
+        addShopCart(this.addCartConfig).then(data => {
+          this.loading = false;
+          this.textMsg = '加入购物车成功';
+          this.$refs.toast.show();
+          // setTimeout(() => {
+          //   this.go('/mall-shopCart');
+          // }, 1500);
+        }, () => {
+          this.loading = false;
+        });
+      }else {
+        this.textMsg = '请先登录';
         this.$refs.toast.show();
-        // setTimeout(() => {
-        //   this.go('/mall-shopCart');
-        // }, 1500);
-      }, () => {
-        this.loading = false;
-      });
+      }
     },
     toShopDet(code, shopCode) {
       this.go(`/mall-shop_detail?code=${code}&shopCode=${shopCode}`);
@@ -197,6 +204,14 @@ export default {
           delete this.config.parentCategoryCode;
         }
       });
+    },
+    goCart() {
+      if(getUserId()) {
+        this.go('/mall-shopCart');
+      }else {
+        this.textMsg = '请先登录';
+        this.$refs.toast.show();
+      }
     }
   },
   components: {

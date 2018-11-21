@@ -40,7 +40,7 @@
                                 <p>合计{{shopItem.quantity}}件商品 <span class="fr sp-b">¥{{formatAmount(shopItem.amount)}}</span></p>
                             </div>
                         </div>
-                        <div class="sing-foo" v-html="operHtmlList[orderIndex]" @click="orderOperClick(orderIndex)">
+                        <div class="sing-foo" v-if="operHtmlList[orderIndex]" v-html="operHtmlList[orderIndex]" @click="orderOperClick(orderIndex)">
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@ export default {
       },
       orderList: [],
       orderStatus: {},
-      operHtmlList: '',
+      operHtmlList: [],
       orderTypeList: [
         {key: 0, value: '全部'}
       ]
@@ -152,13 +152,13 @@ export default {
                       <div class="foo-btn look-wl set-btn">查看物流</div>`;
           break;
         case '3':
-          this.operHtml = `<div class="foo-btn order-pj">待完成</div>`;
+          this.operHtml = ``;
           break;
         case '4':
-          this.operHtml = `<div class="foo-btn order-pj">已完成</div>`;
+          this.operHtml = ``;
           break;
         case '5':
-          this.operHtml = `<div class="foo-btn order-pj">已取消</div>`;
+          this.operHtml = ``;
           break;
       };
       this.operHtmlList.push(this.operHtml);
