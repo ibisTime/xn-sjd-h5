@@ -18,15 +18,6 @@
               <div class="sing-con" v-html="item.content">
 
               </div>
-              <div class="sing-foo hidden">
-                  <div class="s-foo_left">
-                      <p class="hidden">浏览46次</p>
-                  </div>
-                  <div class="s-foo_right">
-                    <p @click="startComment(index, parentCode, userId)"><span class="foo-pl"></span> <span class="pl">评论</span></p>
-                    <p class="hidden"><span class="foo-z"></span> <span class="pl">150</span></p>
-                  </div>
-              </div>
           </div>
          <p></p>
       </div>
@@ -70,7 +61,7 @@ export default {
         start: 1,
         limit: 6,
         commodityCode: '',
-        status: 'D'
+        statusList: ['D', 'B']
       },
       commentData: [],       // 评论数据
       specsList: [],          // 产品规格
@@ -418,132 +409,6 @@ export default {
         -moz-border-radius: 0.08rem;
         border-radius: 0.08rem;
       }
-    }
-    .toast{
-        position: fixed;
-        z-index: 99;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, .7);
-    }
-    .shop-toast{
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 60%;
-        padding: 0.3rem 0.3rem 0.1rem;
-        background-color: #fff;
-        .tos-head{
-            display: flex;
-            margin-bottom: 0.3rem;
-            .l-img{
-            width: 1.6rem;
-            height: 1.6rem;
-            margin-right: 0.24rem;
-            background-image: url('./shop.png');
-            background-size: 100% 100%;
-            }
-            .head-right{
-            display: flex;
-            width: 100%;
-            align-content: space-between;
-            flex-wrap: wrap;
-            position: relative;
-            font-family: PingFang-SC-Medium;
-            font-size: 0.26rem;
-            color: #999999;
-            letter-spacing: 0.002rem;
-            >p{
-                width: 100%;
-            }
-            .r-head{
-                color: #23AD8C;
-                font-size: 0.3rem;
-                .iconX{
-                width: 0.34rem;
-                height: 0.34rem;
-                margin-top: -0.1rem;
-                display: inline-block;
-                background-image: url('./x.png');
-                background-size: 100% 100%;
-                }
-            }
-            }
-        }
-        .tos-con{
-            padding-top: 0.3rem;
-            .con-head{
-            margin-bottom: 0.3rem;
-            h5{
-                font-family: PingFang-SC-Medium;
-                font-size: 0.32rem;
-                color: #333333;
-                letter-spacing: 0.0025rem;
-            }
-            }
-            .con-list{
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            background: rgba(216,216,216,0.00);
-            box-shadow: 0 0.01rem 0 0 #E5E5E5;
-            .sing{
-                width: 32%;
-                text-align: center;
-                height: 0.8rem;
-                line-height: 0.7rem;
-                color: #666;
-                background-color: #EBEBEB;
-                font-size: 0.28rem;
-                margin-bottom: 0.3rem;
-            }
-            }
-        }
-        .con-foo{
-            height: 1.1rem;
-            line-height: 1.1rem;
-            background: rgba(216,216,216,0.00);
-            box-shadow: 0 0.01rem 0 0 #E5E5E5;
-            margin-bottom: 0.65rem;
-            .f-left{
-            font-family: PingFang-SC-Heavy;
-            font-size: 0.32rem;
-            color: #333;
-            letter-spacing: 0.002rem;
-            .l-num{
-                span{
-                vertical-align: middle;
-                display: inline-block;
-                width: 0.36rem;
-                height: 0.36rem;
-                font-size: 0.26rem;
-                background-size: 100% 100%;
-                }
-                b{
-                vertical-align: middle;
-                }
-                .jian{
-                background-image: url('./jian.png');
-                }
-                .jia{
-                background-image: url('./jia.png');
-                }
-            }
-            }
-        }
-        .tos-btn{
-            height: 0.9rem;
-            line-height: 0.9rem;
-            width: 100%;
-            background-color: #23AD8C;
-            color: #fff;
-            text-align: center;
-            border-radius: 0.1rem;
-            font-size: 0.34rem;
-            letter-spacing: 0.05rem;
-        }
     }
 }
 </style>

@@ -186,11 +186,11 @@ export default {
       this.go(`/mall-shop_detail?code=${code}&shopCode=${shopCode}`);
     },
     tomore() {
-      this.go('/mall/mall-shopList?code=' + this.shopCode);
+      this.go('/mall-shopList?code=' + this.shopCode);
     },
     selectCategory(index) {
       let storeTypeCode = this.shopTypeData[index].code;
-      this.go('/mall/mall-shopList?storeTypeCode=' + storeTypeCode + '&typeIndex=' + index + '&code=' + this.shopCode);
+      this.go('/mall-shopList?storeTypeCode=' + storeTypeCode + '&typeIndex=' + index + '&code=' + this.shopCode);
     },
     getHotShop() {
       this.config.start = this.start;

@@ -107,8 +107,7 @@ export default {
           this.getCartData();
         });
         return;
-      }
-      if(shopCode) {
+      }else if(shopCode) {
         storeRemoveFn(shopCode).then(data => {
           this.textMsg = '删除成功';
           this.$refs.toast.show();
@@ -117,6 +116,9 @@ export default {
           this.loading = false;
         });
         return;
+      }else {
+        this.textMsg = '请选择商品';
+        this.$refs.toast.show();
       }
     },
     shopTatilFn(storeAllShop, isAll, codeList) { // 计算总额

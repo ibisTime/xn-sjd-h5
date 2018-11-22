@@ -102,7 +102,7 @@
           <div class="dp-img"></div>
           <p>店铺</p>
         </div>
-        <div class="le-kf" @click="go(`/store-service?user2=${shopDetData.sellUserId}`)">
+        <div class="le-kf" @click="toConver">
           <div class="kf-img"></div>
           <p>客服</p>
         </div>
@@ -325,6 +325,10 @@ export default {
       if(this.isCartType === '1') {  // 立即购买
         this.toShopOrder();
       }
+    },
+    toConver() {
+      this.isLogin();
+      this.go(`/store-service?user2=${this.shopDetData.sellUserId}`);
     }
     // 富文本滚动
     // _refreshScroll() {
@@ -479,6 +483,13 @@ export default {
               color: #999;
               line-height: 0.6rem;
             }
+          }
+          .pj-con{
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            line-height: 1.3;
           }
         }
       }

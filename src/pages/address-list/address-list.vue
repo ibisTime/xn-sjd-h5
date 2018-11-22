@@ -157,6 +157,7 @@
         this.$refs.confirm.show();
       },
       cancelRess() {
+        this.currentItem = null;
         if(this.storeOrder) {
           this.isokIndex = this.isokIndex || 0;
           sessionStorage.removeItem('setRess');

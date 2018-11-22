@@ -167,13 +167,13 @@ export default {
                       <div class="foo-btn look-wl set-btn">查看物流</div>`;
           break;
         case '3':
-          this.operHtml = `<div class="foo-btn">待完成</div>`;
+          this.operHtml = ``;
           break;
         case '4':
-          this.operHtml = `<div class="foo-btn">已完成</div>`;
+          this.operHtml = ``;
           break;
         case '5':
-          this.operHtml = `<div class="foo-btn">已取消</div>`;
+          this.operHtml = ``;
           break;
       };
     },
@@ -235,11 +235,7 @@ export default {
         this.orderDetail = data;
         this.loading = false;
         this.storeList = data.detailList;   // moreStoreOrder
-        if(this.isRess) {
-          this.addressMsg = data.address;
-        }else {
-          this.addressMsg = data.address;
-        }
+        this.addressMsg = data.address;
         if(data.status === '3' || data.status === '4') {
           this.ispj = true;
           data.detailList.forEach((item, index) => {

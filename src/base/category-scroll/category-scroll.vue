@@ -5,7 +5,7 @@
         v-for="(item,index) in categorys"
         :key="index"
         ref="cate"
-        @click="_selectItem($event, index)"
+        @click.stop="_selectItem($event, index)"
         class="category-item"
         :class="{active: index===currentIndex}"
         :style="_getItemColor(index)">

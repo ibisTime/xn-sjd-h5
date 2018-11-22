@@ -192,7 +192,7 @@ export default {
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderList[index]];
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-        this.go('/pay?code=' + this.orderList[index].orderCode + '&type=one');
+        this.go('/pay?code=' + this.orderList[index].code + '&type=one');
       }
       if(target.classList.contains('after-sale')) { // 申请售后
         this.go('/after-sale?code=' + this.orderList[index].code);
@@ -306,9 +306,8 @@ export default {
         }
     }
     .main{
-        height: 13rem;
+        height: calc(100% - 0.8rem);
         overflow: scroll;
-        padding-bottom: 2rem;
     }
     .order-sing{
         margin-bottom: 0.2rem;

@@ -53,7 +53,12 @@
         </div>
       </div>
       <div class="footer">
-        <span>金额：<span>{{totalPrice ? isPublish ? totalPrice - formatAmount(rate.cnyAmount) : totalPrice : isPublish ? formatAmount(amount-rate.cnyAmount) : formatAmount(amount)}}</span><span>元</span></span>
+        <span>金额：<span>
+          {{totalPrice ? isPublish ? formatAmount(totalPrice - rate.cnyAmount) :
+          totalPrice : isPublish ? formatAmount(amount - rate.cnyAmount) :
+          formatAmount(amount)}}
+        </span>
+          <span>元</span></span>
         <button class="fr" @click="pay">支付</button>
       </div>
     </div>

@@ -128,7 +128,11 @@ export default {
           target.classList.remove('sel-sp');
           this.isShopAll = false;
           this.isAll = 2;
-          this.codeList.splice(index, 1);
+          this.codeList.forEach((item, shopIndex) => {
+            if(item.shopName === this.shopSingData[index].shopName) {
+              this.codeList.splice(shopIndex, 1);
+            }
+          });
           this.setIndexList.splice(this.setIndexList.indexOf(index, 1));
           this.shopLen --;
           this.shopTatil -= this.shopSingData[index].amount;
@@ -195,10 +199,14 @@ export default {
       this.selShop = this.$refs.selShop;
       this.shopLen = this.selShop.length;
       let storeCode = '';
+      let shopName = '';
       if(this.isShopAll) {
         storeCode = this.storeSingData.shopCode;
       }
-      this.$emit('removeShop', this.shopIndex, storeCode, this.storeSingData.shopName);
+      if(this.codeList.length > 0) {
+        shopName = this.storeSingData.shopName;
+      }
+      this.$emit('removeShop', this.shopIndex, storeCode, shopName);
     },
     toStoreFn() {
       this.go(`/mall-store?shopCode=${this.storeSingData.shopCode}`);

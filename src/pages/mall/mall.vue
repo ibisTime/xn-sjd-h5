@@ -29,7 +29,7 @@
         </div>
         <div class="mall-content">
           <div class="con-head">
-            <h5>热门推荐 <router-link to="/mall/mall-shopList" class="fr" @click.native="isAll = true;">更多</router-link></h5>
+            <h5>热门推荐 <router-link to="/mall-shopList?location=1" class="fr">更多</router-link></h5>
             <div class="shop-list">
                 <div class="con-list">
                   <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, index) in hotShopList" :key="index">
@@ -56,7 +56,7 @@
           </div>
         </div>
       </div>
-      <router-view v-show="isAll"></router-view>
+      <!--<router-view v-show="isAll"></router-view>-->
     </Scroll>
     <div class="go-cart" @click.stop="toCartFn">
       <p v-if="iscart"></p>
@@ -190,7 +190,7 @@ export default {
     },
     selectCategory(index) {
       let storeTypeCode = this.shopTypeData[index].code;
-      this.go('/mall/mall-shopList?storeTypeCode=' + storeTypeCode + '&typeIndex=' + index);
+      this.go('/mall-shopList?storeTypeCode=' + storeTypeCode + '&typeIndex=' + index);
       this.isAll = true;
     },
     addCart(code, name, specsId, specsName) {
@@ -300,7 +300,6 @@ export default {
       height: 3.7rem;
       margin: 0 auto;
       position: relative;
-      background-image: url('./banner.png');
       background-size: 100% 100%;
       .home-slider {
         height: 100%;

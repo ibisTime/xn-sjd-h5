@@ -6,7 +6,12 @@
             :currentIndex="currentIndex"
             :categorys="shopTypeData"
             @select="selectCategory"
-          ></category-scroll>
+          />
+          <category-scroll
+            :currentIndex="currentIndexSub"
+            :categorys="categorysSub"
+            @select="selectCategorySub"
+          />
         </div>
         <div class="con-list">
           <Scroll
@@ -19,7 +24,7 @@
                   <div class="shop-det">
                       <h5>{{item.name}}</h5>
                       <p>￥{{formatAmount(item.minPrice)}} 起
-                        <span class="fr icon" @click.stop="addCart(item.code, item.name, item.specsList[0].id, item.specsList[0].name)"></span>
+                        <span class="fr icon" @click.stop="addListCart(item.code, item.name, item.specsList[0].id, item.specsList[0].name)"></span>
                       </p>
                   </div>
               </div>
@@ -49,6 +54,7 @@ export default {
       loading: true,
       hasMore: true,
       currentIndex: 0,
+      currentIndexSub: 0,
       textMsg: '',
       loadingText: '正在加载...',
       isset: -1,
@@ -79,33 +85,34 @@ export default {
         orderDir: 'asc'
       },
       shopTypeData: [{key: '0', value: '全部', code: ''}],
+      categorysSub: [{key: '0', value: '全部', code: ''}],
       shopCode: '',
       storeTypeCode: '',
-      typeIndex: ''
+      setIndex: 0,
+      typeIndex: '',
+      location: ''
     };
   },
   created() {
     setTitle('全部商品');
     this.storeTypeCode = this.$route.query.storeTypeCode;
-    this.typeIndex = this.$route.query.typeIndex;
-    this.currentIndex = Number(this.typeIndex) + 1 || 0;
     this.shopCode = this.$route.query.code;
+    this.typeIndex = this.$route.query.typeIndex;
+    this.location = this.$route.query.location;
+    if(this.location) {
+      this.config.location = this.location;
+    }
     if(this.shopCode) {
       this.config.shopCode = this.shopCode;
     }
     if(this.storeTypeCode) {
       this.config.parentCategoryCode = this.storeTypeCode;
+      this.shopTypeConfig.parentCode = this.storeTypeCode;
+      this.currentIndex = Number(this.typeIndex) + 1;
+      this.getTypeDataFn(this.categorysSub, '2');
     }
+    this.getTypeDataFn(this.shopTypeData, '1');
     this.getHotShop();
-    getShopType(this.shopTypeConfig).then(data => {
-      data.list.map((item, index) => {
-        this.shopTypeData.push({
-          key: index,
-          value: item.name,
-          code: item.code
-        });
-      });
-    });
   },
   mounted() {
     this.loading = false;
@@ -149,9 +156,43 @@ export default {
         this.getHotShop();
       }
     },
+    getTypeDataFn(shopType, type) {
+      if(type === '1') {
+        this.shopTypeConfig.level = 1;
+        delete this.shopTypeConfig.parentCode;
+      }
+      if(type === '2') {
+        delete this.shopTypeConfig.level;
+      }
+      getShopType(this.shopTypeConfig).then(data => {
+        data.list.map((item, index) => {
+          shopType.push({
+            key: index,
+            value: item.name,
+            code: item.code
+          });
+        });
+      });
+    },
     selectCategory(index) {
       this.currentIndex = index;
+      this.currentIndexSub = 0;
       this.config.parentCategoryCode = this.shopTypeData[index].code;
+      this.categorysSub = [{key: '0', value: '全部', code: ''}];
+      this.shopTypeConfig.parentCode = this.shopTypeData[index].code;
+      delete this.config.categoryCode;
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
+      if(!this.shopTypeConfig.parentCode) {
+        this.categorysSub = [{key: '0', value: '全部', code: ''}];
+      }else {
+        this.getTypeDataFn(this.categorysSub, '2');
+      }
+    },
+    selectCategorySub(index) {
+      this.currentIndexSub = index;
+      this.config.categoryCode = this.categorysSub[index].code;
       this.start = 1;
       this.hotShopList = [];
       this.getHotShop();
@@ -170,26 +211,29 @@ export default {
         }
       });
     },
-    addCart(code, name, specsId, specsName) {
-      if(getUserId()) {
-        this.loading = true;
-        this.addCartConfig.commodityCode = code;
-        this.addCartConfig.commodityName = name;
-        this.addCartConfig.specsId = specsId;
-        this.addCartConfig.specsName = specsName;
-        addShopCart(this.addCartConfig).then(data => {
-          this.loading = false;
-          this.textMsg = '加入购物车成功';
+    addListCart(code, name, specsId, specsName) {
+      if(this.setIndex === 0) {
+        if(getUserId()) {
+          this.loading = true;
+          this.addCartConfig.commodityCode = code;
+          this.addCartConfig.commodityName = name;
+          this.addCartConfig.specsId = specsId;
+          this.addCartConfig.specsName = specsName;
+          addShopCart(this.addCartConfig).then(data => {
+            this.loading = false;
+            this.textMsg = '加入购物车成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.setIndex = 0;
+            }, 500);
+          }, () => {
+            this.loading = false;
+          });
+          this.setIndex ++;
+        }else {
+          this.textMsg = '请先登录';
           this.$refs.toast.show();
-          // setTimeout(() => {
-          //   this.go('/mall-shopCart');
-          // }, 1500);
-        }, () => {
-          this.loading = false;
-        });
-      }else {
-        this.textMsg = '请先登录';
-        this.$refs.toast.show();
+        }
       }
     }
   },
@@ -231,7 +275,6 @@ export default {
     background-color: #fff;
     font-family: PingFangSC-Regular;
     .head-nav{
-        height: 0.8rem;
         line-height: 0.8rem;
         border-bottom: 0.01rem solid #e5e5e5;
         font-size: 0.32rem;
@@ -254,7 +297,7 @@ export default {
         }
     }
     .con-list{
-      height: 13rem;
+      height: 12rem;
       padding-bottom: 2rem;
       overflow: scroll;
     }

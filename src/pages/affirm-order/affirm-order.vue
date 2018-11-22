@@ -149,7 +149,6 @@ export default {
       res3.forEach(item => {
         this.logistics[item.dkey] = item.dvalue;
       });
-    //   this.userName = res2.realName ? res2.realName : res2.nickname;
       res1.forEach(item => {
         if(item.isDefault === '1') {
           this.defaultSite = this.setRess || item;
@@ -215,6 +214,11 @@ export default {
       this.totalPrice = this.singPrice;
     },
     qrorderFn() {
+      if(!this.ressee) {
+        this.textMsg = '请选择地址';
+        this.$refs.toast.show();
+        return;
+      }
       if(this.shopMsgList.length === 1 && this.shopMsgList[0].orderCode || this.shopMsgList[0].setPrice) {
         this.buyItNow();
       }else {

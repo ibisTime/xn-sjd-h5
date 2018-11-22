@@ -413,14 +413,12 @@ export default new Router({
     },
     {
       path: '/mall',
-      component: Mall,
-      children: [
-        {
-          path: '/mall/mall-shopList',
-          name: 'mallShopList',
-          component: mallShopList
-        }
-      ]
+      component: Mall
+    },
+    {
+      path: '/mall-shopList',
+      name: 'mallShopList',
+      component: mallShopList
     },
     {
       path: '/mall-store',
