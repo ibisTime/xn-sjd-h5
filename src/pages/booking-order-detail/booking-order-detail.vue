@@ -26,7 +26,7 @@
                     <span>预售规格：{{detail.specsName}}</span>
                     <span>¥{{formatAmount(detail.price)}}</span>
                   </p>
-                  <div class="props"><span class="duration">合计{{detail.quantity}}件商品</span><span class="price" v-show="!item.jfDeductAmount">¥{{formatAmount(detail.amount)}}</span><span class="price" v-show="item.jfDeductAmount">¥{{formatAmount(item.payAmount)}}+{{formatAmount(item.jfDeductAmount)}}积分</span></div>
+                  <div class="props"><span class="duration">合计{{detail.quantity}}件商品</span><span class="price" v-show="!detail.jfDeductAmount">¥{{formatAmount(detail.amount)}}</span><span class="price" v-show="detail.jfDeductAmount">¥{{formatAmount(detail.payAmount)}}+{{formatAmount(detail.jfDeductAmount)}}积分</span></div>
                 </div>
               </div>
               <div class="gray"></div>
@@ -178,10 +178,6 @@
 </script>
 <style lang="scss" scoped>
   @import "~common/scss/variable";
-  .header-height{
-    width: 100%;
-    height: 0.88rem;
-  }
   .booking-order-detail-wrapper {
     background: #fff;
     position: fixed;
