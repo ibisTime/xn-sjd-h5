@@ -79,8 +79,8 @@
         </div>
         <div class="item" @click="go('/store-message')">
           <img src="./message.png" class="me-list-icon">
-          <span>我的商城消息</span>
-          <img src="./more@2x.png" class="fr more">
+          <span>我的商城消息 <i class="fr msg"></i></span>
+          <img src="./more@2x.png" class="fr more" v-show="ismsg">
         </div>
         <div class="white"></div>
         <div class="item" @click="go('/my-article')">
@@ -120,6 +120,7 @@
   import {getCookie} from 'common/js/cookie';
   import {getUserDetail} from 'api/user';
   import { getAccount } from 'api/biz';
+  import { storeMessage } from 'api/store';
 
   export default {
     data() {
@@ -134,12 +135,27 @@
         jfAccountNumber: '',
         tpp: 0,
         tppAccountNumber: '',
-        src: ''
+        src: '',
+        config: {
+          user1: getUserId(),
+          start: 1,
+          limit: 6,
+          orderColumn: 'update_datetime',
+          orderDir: 'desc'
+        },
+        ismsg: false
       };
     },
     created() {
       this.pullUpLoad = null;
       this._refreshScroll();
+      if(getUserId()) {
+        storeMessage(this.config).then(data => {
+          if(data.list.length > 0) {
+            this.ismsg = false;
+          }
+        });
+      }
     },
     methods: {
       getUserId() {
@@ -378,12 +394,30 @@
         align-items: center;
         .me-list-icon {
           margin-right: 0.1rem;
+          }
         }
         img {
           height: 0.34rem;
         }
         span {
           flex: 1;
+          position: relative;
+          .msg{
+            display: inline-block;
+            position: absolute;
+            right: 0.1rem;
+            top: 50%;
+            -webkit-transform: translateY(-50%);
+            -moz-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+            -o-transform: translateY(-50%);
+            transform: translateY(-50%);
+            width: 0.2rem;
+            height: 0.2rem;
+            -webkit-border-radius: 100%;
+            -moz-border-radius: 100%;
+            border-radius: 100%;
+            background-color: red;
         }
       }
     }

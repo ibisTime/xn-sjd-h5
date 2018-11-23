@@ -24,7 +24,7 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Scroll from 'base/scroll/scroll';
 import NoResult from 'base/no-result/no-result';
-import { formatDate, setTitle } from 'common/js/util';
+import { formatDate, setTitle, getUserId } from 'common/js/util';
 import { storeMessage } from 'api/store';
 export default {
   data() {
@@ -34,6 +34,7 @@ export default {
       loadingText: '正在加载...',
       start: 1,
       config: {
+        user1: getUserId(),
         start: 1,
         limit: 6,
         orderColumn: 'update_datetime',
