@@ -121,6 +121,16 @@
                       </div>
                     </div>
                   </div>
+                  <div class="daily-content-item-info" v-if="item.type === '7'">
+                    <div class="message-border">
+                      <img :src="formatImg(item.userInfo.photo)" class="head">
+                      <div class="message-text">
+                        <p class="name">{{getName(item)}}</p>
+                        <p class="activity">{{item.barrageContent}}</p>
+                      </div>
+                      <img :src="formatImg(item.barragePic)" class="head">
+                    </div>
+                  </div>
                   <p v-show="item.type === '5' || item.type === '6'">
                     <span class="name">{{item.note}}</span>
                     <span class="activity"></span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
@@ -204,6 +214,16 @@
                   </div>
                 </div>
               </div>
+              <div class="daily-content-item-info" v-if="item.type === '7'">
+                <div class="message-border">
+                  <img :src="formatImg(item.userInfo.photo)" class="head">
+                  <div class="message-text">
+                    <p class="name">{{getName(item)}}</p>
+                    <p class="activity">{{item.barrageContent}}</p>
+                  </div>
+                  <img :src="formatImg(item.barragePic)" class="head">
+                </div>
+              </div>
               <div class="border"></div>
             </div>
           </div>
@@ -257,8 +277,8 @@
       </div>
     </div>
     <div :class="['danmu',flag && danmuFlag ? 'show' : '']">
-      <div class="title">
-        <img src="./close@2x.png" @click="close('propFlag')">
+      <div class="title" @click.stop.prevent="close('propFlag')">
+        <img src="./close@2x.png">
       </div>
       <div class="content">
         <Scroll

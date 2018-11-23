@@ -195,7 +195,7 @@ export default {
           location: '1',
           orderDir: 'asc',
           orderColumn: 'order_no',
-          statusList: [4, 5]
+          statusList: [4, 5, 6]
         }),
         getProductType({
           orderDir: 'asc',
@@ -233,11 +233,6 @@ export default {
             pic: item.pic
           });
         });
-        // res3.map((item) => {
-        //   if(!item.parentCode) {
-        //     this.proType.push(item);
-        //   }
-        // });
         this.noticeList = res4.list.slice(0, 1);
         this.bulletinList = res5.list;
         this.loading = false;

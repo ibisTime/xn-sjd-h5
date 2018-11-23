@@ -188,6 +188,10 @@ const ConsignmentOrder = () => import('@/pages/consignment-order/consignment-ord
 const ConsignmentOrderDetail = () => import('@/pages/consignment-order-detail/consignment-order-detail');
 // 提货详情
 const TihuoXiangqing = () => import('@/pages/tihuo-xiangqing/tihuo-xiangqing');
+// 实名
+const Auth = () => import('@/pages/auth/auth');
+const PersonAuth = () => import('@/pages/person-auth/person-auth');
+const CompanyAuth = () => import('@/pages/company-auth/company-auth');
 export default new Router({
   routes: [
     {
@@ -610,6 +614,18 @@ export default new Router({
     {
       path: '/tihuo-xiangqing',
       component: TihuoXiangqing
+    },
+    {
+      path: '/auth',
+      component: Auth
+    },
+    {
+      path: '/person-auth',
+      component: PersonAuth
+    },
+    {
+      path: '/company-auth',
+      component: CompanyAuth
     }
   ],
   mode: 'hash'
