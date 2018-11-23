@@ -79,7 +79,7 @@ export default {
       this.getPageMsg(),
       getUser()
     ]).then(([data, userInfo]) => {
-      this.avatar = formatImg(userInfo.photo);
+      this.avatar = formatImg(userInfo.photo) || '/static/avatar@2x.png';
       this.loading = false;
       this.scrollToBottom();
       this.refreshMsg();

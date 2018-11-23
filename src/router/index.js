@@ -407,13 +407,11 @@ export default new Router({
     },
     {
       path: '/emotion-channel',
-      component: EmotionChannel,
-      children: [
-        {
-          path: 'article-detail',
-          component: ArticleDetail
-        }
-      ]
+      component: EmotionChannel
+    },
+    {
+      path: '/article-detail',
+      component: ArticleDetail
     },
     {
       path: '/mall',

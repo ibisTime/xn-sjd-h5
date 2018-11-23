@@ -55,7 +55,7 @@
       <div class="footer">
         <span>金额：<span>
           {{totalPrice ? isPublish ? formatAmount(totalPrice - rate.cnyAmount) :
-          totalPrice : isPublish ? formatAmount(amount - rate.cnyAmount) :
+          formatAmount(totalPrice) : isPublish ? formatAmount(amount - rate.cnyAmount) :
           formatAmount(amount)}}
         </span>
           <span>元</span></span>
@@ -128,7 +128,7 @@
       this.pre = this.$route.query.pre;
       this.jishou = this.$route.query.jishou;
       this.userId = getCookie('userId');
-      this.totalPrice = sessionStorage.getItem('totalPrice');
+      this.totalPrice = Number(sessionStorage.getItem('totalPrice')) * 1000;
       this.storeCode = this.$route.query.code;             // 商城订单code
       this.storeType = this.$route.query.storeType;
       this.config.code = this.storeCode;
