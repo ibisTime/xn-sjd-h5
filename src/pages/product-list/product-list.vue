@@ -145,11 +145,17 @@ export default {
           item.noAdoptReason = '已被认养';
           return item;
         }
-        if(item.directObject !== this.userId) {
+        this.directFlag = false;
+        item.directObject.split(',').map((item) => {
+          if(item === this.userId) {
+            this.directFlag = true;
+          }
+        });
+        if(this.directFlag) {
+          item.noAdoptReason = '可认养';
+        } else {
           item.canAdoptFlag = false;
           item.noAdoptReason = '不可认养';
-        } else {
-          item.noAdoptReason = '可认养';
         }
         return item;
       }

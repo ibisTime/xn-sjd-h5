@@ -705,3 +705,17 @@ export function preOrderScore(data) {
     ...data
   });
 }
+
+// 列表查弹幕
+export function getDanmuList(data) {
+  return fetch(629387, {
+    ...data
+  });
+}
+
+// 发送弹幕
+export function sendDanmu(data) {
+  return fetch(629384, {
+    ...data
+  });
+}

@@ -231,10 +231,33 @@ export default {
           this.noAdoptReason = '已被认养';
           return false;
         }
-        if(this.detail.directObject !== this.userId) {
+        // this.directFlag = false;
+        // item.directObject.split(',').map((item) => {
+        //   if(item === this.userId) {
+        //     this.directFlag = true;
+        //   }
+        // });
+        // if(this.directFlag) {
+        //   item.noAdoptReason = '可认养';
+        // } else {
+        //   item.canAdoptFlag = false;
+        //   item.noAdoptReason = '不可认养';
+        // }
+        // return item;
+        this.directFlag = false;
+        this.detail.directObject.split(',').map((item) => {
+          if(item === this.userId) {
+            this.directFlag = true;
+          }
+        });
+        if(!this.directFlag) {
           this.noAdoptReason = '您不是该产品定向的用户';
           return false;
         }
+        // if(this.detail.directObject !== this.userId) {
+        //   this.noAdoptReason = '您不是该产品定向的用户';
+        //   return false;
+        // }
         // 用户定向且是定向用户
       }
       if(this.detail.sellType === '4' && this.detail.raiseCount === this.detail.nowCount) {

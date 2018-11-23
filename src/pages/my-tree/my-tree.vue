@@ -18,7 +18,7 @@
               <span class="name">hhh</span>
               <span class="context">{{emojiText}}</span>
             </div>
-            <img :src="emoji" class="emoji">
+            <img :src="formatImg(emoji)" class="emoji">
           </div>
           <div class="carbon-bubbles" v-show="tppList.length">
             <div class="bubble-item" v-for="item in tppList" @click="doCollectionTpp(item)">
@@ -261,34 +261,38 @@
         <img src="./close@2x.png" @click="close('propFlag')">
       </div>
       <div class="content">
-        <div class="prop-item" @click="showDanmu(1)">
-          <span>感谢帮我收能量</span>
-          <img src="./1@2x.png">
-        </div>
-        <div class="prop-item" @click="showDanmu(2)">
-          <span>给你点个赞</span>
-          <img src="./7@2x.png">
-        </div>
-        <div class="prop-item" @click="showDanmu(3)">
-          <span>我控制不住我自己啊~</span>
-          <img src="./2@2x.png">
-        </div>
-        <div class="prop-item" @click="showDanmu(4)">
-          <span>勤快的宝宝有能量~</span>
-          <img src="./3@2x.png">
-        </div>
-        <div class="prop-item" @click="showDanmu(5)">
-          <span>我对你已绝望</span>
-          <img src="./4@2x.png">
-        </div>
-        <div class="prop-item" @click="showDanmu(6)">
-          <span>你行行好，别把我的能量全收走，可以吗~</span>
-          <img src="./5@2x.png">
-        </div>
-        <div class="prop-item" @click="showDanmu(7)">
-          <span>你怎么每天这么勤快呢</span>
-          <img src="./6@2x.png">
-        </div>
+        <Scroll
+          :pullUpLoad="pullUpLoad"
+        >
+          <div class="prop-item" @click="showDanmu(item)" v-for="item in emojiArr">
+            <span>{{item.content}}</span>
+            <img :src="formatImg(item.pic)">
+          </div>
+        </Scroll>
+        <!--<div class="prop-item" @click="showDanmu(2)">-->
+          <!--<span>给你点个赞</span>-->
+          <!--<img src="./7@2x.png">-->
+        <!--</div>-->
+        <!--<div class="prop-item" @click="showDanmu(3)">-->
+          <!--<span>我控制不住我自己啊~</span>-->
+          <!--<img src="./2@2x.png">-->
+        <!--</div>-->
+        <!--<div class="prop-item" @click="showDanmu(4)">-->
+          <!--<span>勤快的宝宝有能量~</span>-->
+          <!--<img src="./3@2x.png">-->
+        <!--</div>-->
+        <!--<div class="prop-item" @click="showDanmu(5)">-->
+          <!--<span>我对你已绝望</span>-->
+          <!--<img src="./4@2x.png">-->
+        <!--</div>-->
+        <!--<div class="prop-item" @click="showDanmu(6)">-->
+          <!--<span>你行行好，别把我的能量全收走，可以吗~</span>-->
+          <!--<img src="./5@2x.png">-->
+        <!--</div>-->
+        <!--<div class="prop-item" @click="showDanmu(7)">-->
+          <!--<span>你怎么每天这么勤快呢</span>-->
+          <!--<img src="./6@2x.png">-->
+        <!--</div>-->
       </div>
     </div>
     <convert v-show="convertFlag" :propsDetail="propsData.buyItem" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
@@ -313,7 +317,8 @@ import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
-        getListProps, buyProps, getPropsOrder, useProps, getAccount, getPropsUsedRecordList } from 'api/biz';
+        getListProps, buyProps, getPropsOrder, useProps, getAccount, getPropsUsedRecordList, getDanmuList,
+        sendDanmu } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import { getUserDetail } from 'api/user';
 import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
@@ -458,7 +463,8 @@ export default {
       // 不是当前用户
       if (this.other === '1') {
         Promise.all([
-          this.getComparisonData(this.currentHolder)
+          this.getComparisonData(this.currentHolder),
+          this.getDanmu()
         ]).then(() => {}).catch(() => {});
       }
     },
@@ -628,6 +634,20 @@ export default {
         this.loading = false;
       }, () => { this.loading = false; });
     },
+    getDanmu() {
+      this.loading = true;
+      getDanmuList({
+        status: '1',
+        orderColumn: 'order_no',
+        orderDir: 'asc'
+      }).then((res) => {
+        this.loading = false;
+        console.log(res);
+        this.emojiArr = res;
+      }).catch(() => {
+        this.loading = false;
+      });
+    },
     // 动态 是否显示日期
     isShowDate(item) {
       let creadDate = formatDate(item.createDatetime, 'MM-dd');
@@ -756,14 +776,24 @@ export default {
     juanzeng() {
       this.juanzengFlag = true;
     },
-    showDanmu(index) {
-      this.close('danmuFlag');
-      this.emoji = this.emojiArr[index - 1].src;
-      this.emojiText = this.emojiArr[index - 1].text;
-      this.danmuShow = true;
-      setTimeout(() => {
-        this.danmuShow = false;
-      }, 1000);
+    showDanmu(item) {
+      this.loading = true;
+      sendDanmu({
+        code: item.code,
+        adoptTreeCode: this.adoptTreeCode,
+        userId: getUserId()
+      }).then((res) => {
+        this.loading = false;
+        if(res.isSuccess) {
+          this.close('danmuFlag');
+          this.emoji = item.pic;
+          this.emojiText = item.content;
+          this.danmuShow = true;
+          setTimeout(() => {
+            this.danmuShow = false;
+          }, 1000);
+        }
+      }).catch(() => { this.loading = false; });
     },
     selectProp(index) {
       this.currentIndex = index;
@@ -912,6 +942,7 @@ export default {
         .emoji {
           width: 0.8rem;
           height: 0.8rem;
+          border-radius: 50%;
         }
       }
       .carbon-bubbles {
@@ -1605,13 +1636,14 @@ export default {
       }
     }
     .content {
-      padding: 0 0.3rem;
+      padding: 0.3rem;
       .prop-item {
         border: 1px solid $color-border;
         border-radius: 0.55rem;
         align-items: center;
         display: inline-block;
         font-size: 0;
+        margin-right: 0.2rem;
         span {
           flex: 1;
           font-size: $font-size-medium;
@@ -1623,6 +1655,7 @@ export default {
         img {
           width: 0.8rem;
           height: 0.8rem;
+          border-radius: 50%;
         }
       }
     }
