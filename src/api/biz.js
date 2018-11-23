@@ -414,6 +414,33 @@ export function getArticleDetail(data) {
   });
 }
 
+// 文章点赞
+export function getArticleDz(config) {
+  return fetch(629810, config);
+}
+
+// 文章收藏
+export function getArticleSc(config) {
+  return fetch(629811, config);
+}
+
+// 文章是否收藏
+export function isArticleSc(config) {
+  return fetch(629348, config);
+}
+
+// 文章是否点赞
+export function isArticleDz(config) {
+  return fetch(629348, config);
+}
+
+// 分页查询我的收藏
+export function myArticlePage() {
+  return fetch(629349, {
+    userId: getUserId()
+  });
+}
+
 // 分页查礼物
 export function getGiftPage(data) {
   return fetch(629325, {

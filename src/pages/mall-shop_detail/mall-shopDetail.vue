@@ -24,7 +24,7 @@
           <div class="shop-gg">
             <p @click.stop="setSpecification">规格：选择规格分类</p>
           </div>
-          <div class="shop-pj" v-if="commentData">
+          <div class="shop-pj" v-if="commentData.content">
             <div class="pj-head">
               <p>评价 <span class="fr pj-all" @click="toComment">查看全部 ></span></p>
             </div>
@@ -147,7 +147,7 @@ export default {
         status: 'D'
       },
       commentDatetime: '',
-      commentData: [],       // 评论数据
+      commentData: {},       // 评论数据
       specsList: [],          // 产品规格
       setPrice: '',           // 选中规格价格
       inventory: '',           // 选中规格库存
@@ -196,7 +196,8 @@ export default {
       this.addCartConfig.commodityName = res2.name;
       this.addCartConfig.specsId = this.specsList[0].id;
       this.addCartConfig.specsName = this.specsList[0].name;
-      if(res3.list[0]) {
+      if(res3.list[0].userId) {
+        console.log(res3.list[0].userId);
         getUser(res3.list[0].userId).then(res => {
           this.commentData = res3.list[0];
           this.commentData.photo = res.photo;
@@ -228,41 +229,42 @@ export default {
       this.go('user-comment?code=' + this.code);
     },
     setAddCart() { // 外加入购物车
-      this.isLogin();
-      if(this.specsList.length > 1) {
-        this.istoast = true;
-        this.isgm = true;
-        this.isCartType = '0';
-      }else {
-        this.addShopCart();
+      if(this.isLogin()) {
+        if(this.specsList.length > 1) {
+          this.istoast = true;
+          this.isgm = true;
+          this.isCartType = '0';
+        }else {
+          this.addShopCart();
+        }
       }
     },
     toBuy() { // 外立即购买
-      this.isLogin();
-      if(this.specsList.length > 1) {
-        this.istoast = true;
-        this.isgm = true;
-        this.isCartType = '1';
-        return;
+      if(this.isLogin()) {
+        if(this.specsList.length > 1) {
+          this.istoast = true;
+          this.isgm = true;
+          this.isCartType = '1';
+          return;
+        }
+        this.loading = true;
+        let shopMsg = {
+          ...this.addCartConfig,
+          shopName: this.shopName,
+          bannerPic: this.bannerPic,
+          logistics: this.shopDetData.logistics,
+          setPrice: parseFloat(this.setPrice) * 1000
+        };
+        let shopMsgList = [shopMsg];
+        sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+        this.go('/affirm-order?code=' + this.code);
       }
-      this.loading = true;
-      let shopMsg = {
-        ...this.addCartConfig,
-        shopName: this.shopName,
-        bannerPic: this.bannerPic,
-        logistics: this.shopDetData.logistics,
-        setPrice: parseFloat(this.setPrice) * 1000
-      };
-      let shopMsgList = [shopMsg];
-      sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-      this.go('/affirm-order?code=' + this.code);
     },
     toShopCart() { // 内加入购物车
-      this.isLogin();
+      this.istoast = false;
       this.addShopCart();
     },
     toShopOrder() { // 内立即购买
-      this.isLogin();
       this.loading = true;
       let shopMsg = {
         ...this.addCartConfig,
@@ -279,10 +281,10 @@ export default {
       if(!getUserId()) {
         this.textMsg = '请先登录';
         this.$refs.toast.show();
-        setTimeout(() => {
-          this.go('login');
-        }, 1500);
-        return;
+        this.istoast = false;
+        return false;
+      }else {
+        return true;
       }
     },
     setSpecification() { // 点击规格
@@ -327,8 +329,9 @@ export default {
       }
     },
     toConver() {
-      this.isLogin();
-      this.go(`/store-service?user2=${this.shopDetData.sellUserId}`);
+      if(this.isLogin()) {
+        this.go(`/store-service?user2=${this.shopDetData.sellUserId}`);
+      }
     }
     // 富文本滚动
     // _refreshScroll() {

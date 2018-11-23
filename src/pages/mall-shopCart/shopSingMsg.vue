@@ -6,9 +6,9 @@
               <span class="sp-name" @click="toStoreFn">
                   {{this.storeSingData.shopName}}<b> ＞</b>
               </span>
-              <span class="clr fr">
-                  <p @click.stop="removeShop">删除</p>
-              </span>
+              <!--<span class="clr fr">-->
+                  <!--<p @click.stop="removeShop">删除</p>-->
+              <!--</span>-->
           </div>
         <div class="sing-con" v-for="(singItem, singIndex) in shopSingData" :key="singIndex">
               <div class="con-left" @click.stop="setShopSing(singIndex, singItem)">

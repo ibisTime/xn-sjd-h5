@@ -79,8 +79,8 @@
         </div>
         <div class="item" @click="go('/store-message')">
           <img src="./message.png" class="me-list-icon">
-          <span>我的商城消息 <i class="fr msg"></i></span>
-          <img src="./more@2x.png" class="fr more" v-show="ismsg">
+          <span>我的商城消息 <i class="fr msg" v-show="ismsg"></i></span>
+          <img src="./more@2x.png" class="fr more">
         </div>
         <div class="white"></div>
         <div class="item" @click="go('/my-article')">
@@ -88,11 +88,11 @@
           <span>我的文章</span>
           <img src="./more@2x.png" class="fr more">
         </div>
-        <!--<div class="item" @click="go('/my-collect')">-->
-        <!--<img src="./collection@2x.png">-->
-        <!--<span>我的收藏</span>-->
-        <!--<img src="./more@2x.png" class="fr more">-->
-        <!--</div>-->
+        <div class="item" @click="go('/my-collect')">
+        <img src="./collection@2x.png" class="me-list-icon">
+        <span>我的收藏</span>
+        <img src="./more@2x.png" class="fr more">
+        </div>
         <div class="item" @click="go('/invitation')">
           <img src="./invitation@2x.png" class="me-list-icon">
           <span>邀请有礼</span>

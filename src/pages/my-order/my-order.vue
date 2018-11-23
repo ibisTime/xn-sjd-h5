@@ -95,7 +95,7 @@
         inputText: '',
         toastText: '',
         sellTypeObj: {},
-        currentIndexSell: +this.$route.query.index || 0,
+        currentIndexSell: +this.$route.query.type - 1 || 0,
         statusObj: {},
         groupStatusObj: {}
       };
@@ -103,10 +103,9 @@
     mounted() {
       setTitle('我的订单');
       // this.currentIndexSell = +this.$route.query.type;
-      // this.type = +this.$route.query.type;
+      this.type = this.$route.query.type.toString();
       this.first = true;
       this.userId = getCookie('userId');
-      this.type = 1;
       if(this.userId) {
         this.getInitData();
       } else {
@@ -236,7 +235,7 @@
         this.$router.push(`/my-order/order-detail?code=${item.code}&type=${item.product.sellType}`);
       },
       payOrder(item) {
-        this.$router.push(`/pay?orderCode=${item.code}&type=${item.type}`);
+        this.$router.push(`/pay?orderCode=${item.code}&type=${this.currentIndexSell}`);
       },
       _cancelOrder(item) {
         this.inputText = '取消原因';

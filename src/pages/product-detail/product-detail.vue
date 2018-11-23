@@ -285,6 +285,7 @@ export default {
           this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
         } else {
           // 集体认养
+          let type = this.detail.sellType;
           let identifyCode = this.identifyCode || '';
           if(this.detail.identifyCode && !identifyCode) {
             this.text = '请输入识别码';
@@ -296,7 +297,7 @@ export default {
             this.text = '识别码错误';
             this.$refs.toast.show();
           } else {
-            this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&identifyCode=' + identifyCode);
+            this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&identifyCode=' + identifyCode + '&type=' + type);
           }
         }
       } else {
@@ -379,6 +380,7 @@ export default {
       ]).then(([res1, res2]) => {
         this.loading = false;
         this.detail = res1;
+        console.log(res1.identifyCode);
         this.detailDescription = res1.description;
         this.banners = this.detail.bannerPic.split('||');
         if(this.banners.length >= 2) {

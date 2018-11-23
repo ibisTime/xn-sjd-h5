@@ -2,6 +2,7 @@
   <div class="mall-wrapper" @click.stop>
     <div class="content">
       <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
+        <m-header class="cate-header" title="我的购物车" :actText="actText" @action="manageCart"></m-header>
         <div class="shop-list">
           <ShopSingMsg
               v-if="shopAllData.length > 0"
@@ -11,7 +12,6 @@
               :shopAll="isShopAll"
               :storeSingData="allItem"
               :storeAllShop="shopAllData"
-              @removeShop="removeShop"
               @shopTatilFn="shopTatilFn"
               @allStoreSetFn="allStoreSetFn"
           >
@@ -27,7 +27,10 @@
           <span class="spl" @click.stop="shopAllFn" ref="allShop"></span>全选
       </div>
       <div class="foo-right">
-          <p>合计：<span>¥{{formatAmount(tatil)}}</span> <button @click="shopCartOrder">结算</button></p>
+        <p v-show="!isManage">合计：<span>¥{{formatAmount(tatil)}}</span> <button @click="shopCartOrder">结算</button></p>
+        <p v-show="isManage" class="foo-remove" @click="removeShop">
+          <span>删 除</span>
+        </p>
       </div>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
@@ -36,13 +39,14 @@
   </div>
 </template>
 <script>
+import MHeader from 'components/m-header/m-header';
 import FullLoading from 'base/full-loading/full-loading';
 import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import ShopSingMsg from './shopSingMsg';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { myShopCart, shopRemoveFn, storeRemoveFn } from 'api/store';
+import { myShopCart, shopRemoveFn } from 'api/store';
 export default {
   data() {
     return {
@@ -55,7 +59,10 @@ export default {
       isShopAll: '',
       tatil: 0,
       isSetAll: null,
-      codeList: []
+      actText: '管理',
+      codeList: [],
+      isManage: false,
+      setCodeList: []
     };
   },
   created() {
@@ -91,45 +98,54 @@ export default {
         this.shopAllData = data;
       });
     },
-    removeShop(shopIndex, shopCode, shopName) {    // 删除店铺操作
-      let setCodeList = new Set();
-      this.codeList.forEach((item, index) => {
-        if(item.shopName === shopName) {
-          setCodeList.add(item.shopCode);
-        }
-      });
-      setCodeList = [...setCodeList];
-      if(setCodeList.length > 0) {
-        this.loading = true;
-        shopRemoveFn(setCodeList).then(data => {
-          this.textMsg = '删除成功';
-          this.$refs.toast.show();
-          this.getCartData();
-        });
-        return;
-      }else if(shopCode) {
-        storeRemoveFn(shopCode).then(data => {
-          this.textMsg = '删除成功';
-          this.$refs.toast.show();
-          this.getCartData();
-        }, () => {
-          this.loading = false;
-        });
-        return;
-      }else {
-        this.textMsg = '请选择商品';
+    // removeShop(shopIndex, shopCode, shopName) {    // 删除店铺操作
+    //   let setCodeList = new Set();
+    //   this.codeList.forEach((item, index) => {
+    //     if(item.shopName === shopName) {
+    //       setCodeList.add(item.shopCode);
+    //     }
+    //   });
+    //   setCodeList = [...setCodeList];
+    //   if(setCodeList.length > 0) {
+    //     this.loading = true;
+    //     shopRemoveFn(setCodeList).then(data => {
+    //       this.textMsg = '删除成功';
+    //       this.$refs.toast.show();
+    //       this.getCartData();
+    //     });
+    //     return;
+    //   }else if(shopCode) {
+    //     storeRemoveFn(shopCode).then(data => {
+    //       this.textMsg = '删除成功';
+    //       this.$refs.toast.show();
+    //       this.getCartData();
+    //     }, () => {
+    //       this.loading = false;
+    //     });
+    //     return;
+    //   }else {
+    //     this.textMsg = '请选择商品';
+    //     this.$refs.toast.show();
+    //   }
+    // },
+    removeShop() {
+      shopRemoveFn(this.setCodeList).then(data => {
+        this.textMsg = '删除成功';
         this.$refs.toast.show();
-      }
+        this.getCartData();
+      });
     },
     shopTatilFn(storeAllShop, isAll, codeList) { // 计算总额
       this.tatil = 0;
       if(codeList) {
         this.codeList = [...this.codeList, ...codeList];
       }
+      this.setCodeList = [];
       storeAllShop.forEach(allItem => {
         allItem.cartList.forEach(item => {
           if(item.isSet) {
             this.tatil += item.amount;
+            this.setCodeList.push(item.code);
           }
         });
       });
@@ -145,11 +161,13 @@ export default {
         shopAll.classList.remove('sel-sp');
         this.isShopAll = '';
       }else {
+        this.setCodeList = [];
         shopAll.classList.add('sel-sp');
         this.isShopAll = 'true' + this.isSetAll;
         this.shopAllData.forEach(allItem => {
           allItem.cartList.forEach(item => {
             this.tatil += item.amount;
+            this.setCodeList.push(item.code);
           });
         });
       }
@@ -178,9 +196,14 @@ export default {
       }
       sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
       this.go('/affirm-order');
+    },
+    manageCart() {
+      this.isManage = !this.isManage;
+      this.actText = this.isManage ? '取消' : '管理';
     }
   },
   components: {
+    MHeader,
     FullLoading,
     Toast,
     ShopSingMsg,
@@ -218,6 +241,9 @@ export default {
     right: 0;
     overflow: auto;
     font-family: PingFang-SC-Medium;
+    .shop-list{
+      padding-top: 0.88rem;
+    }
   }
   .foo-cart{
     position: fixed;
@@ -229,7 +255,7 @@ export default {
     display: flex;
     justify-content: space-between;
     font-size: 0.28rem;
-    padding: 0 0.3rem;
+    padding: 0rem 0.3rem;
     background-color: #fff;
     box-shadow: 0 -1px 0 0 #EBEBEB;
     .foo-left{
@@ -254,6 +280,19 @@ export default {
             background-color: #23AD8C;
             color: #fff;
         }
+      .foo-remove{
+        text-align: center;
+        border: 1px solid #23AD8C;
+        color: #23AD8C;
+        padding: 0 0.4rem;
+        height: 0.7rem;
+        line-height: 0.7rem;
+        margin-top: 0.14rem;
+        border-radius: 0.08rem;
+        span{
+          margin: 0;
+        }
+      }
     }
   }
  .spl{

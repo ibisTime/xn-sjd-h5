@@ -115,7 +115,7 @@
                 quantity: this.quantity
               }).then((res) => {
                 this.loading = false;
-                this.go('/pay?orderCode=' + res);
+                this.go('/pay?orderCode=' + res + '&type=' + this.type);
               }).catch(() => { this.loading = false; });
             } else {
               // 第一人
@@ -126,7 +126,7 @@
                 quantity: this.quantity
               }).then((res) => {
                 this.loading = false;
-                this.go('/pay?orderCode=' + res);
+                this.go('/pay?orderCode=' + res + '&type=' + this.type);
               }).catch(() => { this.loading = false; });
             }
           }
@@ -144,7 +144,7 @@
           // type: this.type
         }).then((res) => {
           this.loading = false;
-          this.go('/pay?pre=1&orderCode=' + res.code);
+          this.go('/pay?pre=1&orderCode=' + res.code + '&type=' + this.type);
         }).catch(() => { this.loading = false; });
       },
       go(url) {

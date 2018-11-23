@@ -7,74 +7,15 @@
     </div>
     <div class="article-list" v-show="type === 0">
       <Scroll :pullUpLoad="pullUpLoad">
-        <div class="item" @click="go('/article-detail')">
-          <img src="./tree@3x.png" alt="">
+        <div class="item" @click="go('/article-detail?code=' + artItem.article.code)" v-for="(artItem, index) in collectTextData" :key="index">
+          <img alt="" :src="getImgSyl(artItem.article.photo)">
           <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
-          </div>
-        </div>
-        <div class="item" @click="go('/article-detail')">
-          <img src="tree@3x.png" alt="">
-          <div class="info">
-            <p class="title">从小苗长到大树，其实挺好的</p>
-            <p class="prop"><span class="date">2018.09.14</span><span class="collect">收藏 280</span><span class="laud">赞 280</span></p>
+            <p class="title">{{artItem.article.title}}</p>
+            <!--<div class="info-middle">-->
+              <!--<span>作者：{{artItem.article.publishUserName}}</span>-->
+              <!--<span v-show="artItem.article.treeName">关联古树：{{artItem.article.treeName}}</span>-->
+            <!--</div>-->
+            <p class="prop"><span class="date">{{formatDate(artItem.createDatetime)}}</span><span class="collect">收藏 {{artItem.article.collectCount}}</span><span class="laud">赞 {{artItem.article.pointCount}}</span></p>
           </div>
         </div>
       </Scroll>
@@ -90,94 +31,6 @@
               <p><span class="hot-pro-price">¥2480.00</span></p>
             </div>
           </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item" @click="goProductDetail">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item" @click="product-detail">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
-          <div class="item">
-            <img src="./emotion@2x.png" class="hot-pro-img">
-            <div class="hot-pro-text">
-              <p class="hot-pro-title">捐赠认养古树</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">四川 成都</span><img src="./emotion@2x.png" class="fr"></p>
-              <p><span class="hot-pro-price">¥2480.00</span></p>
-            </div>
-          </div>
         </div>
       </Scroll>
     </div>
@@ -186,19 +39,36 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import { myArticlePage } from 'api/biz';
+  import { formatImg, formatDate } from 'common/js/util';
 
   export default {
     data() {
       return {
-        type: 0
+        type: 0,
+        collectTextData: [],   // 文章收藏
+        collectTreeData: []    // 古树收藏
       };
     },
     created() {
       this.pullUpLoad = null;
+      Promise.all([myArticlePage()]).then(([res1]) => {
+        this.collectTextData = res1;
+      }).catch(() => {});
     },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
+      formatDate(time) {
+        return formatDate(time);
+      },
       go(url) {
         this.$router.push(url);
+      },
+      getImgSyl(imgs, type) {
+        let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
+        return pic;
       },
       changeType(index) {
         this.type = index;

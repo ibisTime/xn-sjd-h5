@@ -17,19 +17,19 @@
         </div>
       </Scroll>
     </div>
-    <!--<div class="footer">-->
-      <!--<div class="collect">-->
-        <!--<img src="./uncollect@2x.png" v-show="!collectFlag" @click="collect">-->
-        <!--<img src="./collect@2x.png" v-show="collectFlag">-->
-        <!--<span>120</span>-->
-      <!--</div>-->
-      <!--<div class="border"></div>-->
-      <!--<div class="laud">-->
-        <!--<img src="./unlaud@2x.png" v-show="!laudFlag" @click="laud">-->
-        <!--<img src="./laud@2x.png" v-show="laudFlag">-->
-        <!--<span>120</span>-->
-      <!--</div>-->
-    <!--</div>-->
+    <div class="footer">
+      <div class="collect" @click="collect">
+        <img src="./uncollect@2x.png" v-show="!collectFlag">
+        <img src="./collect@2x.png" v-show="collectFlag">
+        <span>{{collectCount}}</span>
+      </div>
+      <div class="border"></div>
+      <div class="laud" @click="laud">
+        <img src="./unlaud@2x.png" v-show="!laudFlag">
+        <img src="./laud@2x.png" v-show="laudFlag">
+        <span>{{pointCount}}</span>
+      </div>
+    </div>
     <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
   </div>
@@ -39,7 +39,7 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
-  import { getArticleDetail } from 'api/biz';
+  import { getArticleDetail, getArticleDz, getArticleSc, isArticleSc, isArticleDz } from 'api/biz';
   import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
   import {initShare} from 'common/js/weixin';
   // import Logo from './logo-64.png';
@@ -54,6 +54,17 @@
         laudFlag: false,
         detail: {},
         contextList: [],
+        config: {
+          userId: getUserId(),
+          code: ''
+        },
+        isConfig: {
+          userId: getUserId(),
+          code: '',
+          type: '2'
+        },
+        collectCount: 0,
+        pointCount: 0,
         context: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
       };
     },
@@ -62,11 +73,15 @@
       this.isWxConfiging = false;
       this.wxData = null;
       this.code = this.$route.query.code;
+      this.config.code = this.code;
+      this.isConfig.code = this.code;
       this.loading = true;
       getArticleDetail({
         code: this.code
       }).then((res) => {
         this.detail = res;
+        this.pointCount = +res.pointCount;
+        this.collectCount = +res.collectCount;
         this.detail.photolist = this.detail.photo.split('||');
         this.contextList = this.detail.content.split(/\n/);
         if(!this.isWxConfiging && !this.wxData) {
@@ -74,6 +89,21 @@
         }
         this.loading = false;
       }).catch(() => { this.loading = false; });
+      isArticleSc(this.isConfig).then(data => {
+        console.log(0, data);
+        // 是否收藏
+        if(data.isPointCollect !== '0') {
+          this.collectFlag = true;
+        }
+      });
+      this.isConfig.type = '1';
+      isArticleDz(this.isConfig).then(data => {
+        console.log(1, data);
+        // 是否点赞
+        if(data.isPointCollect !== '0') {
+          this.laudFlag = true;
+        }
+      });
     },
     methods: {
       formatImg(img) {
@@ -107,12 +137,34 @@
       },
       collect() {
         // 调接口收藏
-        this.collectFlag = true;
+        this.loading = true;
+        getArticleSc(this.config).then(data => {
+          this.loading = false;
+          this.collectFlag = !this.collectFlag;
+          if(this.collectFlag) {
+            this.collectCount ++;
+          }else {
+            this.collectCount --;
+          }
+        }, () => {
+          this.loading = false;
+        });
         // 收藏数+1
       },
       laud() {
         // 调接口点赞
-        this.laudFlag = true;
+        this.loading = true;
+        getArticleDz(this.config).then(data => {
+          this.loading = false;
+          this.laudFlag = !this.laudFlag;
+          if(this.laudFlag) {
+            this.pointCount ++;
+          }else {
+            this.pointCount --;
+          }
+        }, () => {
+          this.loading = false;
+        });
         // 点赞数+1
       },
       _refreshScroll() {

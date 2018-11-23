@@ -294,7 +294,12 @@
                 ok: true
               };
               if(item.ok === true) {
-                self.photos.push(item);
+                if(self.photos.length < 9) {
+                  self.photos.push(item);
+                }else {
+                  self.text = '选择图片不得超过九张';
+                  self.$refs.toast.show();
+                }
               }
               self.updatePhotos(item);
             }).catch(err => {
