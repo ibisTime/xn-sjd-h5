@@ -30,10 +30,10 @@
               <!--<img src="./no-auth@2x.png">-->
               <!--<span>未认证</span>-->
             <!--</div>-->
-            <!--<div class="noUser">-->
-              <!--<button class="login" @click="$router.push('/login')">登录</button>-->
-              <!--<button class="register" @click="$router.push('/register')">注册</button>-->
-            <!--</div>-->
+            <div class="noUser">
+              <button class="login" @click="$router.push('/login')">登录</button>
+              <button class="register" @click="$router.push('/register')">注册</button>
+            </div>
           </div>
         </div>
       </div>

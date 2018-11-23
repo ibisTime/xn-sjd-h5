@@ -198,7 +198,7 @@
           link: location.href.split('#')[0] + '/#/emotion-channel/article-detail?code=' + this.code,
           imgUrl: formatImg(this.detail.photo.split('||')[0]),
           success: (res) => {
-            alert(JSON.stringify(res));
+            // alert(JSON.stringify(res));
           }
         }, (data) => {
           this.isWxConfiging = false;
