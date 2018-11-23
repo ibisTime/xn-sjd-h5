@@ -22,24 +22,24 @@
         </div>
         <div class="me-content-list">
           <div class="item" @click="go('/userInfo')">
-            <img src="./change-avatar@2x.png" alt="">
+            <img src="./change-avatar@2x.png">
             <span>修改头像</span>
           </div>
           <div class="item" @click="go('/carbon-bubble')">
-            <img src="./carbon-bubble@2x.png" alt="">
-            <span>我的碳泡泡</span>
+            <img src="./carbon-bubble@2x.png">
+            <span>我的碳泡泡<img src="./new@2x.png"/></span>
           </div>
           <div class="item" @click="go('/my-article')">
-            <img src="./romantic-story@2x.png" alt="">
-            <span>我的浪漫故事</span>
+            <img src="./romantic-story@2x.png">
+            <span>我的浪漫故事<img src="./new@2x.png"/></span>
           </div>
           <div class="item" @click="go('/gift')">
-            <img src="./gift@2x.png" alt="">
-            <span>我的礼物</span>
+            <img src="./gift@2x.png">
+            <span>我的礼物<img src="./new@2x.png"/></span>
           </div>
           <div class="item" @click="go('/charts')">
-            <img src="./notify@2x.png" alt="">
-            <span>我的好友</span>
+            <img src="./notify@2x.png">
+            <span>我的好友<img src="./new@2x.png"/></span>
           </div>
         </div>
       </div>
@@ -299,6 +299,14 @@ export default {
             display: inline-block;
             height: 1.1rem;
             line-height: 1.1rem;
+            position: relative;
+            img {
+              width: 0.26rem;
+              height: 0.16rem;
+              position: absolute;
+              top: 0.2rem;
+              right: -0.6rem;
+            }
           }
         }
       }

@@ -39,7 +39,7 @@
                   <span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span>
                 </p>
                 <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">总数量：{{item.quantity}}</span></p>
-                <!--<p class="hot-pro-bottom" v-show="type === 1"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">转让中数量：{{item.presellQuantity}}</span></p>-->
+                <p class="hot-pro-bottom status" v-show="type === 2"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">{{deriveStatusObj[item.status]}}</span></p>
               </div>
             </div>
           </div>
@@ -361,6 +361,12 @@ export default {
               .hot-pro-bottom-number {
                 font-size: 0.24rem;
                 color: #999;
+              }
+            }
+            .hot-pro-bottom.status {
+              margin-top: 0.3rem;
+              span {
+                color: red;
               }
             }
           }
