@@ -105,7 +105,7 @@
           isNeedMobile: '1'
         }).then((data) => {
           this.loading = false;
-          alert('data-' + JSON.stringify(data));
+          // alert('data-' + JSON.stringify(data));
           setUser(data);
           if (data.isNeedMobile === '1') {
             this.text = '微信登录需要先绑定手机号';

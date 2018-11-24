@@ -180,10 +180,7 @@
         this.$refs.toast.show();
       },
       success() {
-        this.loading = false;
-        this.text = '支付成功！';
-        this.$refs.toast.show();
-        this.checkUser(getUserId());
+        this.paySuccess();
       },
       formatAmount(amount) {
         return formatAmount(amount);
@@ -441,9 +438,20 @@
           tradePwd: this.pwd || ''
         }).then((res) => {
           this.loading = false;
+          // alert(JSON.stringify(res));
           if(res) {
             if(this.payType === '3' && res.signOrder) {
               this._alipay(res);
+            } else if(this.payType === '5') {
+              let wxConfig = {
+                appId: res.appId, // 公众号名称，由商户传入
+                timeStamp: res.timeStamp, // 时间戳，自1970年以来的秒数
+                nonceStr: res.nonceStr, // 随机串
+                wechatPackage: res.wechatPackage,
+                signType: res.signType, // 微信签名方式：
+                paySign: res.paySign // 微信签名
+              };
+              initPay(wxConfig, this.success, this.error, this.cancel);
             } else {
               this.paySuccess();
             }
@@ -463,6 +471,16 @@
           if(res) {
             if(this.payType === '3' && res.signOrder) {
               this._alipay(res);
+            } else if(this.payType === '5') {
+              let wxConfig = {
+                appId: res.appId, // 公众号名称，由商户传入
+                timeStamp: res.timeStamp, // 时间戳，自1970年以来的秒数
+                nonceStr: res.nonceStr, // 随机串
+                wechatPackage: res.wechatPackage,
+                signType: res.signType, // 微信签名方式：
+                paySign: res.paySign // 微信签名
+              };
+              initPay(wxConfig, this.success, this.error, this.cancel);
             } else {
               this.paySuccess();
             }

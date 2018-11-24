@@ -103,7 +103,7 @@
           smsCaptcha = mobAndCapt.captcha;
         }
         wxLogin(code, userReferee, mobile, smsCaptcha).then((data) => {
-          alert('wxlogin-data-' + JSON.stringify(data));
+          // alert('wxlogin-data-' + JSON.stringify(data));
           if (data.isNeedMobile === '1') {
             this.text = '微信登录需要先绑定手机号';
             this.$refs.toast.show();

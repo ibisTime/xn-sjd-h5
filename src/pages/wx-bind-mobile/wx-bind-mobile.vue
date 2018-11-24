@@ -85,7 +85,6 @@
               smsCaptcha: this.captcha
             }).then((res) => {
               this.loading = false;
-              alert('res' + JSON.stringify(res));
               if(res.isSuccess) {
                 this.text = '绑定成功';
                 this.$refs.toast.show();
@@ -99,7 +98,7 @@
                   }, 100);
                 });
               }
-            }).catch(() => { alert('绑手机号报错'); this.loading = false; });
+            }).catch(() => { this.loading = false; });
             // getAppId().then((data) => {
             //   let appId = data.cvalue;
             //   let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);
