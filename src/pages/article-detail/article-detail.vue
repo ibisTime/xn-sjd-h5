@@ -196,7 +196,10 @@
           // link: location.origin + '/#' + location.href.split('#')[1],
           // link: location.origin + '/#/product-detail?code=' + this.code,
           link: location.href.split('#')[0] + '/#/emotion-channel/article-detail?code=' + this.code,
-          imgUrl: formatImg(this.detail.photo.split('||')[0])
+          imgUrl: formatImg(this.detail.photo.split('||')[0]),
+          success: (res) => {
+            // alert(JSON.stringify(res));
+          }
         }, (data) => {
           this.isWxConfiging = false;
           this.wxData = data;

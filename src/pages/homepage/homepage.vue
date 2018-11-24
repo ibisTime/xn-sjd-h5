@@ -128,6 +128,16 @@
                       </div>
                     </div>
                   </div>
+                  <div class="daily-content-item-info" v-if="item.type === '7'">
+                    <div class="message-border">
+                      <img :src="formatImg(item.userInfo.photo)" class="head">
+                      <div class="message-text">
+                        <p class="name">{{getName(item)}}</p>
+                        <p class="activity">{{item.barrageContent}}</p>
+                      </div>
+                      <img :src="formatImg(item.barragePic)" class="head">
+                    </div>
+                  </div>
                   <div class="daily-content-item-info" v-if="item.type === '5' || item.type === '6'">
                     <!--<img src="./steal@2x.png" alt="">-->
                     <p class="activity"><span>{{item.note}}</span></p>

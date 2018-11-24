@@ -25,6 +25,11 @@
                 <p class="text">积分</p>
               </div>
             </div>
+            <!--<div class="auth" @click="go('/auth')">-->
+              <!--&lt;!&ndash;<img src="./auth@2x.png">&ndash;&gt;-->
+              <!--<img src="./no-auth@2x.png">-->
+              <!--<span>未认证</span>-->
+            <!--</div>-->
             <div class="noUser">
               <button class="login" @click="$router.push('/login')">登录</button>
               <button class="register" @click="$router.push('/register')">注册</button>
@@ -269,6 +274,7 @@
             box-shadow: 0 8px 16px 0 #EBEFED;
             margin-bottom: 0.25rem;
             padding: 0.5rem;
+            position: relative;
             .info {
               height: 1.1rem;
               img {
@@ -341,6 +347,29 @@
                 font-size: $font-size-small;
                 line-height: $font-size-medium-xx;
                 color: #666;
+              }
+            }
+            .auth {
+              width: 1.72rem;
+              height: 0.6rem;
+              background: #d8eee8;
+              display: flex;
+              align-items: center;
+              position: absolute;
+              right: 0;
+              top: 0.75rem;
+              text-align: center;
+              padding: 0.2rem;
+              border-top-left-radius: 0.3rem;
+              border-bottom-left-radius: 0.3rem;
+              img {
+                width: 0.3rem;
+                height: 0.3rem;
+                margin-right: 0.1rem;
+              }
+              span {
+                font-size: 0.24rem;
+                color: #999;
               }
             }
             .noUser {
