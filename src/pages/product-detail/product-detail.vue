@@ -50,14 +50,9 @@
           <div class="description-detail rich-text-description" v-html="detailDescription" ref="description"></div>
         </div>
       </div>
-      <!--<div class="mall-content">-->
-        <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
-      <!--</div>-->
       </Scroll>
     </div>
     <div class="footer">
-      <!--<button @click="showPopUp">集体下单</button>-->
-      <!--<button @click="showPopUp">捐赠下单</button>-->
       <button @click="showPopUp" v-show="canAdopt()">申请认养</button>
       <button class="disabled" v-show="!canAdopt()" @click="goLogin()">{{noAdoptReason}}</button>
     </div>
@@ -119,10 +114,8 @@ import MHeader from 'components/m-header/m-header';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
-import { getProductDetail } from 'api/biz';
+import { getProductDetail, share } from 'api/biz';
 import { getUserDetail } from 'api/user';
-// import Logo from './../../../static/sjdicon.ico';
-// import Logo from './tree-default.png';
 export default {
   data() {
     return {
@@ -365,13 +358,26 @@ export default {
       initShare({
         title: '氧林',
         desc: this.detail.name,
-        // link: location.href.split('#')[0],
-        // link: location.origin + '/#' + location.href.split('#')[1],
-        // link: location.origin + '/#/product-detail?code=' + this.code,
         link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code,
-        // imgUrl: Logo
-        // imgUrl: 'http://image.tree.hichengdai.com/ForDa3S7_OY8tk81eGFag6PEchBF?imageMogr2/auto-orient/thumbnail/!300x300'
-        imgUrl: formatImg(this.detail.listPic)
+        imgUrl: formatImg(this.detail.listPic),
+        success: (res) => {
+          this.channel = '';
+          if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+            this.channel = 0;
+          } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+            this.channel = 1;
+          } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+            this.channel = 2;
+          } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+            this.channel = 3;
+          }
+          share(this.channel).then((res) => {
+            if(res.code) {
+              this.text = '分享成功';
+              this.$refs.toast.show();
+            }
+          }).then(() => {});
+        }
       }, (data) => {
         this.isWxConfiging = false;
         this.wxData = data;

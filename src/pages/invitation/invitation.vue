@@ -6,22 +6,14 @@
         <img :src="bgUrl">
         <div class="erweimaPic" id="qrcode"></div>
       </div>
-      <!--<div class="content">-->
-        <!--<div class="border">-->
-          <!--<div class="erweimaPic" id="qrcode"></div>-->
-        <!--</div>-->
-        <!--<div class="text">-->
-          <!--<span class="wing"></span>-->
-          <!--<span>扫 描 二 维 码 ，惊 喜 不 断</span>-->
-          <!--<span class="wing"></span>-->
-        <!--</div>-->
-      <!--</div>-->
     </div>
+    <toast ref="toast" :text="text"></toast>
     <full-loading v-show="loading"></full-loading>
   </div>
 </template>
 <script>
   const QRCode = require('js-qrcode');
+  import Toast from 'base/toast/toast';
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
   import {setTitle, formatImg, getUserId} from 'common/js/util';
@@ -29,16 +21,13 @@
   import {initShare} from 'common/js/weixin';
   import { getConfig } from 'api/general';
   import { getUserDetail } from 'api/user';
-  // import Logo from './logo-64.png';
+  import { share } from 'api/biz';
 
   export default {
     data() {
       return {
+        text: '',
         loading: false,
-        wechat: true,
-        alipay: false,
-        balance: false,
-        amount: 0,
         url: '',
         bgUrl: ''
       };
@@ -68,7 +57,6 @@
             background: '#ffffff',
             foreground: '#000000'
           });
-          console.log(this.url);
           qr.make(this.url);
           this.bgUrl = formatImg(res2.cvalue);
           if(!this.isWxConfiging && !this.wxData) {
@@ -77,9 +65,6 @@
           this.loading = false;
         }).catch(() => { this.loading = false; });
       });
-      // getUserDetail({
-      //   userId: this.userId
-      // })
     },
     methods: {
       go(url) {
@@ -90,11 +75,26 @@
         initShare({
           title: '氧林',
           desc: '邀请好友',
-          // link: location.href.split('#')[0],
-          // link: location.origin + '/#' + location.href.split('#')[1],
-          // link: location.origin + '/#/product-detail?code=' + this.code,
           link: location.href.split('#')[0] + '/#/invitation?userId=' + getUserId(),
-          imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300'
+          imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
+          success: (res) => {
+            this.channel = '';
+            if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+              this.channel = 0;
+            } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+              this.channel = 1;
+            } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+              this.channel = 2;
+            } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+              this.channel = 3;
+            }
+            share(this.channel).then((res) => {
+              if(res.code) {
+                this.text = '分享成功';
+                this.$refs.toast.show();
+              }
+            }).then(() => {});
+          }
         }, (data) => {
           this.isWxConfiging = false;
           this.wxData = data;
@@ -109,6 +109,7 @@
     },
     components: {
       MHeader,
+      Toast,
       FullLoading
     }
   };

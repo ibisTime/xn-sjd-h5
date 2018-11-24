@@ -49,6 +49,14 @@
                 <input type="text" name="idNo" v-model="idNo" v-validate="'required'" placeholder="请输入身份证号">
                 <span v-show="errors.has('idNo')" class="error-tip">{{errors.first('idNo')}}</span>
               </div>
+              <div class="item-input-wrapper">
+                <span class="mr50">出生日期</span>
+                <date-picker class="item-input"
+                             :year="year"
+                             :month="month"
+                             :day="day"
+                             @change="updateDate"></date-picker>
+              </div>
             </div>
           </div>
         </div>
@@ -65,8 +73,9 @@
   import MHeader from 'components/m-header/m-header';
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
+  import DatePicker from 'base/date-picker/date-picker';
   import EXIF from 'exif-js';
-  import {formatImg, getImgData} from 'common/js/util';
+  import {formatImg, getImgData, emptyValid} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import { getQiniuToken } from 'api/general';
   import { getUserDetail, changeAvatar, changeNickname, completeInfo } from 'api/user';
@@ -88,7 +97,10 @@
         multiple: false,
         mobile: '',
         photos: [],
-        user: {}
+        user: {},
+        year: '',
+        day: '',
+        month: ''
       };
     },
     methods: {
@@ -105,8 +117,21 @@
           return require('./../../common/image/avatar@2x.png');
         }
       },
+      updateDate (year, month, day) {
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        return this._yearValid();
+      },
+      _yearValid() {
+        let result = emptyValid(this.year);
+        this.yearErr = result.msg;
+        return !result.err;
+      },
       // 保存
       action() {
+        let date = this.year ? this.year + '-' + this.month + '-' + this.day : '';
+        console.log(date);
         if(this.photos.length) {
           this.$validator.validateAll().then((result) => {
             if (result) {
@@ -128,7 +153,8 @@
                   age: this.age,
                   realName: this.realName,
                   nickname: this.nickname,
-                  idNo: this.idNo
+                  idNo: this.idNo,
+                  birthday: date || ''
                 })
               ]).then(([res1, res2, res3]) => {
                 this.loading = false;
@@ -161,7 +187,8 @@
                   age: this.age,
                   realName: this.realName,
                   nickname: this.nickname,
-                  idNo: this.idNo
+                  idNo: this.idNo,
+                  birthday: date || ''
                 })
               ]).then(([res2, res3]) => {
                 this.loading = false;
@@ -262,6 +289,9 @@
         this.age = this.user.age || '';
         this.realName = this.user.realName || '';
         this.idNo = this.user.idNo || '';
+        this.year = this.user.birthday.split('-')[0];
+        this.month = this.user.birthday.split('-')[1];
+        this.day = this.user.birthday.split('-')[2];
       }).catch(() => {});
     },
     components: {
@@ -269,6 +299,7 @@
       MHeader,
       Qiniu,
       Toast,
+      DatePicker,
       FullLoading
     }
   };

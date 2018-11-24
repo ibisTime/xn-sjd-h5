@@ -275,3 +275,16 @@ export function getWxMobAndCapt () {
   }
   return null;
 }
+
+// 非空校验
+export function emptyValid(value) {
+  let result = {
+    err: 0,
+    msg: ''
+  };
+  if (isUnDefined(value)) {
+    result.err = 1;
+    result.msg = '不能为空';
+  }
+  return result;
+}

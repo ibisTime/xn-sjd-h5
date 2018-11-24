@@ -103,7 +103,7 @@
     mounted() {
       setTitle('我的订单');
       // this.currentIndexSell = +this.$route.query.type;
-      this.type = this.$route.query.type.toString();
+      this.type = this.$route.query.type ? this.$route.query.type.toString() : '';
       this.first = true;
       this.userId = getCookie('userId');
       if(this.userId) {

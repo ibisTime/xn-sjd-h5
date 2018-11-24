@@ -10,14 +10,14 @@
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
-            <!--<div @click="selectPayType(1)">-->
-              <!--<img src="./wechat@2x.png" alt="">-->
-              <!--<div class="text">-->
-                <!--<p>微信</p>-->
-              <!--</div>-->
-              <!--<img class="money fr" src="./choosed@2x.png" v-show="wechat">-->
-              <!--<img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">-->
-            <!--</div>-->
+            <div @click="selectPayType(1)">
+              <img src="./wechat@2x.png" alt="">
+              <div class="text">
+                <p>微信</p>
+              </div>
+              <img class="money fr" src="./choosed@2x.png" v-show="wechat">
+              <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
+            </div>
             <div @click="selectPayType(2)">
               <img src="./alipay@2x.png" alt="">
               <div class="text">
@@ -53,9 +53,12 @@
         </div>
       </div>
       <div class="footer">
-        <span>金额：<span>
-          {{totalPrice ? isPublish ? formatAmount(totalPrice - rate.cnyAmount) :
-          formatAmount(totalPrice) : isPublish ? formatAmount(amount - rate.cnyAmount) :
+        <span>金额：<span v-if="totalPrice">
+          {{isPublish ? formatAmount(totalPrice - rate.cnyAmount) :
+          formatAmount(totalPrice)}}
+        </span>
+        <span v-if="!totalPrice">
+          {{isPublish ? formatAmount(amount - rate.cnyAmount) :
           formatAmount(amount)}}
         </span>
           <span>元</span></span>
@@ -81,6 +84,7 @@
   import { getUserDetail } from 'api/user';
   import { getSystemConfigPage } from 'api/general';
   import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible } from 'api/store';         // 商城
+  import { initPay } from 'common/js/weixin';
 
   export default {
     data() {
@@ -170,6 +174,17 @@
       }
     },
     methods: {
+      error() {
+        this.loading = false;
+        this.text = '支付失败！';
+        this.$refs.toast.show();
+      },
+      success() {
+        this.loading = false;
+        this.text = '支付成功！';
+        this.$refs.toast.show();
+        this.checkUser(getUserId());
+      },
       formatAmount(amount) {
         return formatAmount(amount);
       },
@@ -367,6 +382,16 @@
             if(res) {
               if(this.payType === '3' && res.signOrder) {
                 this._alipay(res);
+              } else if(this.payType === '5') {
+                let wxConfig = {
+                  appId: res.appId, // 公众号名称，由商户传入
+                  timeStamp: res.timeStamp, // 时间戳，自1970年以来的秒数
+                  nonceStr: res.nonceStr, // 随机串
+                  wechatPackage: res.wechatPackage,
+                  signType: res.signType, // 微信签名方式：
+                  paySign: res.paySign // 微信签名
+                };
+                initPay(wxConfig, this.success, this.error, this.cancel);
               } else {
                 this.paySuccess();
               }
@@ -386,6 +411,16 @@
             if(res) {
               if(this.payType === '3' && res.signOrder) {
                 this._alipay(res);
+              } else if(this.payType === '5') {
+                let wxConfig = {
+                  appId: res.appId, // 公众号名称，由商户传入
+                  timeStamp: res.timeStamp, // 时间戳，自1970年以来的秒数
+                  nonceStr: res.nonceStr, // 随机串
+                  wechatPackage: res.wechatPackage,
+                  signType: res.signType, // 微信签名方式：
+                  paySign: res.paySign // 微信签名
+                };
+                initPay(wxConfig, this.success, this.error, this.cancel);
               } else {
                 this.paySuccess();
               }

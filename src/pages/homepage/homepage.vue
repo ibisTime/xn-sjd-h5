@@ -322,12 +322,25 @@
             status: '1',
             level: '1',
             type: '0'
+          }),
+          getProductType({
+            orderDir: 'asc',
+            orderColumn: 'order_no',
+            status: '1',
+            level: '2',
+            type: '1'
           })
-        ]).then(([userInfo, productType]) => {
+        ]).then(([userInfo, productType, res3]) => {
           this.loading = false;
           this.userInfo = userInfo;
 
           productType.map(item => {
+            this.categorys.push({
+              key: item.code,
+              value: item.name
+            });
+          });
+          res3.map((item) => {
             this.categorys.push({
               key: item.code,
               value: item.name

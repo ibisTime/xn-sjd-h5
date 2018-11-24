@@ -10,7 +10,7 @@ import {getUserId} from 'common/js/util';
  */
 export function wxLogin(data) {
   // code, userReferee, mobile, smsCaptcha, isNeedMobile
-  alert(data.isNeedMobile);
+  alert(JSON.stringify(data));
   let params = {
     code: data.code,
     kind: 'C',
@@ -23,6 +23,7 @@ export function wxLogin(data) {
     params.userReferee = data.userReferee;
     params.userRefereeKind = 'C';
   }
+  alert('params' + JSON.stringify(data));
   return fetch(805051, params);
 }
 
@@ -421,6 +422,7 @@ export function bindEmail(data) {
 
 // 绑定手机号
 export function bindMobile(data) {
+  alert(getUserId());
   return fetch(805060, {
     userId: getUserId(),
     ...data

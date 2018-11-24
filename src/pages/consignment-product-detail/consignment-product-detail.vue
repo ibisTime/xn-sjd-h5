@@ -200,7 +200,7 @@ import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getDeriveZichanDetail, getOriginZichanDetail,
   guadanjishou, dingxiangjishou, erweimajishou, placeOrderGuadan,
-  refuseDingxiangJishou, cancelDingxiangJishou, zhifuzhuanzeng, placeOrderDingxiang, placeOrderErweima } from 'api/biz';
+  refuseDingxiangJishou, cancelDingxiangJishou, zhifuzhuanzeng, placeOrderDingxiang, placeOrderErweima, share } from 'api/biz';
 import { getDictList } from 'api/general';
 export default {
   data() {
@@ -545,8 +545,26 @@ export default {
       initShare({
         title: '氧林',
         desc: this.detail.name,
-        link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code,
-        imgUrl: formatImg(this.detail.listPic)
+        link: location.href.split('#')[0] + '/#/consignment-product-detail?code=' + this.code,
+        imgUrl: formatImg(this.detail.listPic),
+        success: (res) => {
+          this.channel = '';
+          if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+            this.channel = 0;
+          } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+            this.channel = 1;
+          } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+            this.channel = 2;
+          } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+            this.channel = 3;
+          }
+          share(this.channel).then((res) => {
+            if(res.code) {
+              this.text = '分享成功';
+              this.$refs.toast.show();
+            }
+          }).then(() => {});
+        }
       }, (data) => {
         this.isWxConfiging = false;
         this.wxData = data;
@@ -644,6 +662,9 @@ export default {
         res3.map((item) => {
           this.outputUnitObj[item.dkey] = item.dvalue;
         });
+        if(!this.isWxConfiging && !this.wxData) {
+          this.getInitWXSDKConfig();
+        }
       }).catch(() => { this.loading = false; });
     }
   },
