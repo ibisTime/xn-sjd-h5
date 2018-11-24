@@ -5,102 +5,199 @@
         <div class="form-item border-bottom-1px">
           <div class="item-label">企业名称</div>
           <div class="item-input-wrapper">
-            <input type="text" class="item-input" v-model="name" name="name" v-validate="'required'" placeholder="请输入企业名称">
+            <input type="text" class="item-input" v-model="perConfig.companyName" name="name" v-validate="'required'" placeholder="请输入企业名称">
             <span v-show="errors.has('name')" class="error-tip">{{errors.first('name')}}</span>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-label">营业执照号</div>
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="mobile" name="mobile" v-validate="'required|mobile'" placeholder="请输入营业执照号">
-            <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+            <input type="tel" class="item-input" v-model="perConfig.bussinessLicenseId" name="license" v-validate="'required'" placeholder="请输入营业执照号">
+            <span v-show="errors.has('license')" class="error-tip">{{errors.first('license')}}</span>
           </div>
         </div>
         <div class="text">
-          <textarea v-model="context" ref="textarea" @input="autosize" v-validate="'required'" rows="5" class="item-input" placeholder="请输入企业简介"></textarea>
+          <textarea v-model="perConfig.companyIntroduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="请输入企业简介"></textarea>
         </div>
         <div class="avatar">
           <img :src="formatImg(item.key)" v-for="(item, index) in photos" class="avatar-photos" ref="myImg" @click="choseItem(index)"/>
-          <!--<qiniu-->
-            <!--ref="qiniu"-->
-            <!--style="visibility: hidden;position: absolute;"-->
-            <!--:token="token"-->
-            <!--:uploadUrl="uploadUrl"></qiniu>-->
+          <img src="./upload@2x.png" v-show="photos.length === 0">
+          <qiniu
+            ref="qiniu"
+            style="visibility: hidden;position: absolute;"
+            :token="token"
+            :uploadUrl="uploadUrl"></qiniu>
           <div class="input-box">
-            <!--<input class="input-file"-->
-                   <!--type="file"-->
-                   <!--:multiple="multiple"-->
-                   <!--ref="fileInput"-->
-                   <!--@change="fileChange($event)"-->
-                   <!--accept="image/*"/>-->
-            <img src="./upload@2x.png">
+            <input class="input-file"
+                   type="file"
+                   :multiple="multiple"
+                   ref="fileInput"
+                   @change="fileChange($event)"
+                   accept="image/*"/>
           </div>
         </div>
         <div class="form-btn">
-          <button :disabled="setting" @click="saveAddress">保存</button>
+          <button :disabled="setting" @click="saveMessage">保存</button>
         </div>
-        <!--<full-loading v-show="showLoading"></full-loading>-->
+        <full-loading v-show="showLoading"></full-loading>
         <toast ref="toast" :text="toastText"></toast>
       </div>
     </div>
   </transition>
 </template>
 <script>
-  import { setTitle } from 'common/js/util';
+  import CityPicker from 'base/city-picker/city-picker';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
+  import MHeader from 'components/m-header/m-header';
+  import { getQiniuToken } from 'api/general';
+  import { comCertification, getUser } from 'api/user';
+  import { setTitle, formatImg, getImgData, getUserId } from 'common/js/util';
+  import EXIF from 'exif-js';
+  import Qiniu from 'base/qiniu/qiniu';
 
   export default {
     data() {
       return {
         setting: false,
-        name: '',
-        mobile: '',
         province: '',
         city: '',
         district: '',
         provErr: '',
-        address: '',
-        addressErr: '',
         isDefault: '0',
-        showLoading: true,
+        showLoading: false,
         isAlert: true,
         toastText: '',
-        code: '',
         photos: [],
-        context: ''
+        token: '',
+        uploadUrl: 'http://up-z0.qiniu.com',
+        multiple: false,
+        perConfig: {
+          bussinessLicenseId: '',
+          bussinessLicense: '',
+          companyIntroduce: '',
+          companyName: '',
+          userId: getUserId()
+        },
+        pramStatus: ''
       };
     },
     created() {
       setTitle('企业认证');
-      // this.code = this.$route.params.id || '';
-      this.code = sessionStorage.getItem('ressCode');
+      this.pramStatus = this.$route.query.pramStatus;
+      Promise.all([
+        getQiniuToken(),
+        getUser()
+      ]).then(([res1, res2]) => {
+        this.token = res1.uploadToken;
+        if(this.pramStatus === '1') {
+          this.photos.push({key: res2.userExt.bussinessLicense});
+          this.perConfig.bussinessLicenseId = res2.userExt.bussinessLicenseId;
+          this.perConfig.companyIntroduce = res2.userExt.companyIntroduce;
+          this.perConfig.companyName = res2.userExt.companyName;
+        }
+      }).catch(() => {});
     },
     methods: {
-      autosize(obj) {
-        // let el = obj;
-        setTimeout(() => {
-          // console.log(1);
-          this.$refs.textarea.style.cssText = 'height:auto; padding:0';
-          // for box-sizing other than "content-box" use:
-          // el.style.cssText = '-moz-box-sizing:content-box';
-          this.$refs.textarea.style.cssText = 'height:' + this.$refs.textarea.scrollHeight + 'px';
-        }, 0);
+      formatImg(key) {
+        this.perConfig.bussinessLicense = key;
+        return formatImg(key);
       },
-      _initPageData(addr) {
-        this.showLoading = false;
-        this.name = addr.addressee;
-        this.mobile = addr.mobile;
-        this.address = addr.detailAddress;
-        this.isDefault = addr.isDefault;
-        this.province = addr.province;
-        this.city = addr.city;
-        this.district = addr.district;
+      /**
+       * 从相册中选择图片
+       * */
+      fileChange(e) {
+        let files;
+        if (e.dataTransfer) {
+          files = e.dataTransfer.files;
+        } else if (e.target) {
+          files = e.target.files;
+        }
+        let self = this;
+        let file = files[0];
+        let orientation;
+        EXIF.getData(file, function() {
+          orientation = EXIF.getTag(this, 'Orientation');
+        });
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          getImgData(file.type, this.result, orientation, function(data) {
+            let _url = URL.createObjectURL(file);
+            let item = {
+              preview: data,
+              ok: false,
+              type: file.type,
+              key: _url.split('/').pop() + '.' + file.name.split('.').pop()
+            };
+            self.loading = true;
+            self.uploadPhoto(data, item.key).then(() => {
+              item = {
+                ...item,
+                ok: true
+              };
+              if(item.ok === true) {
+                self.photos = [item];
+              }
+              self.updatePhotos(item);
+            }).catch(err => {
+              self.onUploadError(err);
+            });
+            self.$refs.fileInput.value = null;
+          });
+        };
+        reader.readAsDataURL(file);
+      },
+      /**
+       * 图片上传完成后更新photos
+       * */
+      updatePhotos(item) {
+        for (let i = 0; i < this.photos.length; i++) {
+          if (this.photos[i].key === item.key) {
+            this.photos.splice(i, 1, item);
+            break;
+          }
+        }
+        this.loading = false;
+      },
+      uploadPhoto(base64, key) {
+        return this.$refs.qiniu.uploadByBase64(base64, key);
+      },
+      /**
+       * 处理图片上传错误事件
+       * @param error 错误信息
+       */
+      onUploadError(error) {
+        this.text = (error.body && error.body.error) || `${error.message}:10M` || '图片上传出错';
+        this.$refs.toast.show();
+      },
+      saveMessage() {
+        if(this.perConfig.bussinessLicenseId === '' ||
+          this.perConfig.bussinessLicense === '' ||
+          this.perConfig.companyIntroduce === '' ||
+          this.perConfig.companyName === '') {
+          this.toastText = '请填写完整';
+          this.$refs.toast.show();
+          return;
+        }
+        this.showLoading = true;
+        comCertification(this.perConfig).then(data => {
+          this.showLoading = false;
+          this.toastText = '认证成功';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/me');
+          }, 1500);
+        }, () => {
+          this.showLoading = false;
+        });
       }
     },
     components: {
+      CityPicker,
       FullLoading,
-      Toast
+      Toast,
+      MHeader,
+      Qiniu
     }
   };
 </script>
@@ -138,7 +235,10 @@
         padding-top: 0.3rem;
         border-bottom: 1px solid $color-border;
         .item-input {
-          line-height: 0.5rem;
+          padding: 0.05rem 0.1rem;
+          min-height: 3rem !important;
+          font-size: 0.3rem;
+          color: #333;
           width: 100%;
         }
       }
@@ -146,30 +246,41 @@
         position: relative;
         padding: 0.3rem;
         font-size: 0;
+        width: 1.6rem;
+        height: 1.6rem;
         .avatar-photos {
-          width: 1.6rem;
-          height: 1.6rem;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          z-index: 1;
           margin: 0.35rem 0.3rem 0 0;
           vertical-align: bottom;
         }
+        img {
+          /*width: 1.6rem;*/
+          /*height: 1.6rem;*/
+          /*margin: 0.35rem 0.3rem 0 0;*/
+          /*vertical-align: bottom;*/
+          width: 1.6rem;
+          height: 1.6rem;
+          /* margin: 0.35rem 0.3rem 0 0; */
+          vertical-align: bottom;
+          float: left;
+          /* position: absolute; */
+          /* left: 0; */
+          z-index: 32;
+          top: 0;
+        }
         .input-box {
           display: inline-block;
-          position: relative;
-          img {
-            /*width: 1.6rem;*/
-            /*height: 1.6rem;*/
-            /*margin: 0.35rem 0.3rem 0 0;*/
-            /*vertical-align: bottom;*/
-            width: 1.6rem;
-            height: 1.6rem;
-            /* margin: 0.35rem 0.3rem 0 0; */
-            vertical-align: bottom;
-            float: left;
-            /* position: absolute; */
-            /* left: 0; */
-            z-index: 32;
-            top: 0;
-          }
+          position: absolute;
+          width: 100%;
+          left: 0;
+          top: 0;
+          z-index: 9;
+          opacity: 0;
+          background-color: transparent;
           .input-file {
             /*width: 1.6rem;*/
             /*height: 1.6rem;*/
@@ -199,3 +310,4 @@
     font-size: $font-size-medium-s;
   }
 </style>
+

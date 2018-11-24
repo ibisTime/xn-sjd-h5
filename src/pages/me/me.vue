@@ -25,11 +25,11 @@
                 <p class="text">积分</p>
               </div>
             </div>
-            <!--<div class="auth" @click="go('/auth')">-->
-              <!--&lt;!&ndash;<img src="./auth@2x.png">&ndash;&gt;-->
-              <!--<img src="./no-auth@2x.png">-->
-              <!--<span>未认证</span>-->
-            <!--</div>-->
+            <div class="auth" @click="toAuth">
+              <!--<img src="./auth@2x.png">-->
+              <img src="./no-auth@2x.png">
+              <span>{{rzText}}</span>
+            </div>
             <div class="noUser">
               <button class="login" @click="$router.push('/login')">登录</button>
               <button class="register" @click="$router.push('/register')">注册</button>
@@ -148,7 +148,9 @@
           orderColumn: 'update_datetime',
           orderDir: 'desc'
         },
-        ismsg: false
+        ismsg: false,
+        rzText: '未认证',
+        rzStatus: '0'
       };
     },
     created() {
@@ -196,6 +198,9 @@
             };
           }
         }, 20);
+      },
+      toAuth() { // 认证
+        this.go('/auth?rzStatus=' + this.rzStatus);
       }
     },
     mounted() {
@@ -210,6 +215,19 @@
           })
         ]).then(([res1, res2]) => {
           this.userDetail = res1;
+          if(res1.userExt.personAuthStatus && res1.userExt.companyAuthStatus) {
+            this.rzText = '已认证';
+            this.rzStatus = '1';
+          }else if(res1.userExt.personAuthStatus) {
+            this.rzText = '已个人认证';
+            this.rzStatus = '2';
+          }else if(res1.userExt.companyAuthStatus) {
+            this.rzText = '已企业认证';
+            this.rzStatus = '3';
+          }else {
+            this.rzText = '未认证';
+            this.rzStatus = '0';
+          }
           this.src = formatImg(this.userDetail.photo) || require('./../../common/image/avatar@2x.png');
           res2.list.map((item) => {
             if(item.currency === 'CNY') {
@@ -350,7 +368,7 @@
               }
             }
             .auth {
-              width: 1.72rem;
+              min-width: 1.72rem;
               height: 0.6rem;
               background: #d8eee8;
               display: flex;

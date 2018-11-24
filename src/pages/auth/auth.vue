@@ -2,17 +2,17 @@
   <div class="auth-wrapper">
     <div class="content">
       <div class="info">
-        <div class="item" @click="go(`/person-auth`)">
+        <div class="item" @click="toPerAuth">
           <span>个人认证</span>
           <div class="is-auth">
-            <span>已认证</span>
+            <span>{{rzPerText}}</span>
             <img src="./more@2x.png" alt="" class="fr more">
           </div>
         </div>
-        <div class="item" @click="go(`/company-auth`)">
+        <div class="item" @click="toPramAuth">
           <span>企业认证</span>
           <div class="is-auth">
-            <span>未认证</span>
+            <span>{{rzPramText}}</span>
             <img src="./more@2x.png" alt="" class="fr more">
           </div>
         </div>
@@ -25,7 +25,37 @@ import { setTitle } from 'common/js/util';
 export default {
   data() {
     return {
+      rzStatus: '',
+      rzPerText: '未认证',
+      rzPramText: '未认证',
+      perStatus: '0',
+      pramStatus: '0'
     };
+  },
+  created() {
+    this.rzStatus = this.$route.query.rzStatus;
+    switch(this.rzStatus) {
+      case '0':  // 都未认证
+        this.rzPerText = '未认证';
+        this.rzPramText = '未认证';
+        break;
+      case '1':  // 都已认证
+        this.rzPerText = '已认证';
+        this.rzPramText = '已认证';
+        this.perStatus = '1';
+        this.pramStatus = '1';
+        break;
+      case '2':  // 个人认证
+        this.rzPerText = '已认证';
+        this.rzPramText = '未认证';
+        this.perStatus = '1';
+        break;
+      case '3': // 企业认证
+        this.rzPerText = '未认证';
+        this.rzPramText = '已认证';
+        this.pramStatus = '1';
+        break;
+    }
   },
   methods: {
     go(url) {
@@ -42,6 +72,12 @@ export default {
       } else {
         this.go(`/productTree-list?code=${this.code}`);
       }
+    },
+    toPerAuth() {
+      this.go(`/person-auth?perStatus=${this.perStatus}`);
+    },
+    toPramAuth() {
+      this.go(`/company-auth?pramStatus=${this.pramStatus}`);
     }
   },
   mounted() {
