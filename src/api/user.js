@@ -428,3 +428,13 @@ export function bindMobile(data) {
     ...data
   });
 }
+
+// 个人认证
+export function certification(config) {
+  return fetch(805071, config);
+}
+
+// 企业认证
+export function comCertification(config) {
+  return fetch(805072, config);
+}

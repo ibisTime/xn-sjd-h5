@@ -5,235 +5,195 @@
         <div class="form-item border-bottom-1px">
           <div class="item-label">真实姓名</div>
           <div class="item-input-wrapper">
-            <input type="text" class="item-input" v-model="name" name="name" v-validate="'required'" placeholder="请输入姓名">
+            <input type="text" class="item-input" v-model="perConfig.realName" name="name" v-validate="'required'" placeholder="请输入姓名">
             <span v-show="errors.has('name')" class="error-tip">{{errors.first('name')}}</span>
           </div>
         </div>
         <div class="form-item border-bottom-1px">
           <div class="item-label">身份证号</div>
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="mobile" name="mobile" v-validate="'required|mobile'" placeholder="请输入身份证号">
-            <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+            <input type="tel" class="item-input" v-model="perConfig.idNo" name="idCard" v-validate="'required|idCard'" placeholder="请输入身份证号">
+            <span v-show="errors.has('idCard')" class="error-tip">{{errors.first('idCard')}}</span>
           </div>
         </div>
         <div class="text">
-          <textarea v-model="context" ref="textarea" @input="autosize" v-validate="'required'" rows="5" class="item-input" placeholder="请输入个人简介"></textarea>
+          <textarea v-model="perConfig.introduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="请输入个人简介"></textarea>
         </div>
         <div class="avatar">
           <img :src="formatImg(item.key)" v-for="(item, index) in photos" class="avatar-photos" ref="myImg" @click="choseItem(index)"/>
-          <!--<qiniu-->
-            <!--ref="qiniu"-->
-            <!--style="visibility: hidden;position: absolute;"-->
-            <!--:token="token"-->
-            <!--:uploadUrl="uploadUrl"></qiniu>-->
+          <img src="./upload@2x.png" v-show="photos.length === 0">
+          <qiniu
+            ref="qiniu"
+            style="visibility: hidden;position: absolute;"
+            :token="token"
+            :uploadUrl="uploadUrl"></qiniu>
           <div class="input-box">
-            <!--<input class="input-file"-->
-                   <!--type="file"-->
-                   <!--:multiple="multiple"-->
-                   <!--ref="fileInput"-->
-                   <!--@change="fileChange($event)"-->
-                   <!--accept="image/*"/>-->
-            <img src="./upload@2x.png">
+            <input class="input-file"
+                   type="file"
+                   :multiple="multiple"
+                   ref="fileInput"
+                   @change="fileChange($event)"
+                   accept="image/*"/>
           </div>
         </div>
         <div class="form-btn">
-          <button :disabled="setting" @click="saveAddress">保存</button>
+          <button :disabled="setting" @click="saveMessage">保存</button>
         </div>
-        <!--<full-loading v-show="showLoading"></full-loading>-->
+        <full-loading v-show="showLoading"></full-loading>
         <toast ref="toast" :text="toastText"></toast>
       </div>
     </div>
   </transition>
 </template>
 <script>
-  import {addAddress, editAddress, getAddressList} from 'api/user';
   import CityPicker from 'base/city-picker/city-picker';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
   import MHeader from 'components/m-header/m-header';
+  import { getQiniuToken } from 'api/general';
+  import { certification, getUser } from 'api/user';
+  import { setTitle, formatImg, getImgData, getUserId } from 'common/js/util';
+  import EXIF from 'exif-js';
+  import Qiniu from 'base/qiniu/qiniu';
 
   export default {
     data() {
       return {
         setting: false,
-        name: '',
-        mobile: '',
         province: '',
         city: '',
         district: '',
         provErr: '',
-        address: '',
-        addressErr: '',
         isDefault: '0',
         showLoading: true,
         isAlert: true,
         toastText: '',
-        headerTitle: '新增收货地址',
-        code: '',
-        context: '',
-        photos: []
+        photos: [],
+        token: '',
+        uploadUrl: 'http://up-z0.qiniu.com',
+        multiple: false,
+        perConfig: {
+          idNo: '',
+          idPic: '',
+          introduce: '',
+          realName: '',
+          userId: getUserId()
+        },
+        perStatus: ''
       };
     },
     created() {
-      // this.code = this.$route.params.id || '';
-      this.code = sessionStorage.getItem('ressCode');
-      if (this.code) {
-        this.headerTitle = '修改收货地址';
-        // this.getAddress();
-      } else {
-        // this._getAddressList();
-      }
-      this._getAddressList();
+      setTitle('个人认证');
+      this.perStatus = this.$route.query.perStatus;
+      Promise.all([
+        getQiniuToken(),
+        getUser()
+      ]).then(([res1, res2]) => {
+        this.token = res1.uploadToken;
+        if(this.perStatus === '1') {
+          this.photos.push({key: res2.userExt.idPic});
+          this.perConfig.idNo = res2.idNo;
+          this.perConfig.introduce = res2.userExt.introduce;
+          this.perConfig.realName = res2.realName;
+        }
+        this.showLoading = false;
+      }).catch(() => {});
     },
     methods: {
-      autosize(obj) {
-        // let el = obj;
-        setTimeout(() => {
-          // console.log(1);
-          this.$refs.textarea.style.cssText = 'height:auto; padding:0';
-          // for box-sizing other than "content-box" use:
-          // el.style.cssText = '-moz-box-sizing:content-box';
-          this.$refs.textarea.style.cssText = 'height:' + this.$refs.textarea.scrollHeight + 'px';
-        }, 0);
+      formatImg(key) {
+        this.perConfig.idPic = key;
+        return formatImg(key);
       },
-      getAddress() {
-        let index = this.addressList.findIndex((item) => {
-          return item.code === this.code;
-        });
-        if (!~index) {
-          this._getAddressList();
-        } else {
-          this._initPageData(this.addressList[index]);
+      /**
+       * 从相册中选择图片
+       * */
+      fileChange(e) {
+        let files;
+        if (e.dataTransfer) {
+          files = e.dataTransfer.files;
+        } else if (e.target) {
+          files = e.target.files;
         }
-      },
-      _getAddressList() {
-        getAddressList().then((data) => {
-          // this.setAddressList(data);
-          if (this.code) {
-            let index = data.findIndex((item) => {
-              return item.code === this.code;
-            });
-            if (!~index) {
-              this.toastText = '地址编号错误';
-              this.$refs.toast.show();
-            } else {
-              this._initPageData(data[index]);
-            }
-          } else {
-            this.showLoading = false;
-          }
-        }).catch(() => {
-          this.showLoading = false;
+        let self = this;
+        let file = files[0];
+        let orientation;
+        EXIF.getData(file, function() {
+          orientation = EXIF.getTag(this, 'Orientation');
         });
-      },
-      _initPageData(addr) {
-        this.showLoading = false;
-        this.name = addr.addressee;
-        this.mobile = addr.mobile;
-        this.address = addr.detailAddress;
-        this.isDefault = addr.isDefault;
-        this.province = addr.province;
-        this.city = addr.city;
-        this.district = addr.district;
-      },
-      cityChange(prov, city, district) {
-        this.province = prov;
-        this.city = city;
-        this.district = district;
-        // this._provinceValid();
-      },
-      saveAddress() {
-        this.$validator.validateAll().then((result) => {
-          if(result && this.province && this.city && this.district) {
-            this.setting = true;
-            let param = {
-              addressee: this.name,
-              mobile: this.mobile,
-              province: this.province,
-              city: this.city,
-              district: this.district,
-              detailAddress: this.address
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          getImgData(file.type, this.result, orientation, function(data) {
+            let _url = URL.createObjectURL(file);
+            let item = {
+              preview: data,
+              ok: false,
+              type: file.type,
+              key: _url.split('/').pop() + '.' + file.name.split('.').pop()
             };
-            if (this.code) {
-              param.code = this.code;
-              param.isDefault = this.isDefault;
-              this._editAddress(param);
-            } else {
-              this._addAddress(param);
-            }
-          } else {
-            if(this.result && !this.province) {
-              this.toastText = '请选择省市区';
-            } else {
-              this.toastText = '请填写完整信息';
-            }
-            this.$refs.toast.show();
-          }
-        });
-        // if (this.errors.items.length === 0 && this.mobile && this.name && this.address) {
-        //   this.setting = true;
-        //   let param = {
-        //     addressee: this.name,
-        //     mobile: this.mobile,
-        //     province: this.province,
-        //     city: this.city,
-        //     district: this.district,
-        //     detailAddress: this.address
-        //   };
-        //   if (this.code) {
-        //     param.code = this.code;
-        //     param.isDefault = this.isDefault;
-        //     this._editAddress(param);
-        //   } else {
-        //     this._addAddress(param);
-        //   }
-        // }
-      },
-      _editAddress(param) {
-        if(this.errors.items.length === 0) {
-          editAddress(param).then(() => {
-            this.setting = false;
-            this.toastText = '修改成功';
-            this.$refs.toast.show();
-            // let addressList = this.addressList.slice();
-            // let index = addressList.findIndex((item) => {
-            //   return item.code === this.code;
-            // });
-            // if (addressList.length === 1) {
-            //   param.isDefault = '1';
-            // }
-            // addressList.splice(index, 1, param);
-            // this.setAddressList(addressList);
-            // this.setCurAddr(param);
-            setTimeout(() => {
-              this.$router.back();
-            }, 1000);
-          }).catch(() => {
-            this.setting = false;
+            self.loading = true;
+            self.uploadPhoto(data, item.key).then(() => {
+              item = {
+                ...item,
+                ok: true
+              };
+              if(item.ok === true) {
+                self.photos = [item];
+              }
+              self.updatePhotos(item);
+            }).catch(err => {
+              self.onUploadError(err);
+            });
+            self.$refs.fileInput.value = null;
           });
-        }
+        };
+        reader.readAsDataURL(file);
       },
-      _addAddress(param) {
-        addAddress(param).then((data) => {
-          this.setting = false;
-          this.toastText = '新增成功';
+      /**
+       * 图片上传完成后更新photos
+       * */
+      updatePhotos(item) {
+        for (let i = 0; i < this.photos.length; i++) {
+          if (this.photos[i].key === item.key) {
+            this.photos.splice(i, 1, item);
+            break;
+          }
+        }
+        this.loading = false;
+      },
+      uploadPhoto(base64, key) {
+        return this.$refs.qiniu.uploadByBase64(base64, key);
+      },
+      /**
+       * 处理图片上传错误事件
+       * @param error 错误信息
+       */
+      onUploadError(error) {
+        this.text = (error.body && error.body.error) || `${error.message}:10M` || '图片上传出错';
+        this.$refs.toast.show();
+      },
+      saveMessage() {
+        if(this.perConfig.idPic === '' ||
+          this.perConfig.idNo === '' ||
+          this.perConfig.realName === '' ||
+          this.perConfig.introduce === '') {
+          this.toastText = '请填写完整';
           this.$refs.toast.show();
-          // let _item = {
-          //   code: data.code,
-          //   ...param
-          // };
-          // let addressList = this.addressList.splice();
-          // if (addressList.length === 0) {
-          //   _item.isDefault = '1';
-          // }
-          // addressList.push(_item);
-          // this.setCurAddr(_item);
-          // this.setAddressList(addressList);
+          return;
+        }
+        this.showLoading = true;
+        certification(this.perConfig).then(data => {
+          this.showLoading = false;
+          if(this.perStatus === '1') {
+            this.toastText = '重新认证成功';
+          }else {
+            this.toastText = '认证成功';
+          }
+          this.$refs.toast.show();
           setTimeout(() => {
-            this.$router.push('/address');
-          }, 1000);
-        }).catch(() => {
-          this.setting = false;
+            this.$router.push('/me');
+          }, 1500);
+        }, () => {
+          this.showLoading = false;
         });
       }
     },
@@ -241,7 +201,8 @@
       CityPicker,
       FullLoading,
       Toast,
-      MHeader
+      MHeader,
+      Qiniu
     }
   };
 </script>
@@ -268,6 +229,9 @@
           padding-right: 0;
           height: 1.1rem;
         }
+        input{
+          color: #666;
+        }
       }
       .form-btn {
         padding: 0;
@@ -279,7 +243,10 @@
         padding-top: 0.3rem;
         border-bottom: 1px solid $color-border;
         .item-input {
-          line-height: 0.5rem;
+          padding: 0.05rem 0.1rem;
+          min-height: 3rem !important;
+          font-size: 0.3rem;
+          color: #333;
           width: 100%;
         }
       }
@@ -287,30 +254,41 @@
         position: relative;
         padding: 0.3rem;
         font-size: 0;
+        width: 1.6rem;
+        height: 1.6rem;
         .avatar-photos {
-          width: 1.6rem;
-          height: 1.6rem;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          z-index: 1;
           margin: 0.35rem 0.3rem 0 0;
           vertical-align: bottom;
         }
+        img {
+          /*width: 1.6rem;*/
+          /*height: 1.6rem;*/
+          /*margin: 0.35rem 0.3rem 0 0;*/
+          /*vertical-align: bottom;*/
+          width: 1.6rem;
+          height: 1.6rem;
+          /* margin: 0.35rem 0.3rem 0 0; */
+          vertical-align: bottom;
+          float: left;
+          /* position: absolute; */
+          /* left: 0; */
+          z-index: 32;
+          top: 0;
+        }
         .input-box {
           display: inline-block;
-          position: relative;
-          img {
-            /*width: 1.6rem;*/
-            /*height: 1.6rem;*/
-            /*margin: 0.35rem 0.3rem 0 0;*/
-            /*vertical-align: bottom;*/
-            width: 1.6rem;
-            height: 1.6rem;
-            /* margin: 0.35rem 0.3rem 0 0; */
-            vertical-align: bottom;
-            float: left;
-            /* position: absolute; */
-            /* left: 0; */
-            z-index: 32;
-            top: 0;
-          }
+          position: absolute;
+          width: 100%;
+          left: 0;
+          top: 0;
+          z-index: 9;
+          opacity: 0;
+          background-color: transparent;
           .input-file {
             /*width: 1.6rem;*/
             /*height: 1.6rem;*/

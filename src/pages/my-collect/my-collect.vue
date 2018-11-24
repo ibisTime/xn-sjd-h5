@@ -19,6 +19,9 @@
           </div>
         </div>
       </Scroll>
+      <div v-show="!collectTextData.length" class="no-result-wrapper">
+        <no-result title="抱歉，暂无收藏"></no-result>
+      </div>
     </div>
     <div class="tree" v-show="type === 1">
       <Scroll :pullUpLoad="pullUpLoad">
@@ -39,6 +42,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
+  import NoResult from 'base/no-result/no-result';
   import { myArticlePage } from 'api/biz';
   import { formatImg, formatDate } from 'common/js/util';
 
@@ -79,7 +83,8 @@
     },
     components: {
       Scroll,
-      MHeader
+      MHeader,
+      NoResult
     }
   };
 </script>
