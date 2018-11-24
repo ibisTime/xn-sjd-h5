@@ -115,6 +115,17 @@
     bottom: 0;
     top: 0;
     left: 0;
+    .no-result-wrapper{
+      position: fixed;
+      top: 3rem;
+      left: 50%;
+      -webkit-transform: translateX(-50%);
+      -moz-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+      -o-transform: translateX(-50%);
+      transform: translateX(-50%);
+      z-index: 9;
+    }
     .fl {
       float: left;
     }
