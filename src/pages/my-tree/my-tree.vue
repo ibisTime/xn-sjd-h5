@@ -78,7 +78,7 @@
         <!-- 用户 -->
         <div class="tab" v-show="!other">
           <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">最新动态</span>
-          <!--<span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>-->
+          <span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>
           <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
         </div>
         <!-- 用户 - 最新动态/认养人/古树详情 -->
@@ -141,7 +141,17 @@
               </div>
             </div>
             <!-- 认养人介绍 -->
-            <!--<div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1"></div>-->
+            <!--<div class="adopter-introduction" v-html="adopterIntroduction" v-show="tab === 1">-->
+              <!---->
+            <!--</div>-->
+          <div class="tree-detail" v-show="tab === 1">
+            <div class="item">
+              <span>认养人昵称</span><span>{{treeDetail.user ? treeDetail.user.nickname : ''}}</span>
+            </div>
+            <div class="item">
+              <span>认养人手机号</span><span>{{treeDetail.user ? jiami(treeDetail.user.mobile) : ''}}</span>
+            </div>
+          </div>
             <!-- 古树详情 -->
             <div class="tree-detail" v-show="tab === 2">
             <!--<div class="item">-->
@@ -534,6 +544,7 @@ export default {
       this.loading = true;
       return getUserTreeDetail(this.adoptTreeCode).then((data) => {
         this.treeDetail = data;
+        console.log(this.treeDetail);
         this.loading = false;
       }, () => { this.loading = false; });
     },
@@ -1162,14 +1173,14 @@ export default {
       height: 0.9rem;
       padding: 0 0.6rem;
       display: flex;
-      /*justify-content: space-between;*/
+      justify-content: space-between;
       background: $color-highlight-background;
       border-bottom: 1px solid $color-border;
 
       span {
         font-size: 0.3rem;
         line-height: 0.9rem;
-        margin-right: 0.9rem;
+        /*margin-right: 0.9rem;*/
       }
       .active {
         color: $primary-color;
