@@ -341,6 +341,22 @@ export default {
     // setInterval(() => {
     //   console.log('Hello');
     // }, 1000);
+    if(getUserId()) {
+      getUserDetail({userId: getUserId()}).then((res) => {
+        if(res.mobile) {
+          if(res.status === '0') {
+            this.$router.push('/home');
+          } else {
+            alert('您的账号已被锁定，请联系管理员');
+          }
+        } else {
+          this.$router.push('/wx-bind-mobile');
+        }
+      }).catch(() => {
+        this.loading = false;
+        this.relogin = true;
+      });
+    }
     this.getInitData();
     if(getUserId()) {
       this.getUserDetail();

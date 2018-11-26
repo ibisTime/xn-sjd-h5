@@ -16,15 +16,11 @@
 <script type="text/ecmascript-6">
   import Loading from 'base/loading/loading';
   import Toast from 'base/toast/toast';
-  import {setUser, getWxMobAndCapt} from 'common/js/util';
-  // import { getCookie } from 'common/js/cookie';
-  // import {setUser, getWxMobAndCapt} from 'common/js/util';
-  import {getAppId, getdomain} from 'api/general';
-  // import {wxLogin, saveLoginLog} from 'api/user';
-  import {wxLogin} from 'api/user';
+  import {setUser, getWxMobAndCapt, getUserId} from 'common/js/util';
+  import {getAppId} from 'api/general';
+  import {wxLogin, getUserDetail} from 'api/user';
   import {mapMutations, mapGetters} from 'vuex';
   import {SET_LOCATION, SET_IS_LOCA_ERR, SET_LOG_FLAG} from 'store/mutation-types';
-  // import WxBindMobile from 'components/wx-bind-mobile/wx-bind-mobile';
 
   export default {
     data() {
@@ -39,10 +35,23 @@
         'logFLag'
       ])
     },
-    created() {
-      getdomain().then((res) => {
-        sessionStorage.setItem('url', res.cvalue);
-      });
+    mounted() {
+      if(getUserId()) {
+        getUserDetail({userId: getUserId()}).then((res) => {
+          if(res.mobile) {
+            if(res.status === '0') {
+              this.$router.push('/home');
+            } else {
+              alert('您的账号已被锁定，请联系管理员');
+            }
+          } else {
+            this.$router.push('/wx-bind-mobile');
+          }
+        }).catch(() => {
+          this.loading = false;
+          this.relogin = true;
+        });
+      }
       // if (!isLogin()) {
       //   if (/code=([^&]+)&state=/.exec(location.href)) {
       //     let code = RegExp.$1;
@@ -94,7 +103,7 @@
           smsCaptcha = mobAndCapt.captcha;
         }
         wxLogin(code, userReferee, mobile, smsCaptcha).then((data) => {
-          alert('wxlogin-data-' + JSON.stringify(data));
+          // alert('wxlogin-data-' + JSON.stringify(data));
           if (data.isNeedMobile === '1') {
             this.text = '微信登录需要先绑定手机号';
             this.$refs.toast.show();

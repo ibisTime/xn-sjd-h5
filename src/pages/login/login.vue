@@ -28,12 +28,12 @@
           <span class="fl" @click="go('/register')">立即注册</span>
           <span class="fr" @click="go('/forget-pwd')">忘记密码？</span>
         </div>
-        <!--<div class="wx-login" @click="AppId">-->
-          <!--<span class="wing"></span>-->
-          <!--<img src="./wx-login@2x.png" alt="">-->
-          <!--<span>微信快速登录</span>-->
-          <!--<span class="wing"></span>-->
-        <!--</div>-->
+        <div class="wx-login" @click="AppId">
+          <span class="wing"></span>
+          <img src="./wx-login@2x.png" alt="">
+          <span>微信快速登录</span>
+          <span class="wing"></span>
+        </div>
       </Scroll>
     </div>
     <full-loading v-show="loading" :title="loadText"></full-loading>
@@ -44,10 +44,8 @@
 <script>
   import {login, wxLogin} from 'api/user';
   import {getConfig} from 'api/general';
-  // import {setUser, setTitle, getWxMobAndCapt} from 'common/js/util';
   import {setUser, setTitle, isLogin, getWxMobAndCapt} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
-  // import { setCookie } from 'common/js/cookie';
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
@@ -82,7 +80,6 @@
           this.AppId();
         }
       } else {
-        // this.checkUser(getUserId());
         this.$router.push('/home');
       }
     },
@@ -105,10 +102,9 @@
           userReferee,
           mobile,
           smsCaptcha,
-          isNeedMobile: '0'
+          isNeedMobile: '1'
         }).then((data) => {
           this.loading = false;
-          // // code, , , , '0'
           // alert('data-' + JSON.stringify(data));
           setUser(data);
           if (data.isNeedMobile === '1') {
@@ -116,6 +112,7 @@
             this.$refs.toast.show();
             this.$refs.bindMobile.show();
           } else {
+            setUser(data);
             this.$router.push('/home');
             // if (this.$route.path === '/home/recommend') {
             //   location.replace(`${location.origin}/?#/home`);

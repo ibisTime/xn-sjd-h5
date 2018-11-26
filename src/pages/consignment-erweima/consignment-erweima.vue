@@ -26,10 +26,7 @@
   import {setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import {initShare} from 'common/js/weixin';
-  // import { getConfig } from 'api/general';
-  // import { getUserDetail } from 'api/user';
-
-  // import Logo from './logo-64.png';
+  import { share } from 'api/biz';
 
   export default {
     data() {
@@ -64,7 +61,6 @@
         background: '#ffffff',
         foreground: '#000000'
       });
-      console.log(this.url);
       qr.make(this.url);
       if(!this.isWxConfiging && !this.wxData) {
         this.getInitWXSDKConfig();
@@ -81,7 +77,25 @@
           title: '氧林',
           desc: '二维码转让',
           link: location.href.split('#')[0] + '/#/consignment-hall/consignment-product-detail?buy=1&code=' + this.code,
-          imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300'
+          imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
+          success: (res) => {
+            this.channel = '';
+            if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+              this.channel = 0;
+            } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+              this.channel = 1;
+            } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+              this.channel = 2;
+            } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+              this.channel = 3;
+            }
+            share(this.channel).then((res) => {
+              if(res.code) {
+                this.text = '分享成功';
+                this.$refs.toast.show();
+              }
+            }).then(() => {});
+          }
         }, (data) => {
           this.isWxConfiging = false;
           this.wxData = data;

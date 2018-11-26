@@ -746,3 +746,11 @@ export function sendDanmu(data) {
     ...data
   });
 }
+
+// 分享
+export function share(channel) {
+  return fetch(629370, {
+    userId: getUserId(),
+    channel
+  });
+}

@@ -1,6 +1,5 @@
 <template>
-  <transition name="slide-up">
-    <div class="bind-mobile-wrapper" v-show="showFlag">
+    <div class="bind-mobile-wrapper">
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-label">手机号</div>
@@ -27,7 +26,6 @@
       <toast ref="toast" :text="text"></toast>
       <full-loading v-show="loading"></full-loading>
     </div>
-  </transition>
 </template>
 <script>
   import Toast from 'base/toast/toast';
@@ -87,7 +85,6 @@
               smsCaptcha: this.captcha
             }).then((res) => {
               this.loading = false;
-              // alert('res' + JSON.stringify(res));
               if(res.isSuccess) {
                 this.text = '绑定成功';
                 this.$refs.toast.show();

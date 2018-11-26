@@ -192,6 +192,7 @@ const TihuoXiangqing = () => import('@/pages/tihuo-xiangqing/tihuo-xiangqing');
 const Auth = () => import('@/pages/auth/auth');
 const PersonAuth = () => import('@/pages/person-auth/person-auth');
 const CompanyAuth = () => import('@/pages/company-auth/company-auth');
+const WxBindMobile = () => import('@/pages/wx-bind-mobile/wx-bind-mobile');
 export default new Router({
   routes: [
     {
@@ -624,6 +625,10 @@ export default new Router({
     {
       path: '/company-auth',
       component: CompanyAuth
+    },
+    {
+      path: '/wx-bind-mobile',
+      component: WxBindMobile
     }
   ],
   mode: 'hash'

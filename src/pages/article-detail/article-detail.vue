@@ -39,7 +39,7 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
-  import { getArticleDetail, getArticleDz, getArticleSc, isArticleSc, isArticleDz } from 'api/biz';
+  import { getArticleDetail, getArticleDz, getArticleSc, isArticleSc, isArticleDz, share } from 'api/biz';
   import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
   import {initShare} from 'common/js/weixin';
   // import Logo from './logo-64.png';
@@ -198,7 +198,22 @@
           link: location.href.split('#')[0] + '/#/emotion-channel/article-detail?code=' + this.code,
           imgUrl: formatImg(this.detail.photo.split('||')[0]),
           success: (res) => {
-            // alert(JSON.stringify(res));
+            this.channel = '';
+            if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+              this.channel = 0;
+            } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+              this.channel = 1;
+            } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+              this.channel = 2;
+            } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+              this.channel = 3;
+            }
+            share(this.channel).then((res) => {
+              if(res.code) {
+                this.text = '分享成功';
+                this.$refs.toast.show();
+              }
+            }).then(() => {});
           }
         }, (data) => {
           this.isWxConfiging = false;

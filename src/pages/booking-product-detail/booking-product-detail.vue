@@ -121,7 +121,7 @@ import MHeader from 'components/m-header/m-header';
 import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
-import { getBookingProDetail } from 'api/biz';
+import { getBookingProDetail, share } from 'api/biz';
 import { getUserDetail } from 'api/user';
 import { getDictList } from 'api/general';
 export default {
@@ -268,7 +268,25 @@ export default {
         title: '氧林',
         desc: this.detail.name,
         link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code,
-        imgUrl: formatImg(this.detail.listPic)
+        imgUrl: formatImg(this.detail.listPic),
+        success: (res) => {
+          this.channel = '';
+          if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+            this.channel = 0;
+          } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+            this.channel = 1;
+          } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+            this.channel = 2;
+          } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+            this.channel = 3;
+          }
+          share(this.channel).then((res) => {
+            if(res.code) {
+              this.text = '分享成功';
+              this.$refs.toast.show();
+            }
+          }).then(() => {});
+        }
       }, (data) => {
         this.isWxConfiging = false;
         this.wxData = data;
