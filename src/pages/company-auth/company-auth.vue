@@ -12,7 +12,7 @@
         <div class="form-item border-bottom-1px">
           <div class="item-label">营业执照号</div>
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="perConfig.bussinessLicenseId" name="license" v-validate="'required'" placeholder="请输入营业执照号">
+            <input type="text" class="item-input" v-model="perConfig.bussinessLicenseId" name="license" v-validate="'required'" placeholder="请输入营业执照号">
             <span v-show="errors.has('license')" class="error-tip">{{errors.first('license')}}</span>
           </div>
         </div>

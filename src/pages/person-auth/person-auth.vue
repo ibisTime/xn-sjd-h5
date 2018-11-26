@@ -12,7 +12,7 @@
         <div class="form-item border-bottom-1px">
           <div class="item-label">身份证号</div>
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="perConfig.idNo" name="idCard" v-validate="'required|idCard'" placeholder="请输入身份证号">
+            <input type="text" class="item-input" v-model="perConfig.idNo" name="idCard" v-validate="'required|idCard'" placeholder="请输入身份证号">
             <span v-show="errors.has('idCard')" class="error-tip">{{errors.first('idCard')}}</span>
           </div>
         </div>
