@@ -92,9 +92,9 @@
         loading: false,
         loadingText: '正在载入...',
         text: '',
-        // wechat: true,    // 微信支付
+        wechat: true,    // 微信支付
         alipay: false,   // 支付宝支付
-        balance: true,  // 余额支付
+        balance: false,  // 余额支付
         isPublish: false,
         cny: 0,
         jf: 0,
@@ -109,14 +109,14 @@
         storeType: '',
         config: {          // 商城订单支付参数
           code: '',
-          payType: '1',
+          payType: '5',
           updater: getUserId(),
           remark: '',
           isJfDeduct: '0'
         },
         moreConfig: {    // 购物车下单支付参数
           payGroup: '',
-          payType: '1',
+          payType: '5',
           tradePwd: '',
           isJfDeduct: '',
           remark: ''

@@ -39,9 +39,7 @@
       if(getUserId()) {
         getUserDetail({userId: getUserId()}).then((res) => {
           if(res.mobile) {
-            if(res.status === '0') {
-              this.$router.push('/home');
-            } else {
+            if(res.status !== '0') {
               alert('您的账号已被锁定，请联系管理员');
             }
           } else {

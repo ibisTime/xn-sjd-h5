@@ -796,6 +796,7 @@ export default {
     juanzeng() {
       this.juanzengFlag = true;
     },
+    // 发送弹幕
     showDanmu(item) {
       this.loading = true;
       sendDanmu({
@@ -804,14 +805,18 @@ export default {
         userId: getUserId()
       }).then((res) => {
         this.loading = false;
-        if(res.isSuccess) {
+        if(res) {
           this.close('danmuFlag');
           this.emoji = item.pic;
           this.emojiText = item.content;
           this.danmuShow = true;
           setTimeout(() => {
             this.danmuShow = false;
-          }, 1000);
+            this.dynamics.start = 1;
+            this.dynamics.limit = 10;
+            this.dynamicsList = [];
+            this.getDynamicsList();
+          }, 2000);
         }
       }).catch(() => { this.loading = false; });
     },

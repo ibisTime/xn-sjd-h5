@@ -32,7 +32,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import {setWxMobAndCapt, setTitle} from 'common/js/util';
   import {sendCaptcha, getAppId} from 'api/general';
-  import {bindMobile} from 'api/user';
+  // import {bindMobile} from 'api/user';
 
   export default {
     data() {
@@ -62,7 +62,7 @@
             this.sending = true;
             this.loading = true;
             sendCaptcha({
-              bizType: '805060',
+              bizType: '805051',
               mobile: this.mobile
             }).then(() => {
               this.loading = false;
@@ -79,35 +79,35 @@
           if(result) {
             setWxMobAndCapt(this.mobile, this.captcha);
             this.loading = true;
-            bindMobile({
-              isSendSms: '1',
-              mobile: this.mobile,
-              smsCaptcha: this.captcha
-            }).then((res) => {
-              this.loading = false;
-              if(res.isSuccess) {
-                this.text = '绑定成功';
-                this.$refs.toast.show();
-                getAppId().then((data) => {
-                  let appId = data.cvalue;
-                  let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);
-                  let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
-                  let suffix = '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
-                  setTimeout(() => {
-                    location.replace(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
-                  }, 100);
-                });
-              }
-            }).catch(() => { this.loading = false; });
-            // getAppId().then((data) => {
-            //   let appId = data.cvalue;
-            //   let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);
-            //   let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
-            //   let suffix = '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
-            //   setTimeout(() => {
-            //     location.replace(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
-            //   }, 100);
-            // });
+            // bindMobile({
+            //   isSendSms: '1',
+            //   mobile: this.mobile,
+            //   smsCaptcha: this.captcha
+            // }).then((res) => {
+            //   this.loading = false;
+            //   if(res.isSuccess) {
+            //     this.text = '绑定成功';
+            //     this.$refs.toast.show();
+            //     getAppId().then((data) => {
+            //       let appId = data.cvalue;
+            //       let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);
+            //       let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
+            //       let suffix = '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
+            //       setTimeout(() => {
+            //         location.replace(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
+            //       }, 100);
+            //     });
+            //   }
+            // }).catch(() => { this.loading = false; });
+            getAppId().then((data) => {
+              let appId = data.cvalue;
+              let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);
+              let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
+              let suffix = '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
+              setTimeout(() => {
+                location.replace(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
+              }, 100);
+            });
           } else {
             if(!this.mobile) {
               this.text = '请输入手机号';

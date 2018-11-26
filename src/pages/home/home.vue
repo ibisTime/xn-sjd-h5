@@ -190,7 +190,9 @@ export default {
     },
     getInitData() {
       Promise.all([
-        getBanner(),
+        getBanner({
+          type: '2'
+        }),
         getProductPage({
           location: '1',
           orderDir: 'asc',
@@ -338,9 +340,6 @@ export default {
     setTitle('氧林');
     this.pullUpLoad = null;
     this.loading = true;
-    // setInterval(() => {
-    //   console.log('Hello');
-    // }, 1000);
     if(getUserId()) {
       getUserDetail({userId: getUserId()}).then((res) => {
         if(res.mobile) {

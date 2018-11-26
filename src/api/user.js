@@ -21,7 +21,7 @@ export function wxLogin(data) {
   };
   if (data.userReferee) {
     params.userReferee = data.userReferee;
-    params.userRefereeKind = 'C';
+    params.userRefereeKind = data.userRefereeKind;
   }
   // alert('params' + JSON.stringify(data));
   return fetch(805051, params);
@@ -422,7 +422,7 @@ export function bindEmail(data) {
 
 // 绑定手机号
 export function bindMobile(data) {
-  // alert(getUserId());
+  // alert('123' + getUserId());
   return fetch(805060, {
     userId: getUserId(),
     ...data

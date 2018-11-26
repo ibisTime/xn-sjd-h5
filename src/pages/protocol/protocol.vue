@@ -93,7 +93,7 @@
         } else {
           let userId = getCookie('userId');
           this.loading = true;
-          if(this.type) {
+          if(this.type !== '4') {
             // 非集体下单
             placeOrder({
               productCode: this.proCode,

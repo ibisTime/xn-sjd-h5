@@ -29,7 +29,7 @@
               <div class="item-input-wrapper">
                 <span class="mr110">性别</span>
                 <select v-validate="'required'" name="sex" v-model="sex">
-                  <option value="男" selected>男</option>
+                  <option value="男">男</option>
                   <option value="女">女</option>
                 </select>
                 <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
@@ -88,7 +88,7 @@
         text: '',
         pullUpLoad: null,
         nickname: '',
-        sex: '男',
+        sex: '',
         age: '',
         realName: '',
         idNo: '',
@@ -285,7 +285,7 @@
         this.token = res1.uploadToken;
         this.user = res2;
         this.nickname = this.user.nickname || '';
-        this.sex = this.user.gender ? this.user.gender === '1' ? '男' : '女' || '男' : '男';
+        this.sex = this.user.gender ? this.user.gender === '1' ? '男' : '女' || '男' : '';
         this.age = this.user.age || '';
         this.realName = this.user.realName || '';
         this.idNo = this.user.idNo || '';
