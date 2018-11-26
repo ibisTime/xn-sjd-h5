@@ -322,10 +322,13 @@
       bottom: 0;
       left: 0;
       height: 0.98rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-evenly;
+      line-height: 0.52rem;
       border-top: 1px solid $color-border;
+      >div{
+        width: 45%;
+        display: inline-block;
+        text-align: center;
+      }
       .border {
         width: 0;
         height: 0.4rem;
@@ -333,8 +336,6 @@
       }
       div {
         font-size: 0;
-        display: flex;
-        align-items: center;
         img {
           width: 0.38rem;
           height: 0.38rem;

@@ -129,11 +129,16 @@ export default {
     //   }
     // },
     removeShop() {
-      shopRemoveFn(this.setCodeList).then(data => {
-        this.textMsg = '删除成功';
+      if(this.setCodeList.length > 0) {
+        shopRemoveFn(this.setCodeList).then(data => {
+          this.textMsg = '删除成功';
+          this.$refs.toast.show();
+          this.getCartData();
+        });
+      }else {
+        this.textMsg = '请选择商品';
         this.$refs.toast.show();
-        this.getCartData();
-      });
+      }
     },
     shopTatilFn(storeAllShop, isAll, codeList) { // 计算总额
       this.tatil = 0;

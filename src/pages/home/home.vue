@@ -283,11 +283,13 @@ export default {
           return item;
         }
         this.directFlag = false;
-        item.directObject.split(',').map((i) => {
-          if(i === this.userDetail.userId) {
-            this.directFlag = true;
-          }
-        });
+        if(item.directObject) {
+          item.directObject.split(',').map((i) => {
+            if(i === this.userDetail.userId) {
+              this.directFlag = true;
+            }
+          });
+        }
         if(this.directFlag) {
           item.noAdoptReason = '可认养';
         } else {
