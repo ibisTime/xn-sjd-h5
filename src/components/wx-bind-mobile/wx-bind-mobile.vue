@@ -37,6 +37,12 @@
   // import {bindMobile} from 'api/user';
 
   export default {
+    props: {
+      mobile: {
+        type: String,
+        default: ''
+      }
+    },
     data() {
       return {
         loading: false,
@@ -52,6 +58,7 @@
     },
     created() {
       // alert('wx-bind-mobile');
+      this.mobile = this.props.mobile || '';
     },
     methods: {
       show() {

@@ -38,7 +38,7 @@
     <!--</div>-->
     <full-loading v-show="loading" :title="loadText"></full-loading>
     <toast ref="toast" :text="text"></toast>
-    <wx-bind-mobile ref="bindMobile"></wx-bind-mobile>
+    <wx-bind-mobile ref="bindMobile" :mobile="mobile"></wx-bind-mobile>
   </div>
 </template>
 <script>
@@ -123,7 +123,11 @@
             //   location.replace(`${location.origin}/?#${this.$route.fullPath}`);
             // }
           }
-        }).catch(() => {});
+        }).catch(() => {
+          this.loading = false;
+          this.mobile = mobile;
+          this.$refs.bindMobile.show();
+        });
       },
       login() {
         this.$validator.validateAll().then((result) => {
