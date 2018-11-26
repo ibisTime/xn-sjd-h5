@@ -5,7 +5,8 @@
       <img src="./close@2x.png" class="close" @click="close">
       <img src="./convert-success@2x.png" class="convert-success">
       <p class="title">兑换成功</p>
-      <p class="description">使用后保护碳泡泡<span>{{propsDetail.validityTerm}}</span>小时内不被收取</p>
+      <p class="tradition">{{propsDetail.description}}</p>
+      <!--<p class="description">使用后保护碳泡泡<span>{{propsDetail.validityTerm}}</span>小时内不被收取</p>-->
       <div class="buttons">
         <!--<button @click="close">暂不使用</button>-->
         <button @click="useProps(propsDetail.code)">立即使用</button>

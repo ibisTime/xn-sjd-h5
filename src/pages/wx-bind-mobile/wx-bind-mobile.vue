@@ -164,7 +164,7 @@
       .form-item {
         .item-btn {
           .captBtn {
-            width: 2.1rem;
+            /*width: 2.1rem;*/
             height: 0.68rem;
             border: 1px solid $primary-color;
             color: $primary-color;

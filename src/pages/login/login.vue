@@ -64,8 +64,9 @@
         pwd: ''
       };
     },
-    mounted() {
+    created() {
       setTitle('登录');
+      // alert('login');
       this.me = this.$route.query.me || '';
       this.setting = this.$route.query.setting || '';
       this.type = this.$route.query.type || '';
@@ -76,8 +77,6 @@
             this.userReferee = RegExp.$1;
           }
           this.wxLogin(this.code, this.userReferee);
-          this.userReferee = RegExp.$1;
-          this.AppId();
         } else {
           this.AppId();
         }
@@ -114,6 +113,7 @@
             this.text = '微信登录需要先绑定手机号';
             this.$refs.toast.show();
             this.$refs.bindMobile.show();
+            // alert(2);
           } else {
             setUser(data);
             this.$router.push('/home');
@@ -123,7 +123,7 @@
             //   location.replace(`${location.origin}/?#${this.$route.fullPath}`);
             // }
           }
-        }).catch((res) => { alert(JSON.stringify(res)); });
+        }).catch(() => {});
       },
       login() {
         this.$validator.validateAll().then((result) => {

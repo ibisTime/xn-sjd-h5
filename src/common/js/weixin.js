@@ -102,6 +102,7 @@ function _initShare(data, config, isInitImage) {
     jsApiList.push('previewImage');
   }
   wx.config({
+    // debug: true,
     appId: data.appId,
     timestamp: data.timestamp,
     nonceStr: data.nonceStr,

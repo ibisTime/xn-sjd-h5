@@ -130,6 +130,7 @@
                       </div>
                       <img :src="formatImg(item.barragePic)" class="head">
                     </div>
+                    <span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </div>
                   <p v-show="item.type === '5' || item.type === '6'">
                     <span class="name">{{item.note}}</span>
@@ -223,6 +224,7 @@
                   </div>
                   <img :src="formatImg(item.barragePic)" class="head">
                 </div>
+                <span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
               </div>
               <div class="border"></div>
             </div>
@@ -1661,7 +1663,8 @@ export default {
       }
     }
     .content {
-      padding: 0.3rem;
+      padding: 1rem 0.3rem 0.3rem;
+      z-index: -1;
       .prop-item {
         border: 1px solid $color-border;
         border-radius: 0.55rem;

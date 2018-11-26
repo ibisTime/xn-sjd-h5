@@ -137,6 +137,7 @@
                       </div>
                       <img :src="formatImg(item.barragePic)" class="head">
                     </div>
+                    <span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </div>
                   <div class="daily-content-item-info" v-if="item.type === '5' || item.type === '6'">
                     <!--<img src="./steal@2x.png" alt="">-->

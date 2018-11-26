@@ -7,7 +7,7 @@
                     <img src="" alt="">
                 </p>
                 <p>支付成功</p>
-              <button class="toOrder" @click="$router.push('/me')">返回个人中心</button>
+              <!--<button class="toOrder" @click="$router.push('/me')">返回个人中心</button>-->
             </div>
         </div>
     </div>
