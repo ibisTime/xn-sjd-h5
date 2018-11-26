@@ -89,21 +89,23 @@
         }
         this.loading = false;
       }).catch(() => { this.loading = false; });
-      isArticleSc(this.isConfig).then(data => {
-        console.log(0, data);
-        // 是否收藏
-        if(data.isPointCollect !== '0') {
-          this.collectFlag = true;
-        }
-      });
-      this.isConfig.type = '1';
-      isArticleDz(this.isConfig).then(data => {
-        console.log(1, data);
-        // 是否点赞
-        if(data.isPointCollect !== '0') {
-          this.laudFlag = true;
-        }
-      });
+      if(getUserId()) {
+        isArticleSc(this.isConfig).then(data => {
+          console.log(0, data);
+          // 是否收藏
+          if(data.isPointCollect !== '0') {
+            this.collectFlag = true;
+          }
+        });
+        this.isConfig.type = '1';
+        isArticleDz(this.isConfig).then(data => {
+          console.log(1, data);
+          // 是否点赞
+          if(data.isPointCollect !== '0') {
+            this.laudFlag = true;
+          }
+        });
+      }
     },
     methods: {
       formatImg(img) {
@@ -137,6 +139,11 @@
       },
       collect() {
         // 调接口收藏
+        if(!getUserId()) {
+          this.text = '请先登录';
+          this.$refs.toast.show();
+          return;
+        }
         this.loading = true;
         getArticleSc(this.config).then(data => {
           this.loading = false;
@@ -153,6 +160,11 @@
       },
       laud() {
         // 调接口点赞
+        if(!getUserId()) {
+          this.text = '请先登录';
+          this.$refs.toast.show();
+          return;
+        }
         this.loading = true;
         getArticleDz(this.config).then(data => {
           this.loading = false;
@@ -322,10 +334,13 @@
       bottom: 0;
       left: 0;
       height: 0.98rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-evenly;
+      line-height: 0.52rem;
       border-top: 1px solid $color-border;
+      >div{
+        width: 45%;
+        display: inline-block;
+        text-align: center;
+      }
       .border {
         width: 0;
         height: 0.4rem;
@@ -333,8 +348,6 @@
       }
       div {
         font-size: 0;
-        display: flex;
-        align-items: center;
         img {
           width: 0.38rem;
           height: 0.38rem;
