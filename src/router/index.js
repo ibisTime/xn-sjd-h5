@@ -19,6 +19,7 @@ Vue.use(Router);
 
 // 登录页
 const Login = () => import('@/pages/login/login');
+const LoginTest = () => import('@/pages/login-test/login-test');
 // 注册页
 const Register = () => import('@/pages/register/register');
 // 忘记密码
@@ -203,6 +204,10 @@ export default new Router({
     {
       path: '/login',
       component: Login
+    },
+    {
+      path: '/login-test',
+      component: LoginTest
     },
     {
       path: '/register',
