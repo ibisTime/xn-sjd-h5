@@ -56,6 +56,7 @@
   import {sendCaptcha} from 'api/general';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
+  import Scroll from 'base/scroll/scroll';
 
   export default {
     mixins: [directiveMixin],
@@ -72,7 +73,8 @@
         captcha: '',
         sending: false,
         userReferee: '',
-        type: ''
+        type: '',
+        pullUpLoad: null
       };
     },
     mounted() {
@@ -172,7 +174,8 @@
     },
     components: {
       FullLoading,
-      Toast
+      Toast,
+      Scroll
     }
   };
 </script>

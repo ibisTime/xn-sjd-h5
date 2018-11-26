@@ -2,14 +2,14 @@
   <div class="auth-wrapper">
     <div class="content">
       <div class="info">
-        <div class="item" @click="toPerAuth">
+        <div class="item" @click="toPerAuth" v-show="pramStatus === '0'">
           <span>个人认证</span>
           <div class="is-auth">
             <span>{{rzPerText}}</span>
             <img src="./more@2x.png" alt="" class="fr more">
           </div>
         </div>
-        <div class="item" @click="toPramAuth">
+        <div class="item" @click="toPramAuth" v-show="perStatus === '0'">
           <span>企业认证</span>
           <div class="is-auth">
             <span>{{rzPramText}}</span>
@@ -38,12 +38,6 @@ export default {
       case '0':  // 都未认证
         this.rzPerText = '未认证';
         this.rzPramText = '未认证';
-        break;
-      case '1':  // 都已认证
-        this.rzPerText = '已认证';
-        this.rzPramText = '已认证';
-        this.perStatus = '1';
-        this.pramStatus = '1';
         break;
       case '2':  // 个人认证
         this.rzPerText = '已认证';

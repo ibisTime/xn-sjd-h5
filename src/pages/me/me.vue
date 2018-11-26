@@ -5,7 +5,7 @@
       <div class="content">
         <div class="in-content">
           <div :class="['card',getUserId() ? '' : 'card-bg']">
-            <div class="info" @click="go('/settings')" v-show="getUserId()">
+            <div class="info" @click="go('/settings')">
               <img :src="src" class="head">
               <div class="text">
                 <p><span>{{userDetail.nickname || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
@@ -14,7 +14,7 @@
               </div>
               <img src="./more@2x.png" class="me-more fr">
             </div>
-            <div class="account" v-show="getUserId()">
+            <div class="account">
               <div class="money fl" @click.stop="go('/money?accountNumber=' + cnyAccountNumber + '&amount=' + cny)">
                 <p class="number">{{formatAmount(cny)}}</p>
                 <p class="text">余额</p>
@@ -217,10 +217,7 @@
           })
         ]).then(([res1, res2]) => {
           this.userDetail = res1;
-          if(res1.userExt.personAuthStatus && res1.userExt.companyAuthStatus) {
-            this.rzText = '已认证';
-            this.rzStatus = '1';
-          }else if(res1.userExt.personAuthStatus) {
+          if(res1.userExt.personAuthStatus) {
             this.rzText = '已个人认证';
             this.rzStatus = '2';
           }else if(res1.userExt.companyAuthStatus) {
