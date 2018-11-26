@@ -89,21 +89,23 @@
         }
         this.loading = false;
       }).catch(() => { this.loading = false; });
-      isArticleSc(this.isConfig).then(data => {
-        console.log(0, data);
-        // 是否收藏
-        if(data.isPointCollect !== '0') {
-          this.collectFlag = true;
-        }
-      });
-      this.isConfig.type = '1';
-      isArticleDz(this.isConfig).then(data => {
-        console.log(1, data);
-        // 是否点赞
-        if(data.isPointCollect !== '0') {
-          this.laudFlag = true;
-        }
-      });
+      if(getUserId()) {
+        isArticleSc(this.isConfig).then(data => {
+          console.log(0, data);
+          // 是否收藏
+          if(data.isPointCollect !== '0') {
+            this.collectFlag = true;
+          }
+        });
+        this.isConfig.type = '1';
+        isArticleDz(this.isConfig).then(data => {
+          console.log(1, data);
+          // 是否点赞
+          if(data.isPointCollect !== '0') {
+            this.laudFlag = true;
+          }
+        });
+      }
     },
     methods: {
       formatImg(img) {
@@ -137,6 +139,11 @@
       },
       collect() {
         // 调接口收藏
+        if(!getUserId()) {
+          this.text = '请先登录';
+          this.$refs.toast.show();
+          return;
+        }
         this.loading = true;
         getArticleSc(this.config).then(data => {
           this.loading = false;
@@ -153,6 +160,11 @@
       },
       laud() {
         // 调接口点赞
+        if(!getUserId()) {
+          this.text = '请先登录';
+          this.$refs.toast.show();
+          return;
+        }
         this.loading = true;
         getArticleDz(this.config).then(data => {
           this.loading = false;
