@@ -1,10 +1,10 @@
 <template>
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="我的收藏"></m-header>
-    <div class="type">
-      <span @click="changeType(0)" :class="type === 0 ? 'active' : ''">文章</span>
-      <span @click="changeType(1)" :class="type === 1 ? 'active' : ''">古树</span>
-    </div>
+    <!--<div class="type">-->
+      <!--<span @click="changeType(0)" :class="type === 0 ? 'active' : ''">文章</span>-->
+      <!--<span @click="changeType(1)" :class="type === 1 ? 'active' : ''">古树</span>-->
+    <!--</div>-->
     <div class="article-list" v-show="type === 0">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="item" @click="go('/article-detail?code=' + artItem.article.code)" v-for="(artItem, index) in collectTextData" :key="index">
@@ -123,7 +123,8 @@
     .article-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 1.68rem;
+      /*top: 1.68rem;*/
+      top: 1rem;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;
@@ -167,6 +168,12 @@
             }
           }
         }
+      }
+      .no-result-wrapper{
+        position: absolute;
+        left: 50%;
+        top: 10%;
+        transform: translateX(-50%);
       }
     }
     .tree {

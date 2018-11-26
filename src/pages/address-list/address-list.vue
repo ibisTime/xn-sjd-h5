@@ -211,7 +211,7 @@
       },
       setStoreRess(index, item) { // 商城选择地址
         if(this.storeOrder) {
-          this.comText = '确认使用该地址吗？';
+          this.comText = '确定使用该地址吗？';
           this.$refs.confirm.show();
           this.setIndex = index;
           this.setRessCode = item.code;

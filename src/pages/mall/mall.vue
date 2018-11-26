@@ -6,7 +6,7 @@
       @pullingUp="getHotShop">
       <div class="content" v-show="!isAll">
         <div class="mall-header">
-          <slider v-if="banners.length" :loop="loop">
+          <slider v-if="banners.length" :loop="banners.length > 1" :showDots="banners.length > 1">
             <div class="home-slider" v-for="item in banners" :key="item.code">
               <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
             </div>
@@ -81,7 +81,6 @@ export default {
   data() {
     return {
       loading: true,
-      loop: true,
       currentIndex: 0,
       textMsg: '',
       loadingText: '正在加载...',

@@ -191,6 +191,11 @@ export default {
       }
     },
     selectCategorySub(index) {
+      if(index === 0) {
+        this.config.parentCategoryCode = this.shopTypeData[this.currentIndex].code;
+      }else {
+        delete this.shopTypeConfig.parentCode;
+      }
       this.currentIndexSub = index;
       this.config.categoryCode = this.categorysSub[index].code;
       this.start = 1;
