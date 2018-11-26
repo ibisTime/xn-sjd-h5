@@ -25,7 +25,7 @@
                 <p class="text">积分</p>
               </div>
             </div>
-            <div class="auth" @click="toAuth">
+            <div class="auth" @click="toAuth" v-show="isLogin">
               <!--<img src="./auth@2x.png">-->
               <img src="./no-auth@2x.png">
               <span>{{rzText}}</span>
@@ -150,13 +150,15 @@
         },
         ismsg: false,
         rzText: '未认证',
-        rzStatus: '0'
+        rzStatus: '0',
+        isLogin: false
       };
     },
     created() {
       this.pullUpLoad = null;
       this._refreshScroll();
       if(getUserId()) {
+        this.isLogin = true;
         storeMessage(this.config).then(data => {
           if(data.list.length > 0) {
             this.ismsg = false;
