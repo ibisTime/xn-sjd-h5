@@ -94,7 +94,7 @@
         text: '',
         token: '',
         uploadUrl: '',
-        multiple: false,
+        multiple: true,
         photos: [],
         list: [], // 认养权列表
         currentItem: null
@@ -273,42 +273,43 @@
           files = e.target.files;
         }
         let self = this;
-        let file = files[0];
-        let orientation;
-        EXIF.getData(file, function() {
-          orientation = EXIF.getTag(this, 'Orientation');
-        });
-        let reader = new FileReader();
-        reader.onload = function(e) {
-          getImgData(file.type, this.result, orientation, function(data) {
-            let _url = URL.createObjectURL(file);
-            let item = {
-              preview: data,
-              ok: false,
-              type: file.type,
-              key: _url.split('/').pop() + '.' + file.name.split('.').pop()
-            };
-            self.uploadPhoto(data, item.key).then(() => {
-              item = {
-                ...item,
-                ok: true
-              };
-              if(item.ok === true) {
-                if(self.photos.length < 9) {
-                  self.photos.push(item);
-                }else {
-                  self.text = '选择图片不得超过九张';
-                  self.$refs.toast.show();
-                }
-              }
-              self.updatePhotos(item);
-            }).catch(err => {
-              self.onUploadError(err);
-            });
-            self.$refs.fileInput.value = null;
+        Array.from(files).forEach(file => {
+          let orientation;
+          EXIF.getData(file, function() {
+            orientation = EXIF.getTag(this, 'Orientation');
           });
-        };
-        reader.readAsDataURL(file);
+          let reader = new FileReader();
+          reader.onload = function(e) {
+            getImgData(file.type, this.result, orientation, function(data) {
+              let _url = URL.createObjectURL(file);
+              let item = {
+                preview: data,
+                ok: false,
+                type: file.type,
+                key: _url.split('/').pop() + '.' + file.name.split('.').pop()
+              };
+              self.uploadPhoto(data, item.key).then(() => {
+                item = {
+                  ...item,
+                  ok: true
+                };
+                if(item.ok === true) {
+                  if(self.photos.length < 9) {
+                    self.photos.push(item);
+                  }else {
+                    self.text = '选择图片不得超过九张';
+                    self.$refs.toast.show();
+                  }
+                }
+                self.updatePhotos(item);
+              }).catch(err => {
+                self.onUploadError(err);
+              });
+              self.$refs.fileInput.value = null;
+            });
+          };
+          reader.readAsDataURL(file);
+        });
       },
       /**
        * 图片上传完成后更新photos

@@ -91,7 +91,6 @@
       }).catch(() => { this.loading = false; });
       if(getUserId()) {
         isArticleSc(this.isConfig).then(data => {
-          console.log(0, data);
           // 是否收藏
           if(data.isPointCollect !== '0') {
             this.collectFlag = true;
