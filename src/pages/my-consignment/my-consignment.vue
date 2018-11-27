@@ -20,7 +20,11 @@
                   </span>
                   <span class="hot-pro-title-date">{{originStatusObj[item.status]}}</span>
                 </p>
-                <p class="hot-pro-middle"><span class="hot-pro-bottom-number">转让中:{{item.presellQuantity}}</span><span class="hot-pro-bottom-number">提货中:{{item.receivingQuantity}}</span></p>
+                <p class="hot-pro-middle">
+                  <span class="hot-pro-bottom-number">转让中:{{item.presellQuantity}}</span>
+                  <span class="hot-pro-bottom-number">提货中:{{item.receivingQuantity}}</span>
+                  <span class="hot-pro-bottom-number" v-show="item.receivedQuantity && item.receivedQuantity !== '0'">已提货数量:{{item.receivedQuantity}}</span>
+                </p>
                 <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">库存：{{item.quantity}}{{packUnitObj[item.presellProduct.packUnit]}}</span></p>
               </div>
             </div>
