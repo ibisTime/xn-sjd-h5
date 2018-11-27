@@ -18,7 +18,6 @@
             </div>
           </div>
         </div>
-
         <div class="mall-list" @click.stop>
           <category-scroll
             :Type="'mall'"
@@ -27,6 +26,7 @@
             @select="selectCategory"
           ></category-scroll>
         </div>
+        <p class="hr"></p>
         <div class="mall-content">
           <div class="con-head">
             <h5>热门推荐 <router-link to="/mall-shopList?location=1" class="fr">更多</router-link></h5>
@@ -281,11 +281,16 @@ export default {
   left: 0;
   bottom: 0.98rem;
   width: 100%;
+  background-color: #fff;
   .fl {
     float: left;
   }
   .fr {
     float: right;
+  }
+  .hr{
+    height: 0.2rem;
+    background-color: #f5f5f5;
   }
   .banner-default {
     width: 100%;

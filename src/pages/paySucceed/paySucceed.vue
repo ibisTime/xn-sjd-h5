@@ -4,7 +4,7 @@
             <!--<m-header class="cate-header" :title="headerTitle"></m-header>-->
             <div>
                 <p>
-                    <img src="" alt="">
+                    <img src="./zfwc.png" alt="">
                 </p>
                 <p>支付成功</p>
               <!--<button class="toOrder" @click="$router.push('/me')">返回个人中心</button>-->
@@ -39,23 +39,21 @@
 <style lang="scss" scoped>
   @import "~common/scss/variable";
     .zf-box{
-        width: 100%;
-        height: 5.1rem;
-        font-size: 0.6rem;
-        padding-top: 0.8rem;
-        color: #333;
-        text-align: center;
-        background-color: #fff;
-      .toOrder {
-        border-radius: 0.08rem;
-        background: #23AD8C;
-        width: 3rem;
-        line-height: 0.98rem;
-        display: inline-block;
-        text-align: center;
-        margin-top: 0.5rem;
-        color: #fff;
-        font-size: 0.34rem;
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      font-size: 0.4rem;
+      padding-top: 2rem;
+      color: #525252;
+      text-align: center;
+      background-color: #fff;
+      p{
+        margin-top: 0.4rem;
+      }
+      img{
+        width: 1.5rem;
       }
     }
 </style>
