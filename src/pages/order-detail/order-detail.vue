@@ -9,12 +9,12 @@
         <div class="gray" v-show="detail.status === '4'"></div>
         <div class="order-list">
           <!--<Scroll :pullUpLoad="pullUpLoad">-->
-            <div class="item" @click="go('/product-detail?code='+detail.productCode)">
+            <div class="item">
               <div class="top">
                 <span class="item-code">{{detail.code}}</span>
                 <span class="item-status">{{statusObj[detail.status]}}</span>
               </div>
-              <div class="info">
+              <div class="info" @click="go('/product-detail?code='+detail.productCode)">
                 <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
                 <div class="text">
                   <p class="title"><span class="title-title">{{detail.product.name}}</span><span class="title-number" v-show="detail.status === '3' || detail.status === '4'">x{{detail.adoptOrderTreeList.length}}</span></p>
@@ -22,7 +22,10 @@
                   <div class="props"><span class="duration">规格：{{detail.productSpecsName}}</span><span class="price" v-show="!detail.jfDeductAmount">¥{{formatAmount(detail.price)}}</span><span class="price" v-show="detail.jfDeductAmount">¥{{formatAmount(detail.payAmount)}}+{{formatAmount(detail.jfDeductAmount)}}积分</span></div>
                 </div>
               </div>
-              <div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}}</div>
+              <div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}} <button class="copy"
+                                                                                                           v-clipboard:copy="detail.identifyCode"
+                                                                                                           v-clipboard:success="onCopy"
+                                                                                                           v-clipboard:error="onError">一键复制</button></div>
               <div class="gray"></div>
             </div>
             <div class="treeList" v-show="detail.status === '3'">
@@ -86,7 +89,8 @@
         detail: {product: {}, adoptOrderTreeList: {}},
         choosedIndex: 0,
         code: '',   // 产品code,
-        statusObj: {}
+        statusObj: {},
+        message: ''
       };
     },
     methods: {
@@ -160,6 +164,14 @@
             case '4': this.toastText = '这棵树已经被赠送咯'; this.$refs.toast.show(); break;
           }
         }
+      },
+      onCopy: function (e) {
+        this.toastText = '复制成功';
+        this.$refs.toast.show();
+      },
+      onError: function (e) {
+        this.toastText = '无法复制文本';
+        this.$refs.toast.show();
       }
     },
     mounted() {
@@ -324,6 +336,12 @@
       .identifyCode {
         border-top: 1px solid $color-border;
         padding: 0 0.3rem;
+        .copy {
+          background: $color-highlight-background;
+          border: 1px solid $primary-color;
+          border-radius: 0.1rem;
+          padding: 0.1rem;
+        }
       }
       .order-list {
         background: $color-highlight-background;

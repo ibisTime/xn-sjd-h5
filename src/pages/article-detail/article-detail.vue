@@ -39,10 +39,9 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
-  import { getArticleDetail, getArticleDz, getArticleSc, isArticleSc, isArticleDz, share } from 'api/biz';
+  import { getArticleDetail, getArticleDz, getArticleSc, isArticleSc, isArticleDz, share, readArticle } from 'api/biz';
   import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
   import {initShare} from 'common/js/weixin';
-  // import Logo from './logo-64.png';
 
   export default {
     data() {
@@ -76,6 +75,7 @@
       this.config.code = this.code;
       this.isConfig.code = this.code;
       this.loading = true;
+      this.readArticle();
       getArticleDetail({
         code: this.code
       }).then((res) => {
@@ -91,7 +91,6 @@
       }).catch(() => { this.loading = false; });
       if(getUserId()) {
         isArticleSc(this.isConfig).then(data => {
-          console.log(0, data);
           // 是否收藏
           if(data.isPointCollect !== '0') {
             this.collectFlag = true;
@@ -99,7 +98,6 @@
         });
         this.isConfig.type = '1';
         isArticleDz(this.isConfig).then(data => {
-          console.log(1, data);
           // 是否点赞
           if(data.isPointCollect !== '0') {
             this.laudFlag = true;
@@ -125,14 +123,19 @@
             this.$router.push('/login');
           }, 1000);
         } else {
-          if (this.detail.adoptOrderTree.status === '2') {
-            if (this.detail.adoptOrderTree.currentHolder === getUserId()) {
-              this.go(`/my-tree?aTCode=${this.detail.adoptTreeCode}`);
+          if(this.detail.adoptOrderTree) {
+            if (this.detail.adoptOrderTree.status === '2') {
+              if (this.detail.adoptOrderTree.currentHolder === getUserId()) {
+                this.go(`/my-tree?aTCode=${this.detail.adoptTreeCode}`);
+              } else {
+                this.go(`/my-tree?other=1&currentHolder=${this.detail.adoptOrderTree.currentHolder}&aTCode=${this.detail.adoptTreeCode}`);
+              }
             } else {
-              this.go(`/my-tree?other=1&currentHolder=${this.detail.adoptOrderTree.currentHolder}&aTCode=${this.detail.adoptTreeCode}`);
+              this.text = '该认养已过期';
+              this.$refs.toast.show();
             }
           } else {
-            this.text = '该认养已过期';
+            this.text = '未被认养';
             this.$refs.toast.show();
           }
         }
@@ -204,9 +207,6 @@
         initShare({
           title: '氧林',
           desc: this.detail.title,
-          // link: location.href.split('#')[0],
-          // link: location.origin + '/#' + location.href.split('#')[1],
-          // link: location.origin + '/#/product-detail?code=' + this.code,
           link: location.href.split('#')[0] + '/#/emotion-channel/article-detail?code=' + this.code,
           imgUrl: formatImg(this.detail.photo.split('||')[0]),
           success: (res) => {
@@ -237,6 +237,10 @@
           this.wxData = null;
           this.loading = false;
         });
+      },
+      readArticle() {
+        readArticle(this.code).then((res) => {
+        }).catch(() => {});
       }
     },
     watch: {

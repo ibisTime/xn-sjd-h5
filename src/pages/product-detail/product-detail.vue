@@ -93,7 +93,7 @@
       </div>
       <div class="other" v-show="showIdentifyCode()">
         <span>下单识别码</span>
-        <input type="text" v-model="identifyCode" placeholder="请输入正确的下单识别码">
+        <input type="text" v-model="identifyCode" placeholder="请输入正确的下单识别码" >
       </div>
       <div class="buypart-bottom">
         <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
@@ -551,13 +551,13 @@ export default {
           line-height: 0.42rem;
         }
       }
-      .description-detail{
-        font-size: 0.26rem;
-        line-height: 1.8;
+      .description-detail.rich-text-description{
         padding: 0.2rem 0;
-        img{
-          max-width: 100%;
-          vertical-align: bottom;
+        p {
+          img {
+            max-width: 100%;
+            vertical-align: top !important;
+          }
         }
       }
     }

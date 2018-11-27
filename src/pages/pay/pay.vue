@@ -48,8 +48,6 @@
         <div class="score-rules" v-if="type">
           <p>规则：</p>
           <p v-for="(item, index) in sysConfig" :key="index">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
-          <!--<p>2.提现金额必须是{{qxBei}}的倍数，单笔最高{{dbiMax}}元；</p>-->
-          <!--<p>3.T+{{qxDay}}到账</p>-->
         </div>
       </div>
       <div class="footer">
@@ -132,7 +130,9 @@
       this.pre = this.$route.query.pre;
       this.jishou = this.$route.query.jishou;
       this.userId = getCookie('userId');
-      this.totalPrice = Number(sessionStorage.getItem('totalPrice')) * 1000;
+      if(!this.orderCode) {
+        this.totalPrice = Number(sessionStorage.getItem('totalPrice')) * 1000;
+      }
       this.storeCode = this.$route.query.code;             // 商城订单code
       this.storeType = this.$route.query.storeType;
       this.config.code = this.storeCode;
