@@ -34,7 +34,6 @@
                 <div class="u-name">{{commentData ? commentData.nickname : ''}} <span class="fr time">{{commentDatetime? formatDate(commentDatetime) : ''}}</span></div>
               </div>
               <div class="pj-con" v-html="commentData ? commentData.content : ''">
-
               </div>
             </div>
           </div>
@@ -486,13 +485,6 @@ export default {
               color: #999;
               line-height: 0.6rem;
             }
-          }
-          .pj-con{
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3;
-            overflow: hidden;
-            line-height: 1.3;
           }
         }
       }
