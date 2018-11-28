@@ -17,9 +17,9 @@
               <div class="info" @click="go('/product-detail?code='+detail.productCode)">
                 <div class="imgWrap" :style="getImgSyl(detail.product.listPic)"></div>
                 <div class="text">
-                  <p class="title"><span class="title-title">{{detail.product.name}}</span><span class="title-number" v-show="detail.status === '3' || detail.status === '4'">x{{detail.adoptOrderTreeList.length}}</span></p>
-                  <p class="position">{{detail.product.province}} {{detail.product.city}} {{detail.product.area}}</p>
-                  <div class="props"><span class="duration">规格：{{detail.productSpecsName}}</span><span class="price" v-show="!detail.jfDeductAmount">¥{{formatAmount(detail.price)}}</span><span class="price" v-show="detail.jfDeductAmount">¥{{formatAmount(detail.payAmount)}}+{{formatAmount(detail.jfDeductAmount)}}积分</span></div>
+                  <p class="title"><span class="title-title">{{detail.product.name}}</span><span class="title-number">x{{detail.quantity}}</span></p>
+                  <p class="position"><span>{{detail.product.province}} {{detail.product.city}} {{detail.product.area}}</span><span class="price">¥{{formatAmount(detail.price)}}</span></p>
+                  <div class="props"><span class="duration">规格：{{detail.productSpecsName}}</span><span class="price" v-show="!detail.jfDeductAmount">¥{{formatAmount(detail.amount)}}</span><span class="price" v-show="detail.jfDeductAmount">¥{{formatAmount(detail.payAmount)}}+{{formatAmount(detail.jfDeductAmount)}}积分</span></div>
                 </div>
               </div>
               <div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}} <button class="copy"
@@ -315,6 +315,8 @@
             line-height: 0.33rem;
             color: #999;
             margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
           }
           .props {
             font-size: $font-size-small;

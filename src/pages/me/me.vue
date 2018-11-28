@@ -5,7 +5,7 @@
       <div class="content">
         <div class="in-content">
           <div :class="['card',getUserId() ? '' : 'card-bg']">
-            <div class="info" @click="go('/settings')">
+            <div class="info" @click="go('/settings')" v-if="getUserId()">
               <img :src="src" class="head">
               <div class="text">
                 <p><span>{{userDetail.nickname || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
@@ -14,7 +14,7 @@
               </div>
               <img src="./more@2x.png" class="me-more fr">
             </div>
-            <div class="account">
+            <div class="account" v-if="getUserId()">
               <div class="money fl" @click.stop="go('/money?accountNumber=' + cnyAccountNumber + '&amount=' + cny)">
                 <p class="number">{{formatAmount(cny)}}</p>
                 <p class="text">余额</p>
@@ -30,10 +30,10 @@
               <img src="./no-auth@2x.png">
               <span>{{rzText}}</span>
             </div>
-            <!--<div class="noUser">-->
-              <!--<button class="login" @click="$router.push('/login')">登录</button>-->
-              <!--<button class="register" @click="$router.push('/register')">注册</button>-->
-            <!--</div>-->
+            <div class="noUser">
+              <button class="login" @click="$router.push('/login')">登录</button>
+              <button class="register" @click="$router.push('/register')">注册</button>
+            </div>
           </div>
         </div>
       </div>

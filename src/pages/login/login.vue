@@ -1,41 +1,41 @@
 <template>
   <div class="login-content">
-    <!--<m-header class="cate-header"></m-header>-->
-    <!--<div class="scroll-section">-->
-      <!--<Scroll :pullUpLoad="pullUpLoad">-->
-        <!--<div class="header"><img src="./back.png" @click="back"></div>-->
-        <!--<div class="title">欢迎回来</div>-->
-        <!--<div class="content">-->
-          <!--<div class="form-login">-->
-            <!--<div class="form-item border-bottom-1px">-->
-              <!--<div class="item-input-wrapper" @click="focus">-->
-                <!--<input v-focus type="tel" ref="input" autofocus class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">-->
-                <!--<span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>-->
-              <!--</div>-->
-            <!--</div>-->
-            <!--<div class="form-item">-->
-              <!--<div class="item-input-wrapper">-->
-                <!--<input type="password" class="item-input" name="pwd" v-model="pwd" v-validate="'required|min:6|max:16'" placeholder="请输入密码">-->
-                <!--<span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</div>-->
-        <!--<div class="login-btn">-->
-          <!--<button @click="login">登录</button>-->
-        <!--</div>-->
-        <!--<div class="register-findpwd">-->
-          <!--<span class="fl" @click="go('/register')">立即注册</span>-->
-          <!--<span class="fr" @click="go('/forget-pwd')">忘记密码？</span>-->
-        <!--</div>-->
-        <!--<div class="wx-login" @click="AppId">-->
-          <!--<span class="wing"></span>-->
-          <!--<img src="./wx-login@2x.png" alt="">-->
-          <!--<span>微信快速登录</span>-->
-          <!--<span class="wing"></span>-->
-        <!--</div>-->
-      <!--</Scroll>-->
-    <!--</div>-->
+    <m-header class="cate-header"></m-header>
+    <div class="scroll-section">
+      <Scroll :pullUpLoad="pullUpLoad">
+        <div class="header"><img src="./back.png" @click="back"></div>
+        <div class="title">欢迎回来</div>
+        <div class="content">
+          <div class="form-login">
+            <div class="form-item border-bottom-1px">
+              <div class="item-input-wrapper" @click="focus">
+                <input v-focus type="tel" ref="input" autofocus class="item-input" name="mobile" v-model="mobile" v-validate="'required|mobile'" placeholder="请输入手机号">
+                <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
+              </div>
+            </div>
+            <div class="form-item">
+              <div class="item-input-wrapper">
+                <input type="password" class="item-input" name="pwd" v-model="pwd" v-validate="'required|min:6|max:16'" placeholder="请输入密码">
+                <span v-show="errors.has('pwd')" class="error-tip">{{errors.first('pwd')}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="login-btn">
+          <button @click="login">登录</button>
+        </div>
+        <div class="register-findpwd">
+          <span class="fl" @click="go('/register')">立即注册</span>
+          <span class="fr" @click="go('/forget-pwd')">忘记密码？</span>
+        </div>
+        <div class="wx-login" @click="AppId" v-if="showWeixin">
+          <span class="wing"></span>
+          <img src="./wx-login@2x.png" alt="">
+          <span>微信快速登录</span>
+          <span class="wing"></span>
+        </div>
+      </Scroll>
+    </div>
     <full-loading v-show="loading" :title="loadText"></full-loading>
     <toast ref="toast" :text="text"></toast>
     <wx-bind-mobile ref="bindMobile" :mobile="mobile"></wx-bind-mobile>
@@ -61,7 +61,8 @@
         pullUpLoad: null,
         text: '',
         mobile: '',
-        pwd: ''
+        pwd: '',
+        showWeixin: true
       };
     },
     created() {
@@ -69,7 +70,12 @@
       // alert('login');
       this.me = this.$route.query.me || '';
       this.setting = this.$route.query.setting || '';
-      this.type = this.$route.query.type || '';
+      let ua = navigator.userAgent.toLowerCase();
+      let isWeixin = ua.indexOf('micromessenger') !== -1;
+      if (!isWeixin) {
+        this.showWeixin = false;
+      }
+      // this.type = this.$route.query.type || '';
       if (!isLogin()) {
         if (/code=([^&]+)&state=/.exec(location.href)) {
           this.code = RegExp.$1;
@@ -77,9 +83,10 @@
             this.userReferee = RegExp.$1;
           }
           this.wxLogin(this.code, this.userReferee);
-        } else {
-          this.AppId();
         }
+        // else {
+        //   this.AppId();
+        // }
       } else {
         this.$router.push('/home');
       }

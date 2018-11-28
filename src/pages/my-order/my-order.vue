@@ -1,12 +1,5 @@
 <template>
   <div class="adopt-list-wrapper">
-    <!--<div class="type">-->
-      <!--<span @click="changeType(0)" :class="type === 0 ? 'active' : ''">全部</span>-->
-      <!--<span @click="changeType(1)" :class="type === 1 ? 'active' : ''">个人</span>-->
-      <!--<span @click="changeType(2)" :class="type === 2 ? 'active' : ''">定向</span>-->
-      <!--<span @click="changeType(3)" :class="type === 3 ? 'active' : ''">集体</span>-->
-      <!--<span @click="changeType(4)" :class="type === 4 ? 'active' : ''">捐赠</span>-->
-    <!--</div>-->
     <div class="category-wrapper">
       <category-scroll :currentIndex="currentIndexSell"
                        :categorys="categorysSell"
@@ -15,16 +8,6 @@
                        :categorys="categorysStatus"
                        @select="selectCategory"></category-scroll>
     </div>
-    <!-- 状态(0待支付1已取消2待认养3认养中4已到期) -->
-    <!--<div class="status">-->
-      <!--<div class="wrap">-->
-        <!--<span @click="changeStatus(0)" :class="status === 0 ? 'active' : ''">待支付</span>-->
-        <!--<span @click="changeStatus(2)" :class="status === 2 ? 'active' : ''">待认养</span>-->
-        <!--<span @click="changeStatus(3)" :class="status === 3 ? 'active' : ''">认养中</span>-->
-        <!--<span @click="changeStatus(1)" :class="status === 1 ? 'active' : ''">已取消</span>-->
-        <!--<span @click="changeStatus(4)" :class="status === 4 ? 'active' : ''">已到期</span>-->
-      <!--</div>-->
-    <!--</div>-->
     <div class="gray"></div>
     <div class="order-list">
       <scroll ref="scroll"
@@ -40,9 +23,9 @@
             <div class="info">
               <div class="imgWrap" :style="getImgSyl(item.product.listPic)"></div>
               <div class="text">
-                <p class="title"><span class="title-title">{{item.product.name}}</span><span class="title-number" v-show="item.status === '3' || item.status === '4'">x{{item.quantity}}</span></p>
-                <p class="position">{{item.product.province}} {{item.product.city}} {{item.product.area}}</p>
-                <div class="props"><span class="duration">规格：{{item.productSpecsName}}</span><span class="price" v-show="!item.jfDeductAmount">¥{{formatAmount(item.price)}}</span><span class="price" v-show="item.jfDeductAmount">¥{{formatAmount(item.payAmount)}}+{{formatAmount(item.jfDeductAmount)}}积分</span></div>
+                <p class="title"><span class="title-title">{{item.product.name}}</span><span class="title-number">x{{item.quantity}}</span></p>
+                <p class="position"><span>{{item.product.province}} {{item.product.city}} {{item.product.area}}</span><span class="price">¥{{formatAmount(item.price)}}</span></p>
+                <div class="props"><span class="duration">规格：{{item.productSpecsName}}</span><span class="price" v-show="!item.jfDeductAmount">¥{{formatAmount(item.amount)}}</span><span class="price" v-show="item.jfDeductAmount">¥{{formatAmount(item.payAmount)}}+{{formatAmount(item.jfDeductAmount)}}积分</span></div>
               </div>
             </div>
             <div class="clearfix btns" v-show="showBtns(item.status)">
@@ -63,7 +46,6 @@
   </div>
 </template>
 <script>
-  // import {ORDER_STATUS} from 'common/js/dict';
   import CategoryScroll from 'base/category-scroll/category-scroll';
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
@@ -514,6 +496,8 @@
               line-height: 0.33rem;
               color: #999;
               margin-bottom: 0.25rem;
+              display: flex;
+              justify-content: space-between;
             }
             .props {
               font-size: $font-size-small;

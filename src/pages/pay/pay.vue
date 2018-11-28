@@ -10,8 +10,8 @@
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
-            <div @click="selectPayType(1)">
-              <img src="./wechat@2x.png" alt="">
+            <div @click="selectPayType(1)" :style="{ opacity: isWeixin && showWeixin ? '1' : '0.1' }">
+              <img src="./wechat@2x.png">
               <div class="text">
                 <p>微信</p>
               </div>
@@ -19,7 +19,7 @@
               <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
             </div>
             <div @click="selectPayType(2)">
-              <img src="./alipay@2x.png" alt="">
+              <img src="./alipay@2x.png">
               <div class="text">
                 <p>支付宝</p>
               </div>
@@ -27,7 +27,7 @@
               <img class="money fr" src="./unchoosed@2x.png" v-show="!alipay">
             </div>
             <div @click="selectPayType(3)">
-              <img src="./balance@2x.png" alt="">
+              <img src="./balance@2x.png">
               <div class="text">
                 <p>余额支付（剩余¥{{formatAmount(cny)}}）</p>
               </div>
@@ -120,11 +120,15 @@
           remark: ''
         },
         totalPrice: '',        // 商品订单总额
-        type: ''
+        type: '',
+        showWeixin: true,
+        isWeixin: true
       };
     },
     mounted() {
       setTitle('支付订单');
+      let ua = navigator.userAgent.toLowerCase();
+      this.isWeixin = ua.indexOf('micromessenger') !== -1;
       this.orderCode = this.$route.query.orderCode;
       this.type = this.$route.query.type;
       this.pre = this.$route.query.pre;
@@ -142,6 +146,10 @@
         getUserDetail({userId: this.userId}).then(data => {
           this.userDetail = data;
           this.loading = false;
+          if(!this.isWeixin || !this.userDetail.h5OpenId) {
+            this.selectPayType(2);
+            this.showWeixin = false;
+          }
         });
         getAccount({userId: this.userId}).then(data => {
           data.list.map((item) => {
@@ -215,6 +223,10 @@
               }
             });
             this.userDetail = res4;
+            if(!this.isWeixin || !this.userDetail.h5OpenId) {
+              this.selectPayType(2);
+              this.showWeixin = false;
+            }
             this.loading = false;
           }).catch(() => { this.loading = false; });
         } else {
@@ -241,6 +253,10 @@
               }
             });
             this.userDetail = res4;
+            if(!this.isWeixin || !this.userDetail.h5OpenId) {
+              this.selectPayType(2);
+              this.showWeixin = false;
+            }
             this.loading = false;
           }).catch(() => { this.loading = false; });
         }
@@ -269,6 +285,10 @@
             }
           });
           this.userDetail = res3;
+          if(!this.isWeixin || !this.userDetail.h5OpenId) {
+            this.selectPayType(2);
+            this.showWeixin = false;
+          }
           this.rate = res4;
           this.loading = false;
         }).catch(() => { this.loading = false; });
@@ -296,16 +316,24 @@
             }
           });
           this.userDetail = res3;
+          if(!this.isWeixin || !this.userDetail.h5OpenId) {
+            this.selectPayType(2);
+            this.showWeixin = false;
+          }
           this.loading = false;
         }).catch(() => { this.loading = false; });
       },
       selectPayType(index) {
         if(index === 1) {
-          this.wechat = true;
-          this.alipay = false;
-          this.balance = false;
-          this.config.payType = '5';
-          this.moreConfig.payType = '5';
+          if(this.isWeixin && this.showWeixin) {
+            this.wechat = true;
+            this.alipay = false;
+            this.balance = false;
+            this.config.payType = '5';
+            this.moreConfig.payType = '5';
+          } else {
+            return;
+          }
         } else if(index === 2) {
           this.wechat = false;
           this.alipay = true;
