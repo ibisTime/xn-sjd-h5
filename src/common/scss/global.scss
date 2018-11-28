@@ -269,9 +269,17 @@
   border: 1px solid #23AD8C;
 }
 .pj-con{
+  p{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    line-height: 1.3;
+  }
   img{
     margin-top: 0.2rem;
-    width: 80%;
+    width: 40%;
+    display: none;
   }
 }
 .sing-con{
