@@ -754,3 +754,11 @@ export function share(channel) {
     channel
   });
 }
+
+// 阅读文章
+export function readArticle(code) {
+  return fetch(629812, {
+    userId: getUserId(),
+    code
+  });
+}

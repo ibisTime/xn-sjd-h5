@@ -15,7 +15,7 @@
           <div class="tree-panel-danmu" v-show="danmuShow">
             <img :src="getAvatar()" class="head">
             <div class="info">
-              <span class="name">hhh</span>
+              <span class="name">{{userDetail.nickname || jiami(userDetail.mobile)}}</span>
               <span class="context">{{emojiText}}</span>
             </div>
             <img :src="formatImg(emoji)" class="emoji">
@@ -439,7 +439,6 @@ export default {
       this.borderTitle = 'TA的动态';
       setTitle('TA的树');
     }
-    this.userId = getCookie('userId');
     this.getInitData();
   },
   methods: {
@@ -544,7 +543,6 @@ export default {
       this.loading = true;
       return getUserTreeDetail(this.adoptTreeCode).then((data) => {
         this.treeDetail = data;
-        console.log(this.treeDetail);
         this.loading = false;
       }, () => { this.loading = false; });
     },
@@ -675,7 +673,6 @@ export default {
         orderDir: 'asc'
       }).then((res) => {
         this.loading = false;
-        console.log(res);
         this.emojiArr = res;
       }).catch(() => {
         this.loading = false;

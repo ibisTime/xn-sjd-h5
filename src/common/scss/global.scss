@@ -142,6 +142,7 @@
   word-wrap: break-word;
   word-break: break-all;
   overflow: hidden;
+  // 后加
 
   h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-family: inherit;
@@ -225,6 +226,7 @@
 
   img {
     max-width: 100%;
+    vertical-align: top;
   }
 }
 
