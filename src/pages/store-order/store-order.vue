@@ -148,8 +148,9 @@ export default {
           this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>`;
           break;
         case '2':
-          this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
-                      <div class="foo-btn look-wl set-btn">查看物流</div>`;
+          // this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
+          //             <div class="foo-btn look-wl set-btn">查看物流</div>`;
+          this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>`;
           break;
         case '3':
           this.operHtml = ``;
@@ -197,9 +198,9 @@ export default {
       if(target.classList.contains('after-sale')) { // 申请售后
         this.go('/after-sale?code=' + this.orderList[index].code);
       }
-      if(target.classList.contains('look-wl')) { // 查看物流
-        alert('查看物流');
-      }
+      // if(target.classList.contains('look-wl')) { // 查看物流
+      //   alert('查看物流');
+      // }
       if(target.classList.contains('order-pj')) { // 发表评论
         this.loading = true;
         this.go('/user-pj?code=' + this.orderList[index].commodityCode + '&toCode=' + this.orderList[index].code);

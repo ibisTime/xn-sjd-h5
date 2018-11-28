@@ -46,6 +46,7 @@
       ]).then(([res1, res2]) => {
         getConfig('REGISTER_URL').then((url) => {
           this.url += `${url.cvalue}?type=U&userReferee=${res1.mobile}`;
+          console.log(this.url);
           // 用插件生成二维码
           const container = document.getElementById('qrcode');
           // 设置转换二维码图片的参数

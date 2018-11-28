@@ -75,7 +75,6 @@
       if (!isWeixin) {
         this.showWeixin = false;
       }
-      // this.type = this.$route.query.type || '';
       if (!isLogin()) {
         if (/code=([^&]+)&state=/.exec(location.href)) {
           this.code = RegExp.$1;

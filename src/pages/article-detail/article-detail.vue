@@ -75,7 +75,9 @@
       this.config.code = this.code;
       this.isConfig.code = this.code;
       this.loading = true;
-      this.readArticle();
+      if(getUserId()) {
+        this.readArticle();
+      }
       getArticleDetail({
         code: this.code
       }).then((res) => {
@@ -121,7 +123,7 @@
           this.$refs.toast.show();
           setTimeout(() => {
             this.$router.push('/login');
-          }, 1000);
+          }, 500);
         } else {
           if(this.detail.adoptOrderTree) {
             if (this.detail.adoptOrderTree.status === '2') {
@@ -207,7 +209,7 @@
         initShare({
           title: '氧林',
           desc: this.detail.title,
-          link: location.href.split('#')[0] + '/#/emotion-channel/article-detail?code=' + this.code,
+          link: location.href.split('#')[0] + '/#/article-detail?code=' + this.code,
           imgUrl: formatImg(this.detail.photo.split('||')[0]),
           success: (res) => {
             this.channel = '';
@@ -220,12 +222,14 @@
             } else if(res.errMsg.indexOf('shareQZone') !== -1) {
               this.channel = 3;
             }
-            share(this.channel).then((res) => {
-              if(res.code) {
-                this.text = '分享成功';
-                this.$refs.toast.show();
-              }
-            }).then(() => {});
+            if(getUserId()) {
+              share(this.channel).then((res) => {
+                if(res.code) {
+                  this.text = '分享成功';
+                  this.$refs.toast.show();
+                }
+              }).then(() => {});
+            }
           }
         }, (data) => {
           this.isWxConfiging = false;

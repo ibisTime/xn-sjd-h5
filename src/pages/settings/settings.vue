@@ -53,10 +53,17 @@
       },
       logout() {
         clearUser();
-        this.go('/login?setting=1');
-        // document.addEventListener('WeixinJSBridgeReady', () => { WeixinJSBridge.call('closeWindow'); }, false);
-        // // 这个可以关闭ios系统的手机
-        // WeixinJSBridge.call('closeWindow');
+        // this.go('/login?setting=1');
+
+        let ua = navigator.userAgent.toLowerCase();
+        let isWeixin = ua.indexOf('micromessenger') !== -1;
+        if (!isWeixin) {
+          this.go('/login?setting=1');
+        } else {
+          document.addEventListener('WeixinJSBridgeReady', () => { WeixinJSBridge.call('closeWindow'); }, false);
+          // 这个可以关闭ios系统的手机
+          WeixinJSBridge.call('closeWindow');
+        }
         // this._reloadPage();
       }
       // _reloadPage() {

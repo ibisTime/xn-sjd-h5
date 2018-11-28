@@ -217,15 +217,17 @@
           })
         ]).then(([res1, res2]) => {
           this.userDetail = res1;
-          if(res1.userExt.personAuthStatus) {
-            this.rzText = '已个人认证';
-            this.rzStatus = '2';
-          }else if(res1.userExt.companyAuthStatus) {
-            this.rzText = '已企业认证';
-            this.rzStatus = '3';
-          }else {
-            this.rzText = '未认证';
-            this.rzStatus = '0';
+          if(res1.userExt) {
+            if(res1.userExt.personAuthStatus) {
+              this.rzText = '已个人认证';
+              this.rzStatus = '2';
+            }else if(res1.userExt.companyAuthStatus) {
+              this.rzText = '已企业认证';
+              this.rzStatus = '3';
+            }else {
+              this.rzText = '未认证';
+              this.rzStatus = '0';
+            }
           }
           this.src = formatImg(this.userDetail.photo) || require('./../../common/image/avatar@2x.png');
           res2.list.map((item) => {

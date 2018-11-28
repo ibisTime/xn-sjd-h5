@@ -29,7 +29,7 @@
                   <!--<span class="add-address-text">收货数量</span>-->
                 </div>
                 <div class="right">
-                  <button>查看物流</button>
+                  <!--<button>查看物流</button>-->
                   <button class="confirm" @click="confirm(item)" v-if="item.status === '1'">确认收货</button>
                 </div>
               </div>

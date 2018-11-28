@@ -36,19 +36,25 @@
       ])
     },
     mounted() {
-      if(getUserId()) {
-        getUserDetail({userId: getUserId()}).then((res) => {
-          if(res.mobile) {
-            if(res.status !== '0') {
-              alert('您的账号已被锁定，请联系管理员');
+      console.log(this.$route);
+      console.log(this.$route.path);
+      console.log(location);
+      if(location.hash.indexOf('register') === -1) {
+        // 不是注册页
+        if(getUserId()) {
+          getUserDetail({userId: getUserId()}).then((res) => {
+            if(res.mobile) {
+              if(res.status !== '0') {
+                alert('您的账号已被锁定，请联系管理员');
+              }
+            } else {
+              this.$router.push('/wx-bind-mobile');
             }
-          } else {
-            this.$router.push('/wx-bind-mobile');
-          }
-        }).catch(() => {
-          this.loading = false;
-          this.relogin = true;
-        });
+          }).catch(() => {
+            this.loading = false;
+            this.relogin = true;
+          });
+        }
       }
       // if (!isLogin()) {
       //   if (/code=([^&]+)&state=/.exec(location.href)) {
