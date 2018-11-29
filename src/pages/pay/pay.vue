@@ -80,7 +80,7 @@
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore,
             getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder, preOrderScore} from 'api/biz';
   import { getUserDetail } from 'api/user';
-  import { getSystemConfigPage } from 'api/general';
+  import { getConfigPage } from 'api/general';
   import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible } from 'api/store';         // 商城
   import { initPay } from 'common/js/weixin';
 
@@ -208,9 +208,9 @@
               userId: this.userId
             }),
             getOrganizeOrderScore(this.orderCode),
-            getUserDetail({userId: this.userId}),
-            this.getConfig()
+            getUserDetail({userId: this.userId})
           ]).then(([res1, res2, res3, res4]) => {
+            this.orderDetail = res1;
             this.identifyCode = res1.identifyCode;
             this.amount = res1.amount;
             this.rate = res3;
@@ -227,6 +227,7 @@
               this.selectPayType(2);
               this.showWeixin = false;
             }
+            this.getConfig();
             this.loading = false;
           }).catch(() => { this.loading = false; });
         } else {
@@ -239,9 +240,9 @@
               userId: this.userId
             }),
             getDeductibleAmount(this.orderCode),
-            getUserDetail({userId: this.userId}),
-            this.getConfig()
+            getUserDetail({userId: this.userId})
           ]).then(([res1, res2, res3, res4]) => {
+            this.orderDetail = res1;
             this.amount = res1.amount;
             this.rate = res3;
             res2.list.map((item) => {
@@ -257,6 +258,7 @@
               this.selectPayType(2);
               this.showWeixin = false;
             }
+            this.getConfig();
             this.loading = false;
           }).catch(() => { this.loading = false; });
         }
@@ -271,10 +273,9 @@
             userId: this.userId
           }),
           getUserDetail({userId: this.userId}),
-          preOrderScore({ code: this.orderCode }),
-          this.getConfig()
+          preOrderScore({ code: this.orderCode })
         ]).then(([res1, res2, res3, res4]) => {
-          this.identifyCode = res1.identifyCode;
+          this.orderDetail = res1;
           this.amount = res1.amount;
           res2.list.map((item) => {
             if(item.currency === 'CNY') {
@@ -290,6 +291,7 @@
             this.showWeixin = false;
           }
           this.rate = res4;
+          this.getConfig();
           this.loading = false;
         }).catch(() => { this.loading = false; });
       },
@@ -302,10 +304,9 @@
           getAccount({
             userId: this.userId
           }),
-          getUserDetail({userId: this.userId}),
-          this.getConfig()
+          getUserDetail({userId: this.userId})
         ]).then(([res1, res2, res3]) => {
-          this.identifyCode = res1.identifyCode;
+          this.orderDetail = res1;
           this.amount = res1.amount;
           res2.list.map((item) => {
             if(item.currency === 'CNY') {
@@ -609,12 +610,27 @@
         }
       },
       getConfig() {
-        getSystemConfigPage({
+        this.ckey = '';
+        if(this.orderCode) {
+          if(this.pre) {
+            this.ckey = 'PRESELL_DK_RATE';
+          } else {
+            this.ckey = 'ADOPT_DK_RATE';
+          }
+        }
+        getConfigPage({
           start: 1,
-          limit: 10,
-          type: 'PAY_RULE'
+          limit: 100,
+          type: 'JF_RULE',
+          ckey: this.ckey
         }).then(data => {
           this.sysConfig = data.list;
+          if(this.orderCode) {
+            this.sysConfig.push({
+              remark: '该产品最大积分抵扣上限',
+              cvalue: `${this.orderDetail.product.maxJfdkRate}%`
+            });
+          }
         });
       }
     },

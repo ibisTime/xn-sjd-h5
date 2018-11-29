@@ -36,7 +36,7 @@
               <div class="select-item">
                 <span>关联古树</span>
                 <select v-validate="'required'" name="adoptTreeCode" v-model="adoptTreeCode">
-                  <option :value="item" v-for="item in list">{{item.tree.scientificName}}-{{item.tree.treeNumber}}</option>
+                  <option :value="item" v-for="item in list">{{item.tree.treeNumber}}</option>
                 </select>
                 <img src="./more@2x.png"/>
               </div>

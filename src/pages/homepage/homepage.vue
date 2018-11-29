@@ -23,28 +23,10 @@
                                  :categorys="categorysSub"
                                  @select="selectCategorySub"></category-scroll>
               </div>
-              <!--<div class="type">-->
-                <!--<span @click="changeType(0)">全部</span>-->
-                <!--<span @click="changeType(1)">古树名木</span>-->
-                <!--<span @click="changeType(4)">水源林</span>-->
-                <!--<span @click="changeType(3)">情感林</span>-->
-                <!--<span @click="changeType(2)">果园林</span>-->
-              <!--</div>-->
-              <!--<div class="type triangle">-->
-                <!--<img :class="!type ? 'active' : ''" src="./triangle@2x.png">-->
-                <!--<img :class="type === 1 ? 'active' : ''" src="./triangle@2x.png">-->
-                <!--<img :class="type === 4 ? 'active' : ''" src="./triangle@2x.png">-->
-                <!--<img :class="type === 3 ? 'active' : ''" src="./triangle@2x.png">-->
-                <!--<img :class="type === 2 ? 'active' : ''" src="./triangle@2x.png">-->
-              <!--</div>-->
             </div>
           </div>
         </div>
       </div>
-      <!--<div class="emotion-forest-type" v-show="type === 3">-->
-        <!--<span :class="emotion === 1 ? 'active' : ''" @click="changeEmotion(1)">爱情林</span>-->
-        <!--<span :class="emotion === 2 ? 'active' : ''" @click="changeEmotion(2)">亲子林</span>-->
-      <!--</div>-->
       <div class="scroll-section">
         <Scroll ref="scroll"
                 :data="dynamicsList"
@@ -53,8 +35,8 @@
           <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
             <div class="item" v-for="item in userTree">
               <div class="tree-info" @click="goMyTree(item)">
-                <p class="tree-name" v-show="item.tree.sellType !== '3'">{{item.tree.scientificName}}-{{item.treeNumber}}</p>
-                <p class="tree-name" v-show="item.tree.sellType === '3'">{{item.tree.scientificName}}-{{item.treeNumber}}-{{item.specsName}}</p>
+                <p class="tree-name">{{item.treeNumber}}</p>
+                <!--<p class="tree-name" v-show="item.tree.sellType === '3'">{{item.treeNumber}}-{{item.specsName}}</p>-->
                 <p class="tree-about"></p>
               </div>
               <div class="map" @click="go('/map?code=' + item.code)">

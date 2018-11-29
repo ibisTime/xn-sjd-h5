@@ -60,14 +60,14 @@
       <span v-show="detail.minPrice !== detail.maxPrice">¥{{formatAmount(detail.minPrice)}}～¥{{formatAmount(detail.maxPrice)}}</span>
       <span v-show="detail.minPrice === detail.maxPrice">¥{{formatAmount(detail.minPrice)}}</span>
       <button @click="showPopUp" v-if="canAdopt()">确认购买</button>
-      <button class="disabled" v-if="!canAdopt()">{{noAdoptReason}}</button>
+      <button class="disabled" v-if="!canAdopt()" @click="goLogin()">{{noAdoptReason}}</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
       <div>
         <div class="title">
           <div class="title-pic">
-            <img :src="formatImg(detail.bannerPic)" alt="">
+            <img :src="formatImg(detail.bannerPic)">
           </div>
           <div class="title-right">
             <p>{{detail.scientificName}}</p>
@@ -84,7 +84,7 @@
             :pullUpLoad="pullUpLoad"
           >
             <div class="select-item" v-for="(item, index) in detail.presellSpecsList" @click="chooseSpecs(index)" :key="index">
-              <span class="item-name">{{item.name}}({{detail.packWeight}}{{outputUnitObj[detail.outputUnit]}}/{{packUnitObj[detail.packUnit]}})</span>
+              <span class="item-name">{{item.name}}({{detail.packWeight}}{{outputUnitObj[detail.outputUnit]}}/{{packUnitObj[detail.packUnit]}},共{{item.packCount}}{{packUnitObj[detail.packUnit]}})</span>
               <div class="item-price-isSelect">
                 <span>¥{{formatAmount(item.price)}}</span>
                 <img src="./choosed@2x.png" v-show="choosedIndex === index">

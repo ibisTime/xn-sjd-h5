@@ -24,13 +24,22 @@
           <span>已募集份数</span><span>{{detail.nowCount}}份/{{detail.raiseCount}}份</span>
         </div>
         <div class="item">
-          <span>古树产地</span><span>{{detail.originPlace}}</span>
-        </div>
-        <div class="item">
           <span>古树学名</span><span>{{detail.scientificName}}</span>
         </div>
         <div class="item">
+          <span>古树级别</span><span>{{detail.rank}}</span>
+        </div>
+        <div class="item">
           <span>古树品种</span><span>{{detail.variety}}</span>
+        </div>
+        <div class="item">
+          <span>古树区域</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
+        </div>
+        <div class="item">
+          <span>乡镇/街道</span><span>{{detail.town}}</span>
+        </div>
+        <div class="item">
+          <span>古树产地</span><span>{{detail.originPlace}}</span>
         </div>
         <div class="item" @click="go(`/adopt-list?code=${code}&type=${detail.sellType}`)">
           <span v-show="detail.sellType !== '3'">已认养名单</span>
@@ -60,7 +69,7 @@
     <div :class="['buypart',flag ? 'show' : '']">
       <div class="title">
         <div class="title-pic">
-          <img :src="formatImg(detail.bannerPic)" alt="">
+          <img :src="formatImg(detail.bannerPic)">
         </div>
         <div class="title-right">
           <p>{{detail.scientificName}}</p>
@@ -91,6 +100,8 @@
           <img class="diamonds right-item" @click="sub" src="./sub@2x.png">
         </div>
       </div>
+      <div class="other tip" v-if="detail.sellType === '4' && !detail.identifyCode">它还没被认养，快发起集体认养，邀请小伙伴一同参与</div>
+      <div class="other tip" v-if="detail.sellType === '4' && detail.identifyCode">此树已经开启集体认养！发起人：{{detail.collectFirstUserName}}，获得识别码即可一同参与</div>
       <div class="other" v-show="showIdentifyCode()">
         <span>下单识别码</span>
         <input type="text" v-model="identifyCode" placeholder="请输入正确的下单识别码" >
@@ -524,6 +535,8 @@ export default {
         border-bottom: 1px solid #eee;
         span:first-child {
           margin-right: 0.3rem;
+          width: 25%;
+          display: inline-block;
         }
         img {
           height: 0.21rem;
@@ -602,7 +615,7 @@ export default {
   }
   .buypart {
     width: 100%;
-    height: 7.7rem;
+    height: 8rem;
     position: fixed;
     bottom: 0;
     background-color: #fff;
@@ -761,6 +774,11 @@ export default {
         height: 70%;
         border: 1px solid $color-border;
       }
+    }
+    .other.tip {
+      color: $primary-color;
+      line-height: 0.36rem;
+      padding: 0 0.2rem;
     }
     .buypart-bottom {
       height: 0.98rem;
