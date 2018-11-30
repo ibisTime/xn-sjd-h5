@@ -36,9 +36,6 @@
       ])
     },
     mounted() {
-      console.log(this.$route);
-      console.log(this.$route.path);
-      console.log(location);
       if(location.hash.indexOf('register') === -1) {
         // 不是注册页
         if(getUserId()) {

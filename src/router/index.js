@@ -194,6 +194,8 @@ const Auth = () => import('@/pages/auth/auth');
 const PersonAuth = () => import('@/pages/person-auth/person-auth');
 const CompanyAuth = () => import('@/pages/company-auth/company-auth');
 const WxBindMobile = () => import('@/pages/wx-bind-mobile/wx-bind-mobile');
+// 查看物流
+const Logistics = () => import('@/pages/logistics/logistics');
 export default new Router({
   routes: [
     {
@@ -633,6 +635,10 @@ export default new Router({
     {
       path: '/wx-bind-mobile',
       component: WxBindMobile
+    },
+    {
+      path: '/logistics',
+      component: Logistics
     }
   ],
   mode: 'hash'

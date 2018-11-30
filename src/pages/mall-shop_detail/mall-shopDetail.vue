@@ -196,7 +196,6 @@ export default {
       this.addCartConfig.specsId = this.specsList[0].id;
       this.addCartConfig.specsName = this.specsList[0].name;
       if(res3.list[0].userId) {
-        console.log(res3.list[0].userId);
         getUser(res3.list[0].userId).then(res => {
           this.commentData = res3.list[0];
           this.commentData.photo = res.photo;
