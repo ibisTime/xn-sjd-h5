@@ -94,7 +94,8 @@ export default {
       ispj: false,
       isRess: true,
       setRess: '',
-      statusDetList: []
+      statusDetList: [],
+      logisCompany: {}
     };
   },
   created() {
@@ -116,9 +117,14 @@ export default {
         this.orderStatus[item.dkey] = item.dvalue;
       });
     });
-    getDictList('logistics').then(data => {
+    getDictList('logistics_company').then(data => {
       data.forEach(item => {
-        this.logistics[item.dkey] = item.dvalue;
+        this.orderStatus[item.dkey] = item.dvalue;
+      });
+    });
+    getDictList('logistics_company').then(data => {
+      data.forEach(item => {
+        this.logisCompany[item.dkey] = item.dvalue;
       });
     });
   },
@@ -163,9 +169,8 @@ export default {
           this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>`;
           break;
         case '2':
-          // this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
-          //             <div class="foo-btn look-wl set-btn">查看物流</div>`;
-          this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>`;
+          this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
+                      <div class="foo-btn look-wl set-btn">查看物流</div>`;
           break;
         case '3':
           this.operHtml = ``;
@@ -208,9 +213,18 @@ export default {
       if(target.classList.contains('after-sale')) { // 申请售后
         this.go('/after-sale?code=' + storeItem.code + '&toCode=' + this.orderDetail.code);
       }
-      // if(target.classList.contains('look-wl')) { // 查看物流
-      //   alert('查看物流');
-      // }
+      if(target.classList.contains('look-wl')) { // 查看物流
+        this.loading = true;
+        let logisData = {
+          statusTxt: this.orderStatus[this.orderDetail.status],
+          shopPic: this.storeList[0].listPic,
+          logicPany: this.logisCompany[this.orderDetail.logisticsCompany],
+          orderCode: this.orderDetail.code,
+          status: this.orderDetail.status
+        };
+        sessionStorage.setItem('logisticData', JSON.stringify(logisData));
+        this.go(`/logistics?expCode=${this.orderDetail.logisticsCompany}&expNo=${this.orderDetail.logisticsNumber}`);
+      }
       if(target.classList.contains('order-take')) { // 确认收货
         this.loading = true;
         this.affrimConfig.code = this.orderDetail.code;

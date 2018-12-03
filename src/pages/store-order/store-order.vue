@@ -91,7 +91,8 @@ export default {
       operHtmlList: [],
       orderTypeList: [
         {key: 0, value: '全部'}
-      ]
+      ],
+      logisCompany: {}
     };
   },
   created() {
@@ -103,6 +104,11 @@ export default {
           key: index + 1,
           value: item.dvalue
         });
+      });
+    });
+    getDictList('logistics_company').then(data => {
+      data.forEach(item => {
+        this.logisCompany[item.dkey] = item.dvalue;
       });
     });
     this.morePageOrderFn();
@@ -148,9 +154,8 @@ export default {
           this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>`;
           break;
         case '2':
-          // this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
-          //             <div class="foo-btn look-wl set-btn">查看物流</div>`;
-          this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>`;
+          this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
+                      <div class="foo-btn look-wl set-btn">查看物流</div>`;
           break;
         case '3':
           this.operHtml = ``;
@@ -198,9 +203,17 @@ export default {
       if(target.classList.contains('after-sale')) { // 申请售后
         this.go('/after-sale?code=' + this.orderList[index].code);
       }
-      // if(target.classList.contains('look-wl')) { // 查看物流
-      //   alert('查看物流');
-      // }
+      if(target.classList.contains('look-wl')) { // 查看物流
+        let logisData = {
+          statusTxt: this.orderStatus[this.orderList[index].status],
+          shopPic: this.orderList[0].detailList[0].listPic,
+          logicPany: this.logisCompany[this.orderList[index].logisticsCompany],
+          orderCode: this.orderList[index].code,
+          status: this.orderList[index].status
+        };
+        sessionStorage.setItem('logisticData', JSON.stringify(logisData));
+        this.go(`/logistics?expCode=${this.orderList[index].logisticsCompany}&expNo=${this.orderList[index].logisticsNumber}`);
+      }
       if(target.classList.contains('order-pj')) { // 发表评论
         this.loading = true;
         this.go('/user-pj?code=' + this.orderList[index].commodityCode + '&toCode=' + this.orderList[index].code);

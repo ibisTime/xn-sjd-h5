@@ -166,3 +166,8 @@ export function getCommemtData(config) {
   return fetch(629755, config);
 }
 
+// 查看物流
+export function lookLogistics(config) {
+  return fetch(629820, config);
+}
+
