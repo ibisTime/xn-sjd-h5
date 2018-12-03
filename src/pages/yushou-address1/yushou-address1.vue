@@ -19,7 +19,7 @@
                       <span class="name">{{item.receiver}}</span>
                       <span class="mobile">{{item.receiverMobile}}</span>
                     </div>
-                    <div class="number">{{item.deliverCount}}{{item.unit}}</div>
+                    <div class="number">{{item.deliverCount}}{{packUnitObj[item.unit]}}</div>
                   </div>
                   <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
                 </div>
@@ -29,7 +29,7 @@
                   <!--<span class="add-address-text">收货数量</span>-->
                 </div>
                 <div class="right">
-                  <button>查看物流</button>
+                  <button @click="go(`/logistics?expCode=${item.logisticsCompany}&expNo=${item.logisticsNumber}`)" v-if="item.status === '1'">查看物流</button>
                   <button class="confirm" @click="confirm(item)" v-if="item.status === '1'">确认收货</button>
                 </div>
               </div>

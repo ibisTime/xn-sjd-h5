@@ -12,7 +12,7 @@
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
-            <div @click="selectPayType(5)">
+            <div @click="selectPayType(5)" :style="{ opacity: isWeixin && showWeixin ? '1' : '0.1' }">
               <img src="./wechat@2x.png" alt="">
               <div class="text">
                 <p>微信</p>
@@ -43,10 +43,10 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
-  import {setTitle, formatAmount} from 'common/js/util';
+  import {setTitle, formatAmount, getUserId} from 'common/js/util';
   import { initPay } from 'common/js/weixin';
   import {userAccount} from 'api/biz';
-  import {userRecharge} from 'api/user';
+  import {userRecharge, getUserDetail} from 'api/user';
   import Toast from 'base/toast/toast';
 
   export default {
@@ -57,6 +57,8 @@
         balance: false,
         amount: 100,
         text: '',
+        showWeixin: true,
+        isWeixin: true,
         userAmount: [{
           amount: 0
         }],
@@ -70,10 +72,20 @@
       setTitle('充值');
     },
     mounted() {
+      let ua = navigator.userAgent.toLowerCase();
+      this.isWeixin = ua.indexOf('micromessenger') !== -1;
       userAccount().then(data => {
         this.userAmount = data.filter(item => {
           return item.currency === 'CNY';
         });
+      });
+      getUserDetail({userId: getUserId()}).then(data => {
+        this.userDetail = data;
+        this.loading = false;
+        if(!this.isWeixin || !this.userDetail.h5OpenId) {
+          this.selectPayType(3);
+          this.showWeixin = false;
+        }
       });
     },
     methods: {
@@ -92,9 +104,13 @@
       },
       selectPayType(index) {
         if(index === 5) {
-          this.wechat = true;
-          this.alipay = false;
-          this.balance = false;
+          if(this.isWeixin && this.showWeixin) {
+            this.wechat = true;
+            this.alipay = false;
+            this.balance = false;
+          } else {
+            return;
+          }
         } else if(index === 3) {
           this.wechat = false;
           this.alipay = true;

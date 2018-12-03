@@ -197,6 +197,7 @@ export default {
       }
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderList[index]];
+        console.log(shopMsgList);
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
         this.go('/pay?code=' + this.orderList[index].code + '&type=one');
       }
