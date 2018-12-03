@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <div class="mall-content">
-                    <no-result v-show="!orderList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+                    <no-result v-show="!orderList.length && !hasMore" class="no-result-wrapper" title="还没有商品订单哦"></no-result>
                 </div>
             </Scroll>
         </div>
