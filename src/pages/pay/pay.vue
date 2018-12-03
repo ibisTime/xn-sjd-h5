@@ -122,7 +122,8 @@
         totalPrice: '',        // 商品订单总额
         type: '',
         showWeixin: true,
-        isWeixin: true
+        isWeixin: true,
+        shopMsgList: []
       };
     },
     mounted() {
@@ -134,8 +135,9 @@
       this.pre = this.$route.query.pre;
       this.jishou = this.$route.query.jishou;
       this.userId = getCookie('userId');
+      this.shopMsgList = JSON.parse(sessionStorage.getItem('shopMsgList'));
       if(!this.orderCode) {
-        this.totalPrice = Number(sessionStorage.getItem('totalPrice')) * 1000;
+        this.totalPrice = Number(this.shopMsgList[0].payAmount);
       }
       this.storeCode = this.$route.query.code;             // 商城订单code
       this.storeType = this.$route.query.storeType;

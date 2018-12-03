@@ -47,10 +47,10 @@
     },
     created() {
       setTitle('物流信息');
-      // let expCode = this.$route.query.expCode;
-      // this.expNo = this.$route.query.expNo;
-      let expCode = 'YD';
-      this.expNo = '3720520214862';
+      let expCode = this.$route.query.expCode;
+      this.expNo = this.$route.query.expNo;
+      // let expCode = 'YD';
+      // this.expNo = '3720520214862';
       this.logisticData = JSON.parse(sessionStorage.getItem('logisticData'));
       lookLogistics({
         expCode,
