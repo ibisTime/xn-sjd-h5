@@ -12,7 +12,7 @@
                   <div class="l-img"></div>
               </div>
               <div class="con-right">
-                  <p>{{addressMsg ? addressMsg.addressee : ''}} <span>{{addressMsg ? addressMsg.mobile : ''}}</span></p>
+                  <p>{{addressMsg ? addressMsg.receiverName : ''}} <span>{{addressMsg ? addressMsg.receiverMobile : ''}}</span></p>
                   <p>{{addressMsg ? addressMsg.province + addressMsg.city + addressMsg.district + addressMsg.detailAddress : '还未选择地址哦'}}</p>
               </div>
           </div>
@@ -250,7 +250,14 @@ export default {
         this.orderDetail = data;
         this.loading = false;
         this.storeList = data.detailList;   // moreStoreOrder
-        this.addressMsg = data.address;
+        this.addressMsg = {
+          province: data.province,
+          city: data.city,
+          district: data.district,
+          detailAddress: data.detailAddress,
+          receiverMobile: data.receiverMobile,
+          receiverName: data.receiverName
+        };
         if(data.status === '3' || data.status === '4') {
           this.ispj = true;
           data.detailList.forEach((item, index) => {

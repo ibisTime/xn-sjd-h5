@@ -10,7 +10,13 @@
             <h4>{{name}}</h4>
             <p>{{description}}</p>
           </div>
-          <div class="mall-cont"></div>
+          <div class="mall-cont">
+            <slider v-if="banners.length" :loop="banners.length > 1" :showDots="banners.length > 1">
+              <div class="home-slider" v-for="item in banners" :key="item.code">
+                <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
+              </div>
+            </slider>
+          </div>
         </div>
         <div class="mall-list">
           <category-scroll
@@ -57,11 +63,13 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
+import Slider from 'base/slider/slider';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import MallShopList from '../mall-shopList/mall-shopList';
 import { getAllShopData, addShopCart, storeMsg, getShopType, myShopCart } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { getBanner } from 'api/general';
 export default {
   // name: "home",
   data() {
@@ -102,13 +110,17 @@ export default {
         orderDir: 'asc'
       },
       shopTypeData: [],   // {key: '0', value: '全部', code: ''}
-      iscart: false
+      iscart: false,
+      banners: []
     };
   },
   created() {
     this.pullUpLoad = null;
     this.shopCode = this.$route.query.shopCode;
     this.config.shopCode = this.shopCode;
+    getBanner({type: 7, shopCode: this.shopCode}).then(data => {
+      this.banners = data;
+    });
     getShopType(this.shopTypeConfig).then(data => {
       data.list.map((item, index) => {
         this.shopTypeData.push({
@@ -120,9 +132,12 @@ export default {
       });
     });
     storeMsg(this.shopCode).then(data => {
+      this.loading = false;
       this.description = data.description;
       this.name = data.name;
       setTitle(this.name);
+    }, () => {
+      this.loading = false;
     });
     if(getUserId()) {
       myShopCart(getUserId()).then(data => {
@@ -132,9 +147,6 @@ export default {
       });
     }
     this.getHotShop();
-  },
-  mounted() {
-    this.loading = false;
   },
   methods: {
     formatAmount(amount) {
@@ -218,6 +230,7 @@ export default {
     FullLoading,
     Toast,
     Scroll,
+    Slider,
     NoResult,
     MallShopList,
     CategoryScroll
@@ -253,8 +266,19 @@ export default {
         height: 3.8rem;
         margin: 0 auto;
         position: relative;
-        background-image: url('./banner.png');
-        background-size: 100% 100%;
+        /*background-image: url('./banner.png');*/
+        /*background-size: 100% 100%;*/
+        .home-slider {
+          height: 100%;
+        }
+        a {
+          width: 100%;
+          height: 100%;
+          display: block;
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: cover;
+        }
       }
       .head-search{
         width: 100%;
