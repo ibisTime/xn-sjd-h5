@@ -100,12 +100,12 @@
           <img class="diamonds right-item" @click="sub" src="./sub@2x.png">
         </div>
       </div>
-      <div class="other tip" v-if="detail.sellType === '4' && !detail.identifyCode">它还没被认养，快发起集体认养，邀请小伙伴一同参与</div>
-      <div class="other tip" v-if="detail.sellType === '4' && detail.identifyCode">此树已经开启集体认养！发起人：{{detail.collectFirstUserName}}，获得识别码即可一同参与</div>
       <div class="other" v-show="showIdentifyCode()">
         <span>下单识别码</span>
         <input type="text" v-model="identifyCode" placeholder="请输入正确的下单识别码" >
       </div>
+      <div class="other tip" v-if="detail.sellType === '4' && !detail.identifyCode">它还没被认养，快发起集体认养，邀请小伙伴一同参与</div>
+      <div class="other tip" v-if="detail.sellType === '4' && detail.identifyCode">此树已经开启集体认养！发起人：<span>{{detail.collectFirstUserName}}</span>，获得识别码即可一同参与</div>
       <div class="buypart-bottom">
         <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
       </div>
@@ -615,7 +615,7 @@ export default {
   }
   .buypart {
     width: 100%;
-    height: 8rem;
+    /*min-height: 8rem;*/
     position: fixed;
     bottom: 0;
     background-color: #fff;
@@ -624,7 +624,6 @@ export default {
     &.show {
       display: block;
     }
-    // padding: 0 0.3rem;
     .title {
       height: 1.5rem;
       position: relative;
@@ -682,7 +681,7 @@ export default {
       }
     }
     .packaging {
-      height: 1.74rem;
+      /*height: 1.74rem;*/
       border-bottom: 1px solid #eee;
       margin: 0.3rem;
       overflow: scroll;
@@ -699,11 +698,11 @@ export default {
         color: #333;
       }
       .select {
-        position: absolute;
-        top: 0.42rem;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        /*position: absolute;*/
+        /*top: 0.42rem;*/
+        /*bottom: 0;*/
+        /*left: 0;*/
+        /*right: 0;*/
         overflow: auto;
         /*height: 2rem;*/
         .select-item {
@@ -762,31 +761,36 @@ export default {
     }
     .other {
       height: 1.1rem;
-      border-bottom: 1px solid #eee;
+      /*border-bottom: 1px solid #eee;*/
       margin: 0 0.3rem;
       display: flex;
       align-items: center;
       font-size: 0.3rem;
       span {
+        display: inline-block;
         margin-right: 0.2rem;
       }
       input {
+        flex: 1;
         height: 70%;
         border: 1px solid $color-border;
       }
     }
     .other.tip {
-      color: $primary-color;
+      color: #999;
+      font-size: 0.24rem;
       line-height: 0.36rem;
-      padding: 0 0.2rem;
+      display: block;
+      margin-top: 0.2rem;
+      span {
+        color: $primary-color;
+      }
     }
     .buypart-bottom {
       height: 0.98rem;
       line-height: 0.9rem;
       color: #fff;
       font-size: $font-size-medium-x;
-      position: absolute;
-      bottom: 0;
       width: 100%;
       left: 0;
       padding: 0 0.3rem;

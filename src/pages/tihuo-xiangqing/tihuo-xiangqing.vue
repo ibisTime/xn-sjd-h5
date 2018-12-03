@@ -34,7 +34,7 @@
         <!--</div>-->
       </div>
       <div class="no-result-wrapper">
-        <no-result v-show="!hasMore && !addressList.length" title="您尚未添加收货地址"></no-result>
+        <no-result v-show="!hasMore && !list.length" title="您尚未添加收货地址"></no-result>
       </div>
       <full-loading v-show="loadingFlag" :title="loadingText"></full-loading>
       <confirm ref="confirm" text="确认收货" @confirm="confirmShouhuo"></confirm>
@@ -56,7 +56,7 @@
     data() {
       return {
         text: '',
-        hasMore: true,
+        hasMore: false,
         loadingFlag: false,
         loadingText: '',
         list: [],
@@ -117,6 +117,7 @@
             originalGroupCode: this.code
           }).then((res) => {
             this.list = res;
+            console.log(this.list);
           })
         ]);
       },

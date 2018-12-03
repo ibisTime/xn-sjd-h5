@@ -624,7 +624,11 @@
           type: 'JF_RULE',
           ckey: this.ckey
         }).then(data => {
-          this.sysConfig = data.list;
+          // this.sysConfig = data.list;
+          this.sysConfig.push({
+            remark: `使用${data.list[0].cvalue}积分抵扣1元`,
+            cvalue: ''
+          });
           if(this.orderCode) {
             this.sysConfig.push({
               remark: '该产品最大积分抵扣上限',

@@ -6,7 +6,7 @@
         <div class="title">{{detail.title}}</div>
         <div class="author-connect">
           <span class="author">作者：{{detail.publishUserName}}</span>
-          <span class="connect"><span @click="goTree()">关联古树：{{detail.treeName}}</span><img src="./more.png" v-show="detail.adoptTreeCode"></span>
+          <span class="connect"><span @click="goTree()">关联古树：{{detail.productName}}({{detail.treeName}})</span><img src="./more.png" v-show="detail.adoptTreeCode"></span>
         </div>
         <p class="prop"><span class="date">{{formatDate(detail.publishDatetime)}}</span></p>
         <div class="context" ref="description">

@@ -6,7 +6,7 @@
     </router-link>
     <router-link tag="div" class="foot-item item-1" to="/forest-space">
       <i></i>
-      <p>林空间</p>
+      <p>氧圈</p>
     </router-link>
     <router-link tag="div" class="foot-item item-2" to="/mall">
       <i></i>

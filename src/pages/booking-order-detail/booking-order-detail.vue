@@ -35,10 +35,11 @@
               <div class="order-info-title">订单信息</div>
               <div class="order-info-content">
                 <p><span>订单号</span><span>{{detail.code}}</span></p>
+                <p><span>下单时间</span><span>{{formatDate(detail.applyDatetime)}}</span></p>
                 <p><span>订单金额</span><span>{{formatAmount(detail.amount)}}元</span></p>
                 <p><span>卖家</span><span>{{detail.sellerName}}</span></p>
                 <p v-if="detail.jourCode"><span>支付流水号</span><span>{{detail.jourCode}}</span></p>
-                <p><span>预计发货时间</span><span>{{formatDate(detail.presellProduct.deliverDatetime)}}</span></p>
+                <p><span>预计发货时间</span><span>{{formatDate(detail.presellProduct.deliverDatetime, 'yyyy-MM-dd')}}</span></p>
                 <p v-if="detail.treeNumbers"><span>树木编号</span><span>{{detail.treeNumbers}}</span></p>
                 <p><span>数量</span><span>{{detail.quantity}}</span></p>
               </div>
@@ -94,8 +95,8 @@
       formatImg(img) {
         return formatImg(img);
       },
-      formatDate(date) {
-        return formatDate(date, 'yyyy-MM-dd');
+      formatDate(date, format) {
+        return formatDate(date, format);
       },
       go(url) {
         this.$router.push(url);

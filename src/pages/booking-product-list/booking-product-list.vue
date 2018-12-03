@@ -19,7 +19,7 @@
             <img :src="formatImg(item.listPic)" class="hot-pro-img">
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
-              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}</span></p>
+              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.presellSpecsList.length > 1">起</span></span></p>
             </div>
           </div>
         </div>
@@ -92,6 +92,11 @@ export default {
     },
     canAdopt(item) {
       item.canAdoptFlag = true;
+      if(!this.userDetail.level) {
+        item.canAdoptFlag = false;
+        item.noAdoptReason = '您未登录';
+        return item;
+      }
       let curTime = new Date();
       // 2把字符串格式转换为日期类
       let startTime = new Date(Date.parse(item.adoptStartDatetime));
@@ -100,11 +105,6 @@ export default {
       if(curTime <= startTime || curTime >= endTime) {
         item.canAdoptFlag = false;
         item.noAdoptReason = '不在预售期内';
-        return item;
-      }
-      if(!this.userDetail.level) {
-        item.canAdoptFlag = false;
-        item.noAdoptReason = '您未登录';
         return item;
       }
       if(item.totalOutput > item.nowCount) {
@@ -177,7 +177,7 @@ export default {
           categoryCode: this.selectdType,
           statusList: [4],
           orderDir: 'asc',
-          orderColumn: 'order_no'
+          orderColumn: 'buyable'
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {

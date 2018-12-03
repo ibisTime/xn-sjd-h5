@@ -86,6 +86,10 @@
       setTitle('我的订单');
       // this.currentIndexSell = +this.$route.query.type;
       this.type = this.$route.query.type ? this.$route.query.type.toString() : '';
+      if(this.type !== '4') {
+        this.type = '';
+      }
+      this.currentIndexSell = this.type === '4' ? 1 : 0;
       this.first = true;
       this.userId = getCookie('userId');
       if(this.userId) {
@@ -122,7 +126,11 @@
     methods: {
       getInitData() {
         this.getCategorysSell();
-        this.getCategorysStatus(0);
+        if(this.currentIndexSell === 1) {
+          this.getCategorysStatus(4);
+        } else {
+          this.getCategorysStatus(0);
+        }
         this.getStatus();
         this.getGroupStatus();
         if (this.shouldGetData()) {
@@ -155,7 +163,7 @@
       },
       // 获取销售分类
       getCategorysSell() {
-        getDictList('sell_type').then((res) => {
+        getDictList('adopt_order_navigate').then((res) => {
           res.map((item) => {
             this.categorysSell.push({
               key: item.dkey,
@@ -167,6 +175,7 @@
       },
       // 获取状态分类
       getCategorysStatus(index) {
+        // console.log(this.currentIndexSell);
         if(index === '4') {
           this.dkey = 'group_adopt_order_status';
         } else {
@@ -246,12 +255,14 @@
       selectCategorySell(index) {
         this.currentIndexSell = index;
         this.$refs.scroll.scrollTo(0, 0);
-        this.type = this.categorysSell[index].key;
+        this.type = this.currentIndexSell === 0 ? '' : '4';
         this.first = false;
         // 清除缓存的订单列表数据
         this.setOrderList({});
-        if(this.type === '4') {
+        if(this.currentIndexSell === 1) {
           this.getCategorysStatus(this.type);
+        } else {
+          this.getCategorysStatus(0);
         }
         if (!this.currentList.data.length && this.currentList.hasMore) {
           this.getPageOrders();
