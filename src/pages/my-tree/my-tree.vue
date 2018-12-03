@@ -132,7 +132,7 @@
                     </div>
                     <span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </div>
-                  <p v-show="item.type === '5' || item.type === '6'">
+                  <p v-show="item.type === '5' || item.type === '6' || item.type === '8'">
                     <span class="name">{{item.note}}</span>
                     <span class="activity"></span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </p>
@@ -145,11 +145,14 @@
               <!---->
             <!--</div>-->
           <div class="tree-detail" v-show="tab === 1">
+            <!--<div class="item">-->
+              <!--<span>认养人昵称</span><span>{{treeDetail.user ? treeDetail.user.nickname : ''}}</span>-->
+            <!--</div>-->
+            <!--<div class="item">-->
+              <!--<span>认养人手机号</span><span>{{treeDetail.user ? jiami(treeDetail.user.mobile) : ''}}</span>-->
+            <!--</div>-->
             <div class="item">
-              <span>认养人昵称</span><span>{{treeDetail.user ? treeDetail.user.nickname : ''}}</span>
-            </div>
-            <div class="item">
-              <span>认养人手机号</span><span>{{treeDetail.user ? jiami(treeDetail.user.mobile) : ''}}</span>
+              <span></span><span>{{auth.introduce || '暂无简介'}}</span>
             </div>
           </div>
             <!-- 古树详情 -->
@@ -425,7 +428,8 @@ export default {
       propsList: [], // 道具数据,
       jf: 0,  // 我有多少积分
       userDetail: {},
-      certificationArr: []  // 证书列表
+      certificationArr: [],  // 证书列表,
+      auth: {}
     };
   },
   mounted() {
@@ -445,6 +449,14 @@ export default {
     formatImg(img) {
       // return formatImg(img);
       return img ? formatImg(img) : defaltAvatarImg;
+    },
+    // 获取认养人介绍
+    getAuth() {
+      this.loading = true;
+      getUserDetail({ userId: this.currentHolder || getUserId() }).then((res) => {
+        this.loading = false;
+        this.auth = res.userExt;
+      }).catch(() => { this.loading = false; });
     },
     getName(item) {
       if(item.userInfo.userId === this.currentHolder) {
@@ -489,7 +501,8 @@ export default {
         this.getPropList(),
         this.getJF(),
         this.getUserDetail(),
-        this.getListUserTree()
+        this.getListUserTree(),
+        this.getAuth()
       ]).then(() => {}).catch(() => {});
       // 不是当前用户
       if (this.other === '1') {
@@ -543,6 +556,7 @@ export default {
       this.loading = true;
       return getUserTreeDetail(this.adoptTreeCode).then((data) => {
         this.treeDetail = data;
+        console.log(this.treeDetail);
         this.loading = false;
       }, () => { this.loading = false; });
     },

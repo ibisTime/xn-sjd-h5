@@ -24,7 +24,10 @@
         </div>
         <div class="item" @click="go('/map?treeCode=' + detail.code)">
           <span>古树定位</span>
-          <img src="./more@2x.png" alt="" class="fr more">
+          <div class="map">
+            <img src="./map@2x.png" alt="">
+            <p>查看地图</p>
+          </div>
         </div>
       </div>
       <div class="slider-wrapper" v-show="pics.length > '0'">
@@ -188,12 +191,28 @@ export default {
         span:first-child {
           margin-right: 0.3rem;
         }
-        img {
-          height: 0.21rem;
-          margin-top: 0.4rem;
-        }
         &:last-child{
           border-bottom: none;
+        }
+      }
+      .item:last-child {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .map {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          img {
+            width: 0.37rem;
+            height: 0.37rem;
+            margin-bottom: 0.2rem;
+          }
+          p {
+            color: $primary-color;
+            font-size: $font-size-small;
+            line-height: $font-size-small;
+          }
         }
       }
     }

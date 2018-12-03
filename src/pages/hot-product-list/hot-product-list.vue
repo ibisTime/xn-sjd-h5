@@ -32,7 +32,7 @@
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
               <p class="hot-pro-place"><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
-              <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}起</span></p>
+              <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.productSpecsList.length > 1">起</span></span></p>
             </div>
           </div>
         </div>
@@ -249,7 +249,7 @@ export default {
           statusList: [4, 5, 6],
           location: '1',
           orderDir: 'asc',
-          orderColumn: 'order_no'
+          orderColumn: 'buyable'
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -435,12 +435,10 @@ export default {
             .hot-pro-img {
               height: 3.3rem;
               width: 100%;
-              margin-bottom: 0.2rem;
             }
             .prograss-bar {
               width: 100%;
-              height: 0.5rem;
-              border: 1px solid;
+              height: 0.32rem;
               position: absolute;
               bottom: 0;
               .nowCount {
@@ -453,15 +451,15 @@ export default {
                 display: inline;
               }
               .prograss-text {
-                font-size: 0.24rem;
-                color: black;
+                font-size: 0.2rem;
+                color: $color-highlight-background;
                 position: absolute;
                 top: 0;
                 width: 100%;
                 text-align: center;
                 height: 100%;
                 span {
-                  line-height: 0.5rem;
+                  line-height: 0.32rem;
                 }
               }
             }

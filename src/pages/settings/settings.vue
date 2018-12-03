@@ -4,27 +4,31 @@
     <div class="settings-list">
       <div class="item" @click="go('/change-mobile')">
         <span>修改手机号</span>
-        <img src="./more@2x.png" alt="" class="fr more">
+        <img src="./more@2x.png" class="fr more">
       </div>
       <div class="item" @click="go('/bind-email')">
         <span>绑定邮箱</span>
-        <img src="./more@2x.png" alt="" class="fr more">
+        <img src="./more@2x.png" class="fr more">
       </div>
       <div class="item" @click="go('/bankcard')">
         <span>我的银行卡</span>
-        <img src="./more@2x.png" alt="" class="fr more">
+        <img src="./more@2x.png" class="fr more">
       </div>
       <div class="item" @click="go('/set-money')">
         <span>设置支付密码</span>
-        <img src="./more@2x.png" alt="" class="fr more">
+        <img src="./more@2x.png" class="fr more">
+      </div>
+      <div class="item" @click="go('/change-loginPwd')">
+        <span>修改登录密码</span>
+        <img src="./more@2x.png" class="fr more">
       </div>
       <div class="item" @click="go('/userInfo')">
         <span>完善资料</span>
-        <img src="./more@2x.png" alt="" class="fr more">
+        <img src="./more@2x.png" class="fr more">
       </div>
       <div class="item" @click="go('/address')">
         <span>收货地址</span>
-        <img src="./more@2x.png" alt="" class="fr more">
+        <img src="./more@2x.png" class="fr more">
       </div>
     </div>
     <div class="btn">

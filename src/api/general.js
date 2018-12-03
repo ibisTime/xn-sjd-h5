@@ -182,3 +182,12 @@ export function getdomain(ckey) {
     ckey: 'qiniu_domain'
   });
 }
+
+// 分页查询系统参数
+export function getConfigPage(data) {
+  return fetch(630045, {
+    start: 1,
+    limit: 10,
+    ...data
+  });
+}

@@ -1,6 +1,5 @@
 <template>
   <div class="home-wrapper">
-    <!--<m-header class="cate-header" title="首页" :showBack="showBack" actText="签到" @action="action"></m-header>-->
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
         <div class="slider-wrapper">
@@ -9,7 +8,6 @@
               <a :href="item.url||'javascript:void(0)'" :style="getImgSyl(item.pic)"></a>
             </div>
           </slider>
-          <!--<img src="./../../common/image/banner-default.png" class="banner-default">-->
         </div>
         <div class="notices">
           <img class="tit" src="./notice@2x.png">
@@ -69,7 +67,7 @@
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
               <p class="hot-pro-introduction">{{formatDate(item.updateDatetime, 'yyyy-MM-dd')}}</p>
-              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}</span></p>
+              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.productSpecsList.length > 1">起</span></span></p>
             </div>
           </div>
         </div>
@@ -196,7 +194,7 @@ export default {
         getProductPage({
           location: '1',
           orderDir: 'asc',
-          orderColumn: 'order_no',
+          orderColumn: 'buyable',
           statusList: [4, 5, 6]
         }),
         getProductType({
@@ -664,10 +662,10 @@ export default {
             }
             .prograss-bar {
               width: 100%;
-              height: 0.5rem;
-              border: 1px solid;
+              height: 0.32rem;
               position: absolute;
               bottom: 0;
+              background: rgba(0,0,0,0.5);
               .nowCount {
                 display: inline-block;
                 background: #23AD8C;
@@ -678,15 +676,15 @@ export default {
                 display: inline;
               }
               .prograss-text {
-                font-size: 0.24rem;
-                color: black;
+                font-size: 0.2rem;
+                color: $color-highlight-background;
                 position: absolute;
                 top: 0;
                 width: 100%;
                 text-align: center;
                 height: 100%;
                 span {
-                  line-height: 0.5rem;
+                  line-height: 0.32rem;
                 }
               }
             }

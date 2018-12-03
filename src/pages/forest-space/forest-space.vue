@@ -1,6 +1,5 @@
 <template>
   <div class="home-wrapper">
-    <!--<m-header class="cate-header" title="我的林空间" :showBack="showBack"></m-header>-->
     <div class="content" @click="go('/homepage?type=1')">
       <div class="me" @click.stop.prevent="change">
         <img :src="src">
@@ -57,7 +56,7 @@ import MFooter from 'components/m-footer/m-footer';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatImg, setTitle, getUserId } from 'common/js/util';
+import { formatImg, setTitle, getUserId, clearUser } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getUserDetail } from 'api/user';
 export default {
@@ -100,6 +99,9 @@ export default {
       } else {
         this.text = '您未登录';
         this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
       }
     },
     change() {
@@ -108,6 +110,10 @@ export default {
       } else {
         this.text = '您未登录';
         this.$refs.toast.show();
+        clearUser();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
       }
     }
   },

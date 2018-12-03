@@ -8,6 +8,7 @@
             <div class="imgWrap" :style="getImgSyl(item.pic)"></div>
             <div class="text">
               <p class="title">编号：{{item.treeNumber}}</p>
+              <!--<p class="title"><span>编号：{{item.treeNumber}}</span><span @click="go('/productTree-detail?code='+item.code)">古树风貌</span><span>它的氧圈</span></p>-->
               <p class="position">学名：{{item.scientificName}}</p>
               <div class="props">
                 <span class="duration">树级：{{item.rank}} / 树龄：{{item.age}}</span>

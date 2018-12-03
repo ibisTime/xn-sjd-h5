@@ -121,7 +121,7 @@
   import MHeader from 'components/m-header/m-header';
   import MFooter from 'components/m-footer/m-footer';
   import Scroll from 'base/scroll/scroll';
-  import { formatAmount, formatImg, setTitle, getUserId } from 'common/js/util';
+  import { formatAmount, formatImg, setTitle, getUserId, clearUser } from 'common/js/util';
   import {getCookie} from 'common/js/cookie';
   import {getUserDetail} from 'api/user';
   import { getAccount } from 'api/biz';
@@ -179,6 +179,10 @@
         } else {
           this.text = '您未登录！';
           this.$refs.toast.show();
+          clearUser();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
         }
       },
       _refreshScroll() {

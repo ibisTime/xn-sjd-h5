@@ -35,7 +35,7 @@
           <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
             <div class="item" v-for="item in userTree">
               <div class="tree-info" @click="goMyTree(item)">
-                <p class="tree-name">{{item.treeNumber}}</p>
+                <p class="tree-name">{{item.tree.productName}}({{item.treeNumber}})</p>
                 <!--<p class="tree-name" v-show="item.tree.sellType === '3'">{{item.treeNumber}}-{{item.specsName}}</p>-->
                 <p class="tree-about"></p>
               </div>
@@ -121,7 +121,7 @@
                     </div>
                     <span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </div>
-                  <div class="daily-content-item-info" v-if="item.type === '5' || item.type === '6'">
+                  <div class="daily-content-item-info" v-if="item.type === '5' || item.type === '6' || item.type === '8'">
                     <!--<img src="./steal@2x.png" alt="">-->
                     <p class="activity"><span>{{item.note}}</span></p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>

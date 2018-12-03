@@ -22,10 +22,18 @@
                   <div class="props"><span class="duration">规格：{{detail.productSpecsName}}</span><span class="price" v-show="!detail.jfDeductAmount">¥{{formatAmount(detail.amount)}}</span><span class="price" v-show="detail.jfDeductAmount">¥{{formatAmount(detail.payAmount)}}+{{formatAmount(detail.jfDeductAmount)}}积分</span></div>
                 </div>
               </div>
-              <div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}} <button class="copy"
-                                                                                                           v-clipboard:copy="detail.identifyCode"
-                                                                                                           v-clipboard:success="onCopy"
-                                                                                                           v-clipboard:error="onError">一键复制</button></div>
+              <div class="duration">
+                <div class="duration-item"><span class="name">下单时间</span><span>{{formatDate(detail.applyDatetime)}}</span></div>
+                <div class="duration-item"><span class="name">订单类型</span><span>{{sellTypeObj[detail.product.sellType]}}</span></div>
+                <div class="duration-item" v-show="detail.identifyCode"><span class="name">下单识别码：</span><span>{{detail.identifyCode}} <button class="copy"
+                                                                                                             v-clipboard:copy="detail.identifyCode"
+                                                                                                             v-clipboard:success="onCopy"
+                                                                                                             v-clipboard:error="onError">一键复制</button></span></div>
+              </div>
+              <!--<div class="identifyCode" v-show="detail.identifyCode">下单识别码：{{detail.identifyCode}} <button class="copy"-->
+                                                                                                           <!--v-clipboard:copy="detail.identifyCode"-->
+                                                                                                           <!--v-clipboard:success="onCopy"-->
+                                                                                                           <!--v-clipboard:error="onError">一键复制</button></div>-->
               <div class="gray"></div>
             </div>
             <div class="treeList" v-show="detail.status === '3'">
@@ -53,9 +61,6 @@
         <div class="btn" v-show="showPayBtn(detail.status)" @click="payOrder(detail)">立即支付</div>
       </div>
     </div>
-    <!--<div class="btns" v-show="detail.adoptOrderTreeList.length && detail.adoptOrderTreeList[0].status === '2'">-->
-      <!--<div class="btn" @click="goTree">看看这棵树</div>-->
-    <!--</div>-->
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <confirm-input ref="confirmInput" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast :text="toastText" ref="toast"></toast>
@@ -90,6 +95,7 @@
         choosedIndex: 0,
         code: '',   // 产品code,
         statusObj: {},
+        sellTypeObj: {},
         message: ''
       };
     },
@@ -172,6 +178,13 @@
       onError: function (e) {
         this.toastText = '无法复制文本';
         this.$refs.toast.show();
+      },
+      getSellTypeObj() {
+        getDictList('sell_type').then((res) => {
+          res.map((item) => {
+            this.sellTypeObj[item.dkey] = item.dvalue;
+          });
+        });
       }
     },
     mounted() {
@@ -180,6 +193,7 @@
       this.code = this.$route.query.code;
       this.type = this.$route.query.type;// 订单类型（1个人/2定向/3捐赠/4集体）
       this.loading = true;
+      this.getSellTypeObj();
       if(this.type === '4') {
         Promise.all([
           getOrganizeOrderDetail({
@@ -286,6 +300,7 @@
         display: flex;
         font-size: 0;
         padding: 0.3rem;
+        border-bottom: 1px solid $color-border;
         .imgWrap {
           width: 1.5rem;
           height: 1.5rem;
@@ -336,14 +351,7 @@
         }
       }
       .identifyCode {
-        border-top: 1px solid $color-border;
         padding: 0 0.3rem;
-        .copy {
-          background: $color-highlight-background;
-          border: 1px solid $primary-color;
-          border-radius: 0.1rem;
-          padding: 0.1rem;
-        }
       }
       .order-list {
         background: $color-highlight-background;
@@ -390,7 +398,14 @@
           padding: 0.37rem 0.3rem;
           border-bottom: 1px solid $color-border;
           .name {
-            margin-right: 0.76rem;
+            display: inline-block;
+            width: 30%;
+          }
+          .copy {
+            background: $color-highlight-background;
+            border: 1px solid $primary-color;
+            border-radius: 0.1rem;
+            padding: 0.1rem;
           }
         }
       }

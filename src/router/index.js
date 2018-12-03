@@ -68,6 +68,8 @@ const ChangeMobile = () => import('@/pages/change-mobile/change-mobile');
 const BindEmail = () => import('@/pages/bind-email/bind-email');
 // 设置支付密码
 const setMoneyPaw = () => import('@/pages/moneyPaw/moneyPaw');
+// 修改登录密码
+const chengeLoginPwd = () => import('@/pages/change-loginPwd/change-loginPwd');
 // 银行卡列表页
 const Bankcard = () => import('@/pages/bankcard/bankcard');
 // 地址编辑页
@@ -295,6 +297,10 @@ export default new Router({
     {
       path: '/set-money',
       component: setMoneyPaw
+    },
+    {
+      path: '/change-loginPwd',
+      component: chengeLoginPwd
     },
     {
       path: '/bankcard',

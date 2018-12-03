@@ -12,14 +12,14 @@
         <div class="pay-type">
           <p>支付方式</p>
           <div class="pay-type-list">
-            <!--<div @click="selectPayType(5)">-->
-              <!--<img src="./wechat@2x.png" alt="">-->
-              <!--<div class="text">-->
-                <!--<p>微信</p>-->
-              <!--</div>-->
-              <!--<img class="money fr" src="./choosed@2x.png" v-show="wechat">-->
-              <!--<img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">-->
-            <!--</div>-->
+            <div @click="selectPayType(5)">
+              <img src="./wechat@2x.png" alt="">
+              <div class="text">
+                <p>微信</p>
+              </div>
+              <img class="money fr" src="./choosed@2x.png" v-show="wechat">
+              <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
+            </div>
             <div @click="selectPayType(3)">
               <img src="./alipay@2x.png" alt="">
               <div class="text">
@@ -44,6 +44,7 @@
   import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import {setTitle, formatAmount} from 'common/js/util';
+  import { initPay } from 'common/js/weixin';
   import {userAccount} from 'api/biz';
   import {userRecharge} from 'api/user';
   import Toast from 'base/toast/toast';
@@ -108,15 +109,38 @@
       },
       toRecharge() {
         this.config.amount = this.amount * 1000;
-        // location.href = 'http://www.baidu.com';
         userRecharge(this.config).then(data => {
-          this.text = '正在跳转支付宝...';
-          this.$refs.toast.show();
-          setTimeout(() => {
-            location.href = data.signOrder;
-          }, 1000);
+          if(this.config.payType === '3' && data.signOrder) {
+            this.text = '正在跳转支付宝...';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              location.href = data.signOrder;
+            }, 1000);
+          } else if(this.config.payType === '5') {
+            let wxConfig = {
+              appId: data.appId, // 公众号名称，由商户传入
+              timeStamp: data.timeStamp, // 时间戳，自1970年以来的秒数
+              nonceStr: data.nonceStr, // 随机串
+              wechatPackage: data.wechatPackage,
+              signType: data.signType, // 微信签名方式：
+              paySign: data.paySign // 微信签名
+            };
+            initPay(wxConfig, this.success, this.error, this.cancel);
+          }
         });
         // this.$router.push('/paySucceed');
+      },
+      error() {
+        this.loading = false;
+        this.text = '支付失败！';
+        this.$refs.toast.show();
+      },
+      success() {
+        this.text = '支付成功';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.back();
+        }, 1000);
       }
     },
     components: {

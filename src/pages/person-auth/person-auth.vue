@@ -17,7 +17,7 @@
           </div>
         </div>
         <div class="text">
-          <textarea v-model="perConfig.introduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="请输入个人简介"></textarea>
+          <textarea v-model="perConfig.introduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="说些什么吧，这会在您的空间内展示"></textarea>
         </div>
         <div class="avatar">
           <img :src="formatImg(item.key)" v-for="(item, index) in photos" class="avatar-photos" ref="myImg" @click="choseItem(index)"/>

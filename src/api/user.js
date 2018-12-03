@@ -438,3 +438,11 @@ export function certification(config) {
 export function comCertification(config) {
   return fetch(805072, config);
 }
+
+// 修改登录密码
+export function changeLoginPwd(config) {
+  return fetch(805064, {
+    userId: getUserId(),
+    ...config
+  });
+}

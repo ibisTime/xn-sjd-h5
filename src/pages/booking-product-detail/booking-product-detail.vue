@@ -14,13 +14,22 @@
           <span>产品名称</span><span>{{detail.name}}</span>
         </div>
         <div class="item">
-          <span>产品产地</span><span>{{detail.originPlace}}</span>
-        </div>
-        <div class="item">
           <span>产品学名</span><span>{{detail.scientificName}}</span>
         </div>
         <div class="item">
+          <span>产品级别</span><span>{{detail.rank}}</span>
+        </div>
+        <div class="item">
           <span>产品品种</span><span>{{detail.variety}}</span>
+        </div>
+        <div class="item">
+          <span>产品区域</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
+        </div>
+        <div class="item">
+          <span>乡镇/街道</span><span>{{detail.town}}</span>
+        </div>
+        <div class="item">
+          <span>产品产地</span><span>{{detail.originPlace}}</span>
         </div>
         <div class="item">
           <span>预售产出产量</span><span>{{detail.totalOutput}}{{outputUnitObj[detail.outputUnit]}}/年</span>
@@ -537,7 +546,7 @@ export default {
   }
   .buypart {
     width: 100%;
-    height: 7.7rem;
+    /*height: 7.7rem;*/
     position: fixed;
     bottom: 0;
     background-color: #fff;
@@ -612,7 +621,7 @@ export default {
       }
     }
     .packaging {
-      height: 1.74rem;
+      /*height: 1.74rem;*/
       border-bottom: 1px solid #eee;
       margin: 0.3rem;
       overflow: scroll;
@@ -629,11 +638,11 @@ export default {
         color: #333;
       }
       .select {
-        position: absolute;
-        top: 0.42rem;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        /*position: absolute;*/
+        /*top: 0.42rem;*/
+        /*bottom: 0;*/
+        /*left: 0;*/
+        /*right: 0;*/
         overflow: auto;
         /*padding: 0 0.1rem;*/
         .select-item {
@@ -698,8 +707,8 @@ export default {
       line-height: 0.9rem;
       color: #fff;
       font-size: $font-size-medium-x;
-      position: absolute;
-      bottom: 0;
+      /*position: absolute;*/
+      /*bottom: 0;*/
       width: 100%;
       left: 0;
       padding: 0 0.3rem;

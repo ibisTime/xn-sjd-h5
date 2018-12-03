@@ -9,7 +9,7 @@
           <img :src="formatImg(item.photolist[0])">
           <div class="info">
             <p class="title">{{item.title}}</p>
-            <div class="info-middle"><span>作者：{{item.publishUserName}}</span><span v-show="item.treeName">关联古树：{{item.treeName}}</span></div>
+            <div class="info-middle"><span>作者：{{item.publishUserName}}</span><span v-show="item.treeName">关联古树：{{item.productName}}({{item.treeName}})</span></div>
             <p class="prop"><span class="date">{{formatDate(item.publishDatetime)}}</span></p>
           </div>
         </div>
