@@ -221,7 +221,8 @@
           // this.setCurAddr(_item);
           // this.setAddressList(addressList);
           setTimeout(() => {
-            this.$router.push('/address');
+            this.$router.back();
+            // location.replace('#/address');
           }, 1000);
         }).catch(() => {
           this.setting = false;
