@@ -266,7 +266,7 @@
     background: #fff;
     position: fixed;
     width: 100%;
-    bottom: 0;
+    bottom: 0.98rem;
     top: 0;
     left: 0;
     .fl {
