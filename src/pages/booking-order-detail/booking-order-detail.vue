@@ -37,6 +37,7 @@
                 <p><span>订单号</span><span>{{detail.code}}</span></p>
                 <p><span>下单时间</span><span>{{formatDate(detail.applyDatetime)}}</span></p>
                 <p><span>订单金额</span><span>{{formatAmount(detail.amount)}}元</span></p>
+                <p><span>支付方式</span><span>{{payTypeObj[detail.payType]}}</span></p>
                 <p><span>卖家</span><span>{{detail.sellerName}}</span></p>
                 <p v-if="detail.jourCode"><span>支付流水号</span><span>{{detail.jourCode}}</span></p>
                 <p><span>预计发货时间</span><span>{{formatDate(detail.presellProduct.deliverDatetime, 'yyyy-MM-dd')}}</span></p>
@@ -85,7 +86,8 @@
         detail: {presellProduct: {listPic: ''}, adoptOrderTreeList: {}},
         choosedIndex: 0,
         code: '',   // 产品code,
-        statusObj: {}
+        statusObj: {},
+        payTypeObj: {}
       };
     },
     methods: {
@@ -146,6 +148,13 @@
         return {
           backgroundImage: `url(${img})`
         };
+      },
+      getPayTypeObj() {
+        getDictList('pay_type').then((res) => {
+          res.map((item) => {
+            this.payTypeObj[item.dkey] = item.dvalue;
+          });
+        });
       }
     },
     mounted() {
@@ -153,6 +162,7 @@
       this.pullUpLoad = null;
       this.code = this.$route.query.code;
       this.loading = true;
+      this.getPayTypeObj();
       Promise.all([
         getPreOrderDetail({
           code: this.code

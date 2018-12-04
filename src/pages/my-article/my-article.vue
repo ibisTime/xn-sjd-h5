@@ -31,7 +31,7 @@
   import NoResult from 'base/no-result/no-result';
   import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
-  import { getArticlePage } from 'api/biz';
+  import { getArticlePage, getListUserTree } from 'api/biz';
   import { getDictList } from 'api/general';
 
   export default {
@@ -74,7 +74,16 @@
             this.$router.push('/login');
           }, 1000);
         } else {
-          this.go('/write-article');
+          getListUserTree({
+            statusList: ['1', '2', '3']
+          }).then((res) => {
+            if(!res.length) {
+              this.text = '您没有古树，暂时无法发布文章哦';
+              this.$refs.toast.show();
+            } else {
+              this.go('/write-article');
+            }
+          });
         }
       },
       getPageOrders() {

@@ -25,7 +25,7 @@
                   <span class="hot-pro-bottom-number">提货中:{{item.receivingQuantity}}</span>
                   <span class="hot-pro-bottom-number" v-show="item.receivedQuantity && item.receivedQuantity !== '0'">已提货数量:{{item.receivedQuantity}}</span>
                 </p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">库存：{{item.quantity}}{{packUnitObj[item.presellProduct.packUnit]}}</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">剩余数量：{{item.quantity}}{{packUnitObj[item.presellProduct.packUnit]}}</span></p>
               </div>
             </div>
           </div>

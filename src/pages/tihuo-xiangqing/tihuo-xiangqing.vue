@@ -12,7 +12,7 @@
                       <span class="name">{{item.receiver}}</span>
                       <span class="mobile">{{item.receiverMobile}}</span>
                     </div>
-                    <div class="number">{{item.deliverCount}}{{item.unit}}</div>
+                    <div class="number">{{item.deliverCount}}{{packUnitObj[item.unit]}}</div>
                   </div>
                   <div class="addr">{{item.province}} {{item.city}} {{item.area}} {{item.address}}</div>
                 </div>
@@ -22,7 +22,7 @@
                   <!--<span class="add-address-text">收货数量</span>-->
                 </div>
                 <div class="right">
-                  <button @click="go(`/logistics?expCode=${item.logisticsCompany}&expNo=${item.logisticsNumber}`)">查看物流</button>
+                  <button @click="go(`/logistics?expCode=${item.logisticsCompany}&expNo=${item.logisticsNumber}`)" v-if="item.status === '1'">查看物流</button>
                   <button class="confirm" @click="confirm(item)" v-if="item.status === '1'">确认收货</button>
                 </div>
               </div>
@@ -51,6 +51,7 @@
   import NoResult from 'base/no-result/no-result';
   import {setTitle, formatAmount} from 'common/js/util';
   import { confirmTihuo, getOriginZichanDetail, getWuliudanList, confirmShouhuo } from 'api/biz';
+  import { getDictList } from 'api/general';
 
   export default {
     data() {
@@ -64,7 +65,9 @@
         deleteIndex: 0,
         detail: {presellProduct: {packUnit: ''}},
         pullUpLoad: null,
-        number: 1
+        number: 1,
+        outputUnitObj: {},
+        packUnitObj: {}
       };
     },
     created() {
@@ -72,26 +75,11 @@
       this.code = this.$route.query.code;
       this.currentItem = null;
       this.getAddress();
+      this.getObjs();
     },
     methods: {
       formatAmount(amount) {
         return formatAmount(amount);
-      },
-      add(item) {
-        item.deliverCount++;
-      },
-      sub(item) {
-        if (item.deliverCount >= 2) {
-          item.deliverCount--;
-        }
-      },
-      addNumber() {
-        this.number++;
-      },
-      subNumber() {
-        if (this.number >= 2) {
-          this.number--;
-        }
       },
       toAddress() {
         if(this.addressList[0]) {
@@ -117,7 +105,6 @@
             originalGroupCode: this.code
           }).then((res) => {
             this.list = res;
-            console.log(this.list);
           })
         ]);
       },
@@ -182,6 +169,19 @@
               location.reload();
             }, 1000);
           }
+        });
+      },
+      getObjs() {
+        Promise.all([
+          getDictList('output_unit'),
+          getDictList('pack_unit')
+        ]).then(([res1, res2]) => {
+          res1.map((item) => {
+            this.outputUnitObj[item.dkey] = item.dvalue;
+          });
+          res2.map((item) => {
+            this.packUnitObj[item.dkey] = item.dvalue;
+          });
         });
       }
     },

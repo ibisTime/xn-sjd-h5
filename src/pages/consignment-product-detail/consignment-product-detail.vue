@@ -120,17 +120,14 @@
       </div>
       <div class="number">
         <span>数量</span>
-        <div class="right" v-show="!erweimaJishou && !dingxiangJishou">
+        <div class="right">
           <img class="diamonds right-item" @click="add" src="./add@2x.png">
           <input class="num right-item" v-model="number" type="number">
           <img class="diamonds right-item" @click="sub" src="./sub@2x.png">
         </div>
-        <div class="right" v-show="erweimaJishou || dingxiangJishou">
-          <!--<img class="diamonds right-item" @click="add" src="./add@2x.png">-->
-          <!--<input class="num right-item" v-model="number" type="number">-->
-          <!--<img class="diamonds right-item" @click="sub" src="./sub@2x.png">-->
-          <span>{{number}}</span>
-        </div>
+        <!--<div class="right" v-show="erweimaJishou || dingxiangJishou">-->
+          <!--<span>{{number}}</span>-->
+        <!--</div>-->
       </div>
       <div class="buypart-bottom">
         <div class="confirm" @click="buyJiShou()">确定(总额：¥{{formatAmount(detail.price * number)}})</div>
@@ -637,7 +634,7 @@ export default {
           this.loop = true;
         }
         if(this.detail.status === '0' && this.detail.type === '0') {
-          this.number = this.detail.quantity;
+          // this.number = this.detail.quantity;
           this.dingxiangJishou = true;
           this.showBottom = true;
         }
@@ -653,7 +650,7 @@ export default {
           // this.showBottom = false;
         }
         if(this.detail.type === '1') {
-          this.number = this.detail.quantity;
+          // this.number = this.detail.quantity;
           this.erweimaJishou = true;
         }
         res2.map((item) => {

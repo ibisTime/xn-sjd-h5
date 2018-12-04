@@ -152,7 +152,7 @@
               <!--<span>认养人手机号</span><span>{{treeDetail.user ? jiami(treeDetail.user.mobile) : ''}}</span>-->
             <!--</div>-->
             <div class="item">
-              <span></span><span>{{auth.introduce || '暂无简介'}}</span>
+              <span></span><span>{{auth.introduce || '暂无简介'}}</span><span class="adoptHomePage" @click="goAdoptHomePage">去认养人主页<img src="./arrow.png"/></span>
             </div>
           </div>
             <!-- 古树详情 -->
@@ -191,59 +191,105 @@
         </div>
         <div class="gray" v-show="other"></div>
         <!-- TA的动态 -->
-        <div class="dynamic-other" v-show="other">
-        <div class="dynamic-title">
-          <div class="border"></div>
-          <span>TA的动态</span>
-        </div>
-        <div class="daily">
-          <div class="daily-content">
-            <div class="daily-content-item" v-for="item in dynamicsList">
-              <div v-show="isShowDate(item)">
-                <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+        <div class="dynamic-other tab-panel" v-show="other">
+          <div class="tab">
+            <!--<div class="border"></div>-->
+            <!--<span>TA的动态</span>-->
+            <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">TA的动态</span>
+            <span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>
+            <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
+          </div>
+          <div class="daily" v-show="tab === 0">
+            <div class="daily-content">
+              <div class="daily-content-item" v-for="item in dynamicsList">
+                <div v-show="isShowDate(item)">
+                  <div class="daily-title" >{{formatDynamicsDate(item)}}</div>
+                  <div class="border"></div>
+                </div>
+                <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
+                <div class="daily-content-item-info" v-if="item.type === '1'">
+                  <img src="./zengsong@2x.png" class="dynamic-type">
+                  <p class="activity"><span>{{getName(item)}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
+                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                </div>
+                <div class="daily-content-item-info" v-if="item.type === '2'">
+                  <img src="./message@2x.png" class="dynamic-type">
+                  <p class="activity"><span>{{getName(item)}}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
+                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                </div>
+                <div class="daily-content-item-info" v-if="item.type === '3'">
+                  <img src="./steal@2x.png" class="dynamic-type">
+                  <p class="activity"><span>{{getName(item)}}</span>收取{{formatAmount(Number(item.quantity))}}g</p>
+                  <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                </div>
+                <div class="daily-content-item-info" v-if="item.type === '4'">
+                  <div class="message-border">
+                    <img :src="formatImg(item.userInfo.photo)" class="head">
+                    <div class="message-text">
+                      <p class="name">{{getName(item)}}</p>
+                      <p class="activity">来收取能量，被保护罩阻挡了</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="daily-content-item-info" v-if="item.type === '7'">
+                  <div class="message-border">
+                    <img :src="formatImg(item.userInfo.photo)" class="head">
+                    <div class="message-text">
+                      <p class="name">{{getName(item)}}</p>
+                      <p class="activity">{{item.barrageContent}}</p>
+                    </div>
+                    <img :src="formatImg(item.barragePic)" class="head">
+                  </div>
+                  <span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
+                </div>
                 <div class="border"></div>
               </div>
-              <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
-              <div class="daily-content-item-info" v-if="item.type === '1'">
-                <img src="./zengsong@2x.png" class="dynamic-type">
-                <p class="activity"><span>{{getName(item)}}</span>赠送{{formatAmount(Number(item.quantity))}}g</p>
-                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-              </div>
-              <div class="daily-content-item-info" v-if="item.type === '2'">
-                <img src="./message@2x.png" class="dynamic-type">
-                <p class="activity"><span>{{getName(item)}}}</span>留言{{formatAmount(Number(item.quantity))}}g</p>
-                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-              </div>
-              <div class="daily-content-item-info" v-if="item.type === '3'">
-                <img src="./steal@2x.png" class="dynamic-type">
-                <p class="activity"><span>{{getName(item)}}</span>收取{{formatAmount(Number(item.quantity))}}g</p>
-                <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
-              </div>
-              <div class="daily-content-item-info" v-if="item.type === '4'">
-                <div class="message-border">
-                  <img :src="formatImg(item.userInfo.photo)" class="head">
-                  <div class="message-text">
-                    <p class="name">{{getName(item)}}</p>
-                    <p class="activity">来收取能量，被保护罩阻挡了</p>
-                  </div>
-                </div>
-              </div>
-              <div class="daily-content-item-info" v-if="item.type === '7'">
-                <div class="message-border">
-                  <img :src="formatImg(item.userInfo.photo)" class="head">
-                  <div class="message-text">
-                    <p class="name">{{getName(item)}}</p>
-                    <p class="activity">{{item.barrageContent}}</p>
-                  </div>
-                  <img :src="formatImg(item.barragePic)" class="head">
-                </div>
-                <span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
-              </div>
-              <div class="border"></div>
+            </div>
+            <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
+          </div>
+          <div class="tree-detail" v-show="tab === 1">
+            <!--<div class="item">-->
+            <!--<span>认养人昵称</span><span>{{treeDetail.user ? treeDetail.user.nickname : ''}}</span>-->
+            <!--</div>-->
+            <!--<div class="item">-->
+            <!--<span>认养人手机号</span><span>{{treeDetail.user ? jiami(treeDetail.user.mobile) : ''}}</span>-->
+            <!--</div>-->
+            <div class="item">
+              <span></span><span>{{auth.introduce || '暂无简介'}}</span><span class="adoptHomePage" @click="goAdoptHomePage">去认养人主页<img src="./arrow.png"/></span>
             </div>
           </div>
-          <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
-        </div>
+          <!-- 古树详情 -->
+          <div class="tree-detail" v-show="tab === 2">
+            <!--<div class="item">-->
+            <!--<span>古树昵称</span><span>樟子松鼠</span>-->
+            <!--</div>-->
+            <div class="item">
+              <span>古树学名</span><span>{{treeDetail.tree ? treeDetail.tree.scientificName : ''}}</span>
+            </div>
+            <div class="item">
+              <span>古树编码</span><span>{{treeDetail.treeNumber}}</span>
+            </div>
+            <div class="item">
+              <span>古树品种</span><span>{{treeDetail.tree ? treeDetail.tree.variety : ''}}</span>
+            </div>
+            <div class="item">
+              <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
+            </div>
+            <div class="item">
+              <span>负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.charger || treeDetail.tree.maintainer.company.chargeMobile : '暂无养护人'}}</span>
+            </div>
+            <!--<div class="item">-->
+            <!--<span>当前认养人</span><span>三级</span>-->
+            <!--</div>-->
+            <div class="item" @click="go('/my-tree/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
+              <span>历史认养人</span>
+              <img src="./more@2x.png" class="fr more">
+            </div>
+            <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
+              <span>养护记录</span>
+              <img src="./more@2x.png" class="fr more">
+            </div>
+          </div>
       </div>
       </Scroll>
     </div>
@@ -384,28 +430,7 @@ export default {
       adopterIntroduction: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>',
       emoji: '',
       emojiText: '',
-      emojiArr: [{
-        src: require('./1@2x.png'),
-        text: '感谢帮我收能量'
-      }, {
-        src: require('./7@2x.png'),
-        text: '给你点个赞'
-      }, {
-        src: require('./2@2x.png'),
-        text: '我控制不住我自己啊~'
-      }, {
-        src: require('./3@2x.png'),
-        text: '勤快的宝宝有能量~'
-      }, {
-        src: require('./4@2x.png'),
-        text: '我对你已绝望'
-      }, {
-        src: require('./5@2x.png'),
-        text: '你行行好，别把我的能量全收走，可以吗~'
-      }, {
-        src: require('./6@2x.png'),
-        text: '你怎么每天这么勤快呢'
-      }],
+      emojiArr: [],
       other: 0,
       comparisonData: {
         toUserInfo: {photo: ''},
@@ -457,6 +482,13 @@ export default {
         this.loading = false;
         this.auth = res.userExt;
       }).catch(() => { this.loading = false; });
+    },
+    goAdoptHomePage() {
+      if(this.other) {
+        this.go(`homepage?other=1&currentHolder=${this.currentHolder}`);
+      } else {
+        this.go(`homepage`);
+      }
     },
     getName(item) {
       if(item.userInfo.userId === this.currentHolder) {
@@ -556,7 +588,6 @@ export default {
       this.loading = true;
       return getUserTreeDetail(this.adoptTreeCode).then((data) => {
         this.treeDetail = data;
-        console.log(this.treeDetail);
         this.loading = false;
       }, () => { this.loading = false; });
     },
@@ -886,7 +917,9 @@ export default {
       }).catch(() => { this.loading = false; });
     },
     jiami(mobile) {
-      return mobile.substr(0, 3) + '****' + mobile.substr(7);
+      if(mobile) {
+        return mobile.substr(0, 3) + '****' + mobile.substr(7);
+      }
     }
   },
   components: {
@@ -1333,6 +1366,10 @@ export default {
             height: 0.21rem;
             margin-top: 0.4rem;
           }
+          .adoptHomePage {
+            color: $primary-color;
+            margin-left: 0.2rem;
+          }
         }
       }
     }
@@ -1355,6 +1392,7 @@ export default {
         }
       }
       .daily {
+        padding-top: 0.2rem;
         .daily-title {
           font-size: $font-size-large-ss;
           line-height: $font-size-large-s;

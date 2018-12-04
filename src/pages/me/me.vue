@@ -8,11 +8,11 @@
             <div class="info" @click="go('/settings')" v-if="getUserId()">
               <img :src="src" class="head">
               <div class="text">
-                <p><span>{{userDetail.nickname || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
+                <p><span>{{cut(userDetail.nickname,6) || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
                 <p class="mobile">{{userDetail.mobile}}</p>
                 <!--<p class="mobile" v-show="userDetail.email">{{userDetail.email}}</p>-->
               </div>
-              <img src="./more@2x.png" class="me-more fr">
+              <!--<img src="./more@2x.png" class="me-more fr">-->
             </div>
             <div class="account" v-if="getUserId()">
               <div class="money fl" @click.stop="go('/money?accountNumber=' + cnyAccountNumber + '&amount=' + cny)">
@@ -172,6 +172,17 @@
       },
       formatAmount(amount) {
         return formatAmount(amount);
+      },
+      cut(str, num) {
+        if(str) {
+          if(str.length > num) {
+            return str.slice(0, num) + '...';
+          } else {
+            return str;
+          }
+        } else {
+          return;
+        }
       },
       go(url) {
         if(getUserId()) {
@@ -380,7 +391,8 @@
               align-items: center;
               position: absolute;
               right: 0;
-              top: 0.75rem;
+              /*top: 0.75rem;*/
+              top: 0.1rem;
               text-align: center;
               padding: 0.2rem;
               border-top-left-radius: 0.3rem;

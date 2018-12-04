@@ -259,6 +259,7 @@
         this.first = false;
         // 清除缓存的订单列表数据
         this.setOrderList({});
+        this.currentList = [];
         if(this.currentIndexSell === 1) {
           this.getCategorysStatus(this.type);
         } else {
