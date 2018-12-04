@@ -166,7 +166,12 @@ export function getCommemtData(config) {
   return fetch(629755, config);
 }
 
-// 分页查评论
+// 查看物流
 export function lookLogistics(config) {
   return fetch(629820, config);
+}
+
+// 是否存在未读消息
+export function isThreeMsg(config) {
+  return fetch(629788, config);
 }

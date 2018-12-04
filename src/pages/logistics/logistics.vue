@@ -92,11 +92,8 @@
   @import "~common/scss/variable";
 
   .logistics-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     font-size: 0.3rem;
     color: #999;
     font-family: PingFang-SC-Medium;

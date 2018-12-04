@@ -177,8 +177,6 @@
             if(this.deleteIndex === this.isokIndex) {
               sessionStorage.removeItem('isokIndex');
               sessionStorage.removeItem('setRess');
-            }else if(this.isokIndex > this.deleteIndex) {
-              this.isokIndex--;
             }
           }).catch(() => {
             this.loadingFlag = false;
@@ -214,7 +212,9 @@
           this.comText = '确定使用该地址吗？';
           this.$refs.confirm.show();
           this.setIndex = index;
+          this.isokIndex = index;
           this.setRessCode = item.code;
+          this.currentItem = null;
           sessionStorage.setItem('setRess', JSON.stringify(item));
         }
       }

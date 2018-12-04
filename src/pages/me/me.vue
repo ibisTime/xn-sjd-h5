@@ -125,7 +125,7 @@
   import {getCookie} from 'common/js/cookie';
   import {getUserDetail} from 'api/user';
   import { getAccount } from 'api/biz';
-  import { storeMessage } from 'api/store';
+  import { isThreeMsg } from 'api/store';
 
   export default {
     data() {
@@ -142,11 +142,7 @@
         tppAccountNumber: '',
         src: '',
         config: {
-          user1: getUserId(),
-          start: 1,
-          limit: 6,
-          orderColumn: 'update_datetime',
-          orderDir: 'desc'
+          user1: getUserId()
         },
         ismsg: false,
         rzText: '未认证',
@@ -159,9 +155,9 @@
       this._refreshScroll();
       if(getUserId()) {
         this.isLogin = true;
-        storeMessage(this.config).then(data => {
-          if(data.list.length > 0) {
-            this.ismsg = false;
+        isThreeMsg(this.config).then(data => {
+          if(data.existsUnread !== '0') {
+            this.ismsg = true;
           }
         });
       }

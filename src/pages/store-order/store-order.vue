@@ -22,7 +22,7 @@
                         <div class="sing-head">
                             <div class="head-dp" @click="go(`/mall-store?shopCode=${orderItem.shopCode}`)">
                                 {{orderItem.sellersName}} >
-                                <span class="fr">{{orderStatus[orderItem.status]}}</span>
+                                <span class="fr">{{currentIndex === 7 ? statusDetList[shopStatusList[orderIndex]].value : orderStatus[orderItem.status]}}</span>
                                 <span class="fr time">{{formatDate(orderItem.applyDatetime)}}</span>
                             </div>
                         </div>
@@ -92,11 +92,23 @@ export default {
       orderTypeList: [
         {key: 0, value: '全部'}
       ],
-      logisCompany: {}
+      logisCompany: {},
+      afterSalesData: [],  // 售后数据
+      statusDetList: [],
+      shopStatusList: []
     };
   },
   created() {
     setTitle('商品订单');
+    getDictList('commodity_order_detail_status').then(data => {
+      data.forEach(item => {
+        this.statusDetList.push({
+          key: item.dkey,
+          value: item.dvalue
+        });
+      });
+      console.log(this.statusDetList);
+    });
     getDictList('commodity_cnavigate_status').then(data => {
       data.forEach((item, index) => {
         this.orderStatus[item.dkey] = item.dvalue;
@@ -136,6 +148,8 @@ export default {
       this.currentIndex = index;
       if(index === 0) {
         this.orderConfig.status = '';
+      }else if(index === 7) {
+        this.orderConfig.status = 3;
       }else {
         this.orderConfig.status = index - 1;
       }
@@ -164,6 +178,9 @@ export default {
           this.operHtml = ``;
           break;
         case '5':
+          this.operHtml = ``;
+          break;
+        case '6':
           this.operHtml = ``;
           break;
       };
@@ -246,11 +263,28 @@ export default {
         if (data.totalPage <= this.start) {
           this.hasMore = false;
         }
-        this.orderList = [...this.orderList, ...data.list];
-        this.start ++;
-        for(let i = 0, len = this.orderList.length; i < len; i++) {
-          this.orderOperFn(this.orderList[i].status);
+        if(this.currentIndex !== 7) {
+          this.orderList = [...this.orderList, ...data.list];
+          for(let i = 0, len = this.orderList.length; i < len; i++) {
+            this.orderOperFn(this.orderList[i].status);
+          }
+        }else{
+          this.orderList = [...this.orderList, ...data.list];
+          for(let i = 0, len = this.orderList.length; i < len; i++) {
+            this.orderOperFn(this.orderList[i].status);
+          }
+          this.orderList.forEach(orderItem => {
+            orderItem.detailList.map(item => {
+              if(parseInt(item.status) > 1) {
+                this.shopStatusList.push(item.status);
+                return item;
+              }
+            });
+          });
+          // this.orderList = this.afterSalesData;
+          console.log(this.orderList);
         }
+        this.start ++;
       }, () => {
         this.loading = false;
       });
@@ -294,7 +328,6 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
-    overflow: auto;
     font-family: PingFangSC-Regular;
     .head-nav{
         height: 0.8rem;
