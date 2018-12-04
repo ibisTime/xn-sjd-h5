@@ -19,6 +19,7 @@
           <p>{{formatDate(item.AcceptTime)}}</p>
           <span :class='{"new-logi": index === 0}'></span>
         </div>
+        <no-result v-show="!logisticsData.length" class="no-result-wrapper" title="暂无物流消息"></no-result>
       </div>
       <full-loading v-show="loading" title="正在加载中..."></full-loading>
     </div>
@@ -26,6 +27,7 @@
 </template>
 <script>
   import FullLoading from 'base/full-loading/full-loading';
+  import NoResult from 'base/no-result/no-result';
   import { lookLogistics } from 'api/store';
   import { setTitle, formatImg, formatDate } from 'common/js/util';
 
@@ -59,9 +61,11 @@
         this.logisticsData = data.Traces;
         setTimeout(() => {
           let logibox = this.$refs.logibox;
-          for(let i = 0, len = logibox.length - 1; i < len; i++) {
-            this.eleHeight += parseFloat(window.getComputedStyle(logibox[i], null).height) + parseFloat(window.getComputedStyle(logibox[i], null).marginBottom);
-            this.$refs.logizz.style.height = this.eleHeight + 'px';
+          if(logibox) {
+            for(let i = 0, len = logibox.length - 1; i < len; i++) {
+              this.eleHeight += parseFloat(window.getComputedStyle(logibox[i], null).height) + parseFloat(window.getComputedStyle(logibox[i], null).marginBottom);
+              this.$refs.logizz.style.height = this.eleHeight + 'px';
+            }
           }
           this.loading = false;
         }, 500);
@@ -79,7 +83,8 @@
       }
     },
     components: {
-      FullLoading
+      FullLoading,
+      NoResult
     }
   };
 </script>
@@ -87,11 +92,8 @@
   @import "~common/scss/variable";
 
   .logistics-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     font-size: 0.3rem;
     color: #999;
     font-family: PingFang-SC-Medium;

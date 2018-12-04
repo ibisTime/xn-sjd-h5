@@ -4,7 +4,7 @@
       <div class="content">
           <div class="det-head">
               <div class="det-img"></div>
-              <div>{{'订单' + orderStatus[orderDetail.status]}}</div>
+              <div>{{orderStuTxt ? orderStuTxt : '订单' + orderStatus[orderDetail.status]}}</div>
           </div>
           <p class="back-co"></p>
           <div class="det-con" @click="toRess">
@@ -12,7 +12,7 @@
                   <div class="l-img"></div>
               </div>
               <div class="con-right">
-                  <p>{{addressMsg ? addressMsg.addressee : ''}} <span>{{addressMsg ? addressMsg.mobile : ''}}</span></p>
+                  <p>{{addressMsg ? addressMsg.receiverName : ''}} <span>{{addressMsg ? addressMsg.receiverMobile : ''}}</span></p>
                   <p>{{addressMsg ? addressMsg.province + addressMsg.city + addressMsg.district + addressMsg.detailAddress : '还未选择地址哦'}}</p>
               </div>
           </div>
@@ -50,7 +50,7 @@
               <div class="foo-con">
                   <p><span>下单时间</span>{{formatDate(orderDetail.applyDatetime)}}</p>
                   <p><span>订单号</span>{{orderDetail.code}}</p>
-                  <p><span>订单金额</span>¥{{formatAmount(orderDetail.amount)}}</p>
+                  <p><span>订单金额</span>¥{{formatAmount(orderDetail.payAmount)}}{{orderDetail.cnyDeductAmount ? `+积分(￥${formatAmount(orderDetail.cnyDeductAmount)})` : ''}}</p>
                   <p><span>卖家</span>{{orderDetail.sellersName}}</p>
                   <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
               </div>
@@ -62,6 +62,7 @@
     </Scroll>
 
     <toast ref="toast" :text="textMsg"></toast>
+    <full-loading v-show="loading" :title="loadingText"></full-loading>
   </div>
 </template>
 <script>
@@ -95,7 +96,8 @@ export default {
       isRess: true,
       setRess: '',
       statusDetList: [],
-      logisCompany: {}
+      logisCompany: {},
+      orderStuTxt: ''
     };
   },
   created() {
@@ -113,11 +115,6 @@ export default {
       });
     });
     getDictList('commodity_cnavigate_status').then(data => {
-      data.forEach(item => {
-        this.orderStatus[item.dkey] = item.dvalue;
-      });
-    });
-    getDictList('logistics_company').then(data => {
       data.forEach(item => {
         this.orderStatus[item.dkey] = item.dvalue;
       });
@@ -247,10 +244,18 @@ export default {
     },
     orderMessage() {  // 获取订单信息
       moreStoreOrder(this.code).then(data => {
+        this.orderStuTxt = '';
         this.orderDetail = data;
         this.loading = false;
         this.storeList = data.detailList;   // moreStoreOrder
-        this.addressMsg = data.address;
+        this.addressMsg = {
+          province: data.province,
+          city: data.city,
+          district: data.district,
+          detailAddress: data.detailAddress,
+          receiverMobile: data.receiverMobile,
+          receiverName: data.receiverName
+        };
         if(data.status === '3' || data.status === '4') {
           this.ispj = true;
           data.detailList.forEach((item, index) => {
@@ -262,9 +267,11 @@ export default {
                 this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
                 break;
               case '2':
+                this.orderStuTxt = '售后中';
                 this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
                 break;
               case '3':
+                this.orderStuTxt = '售后完成';
                 this.wcOperHtml.push(`<div class="foo-btn">售后完成</div>`);
                 break;
             }

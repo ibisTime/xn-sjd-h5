@@ -180,7 +180,7 @@ export default {
       });
       this.scrollToBottom();
       fetch(629780, {
-        type: '1',
+        type: '0',
         user1: getUserId(),
         user2: this.user2,
         content: msg

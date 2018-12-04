@@ -171,3 +171,7 @@ export function lookLogistics(config) {
   return fetch(629820, config);
 }
 
+// 是否存在未读消息
+export function isThreeMsg(config) {
+  return fetch(629788, config);
+}

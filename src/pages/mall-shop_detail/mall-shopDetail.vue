@@ -245,6 +245,30 @@ export default {
           this.isCartType = '1';
           return;
         }
+        if(this.inventory > 0) {
+          this.loading = true;
+          let shopMsg = {
+            ...this.addCartConfig,
+            shopName: this.shopName,
+            bannerPic: this.bannerPic,
+            logistics: this.shopDetData.logistics,
+            setPrice: parseFloat(this.setPrice) * 1000
+          };
+          let shopMsgList = [shopMsg];
+          sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+          this.go('/affirm-order?code=' + this.code);
+        }else {
+          this.textMsg = '库存规格不足';
+          this.$refs.toast.show();
+        }
+      }
+    },
+    toShopCart() { // 内加入购物车
+      this.istoast = false;
+      this.addShopCart();
+    },
+    toShopOrder() { // 内立即购买
+      if(this.inventory > 0) {
         this.loading = true;
         let shopMsg = {
           ...this.addCartConfig,
@@ -256,24 +280,10 @@ export default {
         let shopMsgList = [shopMsg];
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
         this.go('/affirm-order?code=' + this.code);
+      }else {
+        this.textMsg = '库存规格不足';
+        this.$refs.toast.show();
       }
-    },
-    toShopCart() { // 内加入购物车
-      this.istoast = false;
-      this.addShopCart();
-    },
-    toShopOrder() { // 内立即购买
-      this.loading = true;
-      let shopMsg = {
-        ...this.addCartConfig,
-        shopName: this.shopName,
-        bannerPic: this.bannerPic,
-        logistics: this.shopDetData.logistics,
-        setPrice: parseFloat(this.setPrice) * 1000
-      };
-      let shopMsgList = [shopMsg];
-      sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-      this.go('/affirm-order?code=' + this.code);
     },
     isLogin() {
       if(!getUserId()) {
@@ -292,7 +302,7 @@ export default {
     specsFn(index, item) { // 选中规格
       this.setIndex = index;
       this.setPrice = formatAmount(item.price);
-      this.inventory = item.inventory;
+      this.inventory = item.inventory > 0 ? item.inventory : 0;
       this.addCartConfig.specsId = item.id;
       this.addCartConfig.specsName = item.name;
       this.setSpecsName = item.name;
@@ -305,18 +315,28 @@ export default {
     },
     addShop() {  // 商品加
       this.shopNum ++;
+      if(this.inventory < this.shopNum) {
+        this.shopNum --;
+        this.textMsg = '库存规格不足';
+        this.$refs.toast.show();
+      }
       this.addCartConfig.quantity = this.shopNum;
     },
     addShopCart() { // 加入购物车接口
-      this.loading = true;
-      addShopCart(this.addCartConfig).then(data => {
-        this.loading = false;
-        this.textMsg = '加入购物车成功';
+      if(this.inventory > 0) {
+        this.loading = true;
+        addShopCart(this.addCartConfig).then(data => {
+          this.loading = false;
+          this.textMsg = '加入购物车成功';
+          this.$refs.toast.show();
+          this.istoast = false;
+        }, () => {
+          this.loading = false;
+        });
+      }else {
+        this.textMsg = '库存规格不足';
         this.$refs.toast.show();
-        this.istoast = false;
-      }, () => {
-        this.loading = false;
-      });
+      }
     },
     qrorderFn() { // 确认操作
       if(this.isCartType === '0') { // 加入购物车

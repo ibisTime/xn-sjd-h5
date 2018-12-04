@@ -153,7 +153,8 @@ export default {
             this.textMsg = '申请成功';
             this.$refs.toast.show();
             setTimeout(() => {
-              this.go('/store-order_detail?code=' + this.toCode);
+              // this.go('/store-order_detail?code=' + this.toCode);
+              this.$router.back();
             }, 1500);
           }, () => {
             this.loading = false;
@@ -173,7 +174,8 @@ export default {
             this.textMsg = '申请成功';
             this.$refs.toast.show();
             setTimeout(() => {
-              this.go('/store-order_detail?code=' + this.toCode);
+              // this.go('/store-order_detail?code=' + this.toCode);
+              this.$router.back();
             }, 1500);
           }, () => {
             this.loading = false;

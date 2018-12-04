@@ -7,7 +7,7 @@
                     <span></span>
                 </div>
                 <div class="o-h_right" @click="toRess">
-                    <p>{{defaultSite.addressee}} <span>{{defaultSite.mobile}}</span></p>
+                    <p>{{defaultSite ? defaultSite.addressee : ''}} <span>{{defaultSite ? defaultSite.mobile : ''}}</span></p>
                     <p class="to-r">{{ressee ? '' : '还没有收货地址哦'}}<span class="fr" v-show="ressee"></span></p>
                     <p>{{ressee ? ressee : ''}}</p>
                 </div>
@@ -152,6 +152,8 @@ export default {
       res1.forEach(item => {
         if(item.isDefault === '1') {
           this.defaultSite = this.setRess || item;
+        }else {
+          this.defaultSite = this.setRess;
         }
       });
       this.config.specsId = this.shopMsgList[0].specsId;
