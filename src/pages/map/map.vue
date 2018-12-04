@@ -84,7 +84,7 @@
                 background-position: 0 0;
                 background-size: 100% 100%;"></i>
                 <!--<span style="font-size: 0.22rem;">导航</span>-->
-                <a href="https://uri.amap.com/marker?position=${this.detail.tree.longitude}, ${this.detail.tree.latitude}" style="font-size: 0.22rem; color: #fff;">导航</a>
+                <a href="https://uri.amap.com/marker?position=${this.detail.tree.longitude}, ${this.detail.tree.latitude}&callnative=0" style="font-size: 0.22rem; color: #fff;">导航</a>
               </div>
             </div>
             <div style="width: 100%; height: 100%; background: #494948; opacity: 0.7; position: absolute; border-radius: 0.06rem; position: absolute; top: 0; z-index: -1;"></div>

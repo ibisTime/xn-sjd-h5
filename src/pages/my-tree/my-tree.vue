@@ -37,6 +37,9 @@
             <img :src="getAvatar()">
             <span>礼物</span>
           </div>
+          <div class="me" @click="go(`/homepage?other=1&currentHolder=${currentHolder}`)" v-show="other">
+            <span>进入主页</span>
+          </div>
           <div class="icons">
             <img src="./map@2x.png" @click="go('/map?code=' + adoptTreeCode)">
             <img src="./prop@2x.png" @click="props" v-show="!other">
