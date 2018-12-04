@@ -175,3 +175,8 @@ export function lookLogistics(config) {
 export function isThreeMsg(config) {
   return fetch(629788, config);
 }
+
+// 订单明细
+export function orderDetail(config) {
+  return fetch(629735, config);
+}

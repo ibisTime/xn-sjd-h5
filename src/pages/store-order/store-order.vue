@@ -21,14 +21,14 @@
                     >
                         <div class="sing-head">
                             <div class="head-dp" @click="go(`/mall-store?shopCode=${orderItem.shopCode}`)">
-                                {{orderItem.sellersName}} >
-                                <span class="fr">{{currentIndex === 7 ? statusDetList[shopStatusList[orderIndex]].value : orderStatus[orderItem.status]}}</span>
+                                {{currentIndex === 7 ? orderItem.shopName : orderItem.sellersName}}>
+                                <span class="fr">{{currentIndex === 7 ? statusDetList[+shopStatusList[orderIndex]] : orderStatus[orderItem.status]}}</span>
                                 <span class="fr time">{{formatDate(orderItem.applyDatetime)}}</span>
                             </div>
                         </div>
                         <div
                           class="sing-con"
-                          @click="toOrderDet(orderItem.code)"
+                          @click="toOrderDet(currentIndex === 7 ? orderItem.orderCode : orderItem.code)"
                           v-for="(shopItem, shopIndex) in orderItem.detailList"
                         >
                             <div class="s-con_left">
@@ -58,7 +58,7 @@
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { onePageOrder, affirmOrder, removeMoreOrder } from 'api/store';
+import { onePageOrder, affirmOrder, removeMoreOrder, orderDetail } from 'api/store';
 import { getDictList } from 'api/general';
 import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
@@ -79,6 +79,12 @@ export default {
         status: '',
         orderDir: 'desc',
         orderColumn: 'update_datetime',
+        applyUser: getUserId()
+      },
+      orderDetailConfig: {
+        start: 1,
+        limit: 8,
+        statusList: ['2', '3'],
         applyUser: getUserId()
       },
       affrimConfig: {  // 确认收货入参
@@ -102,12 +108,8 @@ export default {
     setTitle('商品订单');
     getDictList('commodity_order_detail_status').then(data => {
       data.forEach(item => {
-        this.statusDetList.push({
-          key: item.dkey,
-          value: item.dvalue
-        });
+        this.statusDetList.push(item.dvalue);
       });
-      console.log(this.statusDetList);
     });
     getDictList('commodity_cnavigate_status').then(data => {
       data.forEach((item, index) => {
@@ -146,15 +148,30 @@ export default {
     },
     selectCategory(index) {
       this.currentIndex = index;
+      this.start = 1;
+      this.orderList = [];
       if(index === 0) {
         this.orderConfig.status = '';
       }else if(index === 7) {
-        this.orderConfig.status = 3;
+        this.loading = true;
+        this.orderDetailConfig.start = this.start;
+        orderDetail(this.orderDetailConfig).then(data => {
+          this.loading = false;
+          if (data.totalPage <= this.start) {
+            this.hasMore = false;
+          }
+          this.orderList = [...this.orderList, ...data.list];
+          this.orderList.forEach(orderItem => {
+            orderItem.detailList = [];
+            orderItem.detailList.push(orderItem);
+            this.shopStatusList.push(orderItem.status);
+          });
+          this.start ++;
+          return;
+        });
       }else {
         this.orderConfig.status = index - 1;
       }
-      this.start = 1;
-      this.orderList = [];
       this.morePageOrderFn();
     },
     orderOperFn(status) { // 根据状态展示按钮
@@ -214,7 +231,6 @@ export default {
       }
       if(target.classList.contains('topay')) { // 待付款-去付款
         let shopMsgList = [this.orderList[index]];
-        console.log(shopMsgList);
         sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
         this.go('/pay?code=' + this.orderList[index].code + '&type=one');
       }
@@ -268,21 +284,6 @@ export default {
           for(let i = 0, len = this.orderList.length; i < len; i++) {
             this.orderOperFn(this.orderList[i].status);
           }
-        }else{
-          this.orderList = [...this.orderList, ...data.list];
-          for(let i = 0, len = this.orderList.length; i < len; i++) {
-            this.orderOperFn(this.orderList[i].status);
-          }
-          this.orderList.forEach(orderItem => {
-            orderItem.detailList.map(item => {
-              if(parseInt(item.status) > 1) {
-                this.shopStatusList.push(item.status);
-                return item;
-              }
-            });
-          });
-          // this.orderList = this.afterSalesData;
-          console.log(this.orderList);
         }
         this.start ++;
       }, () => {
