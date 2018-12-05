@@ -146,7 +146,11 @@ export default {
         this.cartConfig.cartList.push(item.code);
       }
       this.postageConfig.commodityCodeList.push(item.commodityCode);
-      this.totalPrice += item.setPrice * item.quantity;
+      if(item.setPrice) {
+        this.totalPrice += item.setPrice * item.quantity;
+      }else {
+        this.totalPrice += item.amount;
+      }
     });
     if(this.postageConfig.addressCode) {
       orderPostage(this.postageConfig).then(data => {
@@ -175,7 +179,7 @@ export default {
       });
       this.config.specsId = this.shopMsgList[0].specsId;
       if(this.shopMsgList.length === 1 && this.shopMsgList[0].setPrice) {
-        this.setPrice = formatAmount(this.shopMsgList[0].setPrice);
+        this.setPrice = this.shopMsgList[0].setPrice;
       }
       this.config.addressCode = this.defaultSite.code;
       this.cartConfig.addressCode = this.defaultSite.code;
