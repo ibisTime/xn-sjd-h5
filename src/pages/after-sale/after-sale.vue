@@ -97,17 +97,20 @@ export default {
       refundAmount: '',
       orderDetailCode: '',
       toCode: '',
-      jfMount: ''
+      jfMount: 0,
+      postalFee: 0
     };
   },
   created() {
     setTitle('售后');
     this.orderDetailCode = this.$route.query.code;
     this.toCode = this.$route.query.toCode;
-    this.jfMount = this.$route.query.jfMount || '';
+    this.jfMount = this.$route.query.jfMount || 0;
+    this.postalFee = this.$route.query.postalFee || 0;
     oneStoreOrder(this.orderDetailCode).then(data => {
       this.loading = false;
-      this.refundAmount = formatAmount(data.amount - this.jfMount);
+      //  - this.jfMount - this.postalFee
+      this.refundAmount = formatAmount(data.amount);
     }, () => {
       this.loading = false;
     });

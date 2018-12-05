@@ -137,7 +137,7 @@
       this.userId = getCookie('userId');
       this.shopMsgList = JSON.parse(sessionStorage.getItem('shopMsgList'));
       if(!this.orderCode) {
-        this.totalPrice = this.shopMsgList[0].payAmount ? Number(this.shopMsgList[0].payAmount) : Number(sessionStorage.getItem('totalPrice')) * 1000;
+        this.totalPrice = this.shopMsgList[0].amount ? Number(this.shopMsgList[0].amount) : Number(sessionStorage.getItem('totalPrice')) * 1000;
       }
       this.storeCode = this.$route.query.code;             // 商城订单code
       this.storeType = this.$route.query.storeType;
