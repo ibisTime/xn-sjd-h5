@@ -45,10 +45,9 @@
   import DatePicker from 'base/date-picker/date-picker';
   import PhotoEdit from 'components/photo-edit/photo-edit';
   import EXIF from 'exif-js';
-  import {formatImg, getImgData, emptyValid} from 'common/js/util';
-  import { getCookie } from 'common/js/cookie';
+  import {formatImg, getImgData, emptyValid, getUserId} from 'common/js/util';
   import { getQiniuToken } from 'api/general';
-  import { getUserDetail, changeAvatar, changeNickname, completeInfo } from 'api/user';
+  import { getUserDetail, changeAvatar } from 'api/user';
 
   export default {
     data() {
@@ -78,13 +77,25 @@
         this.$router.push(url);
       },
       getAvatar() {
-        if (!this.userId) {
+        // if (!getUserId()) {
+        //   return require('./../../common/image/avatar@2x.png');
+        // }
+        // if(this.user.photo) {
+        //   this.photos.push({
+        //     key: this.user.photo
+        //   });
+        //   return formatImg(this.photos[0].key);
+        // } else {
+        //   if(this.photos.length) {
+        //     return formatImg(this.photos[0].key);
+        //   } else {
+        //     return require('./../../common/image/avatar@2x.png');
+        //   }
+        // }
+        if (!getUserId()) {
           return require('./../../common/image/avatar@2x.png');
         }
         if(this.photos.length || this.user.photo) {
-          if(this.user.photo) {
-            this.photos[0].key = this.user.photo;
-          }
           return formatImg(this.photos.length ? this.photos[0].key : this.user.photo);
         } else {
           return require('./../../common/image/avatar@2x.png');
@@ -103,80 +114,29 @@
       },
       // 保存
       action() {
-        let date = this.year ? this.year + '-' + this.month + '-' + this.day : '';
-        console.log(date);
-        if(this.photos.length) {
-          this.$validator.validateAll().then((result) => {
-            if (result) {
-              this.loading = true;
-              this.loadText = '修改中...';
-              this.sex = this.sex === '男' ? '1' : '0';
-              // 修改头像
-              // 修改昵称
-              // 完善资料
-              Promise.all([
-                changeAvatar({
-                  photo: this.photos.length ? this.photos[0].key : this.user.photo
-                }),
-                changeNickname({
-                  nickname: this.nickname
-                }),
-                completeInfo({
-                  gender: this.sex,
-                  age: this.age,
-                  realName: this.realName,
-                  nickname: this.nickname,
-                  idNo: this.idNo,
-                  birthday: date || ''
-                })
-              ]).then(([res1, res2, res3]) => {
-                this.loading = false;
-                this.sex = this.sex === '1' ? '男' : '女';
-                if(res1.isSuccess && res2.isSuccess && res3.isSuccess) {
-                  this.text = '修改成功';
-                  this.$refs.toast.show();
-                  setTimeout(() => {
-                    this.$router.push('/me');
-                  }, 1000);
-                }
-              }).catch(() => { this.loading = false; });
-            }
-          });
-        } else {
-          this.$validator.validateAll().then((result) => {
-            if (result) {
-              this.loading = true;
-              this.loadText = '修改中...';
-              this.sex = this.sex === '男' ? '1' : '0';
-              // 修改头像
-              // 修改昵称
-              // 完善资料
-              Promise.all([
-                changeNickname({
-                  nickname: this.nickname
-                }),
-                completeInfo({
-                  gender: this.sex,
-                  age: this.age,
-                  realName: this.realName,
-                  nickname: this.nickname,
-                  idNo: this.idNo,
-                  birthday: date || ''
-                })
-              ]).then(([res2, res3]) => {
-                this.loading = false;
-                this.sex = this.sex === '1' ? '男' : '女';
-                if(res2.isSuccess && res3.isSuccess) {
-                  this.text = '修改成功';
-                  this.$refs.toast.show();
-                  setTimeout(() => {
-                    this.$router.push('/me');
-                  }, 1000);
-                }
-              }).catch(() => { this.loading = false; });
-            }
-          });
-        }
+        this.$validator.validateAll().then((result) => {
+          if (result) {
+            this.loading = true;
+            this.loadText = '修改中...';
+            // 修改头像
+            // 修改昵称
+            // 完善资料
+            Promise.all([
+              changeAvatar({
+                photo: this.photos.length ? this.photos[0].key : this.user.photo
+              })
+            ]).then(([res1]) => {
+              this.loading = false;
+              if(res1.isSuccess) {
+                this.text = '修改成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/me');
+                }, 1000);
+              }
+            }).catch(() => { this.loading = false; });
+          }
+        });
       },
       /**
        * 选中要操作的图片
@@ -312,24 +272,16 @@
       }
     },
     mounted() {
-      this.userId = getCookie('userId');
       this.uploadUrl = 'http://up-z0.qiniu.com';
       Promise.all([
         getQiniuToken(),
         getUserDetail({
-          userId: this.userId
+          userId: getUserId()
         })
       ]).then(([res1, res2]) => {
         this.token = res1.uploadToken;
         this.user = res2;
-        this.nickname = this.user.nickname || '';
-        this.sex = this.user.gender ? this.user.gender === '1' ? '男' : '女' || '男' : '';
-        this.age = this.user.age || '';
-        this.realName = this.user.realName || '';
-        this.idNo = this.user.idNo || '';
-        this.year = this.user.birthday.split('-')[0];
-        this.month = this.user.birthday.split('-')[1];
-        this.day = this.user.birthday.split('-')[2];
+        console.log(this.user);
       }).catch(() => {});
     },
     computed: {
