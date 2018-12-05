@@ -6,7 +6,7 @@
                 :hasMore="hasMore"
                 @pullingUp="storeMsgFn">
                 <ul class="msg-list">
-                    <li v-for="(item, index) in storeMsgData" :key="index" @click="$router.push(`/store-service?user2=${item.user1}`)">
+                    <li v-for="(item, index) in storeMsgData" :key="index" @click="$router.push(`/store-service?user2=${item.user2}`)">
                         <h5>{{item.user1Nickname}} <span class="fr time">{{formatDate(item.createDatetime)}}</span></h5>
                         <p>{{item.messageList[0].content}}</p>
                     </li>
@@ -36,7 +36,7 @@ export default {
       config: {
         user1: getUserId(),
         start: 1,
-        limit: 6,
+        limit: 8,
         orderColumn: 'update_datetime',
         orderDir: 'desc'
       },
