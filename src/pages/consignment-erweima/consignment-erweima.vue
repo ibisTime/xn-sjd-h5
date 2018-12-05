@@ -89,7 +89,7 @@
             } else if(res.errMsg.indexOf('shareQZone') !== -1) {
               this.channel = 3;
             }
-            share(this.channel).then((res) => {
+            share(this.channel, '二维码转让').then((res) => {
               if(res.code) {
                 this.text = '分享成功';
                 this.$refs.toast.show();

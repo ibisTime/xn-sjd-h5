@@ -228,12 +228,12 @@
               this.channel = 3;
             }
             if(getUserId()) {
-              share(this.channel).then((res) => {
+              share(this.channel, '文章').then((res) => {
                 if(res.code) {
                   this.text = '分享成功';
                   this.$refs.toast.show();
                 }
-              }).then(() => {});
+              }).then(() => { });
             }
           }
         }, (data) => {
