@@ -8,7 +8,7 @@
         <div class="head-right">
           <p>物流状态：<span class="status">{{logisticData.statusTxt}}</span></p>
           <p>承运来源：{{logisticData.logicPany}}</p>
-          <p>订单编号：{{expNo}}</p>
+          <p>物流单号：{{expNo}}</p>
         </div>
       </div>
       <p class="hr"></p>
@@ -58,17 +58,21 @@
         expCode,
         expNo: this.expNo
       }).then(data => {
-        this.logisticsData = data.Traces;
-        setTimeout(() => {
-          let logibox = this.$refs.logibox;
-          if(logibox) {
-            for(let i = 0, len = logibox.length - 1; i < len; i++) {
-              this.eleHeight += parseFloat(window.getComputedStyle(logibox[i], null).height) + parseFloat(window.getComputedStyle(logibox[i], null).marginBottom);
-              this.$refs.logizz.style.height = this.eleHeight + 'px';
+        if(data.Traces) {
+          this.logisticsData = data.Traces;
+          setTimeout(() => {
+            let logibox = this.$refs.logibox;
+            if(logibox) {
+              for(let i = 0, len = logibox.length - 1; i < len; i++) {
+                this.eleHeight += parseFloat(window.getComputedStyle(logibox[i], null).height) + parseFloat(window.getComputedStyle(logibox[i], null).marginBottom);
+                this.$refs.logizz.style.height = this.eleHeight + 'px';
+              }
             }
-          }
+            this.loading = false;
+          }, 500);
+        }else {
           this.loading = false;
-        }, 500);
+        }
       }, () => {
         this.loading = false;
       });

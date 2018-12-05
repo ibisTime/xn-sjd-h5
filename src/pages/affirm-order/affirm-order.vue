@@ -114,6 +114,10 @@ export default {
         cartList: [],
         addressCode: ''
       },
+      postageConfig: {  // 查询邮费参数
+        addressCode: '',
+        orderCode: ''
+      },
       code: '',
       setRess: ''
     };
@@ -123,7 +127,10 @@ export default {
     this.pullUpLoad = null;
     this.code = this.$route.query.code;
     sessionStorage.removeItem('storetype');
-    this.setRess = JSON.parse(sessionStorage.getItem('setRess'));
+    this.setRess = JSON.parse(sessionStorage.getItem('setRess')) || '';
+    if(this.setRess) {
+      this.postageConfig.addressCode = this.setRess.code;
+    }
     this.shopMsgList = JSON.parse(sessionStorage.getItem('shopMsgList'));
     if(!this.shopMsgList) {
       this.go('/mall');

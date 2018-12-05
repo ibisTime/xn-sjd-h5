@@ -51,6 +51,7 @@
                   <p><span>下单时间</span>{{formatDate(orderDetail.applyDatetime)}}</p>
                   <p><span>订单号</span>{{orderDetail.code}}</p>
                   <p><span>订单金额</span>¥{{formatAmount(orderDetail.payAmount)}}{{orderDetail.cnyDeductAmount ? `+积分(￥${formatAmount(orderDetail.cnyDeductAmount)})` : ''}}</p>
+                  <p><span>支付方式</span>{{payType[orderDetail.payType]}}</p>
                   <p><span>卖家</span>{{orderDetail.sellersName}}</p>
                   <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
               </div>
@@ -94,16 +95,20 @@ export default {
       wcOperHtml: [],
       ispj: false,
       isRess: true,
-      setRess: '',
+      setRessCode: '',
       statusDetList: [],
       logisCompany: {},
-      orderStuTxt: ''
+      orderStuTxt: '',
+      payType: {},
+      postageConfig: {
+        addressCode: '',
+        commodityCodeList: []
+      }
     };
   },
   created() {
     setTitle('订单详情');
     this.pullUpLoad = null;
-    // this.setRess = JSON.parse(sessionStorage.getItem('setRess'));
     this.code = this.$route.query.code;
     this.orderType = this.$route.query.type;
     getDictList('commodity_order_detail_status').then(data => {
@@ -122,6 +127,11 @@ export default {
     getDictList('logistics_company').then(data => {
       data.forEach(item => {
         this.logisCompany[item.dkey] = item.dvalue;
+      });
+    });
+    getDictList('pay_type').then(data => {
+      data.forEach(item => {
+        this.payType[item.dkey] = item.dvalue;
       });
     });
   },
@@ -208,7 +218,7 @@ export default {
         this.go('/pay?code=' + this.orderDetail.code + '&type=one');
       }
       if(target.classList.contains('after-sale')) { // 申请售后
-        this.go('/after-sale?code=' + storeItem.code + '&toCode=' + this.orderDetail.code);
+        this.go('/after-sale?code=' + storeItem.code + '&toCode=' + this.orderDetail.code + '&jfMount=' + this.orderDetail.cnyDeductAmount);
       }
       if(target.classList.contains('look-wl')) { // 查看物流
         this.loading = true;
@@ -245,6 +255,10 @@ export default {
     orderMessage() {  // 获取订单信息
       moreStoreOrder(this.code).then(data => {
         this.orderStuTxt = '';
+        this.postageConfig.addressCode = data.addressCode;
+        data.detailList.forEach(item => {
+          this.postageConfig.commodityCodeList.push(item.commodityCode);
+        });
         this.orderDetail = data;
         this.loading = false;
         this.storeList = data.detailList;   // moreStoreOrder
@@ -256,6 +270,10 @@ export default {
           receiverMobile: data.receiverMobile,
           receiverName: data.receiverName
         };
+        // 查询邮费
+        // orderPostage(this.postageConfig).then(data => {
+        //   console.log(data);
+        // });
         if(data.status === '3' || data.status === '4') {
           this.ispj = true;
           data.detailList.forEach((item, index) => {

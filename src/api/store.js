@@ -180,3 +180,8 @@ export function isThreeMsg(config) {
 export function orderDetail(config) {
   return fetch(629735, config);
 }
+
+// 邮费查询
+export function orderPostage(config) {
+  return fetch(629801, config);
+}
