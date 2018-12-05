@@ -42,7 +42,7 @@
                 </span>
                   <span class="hot-pro-title-date">{{formatDate(item.createDatetime)}}</span>
                 </p>
-                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">总数量：{{item.quantity}}</span></p>
+                <p class="hot-pro-bottom"><span class="hot-pro-bottom-price">¥{{formatAmount(item.price)}}</span><span class="hot-pro-bottom-number">剩余数量：{{item.quantity}}</span></p>
                 <p class="hot-pro-bottom"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">已成交数量：{{item.dealQuantity || 0}}</span></p>
                 <p class="hot-pro-bottom status" v-show="type === 2"><span class="hot-pro-bottom-price"></span><span class="hot-pro-bottom-number">{{deriveStatusObj[item.status]}}</span></p>
               </div>

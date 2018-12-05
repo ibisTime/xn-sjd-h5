@@ -77,8 +77,7 @@
       </Scroll>
     </div>
     <div class="footer" v-show="buy">
-      <span v-show="erweimaJishou">¥{{formatAmount(detail.price) * detail.quantity}}</span>
-      <span v-show="!erweimaJishou">¥{{formatAmount(detail.price)}}</span>
+      <span>¥{{formatAmount(detail.price)}}</span>
       <button :style="{'background' : buyDisable ? 'gray' : ''}" @click="showPopUp">{{buyText}}</button>
     </div>
     <div class="footer-dingxiangjishou" v-show="dingxiangJishou">
@@ -443,7 +442,8 @@ export default {
         } else if(this.detail.type === '1') {
           placeOrderErweima({
             code: this.code,
-            userId: getUserId()
+            userId: getUserId(),
+            quantity: this.number
           }).then((res) => {
             if(res.code) {
               this.text = '下单成功';
@@ -470,7 +470,8 @@ export default {
         } else if(this.detail.type === '0') {
           placeOrderDingxiang({
             code: this.code,
-            userId: getUserId()
+            userId: getUserId(),
+            quantity: this.number
           }).then((res) => {
             if(res.code) {
               this.text = '下单成功';

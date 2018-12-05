@@ -47,6 +47,7 @@ import { getCookie } from 'common/js/cookie';
 // import { getDictList } from 'api/general';
 import { getBookingProPage, getProductType } from 'api/biz';
 import { getUserDetail } from 'api/user';
+import { getDictList } from 'api/general';
 export default {
   data() {
     return {
@@ -62,6 +63,7 @@ export default {
       categorys: [{value: '全部', key: 'all'}],
       categorysSub: [{value: '全部', key: 'all'}],
       sellTypeObj: {},
+      presellProductStatusObj: {},
       userDetail: {},
       showCheckIn: false,
       pullUpLoad: null,
@@ -94,7 +96,8 @@ export default {
       item.canAdoptFlag = true;
       if(!this.userDetail.level) {
         item.canAdoptFlag = false;
-        item.noAdoptReason = '您未登录';
+        // item.noAdoptReason = '您未登录';
+        item.noAdoptReason = this.presellProductStatusObj[item.status];
         return item;
       }
       let curTime = new Date();
@@ -212,8 +215,9 @@ export default {
         orderColumn: 'order_no',
         orderDir: 'asc',
         type: 1
-      })
-    ]).then(([res2]) => {
+      }),
+      getDictList('presell_product_status')
+    ]).then(([res2, res3]) => {
       // console.log(res2);
       res2.map((item) => {
         this.categorys.push({
@@ -226,6 +230,9 @@ export default {
           this.index = index;
           this.currentIndex = index;
         }
+      });
+      res3.map((item) => {
+        this.presellProductStatusObj[item.dkey] = item.dvalue;
       });
       this.loading = false;
       this.getSubType();

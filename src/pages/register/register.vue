@@ -42,6 +42,9 @@
         <div class="login-btn">
           <button @click="register">注册</button>
         </div>
+        <div class="register-findpwd">
+          <span class="fl" @click="go('/login')">去登录</span>
+        </div>
       </Scroll>
     </div>
     <full-loading v-show="loading" :title="loadText"></full-loading>
@@ -298,6 +301,12 @@
           border-radius: 0.08rem;
           font-size: 0.32rem;
         }
+      }
+      .register-findpwd {
+        font-size: 0.26rem;
+        color: $color-text-l;
+        margin-bottom: 1.3rem;
+        padding: 0 0.2rem;
       }
     }
   }
