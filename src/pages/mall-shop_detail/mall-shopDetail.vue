@@ -190,6 +190,7 @@ export default {
       this.specsList = res2.specsList;
       this.setPrice = formatAmount(this.specsList[0].price);
       this.inventory = this.specsList[0].inventory;
+      sessionStorage.setItem('inventory', this.inventory);
       this.setSpecsName = this.specsList[0].name;
       this.detailDescription = res2.description;
       this.addCartConfig.commodityName = res2.name;
@@ -303,6 +304,7 @@ export default {
       this.setIndex = index;
       this.setPrice = formatAmount(item.price);
       this.inventory = item.inventory > 0 ? item.inventory : 0;
+      sessionStorage.setItem('inventory', this.inventory);
       this.addCartConfig.specsId = item.id;
       this.addCartConfig.specsName = item.name;
       this.setSpecsName = item.name;

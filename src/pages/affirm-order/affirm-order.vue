@@ -25,7 +25,7 @@
                         <div class="o-c_right">
                             <p class="r-p1">{{orderItem.commodityName}} <span class="fr">×{{orderItem.quantity}}</span></p>
                             <p class="r-p2">规格分类：{{orderItem.specsName}}</p>
-                            <p class="r-p3">¥{{setPrice ? setPrice : formatAmount(orderItem.amount / orderItem.quantity)}}</p>
+                            <p class="r-p3">¥{{setPrice ? formatAmount(setPrice) : formatAmount(orderItem.amount / orderItem.quantity)}}</p>
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,8 @@ export default {
         addressCode: '',
         commodityCodeList: []
       },
-      postalFee: 0  // 邮费
+      postalFee: 0,  // 邮费
+      inventory: ''
     };
   },
   created() {
@@ -129,6 +130,7 @@ export default {
     this.code = this.$route.query.code;
     sessionStorage.removeItem('storetype');
     this.setRess = JSON.parse(sessionStorage.getItem('setRess')) || '';
+    this.inventory = sessionStorage.getItem('inventory');
     if(this.setRess) {
       this.postageConfig.addressCode = this.setRess.code;
     }
@@ -229,6 +231,13 @@ export default {
     },
     addShop() {
       this.shopMsgList[0].quantity ++;
+      if(this.inventory) {
+        if(this.shopMsgList[0].quantity > parseInt(this.inventory)) {
+          this.textMsg = '规格库存不足';
+          this.$refs.toast.show();
+          this.shopMsgList[0].quantity --;
+        }
+      }
       this.singPriceFn();
     },
     singPriceFn() {
