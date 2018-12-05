@@ -58,6 +58,8 @@ const tppRules = () => import('@/pages/tppRules/tppRules');
 const Invitation = () => import('@/pages/invitation/invitation');
 // 完善资料
 const UserInfo = () => import('@/pages/userInfo/userInfo');
+// 修改头像
+const UserAvatar = () => import('@/pages/userAvatar/userAvatar');
 // 我的碳泡泡
 const CarbonBubble = () => import('@/pages/carbonBubble/carbonBubble');
 // 设置
@@ -277,6 +279,10 @@ export default new Router({
     {
       path: '/userInfo',
       component: UserInfo
+    },
+    {
+      path: '/userAvatar',
+      component: UserAvatar
     },
     {
       path: '/carbon-bubble',

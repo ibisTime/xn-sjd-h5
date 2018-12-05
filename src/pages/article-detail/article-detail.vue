@@ -139,6 +139,11 @@
           } else {
             this.text = '未被认养';
             this.$refs.toast.show();
+            if(this.detail.productStatus === '4') {
+              setTimeout(() => {
+                this.go(`/product-detail?code=${this.detail.productCode}`);
+              }, 1000);
+            }
           }
         }
       },
