@@ -40,7 +40,7 @@
                                 <p>合计{{shopItem.quantity}}件商品 <span class="fr sp-b">¥{{formatAmount(shopItem.amount)}}</span></p>
                             </div>
                         </div>
-                        <p class="order-all">合计：￥{{formatAmount(orderItem.payAmount)}}{{orderItem.cnyDeductAmount ? `+积分(￥${formatAmount(orderItem.cnyDeductAmount)})` : ''}}</p>
+                        <p class="order-all">合计：￥{{formatAmount(orderItem.amount)}}({{orderItem.status === '0' ? formatAmount(orderItem.amount - orderItem.postalFee) : formatAmount(orderItem.payAmount - orderItem.postalFee)}}{{orderItem.cnyDeductAmount ? `+积分(${formatAmount(orderItem.cnyDeductAmount)})` : ''}}{{orderItem.postalFee > 0 ? `+邮费(${formatAmount(orderItem.postalFee)})` : ''}})</p>
                         <div class="sing-foo" v-if="operHtmlList[orderIndex]" v-html="operHtmlList[orderIndex]" @click="orderOperClick(orderIndex)">
                         </div>
                     </div>
@@ -102,7 +102,8 @@ export default {
       logisCompany: {},
       afterSalesData: [],  // 售后数据
       statusDetList: [],
-      shopStatusList: []
+      shopStatusList: [],
+      payAmount: 0
     };
   },
   created() {
@@ -424,11 +425,14 @@ export default {
         }
       }
       .order-all{
-        font-size: 0.32rem;
+        font-size: 0.3rem;
         color: #333;
         margin-top: -0.3rem;
         padding-bottom: 0.18rem;
         text-align: right;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
       }
       .sing-foo{
         height: 0.9rem;

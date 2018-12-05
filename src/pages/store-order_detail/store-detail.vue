@@ -50,9 +50,9 @@
               <div class="foo-con">
                   <p><span>下单时间</span>{{formatDate(orderDetail.applyDatetime)}}</p>
                   <p><span>订单号</span>{{orderDetail.code}}</p>
-                  <p><span>订单金额</span>¥{{formatAmount(orderDetail.payAmount)}}{{orderDetail.cnyDeductAmount ? `+积分(￥${formatAmount(orderDetail.cnyDeductAmount)})` : ''}}</p>
-                  <p><span>支付方式</span>{{payType[orderDetail.payType]}}</p>
+                  <p><span>订单金额</span>¥{{orderDetail.status === '0' ? formatAmount(orderDetail.amount - orderDetail.postalFee) : formatAmount(orderDetail.payAmount - orderDetail.postalFee)}}{{orderDetail.cnyDeductAmount ? `+积分(￥${formatAmount(orderDetail.cnyDeductAmount)})` : ''}}{{orderDetail.postalFee > 0 ? `+邮费(￥${formatAmount(orderDetail.postalFee)})` : ''}}</p>
                   <p><span>卖家</span>{{orderDetail.sellersName}}</p>
+                  <p><span>支付方式</span>{{payType[orderDetail.payType]}}</p>
                   <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
               </div>
           </div>
@@ -218,7 +218,7 @@ export default {
         this.go('/pay?code=' + this.orderDetail.code + '&type=one');
       }
       if(target.classList.contains('after-sale')) { // 申请售后
-        this.go('/after-sale?code=' + storeItem.code + '&toCode=' + this.orderDetail.code + '&jfMount=' + this.orderDetail.cnyDeductAmount);
+        this.go('/after-sale?code=' + storeItem.code + '&toCode=' + this.orderDetail.code + '&jfMount=' + this.orderDetail.cnyDeductAmount + '&postalFee=' + this.orderDetail.postalFee);
       }
       if(target.classList.contains('look-wl')) { // 查看物流
         this.loading = true;
@@ -270,10 +270,6 @@ export default {
           receiverMobile: data.receiverMobile,
           receiverName: data.receiverName
         };
-        // 查询邮费
-        // orderPostage(this.postageConfig).then(data => {
-        //   console.log(data);
-        // });
         if(data.status === '3' || data.status === '4') {
           this.ispj = true;
           data.detailList.forEach((item, index) => {

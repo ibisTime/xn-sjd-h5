@@ -44,7 +44,7 @@
                 </div>
                 <div class="foo-box02">
                     <div class="box02-left foo-left">
-                        配送方式
+                        配送方式{{shopMsgList[0].logistics === '1' ? `(邮费:￥${formatAmount(postalFee)})` : ''}}
                     </div>
                     <div class="box02-right">
                         <p>
@@ -82,7 +82,7 @@ import Scroll from 'base/scroll/scroll';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getDictList } from 'api/general';
 import { getAddressList, getUser } from 'api/user';
-import { buyItNow, shopCartOrder } from 'api/store';
+import { buyItNow, shopCartOrder, orderPostage } from 'api/store';
 export default {
   data() {
     return {
@@ -114,12 +114,13 @@ export default {
         cartList: [],
         addressCode: ''
       },
-      postageConfig: {  // 查询邮费参数
-        addressCode: '',
-        orderCode: ''
-      },
       code: '',
-      setRess: ''
+      setRess: '',
+      postageConfig: {
+        addressCode: '',
+        commodityCodeList: []
+      },
+      postalFee: 0  // 邮费
     };
   },
   created() {
@@ -144,9 +145,18 @@ export default {
       }else {
         this.cartConfig.cartList.push(item.code);
       }
-      this.totalPrice += item.amount;
+      this.postageConfig.commodityCodeList.push(item.commodityCode);
+      this.totalPrice += item.setPrice * item.quantity;
     });
-    this.totalPrice = formatAmount(this.totalPrice);
+    if(this.postageConfig.addressCode) {
+      orderPostage(this.postageConfig).then(data => {
+        this.postalFee = data.postalFee;
+        let all = this.totalPrice + this.postalFee;
+        this.totalPrice = formatAmount(all);
+      });
+    }else{
+      this.totalPrice = formatAmount(this.totalPrice);
+    }
     Promise.all([
       getAddressList(), // 地址
       getUser(),
@@ -166,7 +176,6 @@ export default {
       this.config.specsId = this.shopMsgList[0].specsId;
       if(this.shopMsgList.length === 1 && this.shopMsgList[0].setPrice) {
         this.setPrice = formatAmount(this.shopMsgList[0].setPrice);
-        this.singPriceFn();
       }
       this.config.addressCode = this.defaultSite.code;
       this.cartConfig.addressCode = this.defaultSite.code;
@@ -220,7 +229,7 @@ export default {
     },
     singPriceFn() {
       this.singPrice = this.setPrice * this.shopMsgList[0].quantity;
-      this.totalPrice = this.singPrice;
+      this.totalPrice = formatAmount(this.singPrice + this.postalFee);
     },
     qrorderFn() {
       if(!this.ressee) {
