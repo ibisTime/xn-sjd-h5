@@ -13,6 +13,7 @@
       <p>商城</p>
     </router-link>
     <router-link tag="div" class="foot-item item-3" to="/me">
+      <b class="msg" v-show="ismsg"></b>
       <i></i>
       <p>我的</p>
     </router-link>
@@ -28,6 +29,10 @@
       currentIndex: {
         type: Number,
         default: 0
+      },
+      ismsg: {
+        type: Boolean,
+        default: false
       }
     },
     computed: {
@@ -77,7 +82,16 @@
       flex-direction: column;
       justify-content: center;
       text-align: center;
-
+      .msg{
+        position: absolute;
+        top: 2%;
+        right: 35%;
+        display: inline-block;
+        width: 0.2rem;
+        height: 0.2rem;
+        background-color: red;
+        border-radius: 100%;
+      }
       >i {
         display: inline-block;
         width: 0.42rem;

@@ -112,7 +112,7 @@
     </div>
     <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
-    <m-footer></m-footer>
+    <m-footer :ismsg="ismsg"></m-footer>
   </div>
 </template>
 <script>

@@ -40,6 +40,7 @@
                                 <p>合计{{shopItem.quantity}}件商品 <span class="fr sp-b">¥{{formatAmount(shopItem.amount)}}</span></p>
                             </div>
                         </div>
+                        <p class="order-all">合计：￥{{formatAmount(orderItem.payAmount)}}{{orderItem.cnyDeductAmount ? `+积分(￥${formatAmount(orderItem.cnyDeductAmount)})` : ''}}</p>
                         <div class="sing-foo" v-if="operHtmlList[orderIndex]" v-html="operHtmlList[orderIndex]" @click="orderOperClick(orderIndex)">
                         </div>
                     </div>
@@ -359,86 +360,93 @@ export default {
         overflow: scroll;
     }
     .order-sing{
-        margin-bottom: 0.2rem;
+      margin-bottom: 0.2rem;
+      padding: 0 0.3rem;
+      background-color: #fff;
+      font-family: PingFang-SC-Medium;
+      box-shadow: 0 -0.02rem 0 0 #EBEBEB;
+      .sing-head{
+          height: 0.8rem;
+          line-height: 0.8rem;
+          font-size: 0.26rem;
+          color: #666;
+        .time{
+          margin-right: 0.2rem;
+        }
+      }
+      .sing-con{
+        height: 2.1rem;
         padding: 0 0.3rem;
-        background-color: #fff;
-        font-family: PingFang-SC-Medium;
-        box-shadow: 0 -0.02rem 0 0 #EBEBEB;
-        .sing-head{
-            height: 0.8rem;
-            line-height: 0.8rem;
-            font-size: 0.26rem;
-            color: #666;
-          .time{
-            margin-right: 0.2rem;
-          }
-        }
-        .sing-con{
-            height: 2.1rem;
-            padding: 0 0.3rem;
-            display: flex;
-            align-items: center;
-            .s-con_left{
-                width: 1.6rem;
-                height: 1.6rem;
-                .l-img{
-                    width: 100%;
-                    height: 100%;
-                    background-size: 100% 100%;
-                    background-image: url('./shop.png');
-                }
-            }
-            .s-con_right{
-                width: 75%;
-                height: 1.6rem;
-                padding-left: 0.2rem;
-                box-sizing: border-box;
-                display: flex;
-                flex-wrap: wrap;
-                align-content: space-around;
-                p{
-                    width: 100%;
-                    font-size: 0.26rem;
-                    color: #999999;
-                    letter-spacing: 0.002rem;
-                    &:nth-of-type(1){
-                        font-size: 0.32rem;
-                        color: #333333;
-                        letter-spacing: 0.0025rem;
-                        font-weight: 600;
-                        span{
-                            font-size: 0.26rem;
-                            color: #999999;
-                            font-weight: 400;
-                        }
-                    }
-                    .sp-b{
-                        font-family: DIN-Bold;
-                        font-size: 0.26rem;
-                        color: #333333;
-                        letter-spacing: 0.0023rem;
-                        font-weight: 600;
-                    }
-                }
+        display: flex;
+        align-items: center;
+        .s-con_left{
+            width: 1.6rem;
+            height: 1.6rem;
+            .l-img{
+                width: 100%;
+                height: 100%;
+                background-size: 100% 100%;
+                background-image: url('./shop.png');
             }
         }
-        .sing-foo{
-            height: 0.9rem;
-            padding: 0.18rem 0;
+        .s-con_right{
+            width: 75%;
+            height: 1.6rem;
+            padding-left: 0.2rem;
+            box-sizing: border-box;
             display: flex;
-            box-shadow: 0 -0.02rem 0 0 #EBEBEB;
-            flex-direction: row-reverse;
-            .foo-btn{
-                width: 1.5rem;
-                height: 0.56rem;
-                text-align: center;
-                line-height: 0.56rem;
-                border: 0.02rem solid #979797;
-                border-radius: 0.06rem;
+            flex-wrap: wrap;
+            align-content: space-around;
+            p{
+                width: 100%;
                 font-size: 0.26rem;
-                color: #999;
+                color: #999999;
+                letter-spacing: 0.002rem;
+                &:nth-of-type(1){
+                    font-size: 0.32rem;
+                    color: #333333;
+                    letter-spacing: 0.0025rem;
+                    font-weight: 600;
+                    span{
+                        font-size: 0.26rem;
+                        color: #999999;
+                        font-weight: 400;
+                    }
+                }
+                .sp-b{
+                    font-family: DIN-Bold;
+                    font-size: 0.26rem;
+                    color: #333333;
+                    letter-spacing: 0.0023rem;
+                    font-weight: 600;
+                }
             }
         }
+      }
+      .order-all{
+        font-size: 0.32rem;
+        color: #333;
+        margin-top: -0.3rem;
+        padding-bottom: 0.18rem;
+        text-align: right;
+      }
+      .sing-foo{
+        height: 0.9rem;
+        padding: 0.18rem 0;
+        display: flex;
+        border-top: 0.02rem solid #EBEBEB;
+        flex-direction: row-reverse;
+        .foo-btn{
+            width: 1.5rem;
+            height: 0.56rem;
+            text-align: center;
+            line-height: 0.56rem;
+            border: 0.02rem solid #979797;
+            border-radius: 0.06rem;
+            font-size: 0.26rem;
+            color: #999;
+        }
+      }
     }
   }
 

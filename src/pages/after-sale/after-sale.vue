@@ -96,16 +96,18 @@ export default {
       },
       refundAmount: '',
       orderDetailCode: '',
-      toCode: ''
+      toCode: '',
+      jfMount: ''
     };
   },
   created() {
     setTitle('售后');
     this.orderDetailCode = this.$route.query.code;
     this.toCode = this.$route.query.toCode;
+    this.jfMount = this.$route.query.jfMount || '';
     oneStoreOrder(this.orderDetailCode).then(data => {
       this.loading = false;
-      this.refundAmount = formatAmount(data.amount);
+      this.refundAmount = formatAmount(data.amount - this.jfMount);
     }, () => {
       this.loading = false;
     });
