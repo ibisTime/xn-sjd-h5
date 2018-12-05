@@ -75,6 +75,7 @@ export default {
       categorys: [{value: '全部', key: 'all'}],
       categorysSub: [{value: '全部', key: 'all'}],
       sellTypeObj: {},
+      projectStatusObj: {},
         // {value: '个人', key: '0'},
         // {value: '定向', key: '1'},
         // {value: '集体', key: '2'},
@@ -108,7 +109,8 @@ export default {
       item.canAdoptFlag = true;
       if(!this.userDetail.level) {
         item.canAdoptFlag = false;
-        item.noAdoptReason = '您未登录';
+        // item.noAdoptReason = '您未登录';
+        item.noAdoptReason = this.projectStatusObj[item.status];
         return item;
       }
       // 专属产品
@@ -284,8 +286,9 @@ export default {
         orderDir: 'asc',
         orderColumn: 'order_no',
         status: '1'
-      })
-    ]).then(([res1, res2]) => {
+      }),
+      getDictList('product_status')
+    ]).then(([res1, res2, res3]) => {
       res1.map((item) => {
         this.sellTypeObj[item.dkey] = item.dvalue;
       });
@@ -304,6 +307,9 @@ export default {
           this.index = index;
           this.currentIndex = index;
         }
+      });
+      res3.map((item) => {
+        this.projectStatusObj[item.dkey] = item.dvalue;
       });
       this.loading = false;
       this.getSubType();

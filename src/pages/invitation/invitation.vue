@@ -65,7 +65,7 @@
           }
           this.loading = false;
         }).catch(() => { this.loading = false; });
-      });
+      }).catch(() => { this.loading = false; });
     },
     methods: {
       go(url) {

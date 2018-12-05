@@ -82,7 +82,7 @@
             this.go(`/my-tree?aTCode=${item.code}`);
           } else {
             // this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
-            this.go(`my-tree?other=1&currentHolder=${item.currentHolder}&aTCode=${item.code}`);
+            this.go(`/my-tree?other=1&currentHolder=${item.currentHolder}&aTCode=${item.code}`);
           }
         } else {
           this.toastText = '您未登录';

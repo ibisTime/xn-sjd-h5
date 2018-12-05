@@ -13,7 +13,7 @@
           <img class="tit" src="./notice@2x.png">
           <div class="notice-wrap">
             <div class="border"></div>
-            <div class="title notice" v-for="item in noticeList" v-show="noticeList.length" @click="go(`/notice-detail?code=${item.code}`)">{{item.title}}</div>
+            <div class="title notice" v-for="item in noticeList" v-show="noticeList.length" @click="go(`/notice-detail?code=${item.code}`)">{{cut(item.title, 15)}}</div>
             <div class="title notice" v-show="!noticeList.length">暂无公告</div>
           </div>
           <div class="more" @click="go('/notices')">更多</div>
@@ -122,6 +122,7 @@ export default {
       noticeList: [],
       bulletinList: [],
       sellTypeObj: {},
+      projectStatusObj: {},
       signTpp: '0',
       signDays: 0,
       userDetail: {}
@@ -139,6 +140,13 @@ export default {
     },
     getWidth(item) {
       return (item.nowCount / item.raiseCount) * 100;
+    },
+    cut(str, num) {
+      if(str.length > num) {
+        return str.slice(0, num) + '...';
+      } else {
+        return str;
+      }
     },
     // 签到
     action() {
@@ -218,8 +226,9 @@ export default {
           orderDir: 'desc'
         }),
         // getBulletinList(),
-        getDictList('sell_type')
-      ]).then(([res1, res2, res3, res4, res5, res6]) => {
+        getDictList('sell_type'),
+        getDictList('product_status')
+      ]).then(([res1, res2, res3, res4, res5, res6, res7]) => {
         this.banners = res1;
         if(this.banners.length > 1) {
           this.loop = true;
@@ -239,13 +248,17 @@ export default {
         res6.map((item) => {
           this.sellTypeObj[item.dkey] = item.dvalue;
         });
+        res7.map((item) => {
+          this.projectStatusObj[item.dkey] = item.dvalue;
+        });
       }).catch(() => { this.loading = false; });
     },
     canAdopt(item) {
       item.canAdoptFlag = true;
       if(!this.userDetail.level) {
         item.canAdoptFlag = false;
-        item.noAdoptReason = '您未登录';
+        // item.noAdoptReason = '您未登录';
+        item.noAdoptReason = this.projectStatusObj[item.status];
         return item;
       }
       // 专属产品
