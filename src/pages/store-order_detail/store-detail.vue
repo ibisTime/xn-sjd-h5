@@ -50,7 +50,7 @@
               <div class="foo-con">
                   <p><span>下单时间</span>{{formatDate(orderDetail.applyDatetime)}}</p>
                   <p><span>订单号</span>{{orderDetail.code}}</p>
-                  <p><span>订单金额</span>¥{{orderDetail.status === '0' ? formatAmount(orderDetail.amount - orderDetail.postalFee) : formatAmount(orderDetail.payAmount - orderDetail.postalFee)}}{{orderDetail.cnyDeductAmount ? `+积分(￥${formatAmount(orderDetail.cnyDeductAmount)})` : ''}}{{orderDetail.postalFee > 0 ? `+邮费(￥${formatAmount(orderDetail.postalFee)})` : ''}}</p>
+                  <p><span>订单金额</span>¥{{formatAmount(orderDetail.payAmount)}}({{formatAmount(orderDetail.amount)}}{{orderDetail.cnyDeductAmount ? `-积分(￥${formatAmount(orderDetail.cnyDeductAmount)})` : ''}}{{orderDetail.postalFee > 0 ? `+邮费(￥${formatAmount(orderDetail.postalFee)})` : ''}})</p>
                   <p><span>卖家</span>{{orderDetail.sellersName}}</p>
                   <p><span>支付方式</span>{{payType[orderDetail.payType]}}</p>
                   <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
@@ -111,6 +111,7 @@ export default {
     this.pullUpLoad = null;
     this.code = this.$route.query.code;
     this.orderType = this.$route.query.type;
+    sessionStorage.removeItem('isokIndex');
     getDictList('commodity_order_detail_status').then(data => {
       data.forEach(item => {
         this.statusDetList.push({
