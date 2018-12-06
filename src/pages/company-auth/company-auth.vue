@@ -1,47 +1,148 @@
 <template>
   <transition name="slide">
     <div class="person-auth-wrapper">
-      <div class="form-wrapper">
-        <div class="form-item border-bottom-1px">
-          <div class="item-label">企业名称</div>
-          <div class="item-input-wrapper">
-            <input type="text" class="item-input" v-model="perConfig.companyName" name="name" v-validate="'required'" placeholder="请输入企业名称">
-            <span v-show="errors.has('name')" class="error-tip">{{errors.first('name')}}</span>
+      <Scroll :pullUpLoad="pullUpLoad">
+        <div class="form-wrapper">
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业名称</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyName" name="name" v-validate="'required'" placeholder="请输入企业名称(必填)">
+              <span v-show="errors.has('name')" class="error-tip">{{errors.first('name')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业地址</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyAddress" name="qydz" v-validate="'required'" placeholder="请输入企业地址(必填)">
+              <span v-show="errors.has('qydz')" class="error-tip">{{errors.first('qydz')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业法人姓名</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyChargerName" name="companyChargerName" v-validate="'required'" placeholder="请输入企业法人姓名(必填)">
+              <span v-show="errors.has('companyChargerName')" class="error-tip">{{errors.first('companyChargerName')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业法人联系方式</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyChargerMobile" name="companyChargerMobile" v-validate="'required'" placeholder="请输入企业法人联系方式(必填)">
+              <span v-show="errors.has('companyChargerMobile')" class="error-tip">{{errors.first('companyChargerMobile')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业法人身份证</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyChargerIdNo" name="companyChargerIdNo" v-validate="'required'" placeholder="请输入企业法人身份证(必填)">
+              <span v-show="errors.has('companyChargerIdNo')" class="error-tip">{{errors.first('companyChargerIdNo')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业联系人</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyContactName" name="lxr" v-validate="'required'" placeholder="请输入企业联系人(必填)">
+              <span v-show="errors.has('lxr')" class="error-tip">{{errors.first('lxr')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业联系人电话</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyContactMobile" name="companyContactMobile" v-validate="'required'" placeholder="请输入企业联系人电话(必填)">
+              <span v-show="errors.has('companyContactMobile')" class="error-tip">{{errors.first('companyContactMobile')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业联系人地址</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyContactAddress" name="license" v-validate="'required'" placeholder="请输入企业联系人地址(必填)">
+              <span v-show="errors.has('companyContactAddress')" class="error-tip">{{errors.first('companyContactAddress')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业开户行</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyBank" name="companyBank" v-validate="'required'" placeholder="请输入企业开户行(必填)">
+              <span v-show="errors.has('companyBank')" class="error-tip">{{errors.first('companyBank')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业开户行账号</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.companyBankNumber" name="companyBankNumber" v-validate="'required'" placeholder="请输入企业开户行账号(必填)">
+              <span v-show="errors.has('companyBankNumber')" class="error-tip">{{errors.first('companyBankNumber')}}</span>
+            </div>
+          </div>
+          <div class="form-item border-bottom-1px">
+            <div class="item-label">企业注册统一码</div>
+            <div class="item-input-wrapper">
+              <input type="text" class="item-input" v-model="perConfig.bussinessLicenseId" name="zctym" v-validate="'required'" placeholder="请输入企业注册统一码(必填)">
+              <span v-show="errors.has('zctym')" class="error-tip">{{errors.first('zctym')}}</span>
+            </div>
+          </div>
+          <div class="text">
+            <textarea v-model="perConfig.companyIntroduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="请输入企业简介(选填)"></textarea>
+          </div>
+          <div class="avatar-box">
+            <div class="avatar">
+              <img src="./rzz.png" v-show="photos.length === 0">
+              <img :src="formatImg(photos, 'zm')"/>
+              <qiniu
+                ref="qiniu"
+                style="visibility: hidden;position: absolute;"
+                :token="token"
+                :uploadUrl="uploadUrl"></qiniu>
+              <div class="input-box">
+                <input class="input-file"
+                       type="file"
+                       :multiple="multiple"
+                       ref="fileInput"
+                       @change="fileChange($event, 'zm')"
+                       accept="image/*"/>
+              </div>
+            </div>
+            <div class="avatar">
+              <img src="./rzf.png" v-show="photoFm.length === 0">
+              <img :src="formatImg(photoFm, 'fm')"/>
+              <qiniu
+                ref="qiniu"
+                style="visibility: hidden;position: absolute;"
+                :token="token"
+                :uploadUrl="uploadUrl"></qiniu>
+              <div class="input-box">
+                <input class="input-file"
+                       type="file"
+                       :multiple="multiple"
+                       ref="fileInput"
+                       @change="fileChange($event, 'fm')"
+                       accept="image/*"/>
+              </div>
+            </div>
+            <div class="avatar">
+              <img src="./yyzz.png" v-show="photoCm.length === 0">
+              <img :src="formatImg(photoCm, 'cm')"/>
+              <qiniu
+                ref="qiniu"
+                style="visibility: hidden;position: absolute;"
+                :token="token"
+                :uploadUrl="uploadUrl"></qiniu>
+              <div class="input-box">
+                <input class="input-file"
+                       type="file"
+                       :multiple="multiple"
+                       ref="fileInput"
+                       @change="fileChange($event, 'cm')"
+                       accept="image/*"/>
+              </div>
+            </div>
+          </div>
+          <div class="form-btn">
+            <button :disabled="setting" @click="saveMessage">保存</button>
           </div>
         </div>
-        <div class="form-item border-bottom-1px">
-          <div class="item-label">营业执照号</div>
-          <div class="item-input-wrapper">
-            <input type="text" class="item-input" v-model="perConfig.bussinessLicenseId" name="license" v-validate="'required'" placeholder="请输入营业执照号">
-            <span v-show="errors.has('license')" class="error-tip">{{errors.first('license')}}</span>
-          </div>
-        </div>
-        <div class="text">
-          <textarea v-model="perConfig.companyIntroduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="请输入企业简介"></textarea>
-        </div>
-        <div class="avatar">
-          <img :src="formatImg(item.key)" v-for="(item, index) in photos" class="avatar-photos" ref="myImg" @click="choseItem(index)"/>
-          <img src="./upload@2x.png" v-show="photos.length === 0">
-          <qiniu
-            ref="qiniu"
-            style="visibility: hidden;position: absolute;"
-            :token="token"
-            :uploadUrl="uploadUrl"></qiniu>
-          <div class="input-box">
-            <input class="input-file"
-                   type="file"
-                   :multiple="multiple"
-                   ref="fileInput"
-                   @change="fileChange($event)"
-                   accept="image/*"/>
-          </div>
-        </div>
-        <div class="form-btn">
-          <button :disabled="setting" @click="saveMessage">保存</button>
-        </div>
-        <full-loading v-show="showLoading"></full-loading>
-        <toast ref="toast" :text="toastText"></toast>
-      </div>
+      </Scroll>
+      <full-loading v-show="showLoading"></full-loading>
+      <toast ref="toast" :text="toastText"></toast>
     </div>
   </transition>
 </template>
@@ -49,6 +150,7 @@
   import CityPicker from 'base/city-picker/city-picker';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
+  import Scroll from 'base/scroll/scroll';
   import MHeader from 'components/m-header/m-header';
   import { getQiniuToken } from 'api/general';
   import { comCertification, getUser } from 'api/user';
@@ -69,14 +171,27 @@
         isAlert: true,
         toastText: '',
         photos: [],
+        photoFm: [],
+        photoCm: [],
         token: '',
         uploadUrl: 'http://up-z0.qiniu.com',
         multiple: false,
         perConfig: {
-          bussinessLicenseId: '',
-          bussinessLicense: '',
-          companyIntroduce: '',
-          companyName: '',
+          bussinessLicenseId: '',   // 企业注册统一码
+          bussinessLicense: '',  // 营业执照
+          companyAddress: '',    // 企业地址
+          companyBank: '',       // 企业开户行
+          companyBankNumber: '',  // 企业开户行账号
+          companyChargerBackIdPic: '', // 企业法人身份证反面
+          companyChargerIdNo: '',   // 企业法人身份证
+          companyChargerIdPic: '',  // 企业法人身份证正面
+          companyChargerMobile: '',  // 企业法人联系方式
+          companyChargerName: '',    // 企业法人姓名
+          companyContactAddress: '',  // 企业联系人地址
+          companyContactMobile: '',   // 企业联系人电话
+          companyContactName: '',    // 企业联系人
+          companyName: '',       // 企业名称
+          companyIntroduce: '',  // 企业简介
           userId: getUserId()
         },
         pramStatus: ''
@@ -84,6 +199,7 @@
     },
     created() {
       setTitle('企业认证');
+      this.pullUpLoad = null;
       this.pramStatus = this.$route.query.pramStatus;
       Promise.all([
         getQiniuToken(),
@@ -91,22 +207,43 @@
       ]).then(([res1, res2]) => {
         this.token = res1.uploadToken;
         if(this.pramStatus === '1') {
-          this.photos.push({key: res2.userExt.bussinessLicense});
+          this.photos.push({key: res2.userExt.companyChargerIdPic});
+          this.photoFm.push({key: res2.userExt.companyChargerBackIdPic});
+          this.photoCm.push({key: res2.userExt.bussinessLicense});
           this.perConfig.bussinessLicenseId = res2.userExt.bussinessLicenseId;
-          this.perConfig.companyIntroduce = res2.userExt.companyIntroduce;
+          this.perConfig.companyAddress = res2.userExt.companyAddress;
+          this.perConfig.companyBank = res2.userExt.companyBank;
+          this.perConfig.companyBankNumber = res2.userExt.companyBankNumber;
+          this.perConfig.companyChargerIdNo = res2.userExt.companyChargerIdNo;
+          this.perConfig.companyChargerMobile = res2.userExt.companyChargerMobile;
+          this.perConfig.companyChargerName = res2.userExt.companyChargerName;
+          this.perConfig.companyContactAddress = res2.userExt.companyContactAddress;
+          this.perConfig.companyContactMobile = res2.userExt.companyContactMobile;
+          this.perConfig.companyContactName = res2.userExt.companyContactName;
           this.perConfig.companyName = res2.userExt.companyName;
+          this.perConfig.companyIntroduce = res2.userExt.companyIntroduce;
         }
       }).catch(() => {});
     },
     methods: {
-      formatImg(key) {
-        this.perConfig.bussinessLicense = key;
-        return formatImg(key);
+      formatImg(photos, type) {
+        if(photos.length > 0) {
+          if(type === 'zm') {
+            this.perConfig.companyChargerIdPic = photos[0].key;
+          }
+          if(type === 'fm') {
+            this.perConfig.companyChargerBackIdPic = photos[0].key;
+          }
+          if(type === 'cm') {
+            this.perConfig.bussinessLicense = photos[0].key;
+          }
+          return formatImg(photos[0].key);
+        }
       },
       /**
        * 从相册中选择图片
        * */
-      fileChange(e) {
+      fileChange(e, type) {
         let files;
         if (e.dataTransfer) {
           files = e.dataTransfer.files;
@@ -136,7 +273,15 @@
                 ok: true
               };
               if(item.ok === true) {
-                self.photos = [item];
+                if(type === 'zm') {
+                  self.photos = [item];
+                }
+                if(type === 'fm') {
+                  self.photoFm = [item];
+                }
+                if(type === 'cm') {
+                  self.photoCm = [item];
+                }
               }
               self.updatePhotos(item);
             }).catch(err => {
@@ -172,8 +317,18 @@
       },
       saveMessage() {
         if(this.perConfig.bussinessLicenseId === '' ||
+          this.perConfig.companyAddress === '' ||
+          this.perConfig.companyBank === '' ||
+          this.perConfig.companyBankNumber === '' ||
+          this.perConfig.companyChargerBackIdPic === '' ||
+          this.perConfig.companyChargerIdNo === '' ||
+          this.perConfig.companyChargerIdPic === '' ||
+          this.perConfig.companyChargerMobile === '' ||
+          this.perConfig.companyChargerName === '' ||
           this.perConfig.bussinessLicense === '' ||
-          this.perConfig.companyIntroduce === '' ||
+          this.perConfig.companyContactAddress === '' ||
+          this.perConfig.companyContactMobile === '' ||
+          this.perConfig.companyContactName === '' ||
           this.perConfig.companyName === '') {
           this.toastText = '请填写完整';
           this.$refs.toast.show();
@@ -196,6 +351,7 @@
       CityPicker,
       FullLoading,
       Toast,
+      Scroll,
       MHeader,
       Qiniu
     }
@@ -203,13 +359,10 @@
 </script>
 <style lang="scss" scoped rel="stylesheet/scss">
   @import "~common/scss/variable";
-
   .person-auth-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
+    padding-bottom: 0.5rem;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     background-color: #fff;;
     .form-wrapper {
       padding: 0rem 0.3rem;
@@ -219,6 +372,8 @@
         }
         .item-label {
           padding: 0;
+          line-height: 1.4;
+          font-size: 0.28rem;
         }
         .item-input-wrapper {
           padding-right: 0;
@@ -236,67 +391,52 @@
         border-bottom: 1px solid $color-border;
         .item-input {
           padding: 0.05rem 0.1rem;
-          min-height: 3rem !important;
+          min-height: 2rem !important;
           font-size: 0.3rem;
           color: #333;
           width: 100%;
         }
       }
+      .avatar-box{
+        text-align: center;
+      }
       .avatar {
         position: relative;
-        padding: 0.3rem;
+        display: inline-block;
+        margin-top: 0.3rem;
         font-size: 0;
-        width: 1.6rem;
-        height: 1.6rem;
-        .avatar-photos {
+        width: 1.8rem;
+        height: 1.8rem;
+        img {
           position: absolute;
           left: 0;
           top: 0;
-          width: 100%;
           z-index: 1;
           margin: 0.35rem 0.3rem 0 0;
-          vertical-align: bottom;
-        }
-        img {
-          /*width: 1.6rem;*/
-          /*height: 1.6rem;*/
-          /*margin: 0.35rem 0.3rem 0 0;*/
-          /*vertical-align: bottom;*/
-          width: 1.6rem;
-          height: 1.6rem;
-          /* margin: 0.35rem 0.3rem 0 0; */
+          width: 1.8rem;
+          height: 1.8rem;
           vertical-align: bottom;
           float: left;
-          /* position: absolute; */
-          /* left: 0; */
-          z-index: 32;
           top: 0;
         }
         .input-box {
           display: inline-block;
           position: absolute;
           width: 100%;
-          left: 0;
-          top: 0;
-          z-index: 9;
+          left: 0rem;
+          top: 0.4rem;
+          z-index: 99;
           opacity: 0;
           background-color: transparent;
           .input-file {
-            /*width: 1.6rem;*/
-            /*height: 1.6rem;*/
-            /*background: url("./upload@2x.png") no-repeat;*/
-            /*background-size: 100% 100%;*/
-            /*font-size: 0;*/
-            width: 1.6rem;
-            height: 1.6rem;
-            /* background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAAAXNSR…4DLF+LuRQIl+NhHIW6HReVShmFyYDddmm3zSa+mpqaN/8H23Hj+bUf5sYAAAAASUVORK5CYII=) no-repeat; */
-            /*background-size: 100% 100%;*/
+            width: 1.8rem;
+            height: 1.8rem;
             font-size: 0;
-            /* float: left; */
-            z-index: 44;
+            opacity: 0;
             position: absolute;
             left: 0;
-            opacity: 0;
+            top: 0;
+            z-index: 999;
           }
         }
       }

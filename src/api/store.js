@@ -185,3 +185,8 @@ export function orderDetail(config) {
 export function orderPostage(config) {
   return fetch(629801, config);
 }
+
+// 清除未读消息
+export function clearMsg(config) {
+  return fetch(629789, config);
+}

@@ -19,21 +19,40 @@
         <div class="text">
           <textarea v-model="perConfig.introduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="说些什么吧，这会在您的空间内展示"></textarea>
         </div>
-        <div class="avatar">
-          <img :src="formatImg(item.key)" v-for="(item, index) in photos" class="avatar-photos" ref="myImg" @click="choseItem(index)"/>
-          <img src="./upload@2x.png" v-show="photos.length === 0">
-          <qiniu
-            ref="qiniu"
-            style="visibility: hidden;position: absolute;"
-            :token="token"
-            :uploadUrl="uploadUrl"></qiniu>
-          <div class="input-box">
-            <input class="input-file"
-                   type="file"
-                   :multiple="multiple"
-                   ref="fileInput"
-                   @change="fileChange($event)"
-                   accept="image/*"/>
+        <div class="avatar-box">
+          <div class="avatar">
+            <img src="./rzz.png" v-show="photos.length === 0">
+            <img :src="formatImg(photos, 'zm')"/>
+            <qiniu
+              ref="qiniu"
+              style="visibility: hidden;position: absolute;"
+              :token="token"
+              :uploadUrl="uploadUrl"></qiniu>
+            <div class="input-box">
+              <input class="input-file"
+                     type="file"
+                     :multiple="multiple"
+                     ref="fileInput"
+                     @change="fileChange($event, 'zm')"
+                     accept="image/*"/>
+            </div>
+          </div>
+          <div class="avatar">
+            <img src="./rzf.png" v-show="photoFm.length === 0">
+            <img :src="formatImg(photoFm, 'fm')"/>
+            <qiniu
+              ref="qiniu"
+              style="visibility: hidden;position: absolute;"
+              :token="token"
+              :uploadUrl="uploadUrl"></qiniu>
+            <div class="input-box">
+              <input class="input-file"
+                     type="file"
+                     :multiple="multiple"
+                     ref="fileInput"
+                     @change="fileChange($event, 'fm')"
+                     accept="image/*"/>
+            </div>
           </div>
         </div>
         <div class="form-btn">
@@ -69,12 +88,14 @@
         isAlert: true,
         toastText: '',
         photos: [],
+        photoFm: [],
         token: '',
         uploadUrl: 'http://up-z0.qiniu.com',
         multiple: false,
         perConfig: {
           idNo: '',
-          idPic: '',
+          idPic: '',  // 正面
+          backIdPic: '', // 反面
           introduce: '',
           realName: '',
           userId: getUserId()
@@ -92,6 +113,7 @@
         this.token = res1.uploadToken;
         if(this.perStatus === '1') {
           this.photos.push({key: res2.userExt.idPic});
+          this.photoFm.push({key: res2.userExt.backIdPic});
           this.perConfig.idNo = res2.idNo;
           this.perConfig.introduce = res2.userExt.introduce;
           this.perConfig.realName = res2.realName;
@@ -100,14 +122,21 @@
       }).catch(() => {});
     },
     methods: {
-      formatImg(key) {
-        this.perConfig.idPic = key;
-        return formatImg(key);
+      formatImg(photos, type) {
+        if(photos.length > 0) {
+          if(type === 'zm') {
+            this.perConfig.idPic = photos[0].key;
+          }
+          if(type === 'fm') {
+            this.perConfig.backIdPic = photos[0].key;
+          }
+          return formatImg(photos[0].key);
+        }
       },
       /**
        * 从相册中选择图片
        * */
-      fileChange(e) {
+      fileChange(e, type) {
         let files;
         if (e.dataTransfer) {
           files = e.dataTransfer.files;
@@ -137,7 +166,11 @@
                 ok: true
               };
               if(item.ok === true) {
-                self.photos = [item];
+                if(type === 'zm') {
+                  self.photos = [item];
+                }else {
+                  self.photoFm = [item];
+                }
               }
               self.updatePhotos(item);
             }).catch(err => {
@@ -173,6 +206,7 @@
       },
       saveMessage() {
         if(this.perConfig.idPic === '' ||
+          this.perConfig.backIdPic === '' ||
           this.perConfig.idNo === '' ||
           this.perConfig.realName === '' ||
           this.perConfig.introduce === '') {
@@ -214,7 +248,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     background-color: #fff;;
     .form-wrapper {
       padding: 0rem 0.3rem;
@@ -250,61 +284,47 @@
           width: 100%;
         }
       }
+      .avatar-box{
+        text-align: center;
+      }
       .avatar {
         position: relative;
-        padding: 0.3rem;
+        display: inline-block;
+        margin: 0 0.3rem;
+        margin-top: 0.3rem;
         font-size: 0;
-        width: 1.6rem;
-        height: 1.6rem;
-        .avatar-photos {
+        width: 2rem;
+        height: 2rem;
+        img {
           position: absolute;
           left: 0;
           top: 0;
-          width: 100%;
           z-index: 1;
           margin: 0.35rem 0.3rem 0 0;
-          vertical-align: bottom;
-        }
-        img {
-          /*width: 1.6rem;*/
-          /*height: 1.6rem;*/
-          /*margin: 0.35rem 0.3rem 0 0;*/
-          /*vertical-align: bottom;*/
-          width: 1.6rem;
-          height: 1.6rem;
-          /* margin: 0.35rem 0.3rem 0 0; */
+          width: 2rem;
+          height: 2rem;
           vertical-align: bottom;
           float: left;
-          /* position: absolute; */
-          /* left: 0; */
-          z-index: 32;
           top: 0;
         }
         .input-box {
           display: inline-block;
           position: absolute;
           width: 100%;
-          left: 0;
-          top: 0;
-          z-index: 9;
+          left: 0rem;
+          top: 0.4rem;
+          z-index: 99;
           opacity: 0;
           background-color: transparent;
           .input-file {
-            /*width: 1.6rem;*/
-            /*height: 1.6rem;*/
-            /*background: url("./upload@2x.png") no-repeat;*/
-            /*background-size: 100% 100%;*/
-            /*font-size: 0;*/
-            width: 1.6rem;
-            height: 1.6rem;
-            /* background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAAAXNSR…4DLF+LuRQIl+NhHIW6HReVShmFyYDddmm3zSa+mpqaN/8H23Hj+bUf5sYAAAAASUVORK5CYII=) no-repeat; */
-            /*background-size: 100% 100%;*/
+            width: 2rem;
+            height: 2rem;
             font-size: 0;
-            /* float: left; */
-            z-index: 44;
+            opacity: 0;
             position: absolute;
             left: 0;
-            opacity: 0;
+            top: 0;
+            z-index: 999;
           }
         }
       }

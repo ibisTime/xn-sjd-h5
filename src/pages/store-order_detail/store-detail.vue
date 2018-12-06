@@ -273,26 +273,26 @@ export default {
         if(data.status === '3' || data.status === '4') {
           this.ispj = true;
           data.detailList.forEach((item, index) => {
-            switch(item.status) {
-              case '0':
-                this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn after-sale set-btn">申请售后</div>`);
-                break;
-              case '1':
-                this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
-                break;
-              case '2':
-                this.orderStuTxt = '售后中';
-                this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
-                break;
-              case '3':
-                this.orderStuTxt = '售后完成';
-                this.wcOperHtml.push(`<div class="foo-btn">售后完成</div>`);
-                break;
-            }
-            if(item.status === '0') {
-
+            if(item.afterSaleStatus && item.status === '0') {
+              switch(item.afterSaleStatus) {
+                case '2':
+                  this.orderStuTxt = '售后中';
+                  this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
+                  break;
+                case '3':
+                  this.orderStuTxt = '售后完成';
+                  this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn">售后完成</div>`);
+                  break;
+              }
             }else {
-
+              switch(item.status) {
+                case '0':
+                  this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn after-sale set-btn">申请售后</div>`);
+                  break;
+                case '1':
+                  this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
+                  break;
+              }
             }
           });
         }else {
