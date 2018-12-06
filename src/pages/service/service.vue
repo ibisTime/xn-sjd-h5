@@ -45,7 +45,7 @@ import Toast from 'base/toast/toast';
 import { setTitle, getUserId, formatDate, isUnDefined, formatImg } from 'common/js/util';
 import fetch from 'common/js/fetch';
 import { getUser } from 'api/user';
-import { readMessage, replyMessage } from 'api/store';
+import { readMessage, replyMessage, clearMsg } from 'api/store';
 
 export default {
   data() {
@@ -66,15 +66,29 @@ export default {
         content: '',
         userId: getUserId()
       },
-      user2: ''
+      user2: '',
+      msgCode: '',
+      clearMsgConfig: {
+        user1: getUserId(),
+        user2: '',
+        code: ''
+      }
     };
   },
   created() {
     setTitle('客服');
     this.user2 = this.$route.query.user2;
+    this.msgCode = this.$route.query.code || '';
     this.pullUpLoad = null;
     this.probeType = 3;
     this.listenScroll = true;
+    if(this.msgCode) {
+      this.clearMsgConfig.code = this.msgCode;
+      this.clearMsgConfig.user2 = this.user2;
+      clearMsg(this.clearMsgConfig).then(data => {
+        console.log(data);
+      });
+    }
     Promise.all([
       this.getPageMsg(),
       getUser()

@@ -50,7 +50,7 @@
               <div class="foo-con">
                   <p><span>下单时间</span>{{formatDate(orderDetail.applyDatetime)}}</p>
                   <p><span>订单号</span>{{orderDetail.code}}</p>
-                  <p><span>订单金额</span>¥{{orderDetail.status === '0' ? formatAmount(orderDetail.amount - orderDetail.postalFee) : formatAmount(orderDetail.payAmount - orderDetail.postalFee)}}{{orderDetail.cnyDeductAmount ? `+积分(￥${formatAmount(orderDetail.cnyDeductAmount)})` : ''}}{{orderDetail.postalFee > 0 ? `+邮费(￥${formatAmount(orderDetail.postalFee)})` : ''}}</p>
+                  <p><span>订单金额</span>¥{{formatAmount(orderDetail.payAmount)}}({{formatAmount(orderDetail.amount)}}{{orderDetail.cnyDeductAmount ? `-积分(￥${formatAmount(orderDetail.cnyDeductAmount)})` : ''}}{{orderDetail.postalFee > 0 ? `+邮费(￥${formatAmount(orderDetail.postalFee)})` : ''}})</p>
                   <p><span>卖家</span>{{orderDetail.sellersName}}</p>
                   <p><span>支付方式</span>{{payType[orderDetail.payType]}}</p>
                   <p><span>支付流水号</span>{{orderDetail.jourCode}}</p>
@@ -111,6 +111,7 @@ export default {
     this.pullUpLoad = null;
     this.code = this.$route.query.code;
     this.orderType = this.$route.query.type;
+    sessionStorage.removeItem('isokIndex');
     getDictList('commodity_order_detail_status').then(data => {
       data.forEach(item => {
         this.statusDetList.push({
@@ -273,26 +274,26 @@ export default {
         if(data.status === '3' || data.status === '4') {
           this.ispj = true;
           data.detailList.forEach((item, index) => {
-            switch(item.status) {
-              case '0':
-                this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn after-sale set-btn">申请售后</div>`);
-                break;
-              case '1':
-                this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
-                break;
-              case '2':
-                this.orderStuTxt = '售后中';
-                this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
-                break;
-              case '3':
-                this.orderStuTxt = '售后完成';
-                this.wcOperHtml.push(`<div class="foo-btn">售后完成</div>`);
-                break;
-            }
-            if(item.status === '0') {
-
+            if(item.afterSaleStatus && item.status === '0') {
+              switch(item.afterSaleStatus) {
+                case '2':
+                  this.orderStuTxt = '售后中';
+                  this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
+                  break;
+                case '3':
+                  this.orderStuTxt = '售后完成';
+                  this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn">售后完成</div>`);
+                  break;
+              }
             }else {
-
+              switch(item.status) {
+                case '0':
+                  this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn after-sale set-btn">申请售后</div>`);
+                  break;
+                case '1':
+                  this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
+                  break;
+              }
             }
           });
         }else {

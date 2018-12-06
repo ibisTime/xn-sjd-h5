@@ -130,6 +130,9 @@ export default {
     this.code = this.$route.query.code;
     sessionStorage.removeItem('storetype');
     this.setRess = JSON.parse(sessionStorage.getItem('setRess')) || '';
+    if(!this.setRess) {
+      sessionStorage.removeItem('isokIndex');
+    }
     this.inventory = sessionStorage.getItem('inventory');
     this.shopMsgList = JSON.parse(sessionStorage.getItem('shopMsgList'));
     if(!this.shopMsgList) {
@@ -288,6 +291,9 @@ export default {
     FullLoading,
     Toast,
     Scroll
+  },
+  beforeDestroy() {
+    sessionStorage.removeItem('setRess');
   }
 };
 </script>
