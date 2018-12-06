@@ -131,9 +131,6 @@ export default {
     sessionStorage.removeItem('storetype');
     this.setRess = JSON.parse(sessionStorage.getItem('setRess')) || '';
     this.inventory = sessionStorage.getItem('inventory');
-    if(this.setRess) {
-      this.postageConfig.addressCode = this.setRess.code;
-    }
     this.shopMsgList = JSON.parse(sessionStorage.getItem('shopMsgList'));
     if(!this.shopMsgList) {
       this.go('/mall');
@@ -154,15 +151,6 @@ export default {
         this.totalPrice += item.amount;
       }
     });
-    if(this.postageConfig.addressCode) {
-      orderPostage(this.postageConfig).then(data => {
-        this.postalFee = data.postalFee;
-        let all = this.totalPrice + this.postalFee;
-        this.totalPrice = formatAmount(all);
-      });
-    }else{
-      this.totalPrice = formatAmount(this.totalPrice);
-    }
     Promise.all([
       getAddressList(), // 地址
       getUser(),
@@ -179,6 +167,14 @@ export default {
           this.defaultSite = this.setRess;
         }
       });
+      this.postageConfig.addressCode = this.defaultSite.code;
+      if(this.postageConfig.addressCode) {
+        orderPostage(this.postageConfig).then(data => {
+          this.postalFee = data.postalFee;
+          let all = this.totalPrice + this.postalFee;
+          this.totalPrice = formatAmount(all);
+        });
+      }
       this.config.specsId = this.shopMsgList[0].specsId;
       if(this.shopMsgList.length === 1 && this.shopMsgList[0].setPrice) {
         this.setPrice = this.shopMsgList[0].setPrice;

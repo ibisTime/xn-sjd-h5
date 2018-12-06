@@ -175,6 +175,7 @@
             // });
             this.addressList.splice(this.deleteIndex, 1);
             if(this.deleteIndex === this.isokIndex) {
+              this.isokIndex = -1;
               sessionStorage.removeItem('isokIndex');
               sessionStorage.removeItem('setRess');
             }
@@ -200,6 +201,7 @@
           }else {
             this.text = '操作成功';
             this.$refs.toast.show();
+            // sessionStorage.removeItem('setRess');
             setTimeout(() => {
               this.go(this.toBank);
             }, 1000);
@@ -226,9 +228,6 @@
       FullLoading,
       NoResult,
       MHeader
-    },
-    beforeDestroy() {
-      sessionStorage.removeItem('isokIndex');
     }
   };
 </script>
