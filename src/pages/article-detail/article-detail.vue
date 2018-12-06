@@ -40,6 +40,7 @@
   import MHeader from 'components/m-header/m-header';
   import FullLoading from 'base/full-loading/full-loading';
   import { getArticleDetail, getArticleDz, getArticleSc, isArticleSc, isArticleDz, share, readArticle } from 'api/biz';
+  import { getUserDetail } from 'api/user';
   import { setTitle, formatDate, formatImg, getUserId } from 'common/js/util';
   import {initShare} from 'common/js/weixin';
 
@@ -67,11 +68,24 @@
         context: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
       };
     },
+    // created() {
+    //   this.userReferee = this.$route.query.userReferee;
+    //   this.code = this.$route.query.code;
+    //   if(this.userReferee) {
+    //     this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
+    //   }
+    // },
     mounted() {
       setTitle('文章详情');
+      this.userReferee = this.$route.query.userReferee;
+      this.code = this.$route.query.code;
+      if(this.userReferee && !getUserId()) {
+        this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
+      }
       this.isWxConfiging = false;
       this.wxData = null;
       this.code = this.$route.query.code;
+      this.userReferee = this.$route.query.userReferee;
       this.config.code = this.code;
       this.isConfig.code = this.code;
       this.loading = true;
@@ -86,7 +100,7 @@
         this.collectCount = +res.collectCount;
         this.detail.photolist = this.detail.photo.split('||');
         this.contextList = this.detail.content.split(/\n/);
-        if(!this.isWxConfiging && !this.wxData) {
+        if(!this.isWxConfiging && !this.wxData && getUserId()) {
           this.getInitWXSDKConfig();
         }
         this.loading = false;
@@ -211,40 +225,42 @@
       },
       getInitWXSDKConfig() {
         this.loading = true;
-        initShare({
-          title: '氧林',
-          desc: this.detail.title,
-          link: location.href.split('#')[0] + '/#/article-detail?code=' + this.code,
-          imgUrl: formatImg(this.detail.photo.split('||')[0]),
-          success: (res) => {
-            this.channel = '';
-            if(res.errMsg.indexOf('sendAppMessage') !== -1) {
-              this.channel = 0;
-            } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
-              this.channel = 1;
-            } else if(res.errMsg.indexOf('shareQQ') !== -1) {
-              this.channel = 2;
-            } else if(res.errMsg.indexOf('shareQZone') !== -1) {
-              this.channel = 3;
+        getUserDetail({userId: getUserId()}).then((res) => {
+          initShare({
+            title: this.detail.title,
+            desc: this.detail.content,
+            link: location.href.split('#')[0] + '/#/article-detail?code=' + this.code + '&userReferee=' + res.mobile + '&type=U',
+            imgUrl: formatImg(this.detail.photo.split('||')[0]) || 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
+            success: (res) => {
+              this.channel = '';
+              if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+                this.channel = 0;
+              } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+                this.channel = 1;
+              } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+                this.channel = 2;
+              } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+                this.channel = 3;
+              }
+              if(getUserId()) {
+                share(this.channel, '文章').then((res) => {
+                  if(res.code) {
+                    this.text = '分享成功';
+                    this.$refs.toast.show();
+                  }
+                }).then(() => { });
+              }
             }
-            if(getUserId()) {
-              share(this.channel, '文章').then((res) => {
-                if(res.code) {
-                  this.text = '分享成功';
-                  this.$refs.toast.show();
-                }
-              }).then(() => { });
-            }
-          }
-        }, (data) => {
-          this.isWxConfiging = false;
-          this.wxData = data;
-          this.loading = false;
-        }, (msg) => {
-          alert(msg);
-          this.isWxConfiging = false;
-          this.wxData = null;
-          this.loading = false;
+          }, (data) => {
+            this.isWxConfiging = false;
+            this.wxData = data;
+            this.loading = false;
+          }, (msg) => {
+            alert(msg);
+            this.isWxConfiging = false;
+            this.wxData = null;
+            this.loading = false;
+          });
         });
       },
       readArticle() {

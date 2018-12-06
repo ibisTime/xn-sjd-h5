@@ -131,7 +131,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getBookingProDetail, share } from 'api/biz';
@@ -278,9 +278,9 @@ export default {
     getInitWXSDKConfig() {
       this.loading = true;
       initShare({
-        title: '氧林',
-        desc: this.detail.name,
-        link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code,
+        title: this.detail.name,
+        desc: '提前订制，专属美味',
+        link: location.href.split('#')[0] + '/#/booking-product-list/booking-product-detail?code=' + this.code + '&userReferee=' + this.userDetail.mobile + '&type=U',
         imgUrl: formatImg(this.detail.listPic),
         success: (res) => {
           this.channel = '';
@@ -313,6 +313,10 @@ export default {
     }
   },
   mounted() {
+    this.userReferee = this.$route.query.userReferee;
+    if(this.userReferee && !getUserId()) {
+      this.$router.push(`/register?userReferee=${this.userReferee}&type=U&back=1`);
+    }
     this.isWxConfiging = false;
     this.wxData = null;
     this.pullUpLoad = null;

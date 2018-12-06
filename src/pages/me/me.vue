@@ -6,7 +6,7 @@
         <div class="in-content">
           <div :class="['card',getUserId() ? '' : 'card-bg']">
             <div class="info" @click="go('/settings')" v-if="getUserId()">
-              <img :src="src" class="head">
+              <img :src="src" class="head" @click.stop="go(`/userAvatar`)">
               <div class="text">
                 <p><span>{{cut(userDetail.nickname,6) || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>
                 <p class="mobile">{{userDetail.mobile}}</p>

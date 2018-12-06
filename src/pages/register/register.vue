@@ -93,6 +93,7 @@
             this.loadText = '注册中...';
             this.userReferee = this.$route.query.userReferee;
             this.type = this.$route.query.type;
+            this.back = this.$route.query.back;
             register({
               mobile: this.mobile,
               loginPwd: this.pwd,
@@ -110,9 +111,15 @@
                   this.text = '注册成功，已为您自动登录';
                   this.$refs.toast.show();
                   this.loading = false;
-                  setTimeout(() => {
-                    this.$router.replace('/home');
-                  }, 1000);
+                  if(this.back) {
+                    setTimeout(() => {
+                      this.$router.back();
+                    }, 1000);
+                  } else {
+                    setTimeout(() => {
+                      this.$router.replace('/home');
+                    }, 1000);
+                  }
                 }).catch(() => {
                   this.loading = false;
                 });

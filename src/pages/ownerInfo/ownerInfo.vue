@@ -103,7 +103,7 @@ export default {
     this.userId = getCookie('userId');
     this.code = this.$route.query.code;
     this.loading = true;
-    setTitle('预售详情');
+    setTitle('产权信息');
     Promise.all([
       getBookingProDetail({
         code: this.code

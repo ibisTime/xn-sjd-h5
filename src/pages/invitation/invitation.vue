@@ -73,38 +73,40 @@
       },
       getInitWXSDKConfig() {
         this.loading = true;
-        initShare({
-          title: '氧林',
-          desc: '邀请好友',
-          link: location.href.split('#')[0] + '/#/invitation?userId=' + getUserId(),
-          imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
-          success: (res) => {
-            this.channel = '';
-            if(res.errMsg.indexOf('sendAppMessage') !== -1) {
-              this.channel = 0;
-            } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
-              this.channel = 1;
-            } else if(res.errMsg.indexOf('shareQQ') !== -1) {
-              this.channel = 2;
-            } else if(res.errMsg.indexOf('shareQZone') !== -1) {
-              this.channel = 3;
-            }
-            share(this.channel, '邀请有礼').then((res) => {
-              if(res.code) {
-                this.text = '分享成功';
-                this.$refs.toast.show();
+        getUserDetail({userId: getUserId()}).then((res) => {
+          initShare({
+            title: '注册氧林，体验氧圈生活',
+            desc: '注册氧林的新用户，开启我的氧圈生活',
+            link: location.href.split('#')[0] + '/#/register?userReferee=' + res.mobile + '&type=U',
+            imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
+            success: (res) => {
+              this.channel = '';
+              if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+                this.channel = 0;
+              } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+                this.channel = 1;
+              } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+                this.channel = 2;
+              } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+                this.channel = 3;
               }
-            }).then(() => {});
-          }
-        }, (data) => {
-          this.isWxConfiging = false;
-          this.wxData = data;
-          this.loading = false;
-        }, (msg) => {
-          alert(msg);
-          this.isWxConfiging = false;
-          this.wxData = null;
-          this.loading = false;
+              share(this.channel, '邀请有礼').then((res) => {
+                if(res.code) {
+                  this.text = '分享成功';
+                  this.$refs.toast.show();
+                }
+              }).then(() => {});
+            }
+          }, (data) => {
+            this.isWxConfiging = false;
+            this.wxData = data;
+            this.loading = false;
+          }, (msg) => {
+            alert(msg);
+            this.isWxConfiging = false;
+            this.wxData = null;
+            this.loading = false;
+          });
         });
       }
     },

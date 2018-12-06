@@ -23,10 +23,11 @@
   const QRCode = require('js-qrcode');
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import {setTitle} from 'common/js/util';
+  import {setTitle, getUserId} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import {initShare} from 'common/js/weixin';
-  import { share } from 'api/biz';
+  import { share, getDeriveZichanDetail } from 'api/biz';
+  import { getUserDetail } from 'api/user';
 
   export default {
     data() {
@@ -43,7 +44,12 @@
     },
     mounted() {
       setTitle('二维码转让');
+      this.userReferee = this.$route.query.userReferee;
+      if(this.userReferee && !getUserId()) {
+        this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
+      }
       this.code = this.$route.query.code;
+      this.price = this.$route.query.price;
       this.isWxConfiging = false;
       this.wxData = null;
       this.userId = getCookie('userId') || this.$route.query.userId;
@@ -62,48 +68,63 @@
         foreground: '#000000'
       });
       qr.make(this.url);
-      if(!this.isWxConfiging && !this.wxData) {
+      if(!this.isWxConfiging && !this.wxData && getUserId()) {
         this.getInitWXSDKConfig();
       }
       this.loading = false;
     },
     methods: {
+      jiami(mobile) {
+        return mobile.substr(0, 3) + '****' + mobile.substr(7);
+      },
       go(url) {
         this.$router.push(url);
       },
+      getUserDetail() {
+        getUserDetail({userId: getUserId()}).then((res) => {
+          this.userDetail = res;
+        }).catch(() => {});
+      },
       getInitWXSDKConfig() {
         this.loading = true;
-        initShare({
-          title: '氧林',
-          desc: '二维码转让',
-          link: location.href.split('#')[0] + '/#/consignment-hall/consignment-product-detail?buy=1&code=' + this.code,
-          imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
-          success: (res) => {
-            this.channel = '';
-            if(res.errMsg.indexOf('sendAppMessage') !== -1) {
-              this.channel = 0;
-            } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
-              this.channel = 1;
-            } else if(res.errMsg.indexOf('shareQQ') !== -1) {
-              this.channel = 2;
-            } else if(res.errMsg.indexOf('shareQZone') !== -1) {
-              this.channel = 3;
-            }
-            share(this.channel, '二维码转让').then((res) => {
-              if(res.code) {
-                this.text = '分享成功';
-                this.$refs.toast.show();
+        Promise.all([
+          getUserDetail({userId: getUserId()}),
+          getDeriveZichanDetail({
+            code: this.code
+          })
+        ]).then(([res1, res2]) => {
+          initShare({
+            title: res2.productName,
+            desc: `${res1.nickname || this.jiami(res1.mobile)}向你${this.price === '0' ? '转赠' : '转让'}${res2.productName}，${this.price === '0' ? '快来领取' : '进去看看'}`,
+            link: location.href.split('#')[0] + '/#/consignment-hall/consignment-product-detail?buy=1&code=' + this.code + '&userReferee=' + res1.mobile + '&type=U',
+            imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
+            success: (res) => {
+              this.channel = '';
+              if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+                this.channel = 0;
+              } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+                this.channel = 1;
+              } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+                this.channel = 2;
+              } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+                this.channel = 3;
               }
-            }).then(() => {});
-          }
-        }, (data) => {
-          this.isWxConfiging = false;
-          this.wxData = data;
-          this.loading = false;
-        }, (msg) => {
-          this.isWxConfiging = false;
-          this.wxData = null;
-          this.loading = false;
+              share(this.channel, '二维码转让').then((res) => {
+                if(res.code) {
+                  this.text = '分享成功';
+                  this.$refs.toast.show();
+                }
+              }).then(() => {});
+            }
+          }, (data) => {
+            this.isWxConfiging = false;
+            this.wxData = data;
+            this.loading = false;
+          }, (msg) => {
+            this.isWxConfiging = false;
+            this.wxData = null;
+            this.loading = false;
+          });
         });
       },
       onCopy: function (e) {

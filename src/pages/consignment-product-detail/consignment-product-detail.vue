@@ -91,11 +91,11 @@
       <span>¥{{formatAmount(detail.price)}}</span>
       <button class="fr" @click="showChexiao">撤销</button>
     </div>
-    <div class="footer" v-show="this.origin && detail.status === '1' || this.origin && detail.status === '0'">
+    <div class="footer" v-show="(this.origin && detail.ownerId === userId) &&(this.origin && detail.status === '1' || this.origin && detail.status === '0')">
       <button class="two" @click="showAssignment">转让</button>
       <button class="two" @click="address">填写地址，确认自用</button>
     </div>
-    <div class="footer" v-show="this.origin && detail.status === '2'">
+    <div class="footer" v-show="(this.origin && detail.ownerId === userId) &&(this.origin && detail.status === '2')">
       <button @click="address" v-if="detail.quantity !== '0'">填写地址，确认自用</button>
       <button @click="confirmShouhuo">确认收货</button>
     </div>
@@ -198,6 +198,7 @@ import { getDeriveZichanDetail, getOriginZichanDetail,
   guadanjishou, dingxiangjishou, erweimajishou, placeOrderGuadan,
   refuseDingxiangJishou, cancelDingxiangJishou, zhifuzhuanzeng, placeOrderDingxiang, placeOrderErweima, share } from 'api/biz';
 import { getDictList } from 'api/general';
+import { getUserDetail } from 'api/user';
 export default {
   data() {
     return {
@@ -224,7 +225,7 @@ export default {
       banners: [],
       loop: false,
       status: '2',
-      buy: 1, // 是否是从寄售大厅点进来要购买
+      buy: 0, // 是否是从寄售大厅点进来要购买
       price: '',
       number: 1,
       mobile: '',
@@ -240,7 +241,8 @@ export default {
       buyText: '确认购买',
       buyDisable: false,
       packUnitObj: {},
-      outputUnitObj: {}
+      outputUnitObj: {},
+      userId: ''
     };
   },
   methods: {
@@ -538,13 +540,16 @@ export default {
         }
       }, 20);
     },
+    jiami(mobile) {
+      return mobile.substr(0, 3) + '****' + mobile.substr(7);
+    },
     getInitWXSDKConfig() {
       this.loading = true;
       initShare({
-        title: '氧林',
-        desc: this.detail.name,
-        link: location.href.split('#')[0] + '/#/consignment-product-detail?code=' + this.code,
-        imgUrl: formatImg(this.detail.listPic),
+        title: this.buy ? `${this.detail.productName}` : `${this.userDetail.nickname || this.jiami(this.userDetail.mobile)}的预售资产`,
+        desc: this.buy ? `${this.detail.createrInfo.nickname || this.jiami(this.detail.createrInfo.mobile)}在寄售大厅内挂单寄售${this.detail.productName}，大家快来抢购。` : `查看${this.userDetail.nickname || this.jiami(this.userDetail.mobile)}的预售资产`,
+        link: location.href.split('#')[0] + '/#/consignment-product-detail?code=' + this.code + '&userReferee=' + this.userDetail.mobile + '&type=U',
+        imgUrl: this.buy ? formatImg(this.detail.presellProduct.listPic) : 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
         success: (res) => {
           this.channel = '';
           if(res.errMsg.indexOf('sendAppMessage') !== -1) {
@@ -576,10 +581,19 @@ export default {
     },
     address() {
       this.go(`/yushou-address?pre=1&clear=1&code=${this.code}`);
+    },
+    getUserDetail() {
+      getUserDetail({userId: getUserId()}).then((res) => {
+        this.userDetail = res;
+      }).catch(() => {});
     }
   },
   mounted() {
     setTitle('详情');
+    this.userReferee = this.$route.query.userReferee;
+    if(this.userReferee && !getUserId()) {
+      this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
+    }
     this.isWxConfiging = false;
     this.wxData = null;
     this.pullUpLoad = null;
@@ -587,6 +601,9 @@ export default {
     this.code = this.$route.query.code;
     this.buy = this.$route.query.buy || 0;
     this.loading = true;
+    if(this.userId) {
+      this.getUserDetail();
+    }
     if(this.code[0] === 'O') {
       this.origin = true;
       Promise.all([
@@ -617,6 +634,7 @@ export default {
         });
       }).catch(() => { this.loading = false; });
     } else {
+      this.buy = true;
       this.showBottom = this.buy;
       this.derive = true;
       Promise.all([

@@ -122,7 +122,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import { formatAmount, formatImg, formatDate, setTitle } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getProductDetail, share } from 'api/biz';
@@ -235,19 +235,6 @@ export default {
           this.noAdoptReason = '已被认养';
           return false;
         }
-        // this.directFlag = false;
-        // item.directObject.split(',').map((item) => {
-        //   if(item === this.userId) {
-        //     this.directFlag = true;
-        //   }
-        // });
-        // if(this.directFlag) {
-        //   item.noAdoptReason = '可认养';
-        // } else {
-        //   item.canAdoptFlag = false;
-        //   item.noAdoptReason = '不可认养';
-        // }
-        // return item;
         this.directFlag = false;
         this.detail.directObject.split(',').map((item) => {
           if(item === this.userId) {
@@ -258,11 +245,6 @@ export default {
           this.noAdoptReason = '您不是该产品定向的用户';
           return false;
         }
-        // if(this.detail.directObject !== this.userId) {
-        //   this.noAdoptReason = '您不是该产品定向的用户';
-        //   return false;
-        // }
-        // 用户定向且是定向用户
       }
       if(this.detail.sellType === '4' && this.detail.raiseCount === this.detail.nowCount) {
         // 销售类型为集体且未到认养量
@@ -367,9 +349,9 @@ export default {
     getInitWXSDKConfig() {
       this.loading = true;
       initShare({
-        title: '氧林',
-        desc: this.detail.name,
-        link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code,
+        title: this.detail.name,
+        desc: '认养一棵树，寻一段树缘，寄一份情感',
+        link: location.href.split('#')[0] + '/#/product-detail?code=' + this.code + '&userReferee=' + this.userDetail.mobile + '&type=U',
         imgUrl: formatImg(this.detail.listPic),
         success: (res) => {
           this.channel = '';
@@ -403,6 +385,10 @@ export default {
   },
   mounted() {
     setTitle('产品详情');
+    this.userReferee = this.$route.query.userReferee;
+    if(this.userReferee && !getUserId()) {
+      this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
+    }
     this.isWxConfiging = false;
     this.wxData = null;
     this.pullUpLoad = null;
@@ -420,7 +406,6 @@ export default {
       ]).then(([res1, res2]) => {
         this.loading = false;
         this.detail = res1;
-        console.log(res1.identifyCode);
         this.detailDescription = res1.description;
         this.banners = this.detail.bannerPic.split('||');
         if(this.banners.length >= 2) {
