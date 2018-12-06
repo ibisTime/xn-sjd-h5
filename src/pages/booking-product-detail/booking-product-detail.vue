@@ -54,6 +54,10 @@
           <span>已预售名单</span>
           <img src="./more@2x.png" class="fr more">
         </div>
+        <div class="item" @click="go(`/booking-product-list/booking-product-detail/ownerInfo?code=${detail.code}`)">
+          <span>产权信息</span>
+          <img src="./more@2x.png" class="fr more">
+        </div>
       </div>
       <div class="gray"></div>
       <div class="description">

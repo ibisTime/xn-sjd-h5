@@ -161,6 +161,8 @@ const Map = () => import('@/pages/map/map');
 const BookingProductList = () => import('@/pages/booking-product-list/booking-product-list');
 // 预售产品详情页
 const BookingProductDetail = () => import('@/pages/booking-product-detail/booking-product-detail');
+// 预售详情 - 产权信息
+const OwnerInfo = () => import('@/pages/ownerInfo/ownerInfo');
 // 预售订单
 const BookingOrder = () => import('@/pages/booking-order/booking-order');
 // 预售订单详情
@@ -553,6 +555,10 @@ export default new Router({
             {
               path: 'booking-already-list',
               component: BookingAlreadyList
+            },
+            {
+              path: 'ownerInfo',
+              component: OwnerInfo
             }
           ]
         }
