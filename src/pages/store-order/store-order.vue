@@ -108,6 +108,7 @@ export default {
   },
   created() {
     setTitle('商品订单');
+    sessionStorage.removeItem('setRess');
     getDictList('commodity_order_detail_status').then(data => {
       data.forEach(item => {
         this.statusDetList.push(item.dvalue);

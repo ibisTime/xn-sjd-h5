@@ -177,6 +177,8 @@ export default {
           let all = this.totalPrice + this.postalFee;
           this.totalPrice = formatAmount(all);
         });
+      }else{
+        this.totalPrice = formatAmount(this.totalPrice);
       }
       this.config.specsId = this.shopMsgList[0].specsId;
       if(this.shopMsgList.length === 1 && this.shopMsgList[0].setPrice) {
@@ -264,6 +266,7 @@ export default {
         this.textMsg = '下单成功';
         this.$refs.toast.show();
         sessionStorage.setItem('totalPrice', this.totalPrice);
+        sessionStorage.removeItem('setRess');
         setTimeout(() => {
           this.go('/pay?code=' + data.code + '&storeType=one');
         }, 1500);
@@ -279,6 +282,7 @@ export default {
         this.textMsg = '下单成功';
         this.$refs.toast.show();
         sessionStorage.setItem('totalPrice', this.totalPrice);
+        sessionStorage.removeItem('setRess');
         setTimeout(() => {
           this.go('/pay?code=' + data.code + '&storeType=more');
         }, 1500);
@@ -291,9 +295,6 @@ export default {
     FullLoading,
     Toast,
     Scroll
-  },
-  beforeDestroy() {
-    sessionStorage.removeItem('setRess');
   }
 };
 </script>

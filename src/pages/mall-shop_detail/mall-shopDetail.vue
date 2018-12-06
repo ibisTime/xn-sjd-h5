@@ -167,6 +167,7 @@ export default {
   },
   created() {
     setTitle('产品详情');
+    sessionStorage.removeItem('setRess');
     this.pullUpLoad = null;
     this.code = this.$route.query.code;
     this.shopCode = this.$route.query.shopCode;

@@ -159,7 +159,6 @@
       cancelRess() {
         this.currentItem = null;
         if(this.storeOrder) {
-          this.isokIndex = this.isokIndex || 0;
           sessionStorage.removeItem('setRess');
           return;
         }
@@ -174,6 +173,10 @@
             //   code: this.currentItem.code
             // });
             this.addressList.splice(this.deleteIndex, 1);
+            if(this.deleteIndex < this.isokIndex) {
+              this.isokIndex --;
+              return;
+            }
             if(this.deleteIndex === this.isokIndex) {
               this.isokIndex = -1;
               sessionStorage.removeItem('isokIndex');
@@ -214,7 +217,6 @@
           this.comText = '确定使用该地址吗？';
           this.$refs.confirm.show();
           this.setIndex = index;
-          this.isokIndex = index;
           this.setRessCode = item.code;
           this.currentItem = null;
           sessionStorage.setItem('setRess', JSON.stringify(item));
