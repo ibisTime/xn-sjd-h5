@@ -375,11 +375,35 @@
               }
               if(this.storeType === 'more') {
                 payMoreOrder(this.moreConfig).then(data => {
-                  this._alipay(data);
+                  if(this.wechat) {
+                    let wxConfig = {
+                      appId: data.appId, // 公众号名称，由商户传入
+                      timeStamp: data.timeStamp, // 时间戳，自1970年以来的秒数
+                      nonceStr: data.nonceStr, // 随机串
+                      wechatPackage: data.wechatPackage,
+                      signType: data.signType, // 微信签名方式：
+                      paySign: data.paySign // 微信签名
+                    };
+                    initPay(wxConfig, this.success, this.error, this.cancel);
+                  }else {
+                    this._alipay(data);
+                  }
                 });
               }else {
                 payOneOrder(this.config).then(data => {
-                  this._alipay(data);
+                  if(this.wechat) {
+                    let wxConfig = {
+                      appId: data.appId, // 公众号名称，由商户传入
+                      timeStamp: data.timeStamp, // 时间戳，自1970年以来的秒数
+                      nonceStr: data.nonceStr, // 随机串
+                      wechatPackage: data.wechatPackage,
+                      signType: data.signType, // 微信签名方式：
+                      paySign: data.paySign // 微信签名
+                    };
+                    initPay(wxConfig, this.success, this.error, this.cancel);
+                  }else {
+                    this._alipay(data);
+                  }
                 });
               }
               return;
