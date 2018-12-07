@@ -1,47 +1,21 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="好友排行榜" actText="好友审核" @action="action"></m-header>
-    <div class="me">
-      <div class="item" @click="goUserHome(userDetail)">
-        <div class="order">
-          <img v-if="userDetail.rowNo === 1" src="./no1@2x.png">
-          <img v-else-if="userDetail.rowNo === 2" src="./no2@2x.png">
-          <img v-else-if="userDetail.rowNo === 3" src="./no3@2x.png">
-          <samp class="rowNo" v-else>{{userDetail.rowNo}}</samp>
-        </div>
-        <div class="userPhoto" :style="getImgSyl(userDetail.toUserInfo.photo ? userDetail.toUserInfo.photo : '')"></div>
-        <div class="info">
-          <p class="name">
-            <span>{{userDetail.toUserInfo.nickname ? userDetail.toUserInfo.nickname: jiami(userDetail.toUserInfo.mobile)}}</span>
-            <img src="./steal@2x.png" v-show="userDetail.takeableTppAmount">
-          </p>
-          <p class="date">获得了{{userDetail.certificateCount}}个环保证书</p>
-        </div>
-        <span class="price fr">{{formatAmount(userDetail.tppAmount)}}碳泡泡</span>
-      </div>
-    </div>
-    <div class="gray"></div>
+    <m-header class="cate-header" title="好友审核"></m-header>
     <div class="adopt-list">
       <scroll ref="scroll"
               :data="userList"
               :hasMore="hasMore"
               @pullingUp="getUserList">
-        <div class="item" v-for="item in userList" @click="goUserHome(item)">
-          <div class="order">
-            <img v-if="item.rowNo === 1" src="./no1@2x.png">
-            <img v-else-if="item.rowNo === 2" src="./no2@2x.png">
-            <img v-else-if="item.rowNo === 3" src="./no3@2x.png">
-            <samp class="rowNo" v-else>{{item.rowNo}}</samp>
-          </div>
-          <div class="userPhoto" :style="getImgSyl(item.toUserInfo.photo ? item.toUserInfo.photo : '')"></div>
+        <div class="item" v-for="item in userList">
+          <div class="userPhoto" :style="getImgSyl(item.fromUserInfo.photo ? item.fromUserInfo.photo : '')" @click="goUserHome(item)"></div>
           <div class="info">
             <p class="name">
-              <span>{{item.toUserInfo.nickname ? item.toUserInfo.nickname: jiami(item.toUserInfo.mobile)}}</span>
-              <img src="./steal@2x.png" v-show="item.takeableTppAmount">
+              <span>{{item.fromUserInfo.nickname ? item.fromUserInfo.nickname: jiami(item.fromUserInfo.mobile)}}</span>
             </p>
-            <p class="date">获得了{{item.certificateCount}}个环保证书</p>
+            <p class="date">申请关注你</p>
           </div>
-          <span class="price fr">{{formatAmount(item.tppAmount)}}碳泡泡</span>
+          <span class="price fr" v-if="item.status === '0'"><button class="refuse" @click="checkFocus(item, 0)">拒绝</button><button class="agree" @click="checkFocus(item, 1)">同意</button></span>
+          <span class="price fr status" v-if="item.status !== '0'">{{statusObj[item.status]}}</span>
         </div>
         <no-result v-show="!hasMore && !(userList && userList.length)" title="暂无好友" class="no-result-wrapper"></no-result>
       </Scroll>
@@ -56,7 +30,8 @@
   import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import { getPageUserRelationship } from 'api/user';
+  import { getRelationPage, checkFocus } from 'api/user';
+  import { getDictList } from 'api/general';
   import {formatAmount, formatDate, formatImg, setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
@@ -73,7 +48,8 @@
         start: 1,
         limit: 30,
         hasMore: true,
-        userDetail: {toUserInfo: {photo: '', mobile: ''}}
+        userDetail: {toUserInfo: {photo: '', mobile: ''}},
+        statusObj: {}
       };
     },
     mounted() {
@@ -84,16 +60,22 @@
     methods: {
       getInitData() {
         this.getUserList();
+        this.getStatusObj();
+      },
+      getStatusObj() {
+        getDictList('user_releation_status').then((res) => {
+          res.map((item) => {
+            this.statusObj[item.dkey] = item.dvalue;
+          });
+        });
       },
       getUserList() {
         this.loading = true;
         this.code = this.$route.query.code;
         Promise.all([
-          getPageUserRelationship({
+          getRelationPage({
             start: this.start,
-            limit: this.limit,
-            orderDir: 'asc',
-            orderColumn: 'row_no'
+            limit: this.limit
           })
         ]).then(([res1]) => {
           if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -141,8 +123,22 @@
       jiami(mobile) {
         return mobile.substr(0, 3) + '****' + mobile.substr(7);
       },
-      action() {
-        this.go(`friends-check`);
+      checkFocus(item, index) {
+        this.approveResult = index;
+        checkFocus({
+          approveResult: this.approveResult,
+          code: item.code
+        }).then((res) => {
+          if(res.isSuccess) {
+            if(this.approveResult) {
+              item.status = '1';
+              this.text = this.statusObj[1];
+            } else {
+              item.status = '2';
+              this.text = this.statusObj[2];
+            }
+          }
+        });
       }
     },
     components: {
@@ -169,61 +165,6 @@
     .fr {
       float: right;
     }
-    .me {
-      background: $color-highlight-background;
-      padding: 0.88rem 0.3rem 0;
-      .item {
-        width: 100%;
-        height: 1.3rem;
-        font-size: $font-size-medium-x;
-        line-height: 1.1rem;
-        padding: 0.3rem 0;
-        display: flex;
-        align-items: center;
-        .order {
-          align-items: center;
-          display: flex;
-          img {
-            width: 0.41rem;
-            height: 0.51rem;
-          }
-          .rowNo{
-            display: inline-block;
-            width: 0.41rem;
-            line-height: 0.51rem;
-            font-size: 0.28rem;
-            text-align: center;
-          }
-        }
-        .userPhoto {
-          width: 0.8rem;
-          height: 0.8rem;
-          margin: 0 0.2rem;
-        }
-        .info {
-          display: inline-block;
-          font-size: 0;
-          flex: 1;
-          .name {
-            font-size: 0.3rem;
-            line-height: 0.42rem;
-            margin-bottom: 0.14rem;
-          }
-          .date {
-            font-size: 0.24rem;
-            line-height: 0.33rem;
-            color: #999
-          }
-          img {
-            width: 0.36rem;
-            height: 0.36rem;
-          }
-        }
-        .price {
-
-        }
-      }
-    }
     .gray {
       width: 100%;
       height: 0.2rem;
@@ -233,7 +174,7 @@
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 2.36rem;
+      top: 0.88rem;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;
@@ -246,14 +187,6 @@
         padding: 0.3rem 0;
         display: flex;
         align-items: center;
-        .order {
-          align-items: center;
-          display: flex;
-          img {
-            width: 0.41rem;
-            height: 0.51rem;
-          }
-        }
         .userPhoto {
           width: 0.8rem;
           height: 0.8rem;
@@ -284,7 +217,24 @@
           }
         }
         .price {
-
+          button {
+            width: 1.16rem;
+            height: 0.52rem;
+            border-radius: 0.04rem;
+            border: 1px solid;
+            background: #fff;
+          }
+          .refuse {
+            color: #999;
+            margin-right: 0.3rem;
+          }
+          .agree {
+            color: $primary-color;
+          }
+        }
+        .status {
+          color: #999;
+          font-size: 0.24rem;
         }
       }
     }

@@ -98,6 +98,10 @@ const AdoptList = () => import('@/pages/adopt-list/adopt-list');
 const ForestSpace = () => import('@/pages/forest-space/forest-space');
 // 好友排行榜
 const Charts = () => import('@/pages/charts/charts');
+// 全局排行榜
+const AllCharts = () => import('@/pages/allCharts/allCharts');
+// 好友审核
+const FriendsCheck = () => import('@/pages/friends-check/friends-check');
 // 礼物
 const Gift = () => import('@/pages/gift/gift');
 // 认领礼物
@@ -373,6 +377,14 @@ export default new Router({
     {
       path: '/charts',
       component: Charts
+    },
+    {
+      path: '/allCharts',
+      component: AllCharts
+    },
+    {
+      path: '/friends-check',
+      component: FriendsCheck
     },
     {
       path: '/gift',

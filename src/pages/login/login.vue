@@ -70,11 +70,15 @@
       // alert('login');
       this.me = this.$route.query.me || '';
       this.setting = this.$route.query.setting || '';
+      this.register = this.$route.query.register || 0;
       let ua = navigator.userAgent.toLowerCase();
       let isWeixin = ua.indexOf('micromessenger') !== -1;
       if (!isWeixin) {
         this.showWeixin = false;
       }
+      // if(this.register) {
+      //   window.location.href = ''
+      // }
       if (!isLogin()) {
         if (/code=([^&]+)&state=/.exec(location.href)) {
           this.code = RegExp.$1;

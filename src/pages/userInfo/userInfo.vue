@@ -9,7 +9,7 @@
             <div class="user-info-list">
               <div class="item-input-wrapper">
                 <span class="mr110">昵称</span>
-                <input type="text" name="nickname" v-model="nickname" v-validate="'required'" placeholder="请输入昵称">
+                <input type="text" name="nickname" v-model="nickname" placeholder="请输入昵称">
                 <span v-show="errors.has('nickname')" class="error-tip">{{errors.first('nickname')}}</span>
               </div>
               <div class="item-input-wrapper">
@@ -18,21 +18,20 @@
                   <option value="男">男</option>
                   <option value="女">女</option>
                 </select>
-                <span v-show="errors.has('mobile')" class="error-tip">{{errors.first('mobile')}}</span>
               </div>
               <div class="item-input-wrapper">
                 <span class="mr110">年龄</span>
-                <input type="number" name="age" v-model="age" v-validate="'required'" placeholder="请输入年龄">
+                <input type="number" name="age" v-model="age" placeholder="请输入年龄">
                 <span v-show="errors.has('age')" class="error-tip">{{errors.first('age')}}</span>
               </div>
               <div class="item-input-wrapper">
                 <span class="mr50">真实姓名</span>
-                <input type="text" name="realName" v-model="realName" v-validate="'required'" placeholder="请输入真实姓名">
+                <input type="text" name="realName" v-model="realName" placeholder="请输入真实姓名">
                 <span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>
               </div>
               <div class="item-input-wrapper">
                 <span class="mr50">身份证号</span>
-                <input type="text" name="idNo" v-model="idNo" v-validate="'required'" placeholder="请输入身份证号">
+                <input type="text" name="idNo" v-model="idNo" placeholder="请输入身份证号">
                 <span v-show="errors.has('idNo')" class="error-tip">{{errors.first('idNo')}}</span>
               </div>
               <div class="item-input-wrapper">
@@ -62,7 +61,7 @@
   import DatePicker from 'base/date-picker/date-picker';
   import {emptyValid} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
-  import { getUserDetail, changeNickname, completeInfo } from 'api/user';
+  import { getUserDetail, completeInfo } from 'api/user';
 
   export default {
     data() {
@@ -105,38 +104,31 @@
       // 保存
       action() {
         let date = this.year ? this.year + '-' + this.month + '-' + this.day : '';
-        this.$validator.validateAll().then((result) => {
-          if (result) {
-            this.loading = true;
-            this.loadText = '修改中...';
-            this.sex = this.sex === '男' ? '1' : '0';
-            // 修改昵称
-            // 完善资料
-            Promise.all([
-              changeNickname({
-                nickname: this.nickname
-              }),
-              completeInfo({
-                gender: this.sex,
-                age: this.age,
-                realName: this.realName,
-                nickname: this.nickname,
-                idNo: this.idNo,
-                birthday: date || ''
-              })
-            ]).then(([res2, res3]) => {
-              this.loading = false;
-              this.sex = this.sex === '1' ? '男' : '女';
-              if(res2.isSuccess && res3.isSuccess) {
-                this.text = '修改成功';
-                this.$refs.toast.show();
-                setTimeout(() => {
-                  this.$router.push('/me');
-                }, 1000);
-              }
-            }).catch(() => { this.loading = false; });
+        this.loading = true;
+        this.loadText = '修改中...';
+        this.sex = this.sex === '男' ? '1' : this.sex === '女' ? '0' : '';
+        // 修改昵称
+        // 完善资料
+        Promise.all([
+          completeInfo({
+            gender: this.sex,
+            age: this.age,
+            realName: this.realName,
+            nickname: this.nickname,
+            idNo: this.idNo,
+            birthday: date || ''
+          })
+        ]).then(([res3]) => {
+          this.loading = false;
+          this.sex = this.sex === '男' ? '1' : this.sex === '女' ? '0' : '';
+          if(res3.isSuccess) {
+            this.text = '修改成功';
+            this.$refs.toast.show();
+            setTimeout(() => {
+              this.$router.push('/me');
+            }, 1000);
           }
-        });
+        }).catch(() => { this.loading = false; });
       }
     },
     mounted() {

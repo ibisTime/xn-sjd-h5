@@ -53,6 +53,9 @@
         <div class="item" v-show="detail.status === '1'">
           <span>转让截止时间</span><span>{{formatDate(detail.adoptEndDatetime || detail.presellProduct.adoptEndDatetime, 'yyyy-MM-dd')}}</span>
         </div>
+        <div class="item" v-show="derive">
+          <span>转让被拒绝原因</span><span>{{detail.remark}}</span>
+        </div>
         <div class="item" @click="go(`/consignment-erweima?code=${detail.code}&number=${detail.quantity}&price=${detail.price}`)" v-show="derive && detail.type === '1'">
           <span>转让二维码</span>
           <img src="./more@2x.png" class="fr more">
@@ -593,95 +596,96 @@ export default {
     this.userReferee = this.$route.query.userReferee;
     if(this.userReferee && !getUserId()) {
       this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
-    }
-    this.isWxConfiging = false;
-    this.wxData = null;
-    this.pullUpLoad = null;
-    this.userId = getCookie('userId');
-    this.code = this.$route.query.code;
-    this.buy = this.$route.query.buy || 0;
-    this.loading = true;
-    if(this.userId) {
-      this.getUserDetail();
-    }
-    if(this.code[0] === 'O') {
-      this.origin = true;
-      Promise.all([
-        getOriginZichanDetail({
-          code: this.code
-        }),
-        getDictList('pack_unit'),
-        getDictList('output_unit')
-      ]).then(([res1, res2, res3]) => {
-        this.loading = false;
-        this.detail = res1;
-        this.detailDescription = res1.presellProduct.description;
-        this.banners = this.detail.presellProduct.bannerPic.split('||');
-        if(this.banners.length >= 2) {
-          this.loop = true;
-        }
-        if(!this.isWxConfiging && !this.wxData) {
-          this.getInitWXSDKConfig();
-        }
-        if(this.detail.status === '1' || this.detail.status === '2') {
-          this.showBottom = true;
-        }
-        res2.map((item) => {
-          this.packUnitObj[item.dkey] = item.dvalue;
-        });
-        res3.map((item) => {
-          this.outputUnitObj[item.dkey] = item.dvalue;
-        });
-      }).catch(() => { this.loading = false; });
     } else {
-      this.buy = true;
-      this.showBottom = this.buy;
-      this.derive = true;
-      Promise.all([
-        getDeriveZichanDetail({
-          code: this.code
-        }),
-        getDictList('pack_unit'),
-        getDictList('output_unit')
-      ]).then(([res1, res2, res3]) => {
-        // debugger;
-        this.loading = false;
-        this.detail = res1;
-        this.detailDescription = res1.presellProduct.description;
-        this.banners = this.detail.presellProduct.bannerPic.split('||');
-        if(this.banners.length >= 2) {
-          this.loop = true;
-        }
-        if(this.detail.status === '0' && this.detail.type === '0') {
-          // this.number = this.detail.quantity;
-          this.dingxiangJishou = true;
-          this.showBottom = true;
-        }
-        if(this.detail.status === '0' && this.detail.creater === getUserId() && !this.buy) {
-          this.chexiao = true;
-          this.showBottom = true;
-        }
-        if(this.detail.creater === getUserId() && this.buy) {
-          this.buyText = '无法购买自己发布的产品';
-          this.buyDisable = true;
-          this.showBottom = true;
-          // this.buy = !this.buy;
-          // this.showBottom = false;
-        }
-        if(this.detail.type === '1') {
-          // this.number = this.detail.quantity;
-          this.erweimaJishou = true;
-        }
-        res2.map((item) => {
-          this.packUnitObj[item.dkey] = item.dvalue;
-        });
-        res3.map((item) => {
-          this.outputUnitObj[item.dkey] = item.dvalue;
-        });
-        if(!this.isWxConfiging && !this.wxData) {
-          this.getInitWXSDKConfig();
-        }
-      }).catch(() => { this.loading = false; });
+      this.isWxConfiging = false;
+      this.wxData = null;
+      this.pullUpLoad = null;
+      this.userId = getCookie('userId');
+      this.code = this.$route.query.code;
+      this.buy = this.$route.query.buy || 0;
+      this.loading = true;
+      if(this.userId) {
+        this.getUserDetail();
+      }
+      if(this.code[0] === 'O') {
+        this.origin = true;
+        Promise.all([
+          getOriginZichanDetail({
+            code: this.code
+          }),
+          getDictList('pack_unit'),
+          getDictList('output_unit')
+        ]).then(([res1, res2, res3]) => {
+          this.loading = false;
+          this.detail = res1;
+          this.detailDescription = res1.presellProduct.description;
+          this.banners = this.detail.presellProduct.bannerPic.split('||');
+          if(this.banners.length >= 2) {
+            this.loop = true;
+          }
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
+          if(this.detail.status === '1' || this.detail.status === '2') {
+            this.showBottom = true;
+          }
+          res2.map((item) => {
+            this.packUnitObj[item.dkey] = item.dvalue;
+          });
+          res3.map((item) => {
+            this.outputUnitObj[item.dkey] = item.dvalue;
+          });
+        }).catch(() => { this.loading = false; });
+      } else {
+        this.buy = true;
+        this.showBottom = this.buy;
+        this.derive = true;
+        Promise.all([
+          getDeriveZichanDetail({
+            code: this.code
+          }),
+          getDictList('pack_unit'),
+          getDictList('output_unit')
+        ]).then(([res1, res2, res3]) => {
+          // debugger;
+          this.loading = false;
+          this.detail = res1;
+          this.detailDescription = res1.presellProduct.description;
+          this.banners = this.detail.presellProduct.bannerPic.split('||');
+          if(this.banners.length >= 2) {
+            this.loop = true;
+          }
+          if(this.detail.status === '0' && this.detail.type === '0') {
+            // this.number = this.detail.quantity;
+            this.dingxiangJishou = true;
+            this.showBottom = true;
+          }
+          if(this.detail.status === '0' && this.detail.creater === getUserId() && !this.buy) {
+            this.chexiao = true;
+            this.showBottom = true;
+          }
+          if(this.detail.creater === getUserId() && this.buy) {
+            this.buyText = '无法购买自己发布的产品';
+            this.buyDisable = true;
+            this.showBottom = true;
+            // this.buy = !this.buy;
+            // this.showBottom = false;
+          }
+          if(this.detail.type === '1') {
+            // this.number = this.detail.quantity;
+            this.erweimaJishou = true;
+          }
+          res2.map((item) => {
+            this.packUnitObj[item.dkey] = item.dvalue;
+          });
+          res3.map((item) => {
+            this.outputUnitObj[item.dkey] = item.dvalue;
+          });
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
+        }).catch(() => { this.loading = false; });
+      }
     }
   },
   watch: {
@@ -772,7 +776,7 @@ export default {
         span:first-child {
           margin-right: 0.3rem;
           display: inline-block;
-          width: 30%;
+          width: 35%;
         }
         span:nth-child(2) {
           flex: 1;
