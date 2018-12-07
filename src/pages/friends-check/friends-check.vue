@@ -75,7 +75,8 @@
         Promise.all([
           getRelationPage({
             start: this.start,
-            limit: this.limit
+            limit: this.limit,
+            isMySelf: 0
           })
         ]).then(([res1]) => {
           if (res1.list.length < this.limit || res1.totalCount <= this.limit) {

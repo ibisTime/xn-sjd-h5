@@ -53,7 +53,7 @@
         <div class="item" v-show="detail.status === '1'">
           <span>转让截止时间</span><span>{{formatDate(detail.adoptEndDatetime || detail.presellProduct.adoptEndDatetime, 'yyyy-MM-dd')}}</span>
         </div>
-        <div class="item" v-show="derive">
+        <div class="item" v-show="derive && detail.remark">
           <span>转让被拒绝原因</span><span>{{detail.remark}}</span>
         </div>
         <div class="item" @click="go(`/consignment-erweima?code=${detail.code}&number=${detail.quantity}&price=${detail.price}`)" v-show="derive && detail.type === '1'">

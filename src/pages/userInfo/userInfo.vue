@@ -120,7 +120,8 @@
           })
         ]).then(([res3]) => {
           this.loading = false;
-          this.sex = this.sex === '男' ? '1' : this.sex === '女' ? '0' : '';
+          this.sex = this.sex === '1' ? '男' : this.sex === '0' ? '女' : '';
+          // this.sex = this.sex === '男' ? '1' : this.sex === '女' ? '0' : '';
           if(res3.isSuccess) {
             this.text = '修改成功';
             this.$refs.toast.show();

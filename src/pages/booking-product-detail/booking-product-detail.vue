@@ -281,6 +281,7 @@ export default {
         title: this.detail.name,
         desc: '提前订制，专属美味',
         link: location.href.split('#')[0] + '/#/booking-product-list/booking-product-detail?code=' + this.code + '&userReferee=' + this.userDetail.mobile + '&type=U',
+        // link: location.href + '/#/booking-product-list/booking-product-detail?code=' + this.code + '&userReferee=' + this.userDetail.mobile + '&type=U',
         imgUrl: formatImg(this.detail.listPic),
         success: (res) => {
           this.channel = '';
@@ -322,12 +323,10 @@ export default {
       this.wxData = null;
       this.pullUpLoad = null;
       this.userId = getCookie('userId');
-      alert(this.userId);
       this.code = this.$route.query.code;
       this.loading = true;
       setTitle('预售详情');
       if(this.userId) {
-        alert('傻了吧');
         Promise.all([
           getBookingProDetail({
             code: this.code

@@ -154,7 +154,7 @@
             <!--<div class="item">-->
               <!--<span>认养人手机号</span><span>{{treeDetail.user ? jiami(treeDetail.user.mobile) : ''}}</span>-->
             <!--</div>-->
-            <div class="item">
+            <div class="adopter-introduction">
               <span></span><span>{{auth.introduce || '暂无简介'}}</span><span class="adoptHomePage" @click="goAdoptHomePage">去认养人主页<img src="./arrow.png"/></span>
             </div>
           </div>
@@ -257,7 +257,7 @@
             <!--<div class="item">-->
             <!--<span>认养人手机号</span><span>{{treeDetail.user ? jiami(treeDetail.user.mobile) : ''}}</span>-->
             <!--</div>-->
-            <div class="item">
+            <div class="adopter-introduction">
               <span></span><span>{{auth.introduce || '暂无简介'}}</span><span class="adoptHomePage" @click="goAdoptHomePage">去认养人主页<img src="./arrow.png"/></span>
             </div>
           </div>
@@ -1352,7 +1352,18 @@ export default {
       }
       .adopter-introduction {
         /*margin: 0.88rem 0;*/
-        padding: 0.6rem 0;
+        /*padding: 0.6rem 0;*/
+        font-size: 0.24rem;
+        line-height: 0.4rem;
+        .adoptHomePage {
+          margin-left: 0.3rem;
+          color: $primary-color;
+          display: flex;
+          align-items: center;
+          img {
+            height: 0.4rem;
+          }
+        }
       }
       .tree-detail {
         background: $color-highlight-background;
