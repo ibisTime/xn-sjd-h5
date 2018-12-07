@@ -316,68 +316,72 @@ export default {
     this.userReferee = this.$route.query.userReferee;
     if(this.userReferee && !getUserId()) {
       this.$router.push(`/register?userReferee=${this.userReferee}&type=U&back=1`);
-    }
-    this.isWxConfiging = false;
-    this.wxData = null;
-    this.pullUpLoad = null;
-    this.userId = getCookie('userId');
-    this.code = this.$route.query.code;
-    this.loading = true;
-    setTitle('预售详情');
-    if(this.userId) {
-      Promise.all([
-        getBookingProDetail({
-          code: this.code
-        }),
-        getUserDetail({
-          userId: this.userId
-        }),
-        getDictList('output_unit'),
-        getDictList('pack_unit')
-      ]).then(([res1, res2, res3, res4]) => {
-        this.loading = false;
-        this.detail = res1;
-        this.detailDescription = res1.description;
-        this.banners = this.detail.bannerPic.split('||');
-        if(this.banners.length >= 2) {
-          this.loop = true;
-        }
-        this.userDetail = res2;
-        res3.map((item) => {
-          this.outputUnitObj[item.dkey] = item.dvalue;
-        });
-        res4.map((item) => {
-          this.packUnitObj[item.dkey] = item.dvalue;
-        });
-        if(!this.isWxConfiging && !this.wxData) {
-          this.getInitWXSDKConfig();
-        }
-      }).catch(() => { this.loading = false; });
     } else {
-      Promise.all([
-        getBookingProDetail({
-          code: this.code
-        }),
-        getDictList('output_unit'),
-        getDictList('pack_unit')
-      ]).then(([res1, res2, res3]) => {
-        this.loading = false;
-        this.detail = res1;
-        this.detailDescription = res1.description;
-        this.banners = this.detail.bannerPic.split('||');
-        if(this.banners.length >= 2) {
-          this.loop = true;
-        }
-        res2.map((item) => {
-          this.outputUnitObj[item.dkey] = item.dvalue;
-        });
-        res3.map((item) => {
-          this.packUnitObj[item.dkey] = item.dvalue;
-        });
-        if(!this.isWxConfiging && !this.wxData) {
-          this.getInitWXSDKConfig();
-        }
-      }).catch(() => { this.loading = false; });
+      // ************************************不分享*********************************
+      this.isWxConfiging = false;
+      this.wxData = null;
+      this.pullUpLoad = null;
+      this.userId = getCookie('userId');
+      alert(this.userId);
+      this.code = this.$route.query.code;
+      this.loading = true;
+      setTitle('预售详情');
+      if(this.userId) {
+        alert('傻了吧');
+        Promise.all([
+          getBookingProDetail({
+            code: this.code
+          }),
+          getUserDetail({
+            userId: this.userId
+          }),
+          getDictList('output_unit'),
+          getDictList('pack_unit')
+        ]).then(([res1, res2, res3, res4]) => {
+          this.loading = false;
+          this.detail = res1;
+          this.detailDescription = res1.description;
+          this.banners = this.detail.bannerPic.split('||');
+          if(this.banners.length >= 2) {
+            this.loop = true;
+          }
+          this.userDetail = res2;
+          res3.map((item) => {
+            this.outputUnitObj[item.dkey] = item.dvalue;
+          });
+          res4.map((item) => {
+            this.packUnitObj[item.dkey] = item.dvalue;
+          });
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
+        }).catch(() => { this.loading = false; });
+      } else {
+        Promise.all([
+          getBookingProDetail({
+            code: this.code
+          }),
+          getDictList('output_unit'),
+          getDictList('pack_unit')
+        ]).then(([res1, res2, res3]) => {
+          this.loading = false;
+          this.detail = res1;
+          this.detailDescription = res1.description;
+          this.banners = this.detail.bannerPic.split('||');
+          if(this.banners.length >= 2) {
+            this.loop = true;
+          }
+          res2.map((item) => {
+            this.outputUnitObj[item.dkey] = item.dvalue;
+          });
+          res3.map((item) => {
+            this.packUnitObj[item.dkey] = item.dvalue;
+          });
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
+        }).catch(() => { this.loading = false; });
+      }
     }
   },
   watch: {

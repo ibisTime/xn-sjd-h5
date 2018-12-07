@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="完善资料" actText="保存" @action="action"></m-header>
+      <m-header class="cate-header" title="修改头像" actText="保存" @action="action"></m-header>
       <div class="scroll-section">
         <Scroll :pullUpLoad="pullUpLoad">
         <div class="content">
@@ -45,7 +45,7 @@
   import DatePicker from 'base/date-picker/date-picker';
   import PhotoEdit from 'components/photo-edit/photo-edit';
   import EXIF from 'exif-js';
-  import {formatImg, getImgData, emptyValid, getUserId} from 'common/js/util';
+  import {formatImg, getImgData, emptyValid, getUserId, setTitle} from 'common/js/util';
   import { getQiniuToken } from 'api/general';
   import { getUserDetail, changeAvatar } from 'api/user';
 
@@ -272,6 +272,7 @@
       }
     },
     mounted() {
+      setTitle('修改头像');
       this.uploadUrl = 'http://up-z0.qiniu.com';
       Promise.all([
         getQiniuToken(),

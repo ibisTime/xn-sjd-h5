@@ -43,7 +43,7 @@
           <button @click="register">注册</button>
         </div>
         <div class="register-findpwd">
-          <span class="fl" @click="go('/login')">去登录</span>
+          <span class="fl" @click="go('/login?register=1')">去登录</span>
         </div>
       </Scroll>
     </div>

@@ -333,7 +333,7 @@ export function completeInfo(data) {
 }
 
 /**
- * 分页查询用户间关系
+ * 分页查询用户间关系(用户排行榜）
  * @params  limit
  * @params  start
  * @params  userId
@@ -344,6 +344,39 @@ export function getPageUserRelationship(params) {
     start: 1,
     userId: getUserId(),
     ...params
+  });
+}
+
+// 全局排行榜
+export function allChart(data) {
+  return fetch(805159, {
+    start: 1,
+    limit: 10,
+    ...data
+  });
+}
+
+/**
+ * 审核关注
+ * @params  toUser
+ * */
+export function checkFocus(data) {
+  return fetch(805152, {
+    userId: getUserId(),
+    ...data
+  });
+}
+
+/**
+ * 分页查询用户间关系
+ * */
+export function getRelationPage(data) {
+  return fetch(805155, {
+    start: 1,
+    limit: 10,
+    toUser: getUserId(),
+    type: '2',
+    ...data
   });
 }
 

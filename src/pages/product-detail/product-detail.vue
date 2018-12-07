@@ -388,51 +388,52 @@ export default {
     this.userReferee = this.$route.query.userReferee;
     if(this.userReferee && !getUserId()) {
       this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
-    }
-    this.isWxConfiging = false;
-    this.wxData = null;
-    this.pullUpLoad = null;
-    this.userId = getCookie('userId');
-    this.code = this.$route.query.code;
-    this.loading = true;
-    if(this.userId) {
-      Promise.all([
-        getProductDetail({
-          code: this.code
-        }),
-        getUserDetail({
-          userId: this.userId
-        })
-      ]).then(([res1, res2]) => {
-        this.loading = false;
-        this.detail = res1;
-        this.detailDescription = res1.description;
-        this.banners = this.detail.bannerPic.split('||');
-        if(this.banners.length >= 2) {
-          this.loop = true;
-        }
-        this.userDetail = res2;
-        if(!this.isWxConfiging && !this.wxData) {
-          this.getInitWXSDKConfig();
-        }
-      }).catch(() => { this.loading = false; });
     } else {
-      Promise.all([
-        getProductDetail({
-          code: this.code
-        })
-      ]).then(([res1]) => {
-        this.loading = false;
-        this.detail = res1;
-        this.detailDescription = res1.description;
-        this.banners = this.detail.bannerPic.split('||');
-        if(this.banners.length >= 2) {
-          this.loop = true;
-        }
-        if(!this.isWxConfiging && !this.wxData) {
-          this.getInitWXSDKConfig();
-        }
-      }).catch(() => { this.loading = false; });
+      this.isWxConfiging = false;
+      this.wxData = null;
+      this.pullUpLoad = null;
+      this.userId = getCookie('userId');
+      this.code = this.$route.query.code;
+      this.loading = true;
+      if(this.userId) {
+        Promise.all([
+          getProductDetail({
+            code: this.code
+          }),
+          getUserDetail({
+            userId: this.userId
+          })
+        ]).then(([res1, res2]) => {
+          this.loading = false;
+          this.detail = res1;
+          this.detailDescription = res1.description;
+          this.banners = this.detail.bannerPic.split('||');
+          if(this.banners.length >= 2) {
+            this.loop = true;
+          }
+          this.userDetail = res2;
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
+        }).catch(() => { this.loading = false; });
+      } else {
+        Promise.all([
+          getProductDetail({
+            code: this.code
+          })
+        ]).then(([res1]) => {
+          this.loading = false;
+          this.detail = res1;
+          this.detailDescription = res1.description;
+          this.banners = this.detail.bannerPic.split('||');
+          if(this.banners.length >= 2) {
+            this.loop = true;
+          }
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
+        }).catch(() => { this.loading = false; });
+      }
     }
   },
   watch: {

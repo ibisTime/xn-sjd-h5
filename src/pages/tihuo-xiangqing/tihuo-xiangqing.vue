@@ -22,7 +22,7 @@
                   <!--<span class="add-address-text">收货数量</span>-->
                 </div>
                 <div class="right">
-                  <button @click="go(`/logistics?expCode=${item.logisticsCompany}&expNo=${item.logisticsNumber}`)" v-if="item.status === '1'">查看物流</button>
+                  <button @click="goLogistics(item)" v-if="item.status === '1'">查看物流</button>
                   <button class="confirm" @click="confirm(item)" v-if="item.status === '1'">确认收货</button>
                 </div>
               </div>
@@ -67,7 +67,9 @@
         pullUpLoad: null,
         number: 1,
         outputUnitObj: {},
-        packUnitObj: {}
+        packUnitObj: {},
+        presellLogisticsStatus: {},
+        logisCompany: {}
       };
     },
     created() {
@@ -76,6 +78,7 @@
       this.currentItem = null;
       this.getAddress();
       this.getObjs();
+      this.getProDetail();
     },
     methods: {
       formatAmount(amount) {
@@ -86,6 +89,16 @@
           sessionStorage.setItem('tihuo-address', JSON.stringify(this.addressList[0]));
         }
         this.go(`/yushou-address-list?tihuo=1&number=${this.number}&code=${this.code}`);
+      },
+      goLogistics(item) {
+        console.log(this.logisCompany);
+        let logisData = {
+          statusTxt: this.presellLogisticsStatus[item.status],
+          shopPic: this.detail.presellProduct.listPic,
+          logicPany: this.logisCompany[item.logisticsCompany]
+        };
+        sessionStorage.setItem('logisticData', JSON.stringify(logisData));
+        this.go(`/logistics?expCode=${item.logisticsCompany}&expNo=${item.logisticsNumber}`);
       },
       getProDetail() {
         this.loadingFlag = true;
@@ -174,13 +187,21 @@
       getObjs() {
         Promise.all([
           getDictList('output_unit'),
-          getDictList('pack_unit')
-        ]).then(([res1, res2]) => {
+          getDictList('pack_unit'),
+          getDictList('presell_logistics_status'),
+          getDictList('logistics_company')
+        ]).then(([res1, res2, res3, res4]) => {
           res1.map((item) => {
             this.outputUnitObj[item.dkey] = item.dvalue;
           });
           res2.map((item) => {
             this.packUnitObj[item.dkey] = item.dvalue;
+          });
+          res3.map((item) => {
+            this.presellLogisticsStatus[item.dkey] = item.dvalue;
+          });
+          res4.map((item) => {
+            this.logisCompany[item.dkey] = item.dvalue;
           });
         });
       }

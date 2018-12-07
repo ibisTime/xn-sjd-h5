@@ -1,6 +1,5 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="好友排行榜" actText="好友审核" @action="action"></m-header>
     <div class="me">
       <div class="item" @click="goUserHome(userDetail)">
         <div class="order">
@@ -9,10 +8,10 @@
           <img v-else-if="userDetail.rowNo === 3" src="./no3@2x.png">
           <samp class="rowNo" v-else>{{userDetail.rowNo}}</samp>
         </div>
-        <div class="userPhoto" :style="getImgSyl(userDetail.toUserInfo.photo ? userDetail.toUserInfo.photo : '')"></div>
+        <div class="userPhoto" :style="getImgSyl(userDetail.photo ? userDetail.photo : '')"></div>
         <div class="info">
           <p class="name">
-            <span>{{userDetail.toUserInfo.nickname ? userDetail.toUserInfo.nickname: jiami(userDetail.toUserInfo.mobile)}}</span>
+            <span>{{userDetail.nickname ? userDetail.nickname: jiami(userDetail.mobile)}}</span>
             <img src="./steal@2x.png" v-show="userDetail.takeableTppAmount">
           </p>
           <p class="date">获得了{{userDetail.certificateCount}}个环保证书</p>
@@ -33,10 +32,10 @@
             <img v-else-if="item.rowNo === 3" src="./no3@2x.png">
             <samp class="rowNo" v-else>{{item.rowNo}}</samp>
           </div>
-          <div class="userPhoto" :style="getImgSyl(item.toUserInfo.photo ? item.toUserInfo.photo : '')"></div>
+          <div class="userPhoto" :style="getImgSyl(item.photo ? item.photo : '')"></div>
           <div class="info">
             <p class="name">
-              <span>{{item.toUserInfo.nickname ? item.toUserInfo.nickname: jiami(item.toUserInfo.mobile)}}</span>
+              <span>{{item.nickname ? item.nickname: jiami(item.mobile)}}</span>
               <img src="./steal@2x.png" v-show="item.takeableTppAmount">
             </p>
             <p class="date">获得了{{item.certificateCount}}个环保证书</p>
@@ -56,8 +55,8 @@
   import NoResult from 'base/no-result/no-result';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
-  import { getPageUserRelationship } from 'api/user';
-  import {formatAmount, formatDate, formatImg, setTitle} from 'common/js/util';
+  import { allChart } from 'api/user';
+  import {formatAmount, formatDate, formatImg, setTitle, getUserId} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
 
@@ -73,11 +72,11 @@
         start: 1,
         limit: 30,
         hasMore: true,
-        userDetail: {toUserInfo: {photo: '', mobile: ''}}
+        userDetail: {photo: '', mobile: ''}
       };
     },
     mounted() {
-      setTitle('好友排行榜');
+      setTitle('排行榜');
       this.userId = getCookie('userId');
       this.getInitData();
     },
@@ -89,7 +88,7 @@
         this.loading = true;
         this.code = this.$route.query.code;
         Promise.all([
-          getPageUserRelationship({
+          allChart({
             start: this.start,
             limit: this.limit,
             orderDir: 'asc',
@@ -102,7 +101,7 @@
           this.loading = false;
           this.userList = this.userList.concat(res1.list);
           this.userList.map((item) => {
-            if(item.toUser === this.userId) {
+            if(item.userId === this.userId) {
               this.userDetail = item;
             }
           });
@@ -131,18 +130,15 @@
         this.$router.push(url);
       },
       goUserHome(item) {
-        if(item.mySelf === '1') {
+        if(item.userId === getUserId()) {
           this.go(`/homepage`);
         } else {
-          this.go(`/homepage?other=1&currentHolder=${item.toUser}`);
+          this.go(`/homepage?other=1&currentHolder=${item.userId}`);
         }
       },
       // 加密
       jiami(mobile) {
         return mobile.substr(0, 3) + '****' + mobile.substr(7);
-      },
-      action() {
-        this.go(`friends-check`);
       }
     },
     components: {
@@ -171,7 +167,7 @@
     }
     .me {
       background: $color-highlight-background;
-      padding: 0.88rem 0.3rem 0;
+      padding: 0 0.3rem;
       .item {
         width: 100%;
         height: 1.3rem;
@@ -233,7 +229,7 @@
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 2.36rem;
+      top: 1.48rem;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;

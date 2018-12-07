@@ -4,7 +4,7 @@
       <div class="me" @click.stop.prevent="change">
         <img :src="src">
       </div>
-      <img src="./charts@2x.png" alt="" class="charts" @click.stop.prevent="go('/charts')">
+      <img src="./charts@2x.png" alt="" class="charts" @click.stop.prevent="go('/allCharts')">
       <!--<div @click="go('/homepage?type=1')" class="block t1"></div>-->
       <!--<div @click="go('/homepage?type=2')" class="block t2"></div>-->
       <!--<div @click="go('/homepage?type=3')" class="block t3"></div>-->
@@ -14,7 +14,7 @@
       <div class="mask" @click="change"></div>
       <div class="me-content" v-show="flag">
         <div class="me-info">
-          <img :src="src">
+          <img :src="src" @click="go(`/userAvatar`)">
           <div class="text">
             <p><span>{{user.nickname ? user.nickname : '未设置昵称'}}</span><span class="lv">LV {{user.level}}</span></p>
           </div>
@@ -22,7 +22,7 @@
         <div class="me-content-list">
           <div class="item" @click="go('/userInfo')">
             <img src="./change-avatar@2x.png">
-            <span>修改头像</span>
+            <span>完善资料</span>
           </div>
           <div class="item" @click="go('/carbon-bubble')">
             <img src="./carbon-bubble@2x.png">

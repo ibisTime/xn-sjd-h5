@@ -9,6 +9,9 @@
                 <p>支付成功</p>
               <!--<button class="toOrder" @click="$router.push('/me')">返回个人中心</button>-->
             </div>
+          <div class="home" @click="$router.push(`/home`)">
+            <img src="./home.png">
+          </div>
         </div>
     </div>
 </template>
@@ -54,6 +57,21 @@
       }
       img{
         width: 1.5rem;
+      }
+      .home {
+        width: 1rem;
+        height: 1rem;
+        position: fixed;
+        right: 0.3rem;
+        bottom: 1.3rem;
+        background-size: 100% 100%;
+        background-color: $primary-color;
+        border-radius: 50%;
+        padding: 0.2rem;
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
     }
 </style>

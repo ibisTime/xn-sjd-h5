@@ -379,7 +379,9 @@
         // 加关注
         } else {
           addRelationship(this.currentHolder).then((data) => {
-            this.isFriend = true;
+            // this.isFriend = true;
+            this.text = '已发送申请，待该用户审核';
+            this.$refs.toast.show();
             this.loading = false;
           }, () => { this.loading = false; });
         }
