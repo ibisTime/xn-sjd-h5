@@ -205,11 +205,8 @@
         this.$refs.toast.show();
       },
       saveMessage() {
-        if(this.perConfig.idPic === '' ||
-          this.perConfig.backIdPic === '' ||
-          this.perConfig.idNo === '' ||
-          this.perConfig.realName === '' ||
-          this.perConfig.introduce === '') {
+        if(this.perConfig.idNo === '' ||
+          this.perConfig.realName === '') {
           this.toastText = '请填写完整';
           this.$refs.toast.show();
           return;

@@ -65,7 +65,7 @@
     </Scroll>
     <div class="footer">
         <div class="foo-left">
-            <p>合计：<span>¥{{totalPrice}}</span></p>
+            <p>合计：<span>¥{{affTotalPrice}}</span></p>
         </div>
         <div class="foo-right" @click="qrorderFn">
             确认购买
@@ -97,6 +97,7 @@ export default {
       setPrice: 0,
       singPrice: 0,
       totalPrice: 0,
+      affTotalPrice: 0,
       logistics: {},
       applyNote: '',
       config: {     // 直接购买下单参数
@@ -175,10 +176,10 @@ export default {
         orderPostage(this.postageConfig).then(data => {
           this.postalFee = data.postalFee;
           let all = this.totalPrice + this.postalFee;
-          this.totalPrice = formatAmount(all);
+          this.affTotalPrice = formatAmount(all);
         });
       }else{
-        this.totalPrice = formatAmount(this.totalPrice);
+        this.affTotalPrice = formatAmount(this.totalPrice);
       }
       this.config.specsId = this.shopMsgList[0].specsId;
       if(this.shopMsgList.length === 1 && this.shopMsgList[0].setPrice) {
@@ -243,7 +244,7 @@ export default {
     },
     singPriceFn() {
       this.singPrice = this.setPrice * this.shopMsgList[0].quantity;
-      this.totalPrice = formatAmount(this.singPrice + this.postalFee);
+      this.affTotalPrice = formatAmount(this.singPrice + this.postalFee);
     },
     qrorderFn() {
       if(!this.ressee) {
@@ -265,7 +266,7 @@ export default {
         this.loading = false;
         this.textMsg = '下单成功';
         this.$refs.toast.show();
-        sessionStorage.setItem('totalPrice', this.totalPrice);
+        sessionStorage.setItem('totalPrice', this.affTotalPrice);
         sessionStorage.removeItem('setRess');
         setTimeout(() => {
           this.go('/pay?code=' + data.code + '&storeType=one');
@@ -281,7 +282,7 @@ export default {
         this.loading = false;
         this.textMsg = '下单成功';
         this.$refs.toast.show();
-        sessionStorage.setItem('totalPrice', this.totalPrice);
+        sessionStorage.setItem('totalPrice', this.affTotalPrice);
         sessionStorage.removeItem('setRess');
         setTimeout(() => {
           this.go('/pay?code=' + data.code + '&storeType=more');

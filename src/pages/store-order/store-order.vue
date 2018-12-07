@@ -378,21 +378,23 @@ export default {
       }
       .sing-con{
         height: 2.1rem;
+        width: 100%;
         padding: 0 0.3rem;
         display: flex;
         align-items: center;
         .s-con_left{
-            width: 1.6rem;
-            height: 1.6rem;
-            .l-img{
-                width: 100%;
-                height: 100%;
-                background-size: 100% 100%;
-                background-image: url('./shop.png');
-            }
+          width: 1.6rem;
+          height: 1.6rem;
+          flex: 0 0 1.6rem;
+          .l-img{
+            width: 100%;
+            height: 100%;
+            background-size: 100% 100%;
+            background-image: url('./shop.png');
+          }
         }
         .s-con_right{
-            width: 75%;
+            width: 73%;
             height: 1.6rem;
             padding-left: 0.2rem;
             box-sizing: border-box;
