@@ -1,7 +1,7 @@
 <template>
   <transition name="slide">
     <div class="person-auth-wrapper">
-      <Scroll :pullUpLoad="pullUpLoad">
+      <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
         <div class="form-wrapper">
           <div class="form-item border-bottom-1px">
             <div class="item-label">企业名称</div>
@@ -360,9 +360,12 @@
 <style lang="scss" scoped rel="stylesheet/scss">
   @import "~common/scss/variable";
   .person-auth-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
     padding-bottom: 0.5rem;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     background-color: #fff;;
     .form-wrapper {
       padding: 0rem 0.3rem;

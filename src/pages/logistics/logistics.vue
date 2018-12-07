@@ -1,26 +1,30 @@
 <template>
   <transition name="logistics">
     <div class="logistics-wrapper">
-      <div class="logi-header">
-        <div class="head-left">
-          <img :src="getImgSyl(logisticData.shopPic)" alt="">
+      <Scroll ref="scroll" :pullUpLoad="null">
+        <div class="logall-content">
+          <div class="logi-header">
+            <div class="head-left">
+              <img :src="getImgSyl(logisticData.shopPic)" alt="">
+            </div>
+            <div class="head-right">
+              <p>物流状态：<span class="status">{{logisticData.statusTxt}}</span></p>
+              <p>承运来源：{{logisticData.logicPany}}</p>
+              <p>物流单号：{{expNo}}</p>
+            </div>
+          </div>
+          <p class="hr"></p>
+          <div class="logi-content">
+            <div class="logi-zz" ref="logizz" v-show="logisticsData.length > 1"></div>
+            <div class="logi-box" ref="logibox" v-for="(item, index) in logisticsData" :key="index">
+              <p class="logi-p">{{item.AcceptStation}}</p>
+              <p>{{item.AcceptTime ? item.AcceptTime : '--'}}</p>
+              <span :class='{"new-logi": index === 0}'></span>
+            </div>
+            <no-result v-show="!logisticsData.length" class="no-result-wrapper" title="暂无物流消息"></no-result>
+          </div>
         </div>
-        <div class="head-right">
-          <p>物流状态：<span class="status">{{logisticData.statusTxt}}</span></p>
-          <p>承运来源：{{logisticData.logicPany}}</p>
-          <p>物流单号：{{expNo}}</p>
-        </div>
-      </div>
-      <p class="hr"></p>
-      <div class="logi-content">
-        <div class="logi-zz" ref="logizz" v-show="logisticsData.length > 1"></div>
-        <div class="logi-box" ref="logibox" v-for="(item, index) in logisticsData" :key="index">
-          <p class="logi-p">{{item.AcceptStation}}</p>
-          <p>{{formatDate(item.AcceptTime)}}</p>
-          <span :class='{"new-logi": index === 0}'></span>
-        </div>
-        <no-result v-show="!logisticsData.length" class="no-result-wrapper" title="暂无物流消息"></no-result>
-      </div>
+      </Scroll>
       <full-loading v-show="loading" title="正在加载中..."></full-loading>
     </div>
   </transition>
@@ -28,6 +32,7 @@
 <script>
   import FullLoading from 'base/full-loading/full-loading';
   import NoResult from 'base/no-result/no-result';
+  import Scroll from 'base/scroll/scroll';
   import { lookLogistics } from 'api/store';
   import { setTitle, formatImg, formatDate } from 'common/js/util';
 
@@ -88,7 +93,8 @@
     },
     components: {
       FullLoading,
-      NoResult
+      NoResult,
+      Scroll
     }
   };
 </script>
@@ -96,8 +102,11 @@
   @import "~common/scss/variable";
 
   .logistics-wrapper {
+    position: fixed;
+    left: 0;
+    top: 0;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     font-size: 0.3rem;
     color: #999;
     font-family: PingFang-SC-Medium;

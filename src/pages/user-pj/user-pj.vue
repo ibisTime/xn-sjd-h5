@@ -2,7 +2,9 @@
     <div>
         <div class="content">
             <div class="pj-con">
+              <Scroll ref="scroll" :pullUpLoad="null">
                 <textarea name="" v-model="pjText" placeholder="宝贝满足你的期待吗？说说你的使用心情，分享给想买的他们吧"></textarea>
+              </Scroll>
             </div>
             <div class="pj-img">
                 <div class="img-box">
@@ -41,6 +43,7 @@ import { getImgData, formatImg, getUserId, setTitle } from 'common/js/util';
 import { addACommemt } from 'api/store';
 import { getQiniuToken } from 'api/general';
 import Toast from 'base/toast/toast';
+import Scroll from 'base/scroll/scroll';
 import FullLoading from 'base/full-loading/full-loading';
 export default {
   data() {
@@ -94,9 +97,16 @@ export default {
       this.commentConfig.content = conText + conImg;
       addACommemt(this.commentConfig).then(data => {
         this.loading = false;
-        this.text = '评论成功';
-        this.$refs.toast.show();
-        this.$router.push('/store-order_detail?code=' + this.toCode);
+        if(data.filterFlag === '2') {
+          this.text = '评论成功, 您的评论中存在敏感字，平台将进行审核';
+          this.$refs.toast.show();
+        }else {
+          this.text = '评论成功';
+          this.$refs.toast.show();
+        }
+        setTimeout(() => {
+          this.$router.push('/store-order_detail?code=' + this.toCode);
+        }, 1500);
       }, () => {
         this.loading = false;
       });
@@ -173,6 +183,7 @@ export default {
   components: {
     Qiniu,
     Toast,
+    Scroll,
     FullLoading
   }
 };
@@ -197,15 +208,14 @@ export default {
         background-color: #f5f5f5;
     }
     .pj-con{
-        padding: 0 0.3rem;
-        height: 2.2rem;
-        font-size: 0.28rem;
-        line-height: 1.3;
-        textarea{
-            width: 100%;
-            height: 100%;
-            padding: 0.1rem;
-        }
+      padding: 0 0.3rem;
+      font-size: 0.28rem;
+      line-height: 1.3;
+      textarea{
+        width: 100%;
+        min-height: 2.5rem;
+        padding: 0.1rem;
+      }
     }
     .img-box{
         margin-left: 0.3rem;
@@ -221,8 +231,8 @@ export default {
             top: 0;
             z-index: 9;
             input{
-                width: 100%;
-                height: 100%;
+                width: 1.8rem;
+                height: 1.8rem;
             }
         }
         .zp-box{
