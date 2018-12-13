@@ -63,7 +63,8 @@
         this.code = this.$route.query.code;
         Promise.all([
           getAdoptList({
-            productCode: this.code
+            productCode: this.code,
+            statusList: [1, 2, 3]
           })
         ]).then(([res1]) => {
           this.dataList = res1;

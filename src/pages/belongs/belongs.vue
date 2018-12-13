@@ -6,12 +6,12 @@
               :data="dataList"
               :pullUpLoad="pullUpLoad">
         <div class="item" v-for="(item, index) in dataList " :key="index">
-          <div class="userPhoto" :style="getImgSyl(item.user ? item.user.photo : '')"></div>
+          <div class="userPhoto" :style="getImgSyl(item.photo || '')"></div>
           <div class="info">
             <p class="name">{{item.nickname ? item.nickname : jiami(item.mobile)}}</p>
             <p class="date">{{formatDate(detail.createDatetime || item.createDatetime, 'yyyy-MM-dd')}}</p>
           </div>
-          <span class="price">¥{{formatAmount(detail.price)}} x{{detail.quantity}}</span>
+          <!--<span class="price">¥{{formatAmount(detail.price)}} x{{detail.quantity}}</span>-->
         </div>
         <no-result v-show="!(dataList && dataList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
       </Scroll>

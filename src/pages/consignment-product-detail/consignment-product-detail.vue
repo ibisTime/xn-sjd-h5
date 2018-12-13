@@ -501,7 +501,6 @@ export default {
             }
           });
         }
-        // this.go(`/protocol?sign=1&jishou=1&proCode=${proCode}&quantity=${quantity}`);
       } else {
         this.text = '您未登录';
         this.$refs.toast.show();
@@ -637,7 +636,6 @@ export default {
           });
         }).catch(() => { this.loading = false; });
       } else {
-        this.buy = true;
         this.showBottom = this.buy;
         this.derive = true;
         Promise.all([
@@ -647,7 +645,6 @@ export default {
           getDictList('pack_unit'),
           getDictList('output_unit')
         ]).then(([res1, res2, res3]) => {
-          // debugger;
           this.loading = false;
           this.detail = res1;
           this.detailDescription = res1.presellProduct.description;
