@@ -1,6 +1,7 @@
 <template>
     <div class="sale-wallper">
         <div class="content">
+          <Scroll ref="scroll" :pullUpLoad="null">
             <div class="sale-head">
                 <div class="sale-jtk" @click="setSaleFn('0')">
                     <div class="jtk-left sale-left">
@@ -59,10 +60,27 @@
                       <span v-show="errors.has('deliver')" class="error-tip">{{errors.first('deliver')}}</span>
                     </div>
                 </div>
+              <div class="sale-box01">
+                <div class="box-left">
+                  <p>退款原因</p>
+                </div>
+                <div class="box-right">
+                  <textarea name="why" type="text" placeholder="请输入退款原因(选填)" v-model="refundReason"></textarea>
+                </div>
+              </div>
+              <div class="sale-box01">
+                <div class="box-left">
+                  <p>留言</p>
+                </div>
+                <div class="box-right">
+                  <textarea name="why" type="text" placeholder="欢迎留言`(选填)" v-model="message"></textarea>
+                </div>
+              </div>
             </div>
             <div class="sale-foo" v-show="isset" @click="afterSale">
                 提交
             </div>
+          </Scroll>
         </div>
         <full-loading v-show="loading" :title="loadingText"></full-loading>
         <toast ref="toast" :text="textMsg"></toast>
@@ -71,6 +89,7 @@
 
 <script>
 import FullLoading from 'base/full-loading/full-loading';
+import Scroll from 'base/scroll/scroll';
 import Toast from 'base/toast/toast';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { refundMoney, salesReturn, oneStoreOrder } from 'api/store';
@@ -87,15 +106,21 @@ export default {
         logisticsCompany: '',    // 物流公司
         logisticsNumber: '',    // 物流单号
         refundAmount: '',    // 退款金额
-        deliver: ''    // 发货人
+        deliver: '',    // 发货人
+        refundReason: '',
+        message: ''
       },
       refundConfig: {  // 退款入参
         orderDetailCode: '',
         refundAmount: '',
+        refundReason: '',
+        message: '',
         applyUser: getUserId()
       },
       refundAmount: '',
       orderDetailCode: '',
+      refundReason: '',
+      message: '',
       toCode: '',
       jfMount: 0,
       postalFee: 0
@@ -134,6 +159,8 @@ export default {
       };
     },
     setSaleFn(index) {
+      this.refundReason = '';
+      this.message = '';
       if(index === this.setIndex) {
         this.setIndex = '';
         this.isset = false;
@@ -153,6 +180,8 @@ export default {
           this.loading = true;
           this.refundConfig.refundAmount = parseFloat(this.refundAmount) * 1000;
           this.refundConfig.orderDetailCode = this.orderDetailCode;
+          this.refundConfig.refundReason = this.refundReason;
+          this.refundConfig.message = this.message;
           refundMoney(this.refundConfig).then(data => {
             this.loading = false;
             this.textMsg = '申请成功';
@@ -174,6 +203,8 @@ export default {
           this.loading = true;
           this.salesConfig.refundAmount = parseFloat(this.refundAmount) * 1000;
           this.salesConfig.orderDetailCode = this.orderDetailCode;
+          this.salesConfig.refundReason = this.refundReason;
+          this.salesConfig.message = this.message;
           salesReturn(this.salesConfig).then(data => {
             this.loading = false;
             this.textMsg = '申请成功';
@@ -191,7 +222,8 @@ export default {
   },
   components: {
     FullLoading,
-    Toast
+    Toast,
+    Scroll
   }
 };
 </script>
@@ -219,6 +251,7 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
+    padding-bottom: 0.6rem;
     overflow: auto;
     background-color: #fff;
     font-family: PingFangSC-Regular;
@@ -271,7 +304,6 @@ export default {
     .sale-con{
       padding: 0 0.3rem;
         >div{
-            height: 1.2rem;
             padding: 0.38rem 0;
             font-family: PingFang-SC-Medium;
             letter-spacing: 0.0022rem;
@@ -285,6 +317,11 @@ export default {
             }
             .box-right{
                 width: 70%;
+              textarea{
+                height: 1.2rem;
+                line-height: 1.2;
+                width: 100%;
+              }
             }
         }
     }
