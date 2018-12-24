@@ -37,13 +37,6 @@
           <span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>
         </div>
       </div>
-      <!--<div class="form-item border-bottom-1px">-->
-        <!--<div class="item-label">身份证</div>-->
-        <!--<div class="item-input-wrapper">-->
-          <!--<input type="text" class="item-input" v-model="idCard" v-validate="'required|idCard'" name="idCard" placeholder="持卡人身份证号">-->
-          <!--<span v-show="errors.has('idCard')" class="error-tip">{{errors.first('idCard')}}</span>-->
-        <!--</div>-->
-      <!--</div>-->
       <div class="form-item border-bottom-1px">
         <div class="item-label">手机号</div>
         <div class="item-input-wrapper">
@@ -68,7 +61,6 @@
   </div>
 </template>
 <script>
-  // import {SET_BANKCARD_LIST} from 'store/mutation-types';
   import {getBankCardList, getBankCodeList, addBankCard, editBankCard, getBankCardDetail} from 'api/account';
   import FullLoading from 'base/full-loading/full-loading';
   import Toast from 'base/toast/toast';
@@ -93,7 +85,6 @@
         bindMobile: '',
         text: '新增成功',
         captBtnText: '获取验证码',
-        // idCard: '',
         captcha: '',
         sending: false,
         userBackCode: '802020',
@@ -103,7 +94,6 @@
         bankcardDetail: {bankcardNumber: '', bankName: '', realName: '', bindMobile: ''},
         userDetail: {
           realName: '',
-          // idCard: '',
           mobile: ''
         }
       };

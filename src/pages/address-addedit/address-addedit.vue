@@ -161,24 +161,6 @@
             this.$refs.toast.show();
           }
         });
-        // if (this.errors.items.length === 0 && this.mobile && this.name && this.address) {
-        //   this.setting = true;
-        //   let param = {
-        //     addressee: this.name,
-        //     mobile: this.mobile,
-        //     province: this.province,
-        //     city: this.city,
-        //     district: this.district,
-        //     detailAddress: this.address
-        //   };
-        //   if (this.code) {
-        //     param.code = this.code;
-        //     param.isDefault = this.isDefault;
-        //     this._editAddress(param);
-        //   } else {
-        //     this._addAddress(param);
-        //   }
-        // }
       },
       _editAddress(param) {
         if(this.errors.items.length === 0) {
@@ -186,16 +168,6 @@
             this.setting = false;
             this.toastText = '修改成功';
             this.$refs.toast.show();
-            // let addressList = this.addressList.slice();
-            // let index = addressList.findIndex((item) => {
-            //   return item.code === this.code;
-            // });
-            // if (addressList.length === 1) {
-            //   param.isDefault = '1';
-            // }
-            // addressList.splice(index, 1, param);
-            // this.setAddressList(addressList);
-            // this.setCurAddr(param);
             setTimeout(() => {
               this.$router.back();
             }, 1000);
@@ -205,24 +177,12 @@
         }
       },
       _addAddress(param) {
-        addAddress(param).then((data) => {
+        addAddress(param).then(() => {
           this.setting = false;
           this.toastText = '新增成功';
           this.$refs.toast.show();
-          // let _item = {
-          //   code: data.code,
-          //   ...param
-          // };
-          // let addressList = this.addressList.splice();
-          // if (addressList.length === 0) {
-          //   _item.isDefault = '1';
-          // }
-          // addressList.push(_item);
-          // this.setCurAddr(_item);
-          // this.setAddressList(addressList);
           setTimeout(() => {
             this.$router.back();
-            // location.replace('#/address');
           }, 1000);
         }).catch(() => {
           this.setting = false;

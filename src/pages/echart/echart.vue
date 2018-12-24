@@ -112,13 +112,9 @@
           xAxis: {
             type: 'category',
             data: this.xArr
-            // boundaryGap: false
-            // show: false
           },
           yAxis: {
             type: 'value'
-            // boundaryGap: false
-            // show: false
           },
           series: [{
             data: this.dataArr,
@@ -174,13 +170,11 @@
             this.dataArr.push(formatAmount(item.price));
             this.xArr.push(formatDate(item.claimDatetime, 'hh:mm:ss'));
           });
-          console.log(this.dataArr);
           this.drawPie('main');
           this.loading = false;
         }).catch(() => { this.loading = false; });
       },
       sendMessage(pinzhong) {
-        // debugger;
         this.variety = pinzhong;
         this.start = 1;
         this.limit = 10;
@@ -192,11 +186,7 @@
       }
     },
     mounted() {
-      // this.$nextTick(function() {
-      //   this.drawPie('main');
-      // });
       setTitle('交易动态');
-      // this.getPageOrders();
     },
     components: {
       Toast,

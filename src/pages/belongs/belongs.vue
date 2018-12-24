@@ -1,6 +1,5 @@
 <template>
   <div class="adopt-list-wrapper">
-    <!--<m-header class="cate-header" title="已认养名单"></m-header>-->
     <div class="adopt-list">
       <scroll ref="scroll"
               :data="dataList"
@@ -11,7 +10,6 @@
             <p class="name">{{item.nickname ? item.nickname : jiami(item.mobile)}}</p>
             <p class="date">{{formatDate(detail.createDatetime || item.createDatetime, 'yyyy-MM-dd')}}</p>
           </div>
-          <!--<span class="price">¥{{formatAmount(detail.price)}} x{{detail.quantity}}</span>-->
         </div>
         <no-result v-show="!(dataList && dataList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
       </Scroll>

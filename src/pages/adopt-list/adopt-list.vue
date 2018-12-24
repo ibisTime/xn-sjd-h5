@@ -1,6 +1,5 @@
 <template>
   <div class="adopt-list-wrapper">
-    <!--<m-header class="cate-header" title="已认养名单"></m-header>-->
     <div class="adopt-list">
       <scroll ref="scroll"
               :data="dataList"

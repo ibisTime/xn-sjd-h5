@@ -43,9 +43,7 @@
   import NoResult from 'base/no-result/no-result';
   import MHeader from 'components/m-header/m-header';
   import {setTitle} from 'common/js/util';
-  // import {SET_ADDRESS_LIST, SET_CURRENT_ADDR} from 'store/mutation-types';
   import {deleteAddress, getAddressList, setDefaultAddress} from 'api/user';
-  // import {mapGetters, mapMutations, mapActions} from 'vuex';
   import { changeOrderRess } from 'api/store';
 
   export default {
@@ -77,19 +75,6 @@
     updated() {
       this.getAddress();
     },
-    computed: {
-      // ...mapGetters([
-      //   'addressList'
-      // ])
-      /* {
-          name: '东南',
-          mobile: '18888888888',
-          province: '浙江省',
-          city: '杭州市',
-          area: '余杭区',
-          address: '仓前街道'
-        } */
-    },
     methods: {
       action() {
         sessionStorage.removeItem('ressCode');
@@ -104,7 +89,6 @@
             getAddressList().then((data) => {
               this.addressList = data;
               this.hasMore = false;
-              // this.setAddressList(data);
             }).catch(() => {
               this.hasMore = false;
             });
@@ -127,9 +111,6 @@
           this.loadingFlag = true;
           setDefaultAddress(item.code).then(() => {
             this.loadingFlag = false;
-            // this.setDefaultAddress({
-            //   code: item.code
-            // });
             this.addressList.forEach((item, i) => {
               if (index === i) {
                 this.addressList[index].isDefault = '1';
@@ -169,9 +150,6 @@
           this.loadingFlag = true;
           deleteAddress(this.currentItem.code).then(() => {
             this.loadingFlag = false;
-            // this.deleteAddress({
-            //   code: this.currentItem.code
-            // });
             this.addressList.splice(this.deleteIndex, 1);
             if(this.deleteIndex < this.isokIndex) {
               this.isokIndex --;
@@ -204,7 +182,6 @@
           }else {
             this.text = '操作成功';
             this.$refs.toast.show();
-            // sessionStorage.removeItem('setRess');
             setTimeout(() => {
               this.go(this.toBank);
             }, 1000);

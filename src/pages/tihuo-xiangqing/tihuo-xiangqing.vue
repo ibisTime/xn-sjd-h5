@@ -308,32 +308,6 @@
 
           .default {
             flex: 1;
-
-            .icon-chose {
-              margin-left: 0.3rem;
-              display: inline-block;
-              vertical-align: middle;
-              width: 0.36rem;
-              height: 0.36rem;
-              background-size: 0.36rem;
-              @include bg-image('un-select');
-
-              &.active {
-                @include bg-image('selected');
-              }
-            }
-
-            span {
-              display: inline-block;
-              vertical-align: middle;
-              padding-left: 0.1rem;
-              line-height: 0.33rem;
-              font-size: $font-size-small;
-              color: $color-text-l;
-            }
-            .act {
-              color: $primary-color;
-            }
           }
 
           button {
@@ -347,10 +321,6 @@
             color: #666;
           }
 
-          .delete {
-            margin-left: 0.5rem;
-            margin-right: 0.3rem;
-          }
         }
       }
     }
@@ -492,39 +462,6 @@
         padding: 0 0.3rem;
         @include border-top-1px($color-border);
 
-        .default {
-
-          .add-address-text {
-            color: #b3b3b3;
-            font-size: 0.24rem;
-          }
-          .icon-chose {
-            margin-left: 0.3rem;
-            display: inline-block;
-            vertical-align: middle;
-            width: 0.36rem;
-            height: 0.36rem;
-            background-size: 0.36rem;
-            @include bg-image('un-select');
-
-            &.active {
-              @include bg-image('selected');
-            }
-          }
-
-          span {
-            display: inline-block;
-            vertical-align: middle;
-            padding-left: 0.1rem;
-            line-height: 0.33rem;
-            font-size: $font-size-small;
-            color: $color-text-l;
-          }
-          .act {
-            color: $primary-color;
-          }
-        }
-
         button {
           display: inline-block;
           vertical-align: middle;
@@ -534,11 +471,6 @@
           border: 1px solid #979797;
           border-radius: 0.04rem;
           color: #666;
-        }
-
-        .delete {
-          margin-left: 0.5rem;
-          margin-right: 0.3rem;
         }
       }
     }

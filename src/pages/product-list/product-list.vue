@@ -195,6 +195,7 @@ export default {
       this.currentIndex = index;
       this.start = 1;
       this.limit = 10;
+      this.hasMore = true;
       this.proList = [];
       this.loading = true;
       this.getSubType();

@@ -68,13 +68,6 @@
         context: '<table><tbody><tr><td width="240px" height="240px"><img id="qrimage" src="//qr.api.cli.im/qr?data=http%253A%252F%252F192.168.1.162%253A8033%252F%2523%252Fregister&amp;level=H&amp;transparent=false&amp;bgcolor=%23ffffff&amp;forecolor=%23000000&amp;blockpixel=12&amp;marginblock=1&amp;logourl=&amp;size=260&amp;kid=cliim&amp;key=9ee0765087ace26c717af8d86bd50a6e"></td></tr></tbody></table>'
       };
     },
-    // created() {
-    //   this.userReferee = this.$route.query.userReferee;
-    //   this.code = this.$route.query.code;
-    //   if(this.userReferee) {
-    //     this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
-    //   }
-    // },
     mounted() {
       setTitle('文章详情');
       this.userReferee = this.$route.query.userReferee;

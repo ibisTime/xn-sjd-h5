@@ -195,6 +195,7 @@ export default {
       this.currentIndex = index;
       this.start = 1;
       this.limit = 10;
+      this.hasMore = true;
       this.proList = [];
       this.categorysSub = [{value: '全部', key: 'all'}];
       this.getSubType();
