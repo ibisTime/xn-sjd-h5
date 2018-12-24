@@ -174,7 +174,7 @@ export default {
                         <div class="foo-btn topay set-btn">立即付款</div>`;
           break;
         case '1':
-          this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>`;
+          this.operHtml = ``;
           break;
         case '2':
           this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
@@ -281,8 +281,12 @@ export default {
                   this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
                   break;
                 case '3':
-                  this.orderStuTxt = '售后完成';
-                  this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn">售后完成</div>`);
+                  this.orderStuTxt = '退款成功';
+                  this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn">退款成功</div>`);
+                  break;
+                case '8':
+                  this.orderStuTxt = '退款失败';
+                  this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn">退款失败</div>`);
                   break;
               }
             }else {
@@ -299,7 +303,7 @@ export default {
         }else {
           this.orderOperFn(data.status);
         }
-        if(Number(data.status) > 1) {
+        if(Number(data.status) > 0) {
           this.isRess = false;
         }
       }, () => {

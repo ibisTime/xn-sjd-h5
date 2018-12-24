@@ -185,7 +185,7 @@ export default {
                         <div class="foo-btn topay set-btn">立即付款</div>`;
           break;
         case '1':
-          this.operHtml = `<div class="foo-btn change-site set-btn">修改地址</div>`;
+          this.operHtml = ``;
           break;
         case '2':
           this.operHtml = `<div class="foo-btn order-take set-btn">确认收货</div>
