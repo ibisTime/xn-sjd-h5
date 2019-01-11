@@ -1,6 +1,6 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
-    <!--<m-header class="cate-header" title="设置"></m-header>-->
+    <m-header class="cate-header" title="设置"></m-header>
     <div class="settings-list">
       <div class="item" @click="go('/change-mobile')">
         <span>修改手机号</span>
@@ -96,7 +96,7 @@
     position: fixed;
     width: 100%;
     bottom: 0.98rem;
-    top: 0;
+    top: 0.88rem;
     left: 0;
     .fl {
       float: left;

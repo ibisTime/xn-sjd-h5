@@ -106,6 +106,7 @@
             this.initMap();
             this.loading = false;
           }).catch((msg) => {
+            debugger;
             console.log(msg);
             this.text = msg;
             this.$refs.toast.show();

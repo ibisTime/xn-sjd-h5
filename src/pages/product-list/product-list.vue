@@ -1,6 +1,8 @@
 <template>
   <div class="home-wrapper">
-    <!--<m-header class="cate-header" title="认养列表"></m-header>-->
+    <div class="search-wrapper">
+      <search :left="searchLeft"></search>
+    </div>
     <div class="header clearfix category-wrapper">
       <category-scroll :currentIndex="currentIndex"
                        :categorys="categorys"
@@ -10,9 +12,6 @@
                        @select="selectCategorySub"></category-scroll>
     </div>
     <div class="content">
-      <!--<div class="bulletin">-->
-        <!--<div class="title">恭喜Bluce，成功参加See的传承认养</div>-->
-      <!--</div>-->
       <div class="hot" v-show="proList.length">
         <Scroll :data="proList"
                 :hasMore="hasMore"
@@ -21,7 +20,7 @@
           <div class="item" @click="go('/product-list/product-detail?code='+item.code)" v-for="item in proList">
             <div class="item-top">
               <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-              <div class="sell-type-right" :style="{background: canAdopt(item).canAdoptFlag ? '#23ad8c' : ''}">{{canAdopt(item).noAdoptReason}}</div>
+              <div class="sell-type-right">{{canAdopt(item).noAdoptReason}}</div>
               <img :src="formatImg(item.listPic)" class="hot-pro-img">
               <div class="prograss-bar" v-if="item.sellType === '4'">
                 <div class="nowCount" :style="{width: getWidth(item)+'%'}"></div>
@@ -31,8 +30,7 @@
             </div>
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
-              <p class="hot-pro-place"><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
-              <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.productSpecsList.length > 1">起</span></span></p>
+              <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.productSpecsList.length > 1">起</span></span><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
             </div>
           </div>
         </div>
@@ -52,8 +50,8 @@ import Toast from 'base/toast/toast';
 import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
-import MHeader from 'components/m-header/m-header';
 import Scroll from 'base/scroll/scroll';
+import Search from 'components/search/search';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
@@ -86,7 +84,10 @@ export default {
       currentIndex: +this.$route.query.index || 0,
       currentIndexSub: +this.$route.query.index || 0,
       index: 0,
-      indexSub: 0
+      indexSub: 0,
+      searchLeft: {
+        back: true
+      }
     };
   },
   methods: {
@@ -322,8 +323,8 @@ export default {
     Toast,
     Slider,
     NoResult,
-    MHeader,
     Scroll,
+    Search,
     CategoryScroll
   }
 };
@@ -343,9 +344,13 @@ export default {
   .fr {
     float: right;
   }
+  .search-wrapper {
+    background: $primary-color;
+    height: 0.88rem;
+  }
   .category-wrapper {
     position: absolute;
-    top: 0;
+    top: 0.88rem;
     left: 0;
     width: 100%;
     height: 1.6rem;
@@ -372,8 +377,7 @@ export default {
       padding: 0 0.3rem 0;
       background: $color-highlight-background;
       position: absolute;
-      /*top: 2.4rem;*/
-      top: 1.6rem;
+      top: 2.48rem;
       bottom: 0;
       left: 0;
       right: 0;
@@ -385,11 +389,8 @@ export default {
         flex-wrap: wrap;
         font-size: 0;
         .item {
-          width: 3.3rem;
-          /*height: 5.17rem;*/
-          margin-top: 0.3rem;
-          border: 1px solid #e6e6e6;
-          border-radius: 0.04rem;
+          width: 3.35rem;
+          margin-top: 0.24rem;
           display: inline-block;
           position: relative;
           .item-top {
@@ -398,12 +399,11 @@ export default {
               position: absolute;
               left: 0;
               top: 0;
-              background: #F7B524;
-              /*opacity: 0.5;*/
-              padding: 0 0.1rem;
-              height: 0.4rem;
-              font-size: 0.24rem;
-              line-height: 0.4rem;
+              background: $primary-color;
+              padding: 0 0.2rem;
+              height: 0.36rem;
+              font-size: 0.22rem;
+              line-height: 0.36rem;
               text-align: center;
               color: $color-highlight-background;
               border-radius: 0.05rem;
@@ -411,20 +411,21 @@ export default {
             .sell-type-right {
               position: absolute;
               right: 0;
-              top: 0;
-              background: #969998;
-              /*opacity: 0.5;*/
+              bottom: 0.4rem;
+              background: #ec554e;
               padding: 0 0.1rem;
-              height: 0.4rem;
-              font-size: 0.24rem;
-              line-height: 0.4rem;
+              height: 0.36rem;
+              font-size: 0.22rem;
+              line-height: 0.36rem;
               text-align: center;
               color: $color-highlight-background;
-              border-radius: 0.05rem;
+              border-top-left-radius: 0.1rem;
+              border-bottom-left-radius: 0.1rem;
             }
             .hot-pro-img {
               height: 3.3rem;
               width: 100%;
+              border-radius: 0.15rem;
             }
             .prograss-bar {
               width: 100%;
@@ -456,29 +457,27 @@ export default {
             }
           }
           .hot-pro-text {
-            padding: 0 0.2rem 0.2rem;
+            padding: 0 0.1rem;
             p {
               font-size: 0;
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
             }
             .hot-pro-title {
               font-size: $font-size-medium-x;
               line-height: 0.42rem;
-              margin-bottom: 0.19rem;
+              margin-bottom: 0.15rem;
+              margin-top: 0.15rem;
             }
-            .hot-pro-place {
-              margin-bottom: 0.17rem;
-              .hot-pro-introduction {
-                color: $color-text-l;
-                font-size: $font-size-small;
-                line-height: $font-size-medium-xx;
-              }
-              img {
-                width: 0.77rem;
-                height: 0.32rem;
-              }
+            .hot-pro-introduction {
+              color: $color-text-l;
+              font-size: 0.22rem;
+              line-height: $font-size-medium-xx;
+              margin-bottom: 0.1rem;
             }
             .hot-pro-price {
-              color: $primary-color;
+              color: #ec554e;
               font-size: $font-size-small;
               line-height: 0.29rem;
               font-weight: bold;

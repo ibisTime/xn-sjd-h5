@@ -1,6 +1,7 @@
 <template>
   <transition name="slide">
     <div class="change-mobile-wrapper">
+      <m-header class="cate-header" title="绑定邮箱"></m-header>
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px" v-show="userDetail.email">
           <div class="item-input-wrapper">
@@ -134,7 +135,7 @@
 
   .change-mobile-wrapper {
     position: fixed;
-    top: 0;
+    top: 0.88rem;
     left: 0;
     width: 100%;
     height: 100%;

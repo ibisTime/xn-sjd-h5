@@ -8,10 +8,10 @@
       <i></i>
       <p>氧圈</p>
     </router-link>
-    <router-link tag="div" class="foot-item item-2" to="/mall">
-      <i></i>
-      <p>商城</p>
-    </router-link>
+    <!--<router-link tag="div" class="foot-item item-2" to="/mall">-->
+      <!--<i></i>-->
+      <!--<p>商城</p>-->
+    <!--</router-link>-->
     <router-link tag="div" class="foot-item item-3" to="/me">
       <b class="msg" v-show="ismsg"></b>
       <i></i>
@@ -159,12 +159,12 @@
 
       &.item-1 {
         i {
-          @include bg-image('space');
+          @include bg-image('circle');
         }
 
         &.router-link-active {
           i {
-            @include bg-image('space-act');
+            @include bg-image('circle-act');
           }
         }
       }

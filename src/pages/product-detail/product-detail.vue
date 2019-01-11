@@ -1,8 +1,8 @@
 <template>
   <div class="product-detail-wrapper">
-    <!--<m-header class="cate-header" title="产品详情"></m-header>-->
+    <back-only class="cate-header"></back-only>
     <div class="content">
-      <Scroll ref='scroll' :pullUpLoad="pullUpLoad">
+      <Scroll ref='scroll' :pullUpLoad="pullUpLoad" :data="adoptList">
         <div class="slider-wrapper">
           <slider :loop="loop">
             <div class="home-slider" v-for="item in banners" :key="item">
@@ -10,58 +10,85 @@
             </div>
           </slider>
         </div>
-      <div class="info">
-        <div class="item">
-          <span>产品名称</span><span>{{detail.name}}</span>
+        <div class="title">
+          <p>
+            <span class="sell-type">{{detail.sellType}}</span>
+            {{detail.name}}
+          </p>
+          <div class="title-second"><span class="price">¥{{formatAmount(detail.minPrice)}}</span><span class="place">杭州市 淳安县</span></div>
         </div>
-        <div class="item" v-show="detail.sellType === '3'">
-          <span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>
+        <div class="gray"></div>
+        <div class="info">
+          <div class="tab">
+            <span @click="tab = 1" :class="tab === 1 ? 'active' : ''">图文详情</span>
+            <span @click="tab = 2" :class="tab === 2 ? 'active' : ''">树木参数</span>
+            <span @click="tab = 3" :class="tab === 3 ? 'active' : ''">认养记录</span>
+          </div>
+          <div class="tab1" v-show='tab === 1'>
+            <div class="description">
+              <div class="description-title">
+                <div class="description-detail rich-text-description" v-html="detailDescription" ref="description"></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab2" v-show='tab === 2'>
+            <div class="item">
+              <span>【树木名称】</span><span>{{detail.name}}</span>
+            </div>
+            <div class="item">
+              <span>【树木学名】</span><span>{{detail.scientificName}}</span>
+            </div>
+            <div class="item">
+              <span>【树木级别】</span><span>{{detail.rank}}</span>
+            </div>
+            <div class="item">
+              <span>【树木品种】</span><span>{{detail.variety}}</span>
+            </div>
+            <div class="item">
+              <span>【所在市县】</span><span>{{detail.city}}{{detail.area}}</span>
+            </div>
+            <div class="item">
+              <span>【乡镇街道】</span><span>{{detail.town}}</span>
+            </div>
+            <div class="item">
+              <span>【树木产地】</span><span>{{detail.originPlace}}</span>
+            </div>
+            <!--<div class="item" v-show="detail.sellType === '3'">-->
+              <!--<span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>-->
+            <!--</div>-->
+            <div class="item" v-show="detail.sellType === '3'">
+              <span>【认养时间】</span><span>{{formatDate(detail.productSpecsList[0].startDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.productSpecsList[0].endDatetime, 'yyyy-MM-dd')}}</span>
+            </div>
+            <div class="item" @click="goTreeList()">
+              <span>【树木定位】</span>
+              <img src="./more@2x.png" class="fr more">
+            </div>
+            <!--<div class="item" v-show="detail.sellType === '4'">-->
+              <!--<span>已募集份数</span><span>{{detail.nowCount}}份/{{detail.raiseCount}}份</span>-->
+            <!--</div>-->
+            <!--<div class="item" @click="go(`/adopt-list?code=${code}&type=${detail.sellType}`)">-->
+              <!--<span v-show="detail.sellType !== '3'">已认养名单</span>-->
+              <!--<span v-show="detail.sellType === '3'">已捐赠名单</span>-->
+              <!--<img src="./more@2x.png" alt="" class="fr more">-->
+            <!--</div>-->
+          </div>
+          <div class="tab3" v-show='tab === 3'>
+            <div class="item" v-for="(item, index) in adoptList " @click="goUserHome(item)" :key="index">
+              <div class="userPhoto" :style="getImgSyl(item.user ? item.user.photo : '')"></div>
+              <div class="info">
+                <p class="name">{{item.user.nickname ? item.user.nickname : jiami(item.user.mobile)}}</p>
+                <p class="date">{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}</p>
+              </div>
+              <!--<span class="price">¥{{formatAmount(item.amount)}} x{{item.userAdoptTreeCount}}</span>-->
+            </div>
+            <no-result v-show="!(adoptList && adoptList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
+          </div>
         </div>
-        <div class="item" v-show="detail.sellType === '3'">
-          <span>认养时间</span><span>{{formatDate(detail.productSpecsList[0].startDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.productSpecsList[0].endDatetime, 'yyyy-MM-dd')}}</span>
-        </div>
-        <div class="item" v-show="detail.sellType === '4'">
-          <span>已募集份数</span><span>{{detail.nowCount}}份/{{detail.raiseCount}}份</span>
-        </div>
-        <div class="item">
-          <span>古树学名</span><span>{{detail.scientificName}}</span>
-        </div>
-        <div class="item">
-          <span>古树级别</span><span>{{detail.rank}}</span>
-        </div>
-        <div class="item">
-          <span>古树品种</span><span>{{detail.variety}}</span>
-        </div>
-        <div class="item">
-          <span>古树区域</span><span>{{detail.province}}{{detail.city}}{{detail.area}}</span>
-        </div>
-        <div class="item">
-          <span>乡镇/街道</span><span>{{detail.town}}</span>
-        </div>
-        <div class="item">
-          <span>古树产地</span><span>{{detail.originPlace}}</span>
-        </div>
-        <div class="item" @click="go(`/adopt-list?code=${code}&type=${detail.sellType}`)">
-          <span v-show="detail.sellType !== '3'">已认养名单</span>
-          <span v-show="detail.sellType === '3'">已捐赠名单</span>
-          <img src="./more@2x.png" alt="" class="fr more">
-        </div>
-        <div class="item" @click="goTreeList()">
-          <span>树木查看</span>
-          <img src="./more@2x.png" class="fr more">
-        </div>
-      </div>
-      <div class="gray"></div>
-      <div class="description">
-        <div class="description-title">
-          <div class="border"></div>
-          <span>图文详情</span>
-          <div class="description-detail rich-text-description" v-html="detailDescription" ref="description"></div>
-        </div>
-      </div>
       </Scroll>
     </div>
     <div class="footer">
+      <button>我的</button>
+      <button @click="showPopUp" v-show="canAdopt()">分享</button>
       <button @click="showPopUp" v-show="canAdopt()">申请认养</button>
       <button class="disabled" v-show="!canAdopt()" @click="goLogin()">{{noAdoptReason}}</button>
     </div>
@@ -121,11 +148,11 @@ import Scroll from 'base/scroll/scroll';
 import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
-import MHeader from 'components/m-header/m-header';
+import BackOnly from 'components/back-only/back-only';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
-import { getProductDetail, share } from 'api/biz';
+import { getProductDetail, share, getAdoptList } from 'api/biz';
 import { getUserDetail } from 'api/user';
 export default {
   data() {
@@ -155,7 +182,9 @@ export default {
       userDetail: {},
       noAdoptReason: '',
       freeScroll: true,
-      click: false
+      click: false,
+      tab: 1,
+      adoptList: []
     };
   },
   methods: {
@@ -226,7 +255,7 @@ export default {
         }
         // 等级定向且用户为该等级
         if(this.detail.directObject !== this.userDetail.level) {
-          this.noAdoptReason = '您不属于该产品定向的等级';
+          this.noAdoptReason = ' 您不是此树的预约认养人';  // 您不属于该产品定向的等级
           return false;
         }
       }
@@ -242,7 +271,7 @@ export default {
           }
         });
         if(!this.directFlag) {
-          this.noAdoptReason = '您不是该产品定向的用户';
+          this.noAdoptReason = ' 您不是此树的预约认养人';  // 您不是该产品定向的用户
           return false;
         }
       }
@@ -325,6 +354,23 @@ export default {
         backgroundImage: `url(${formatImg(imgs)})`
       };
     },
+    goUserHome(item) {
+      if(getUserId()) {
+        if(item.currentHolder === getUserId()) {
+          // this.go(`/homepage`);
+          this.go(`/my-tree?aTCode=${item.code}`);
+        } else {
+          // this.go(`/homepage?other=1&currentHolder=${item.currentHolder}`);
+          this.go(`/my-tree?other=1&currentHolder=${item.currentHolder}&aTCode=${item.code}`);
+        }
+      } else {
+        this.toastText = '您未登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
+      }
+    },
     // 富文本滚动
     _refreshScroll() {
       setTimeout(() => {
@@ -402,37 +448,44 @@ export default {
           }),
           getUserDetail({
             userId: this.userId
+          }),
+          getAdoptList({
+            productCode: this.code,
+            statusList: [1, 2, 3]
           })
-        ]).then(([res1, res2]) => {
+        ]).then(([res1, res2, res3]) => {
           this.loading = false;
           this.detail = res1;
           this.detailDescription = res1.description;
+          this.userDetail = res2;
+          this.adoptList = res3;
           this.banners = this.detail.bannerPic.split('||');
           if(this.banners.length >= 2) {
             this.loop = true;
-          }
-          this.userDetail = res2;
-          if(!this.isWxConfiging && !this.wxData) {
-            this.getInitWXSDKConfig();
           }
         }).catch(() => { this.loading = false; });
       } else {
         Promise.all([
           getProductDetail({
             code: this.code
+          }),
+          getAdoptList({
+            productCode: this.code,
+            statusList: [1, 2, 3]
           })
-        ]).then(([res1]) => {
+        ]).then(([res1, res2]) => {
           this.loading = false;
           this.detail = res1;
           this.detailDescription = res1.description;
+          this.adoptList = res2;
           this.banners = this.detail.bannerPic.split('||');
           if(this.banners.length >= 2) {
             this.loop = true;
           }
-          if(!this.isWxConfiging && !this.wxData) {
-            this.getInitWXSDKConfig();
-          }
         }).catch(() => { this.loading = false; });
+      }
+      if(!this.isWxConfiging && !this.wxData) {
+        this.getInitWXSDKConfig();
       }
     }
   },
@@ -446,7 +499,7 @@ export default {
     Toast,
     Slider,
     NoResult,
-    MHeader,
+    BackOnly,
     Scroll
   }
 };
@@ -474,10 +527,6 @@ export default {
     padding: 0;
     background: #f5f5f5;
   }
-  .banner-default {
-    width: 100%;
-    height: 7.5rem;
-  }
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
@@ -487,9 +536,8 @@ export default {
     right: 0;
     overflow: auto;
     .slider-wrapper {
-      padding-bottom: 0.2rem;
       background: $color-highlight-background;
-      height: 7.5rem;
+      height: 7.1rem;
       width: 100%;
       overflow: hidden;
       .slider {
@@ -510,52 +558,138 @@ export default {
         background-size: 100% 100%;
       }
     }
-    .info {
-      background: $color-highlight-background;
-      padding: 0 0.3rem;
-      .item {
-        width: 100%;
-        height: 1.1rem;
-        font-size: $font-size-medium-x;
-        line-height: 1.1rem;
-        border-bottom: 1px solid #eee;
-        span:first-child {
-          margin-right: 0.3rem;
-          width: 25%;
-          display: inline-block;
+    .title {
+      padding: 0.3rem;
+      p {
+        font-size: 0.3rem;
+        margin-bottom: 0.3rem;
+        display: flex;
+        align-items: center;
+        .sell-type {
+          background: $second-color;
+          font-size: 0.22rem;
+          color: $color-highlight-background;
+          border-radius: 0.2rem;
+          padding: 0 0.1rem;
         }
-        img {
-          height: 0.21rem;
-          margin-top: 0.4rem;
+      }
+      .title-second {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .price {
+          font-size: 0.36rem;
+          color: $second-color;
         }
-        &:last-child{
-          border-bottom: none;
+        .place {
+          color: $color-gray;
+          font-size: 0.22rem;
         }
       }
     }
-    .description {
-      background: #fff;
-      padding: 0.3rem;
-      .description-title {
-        font-size: 0;
-        .border {
-          border: 2px solid $primary-color;
-          height: 0.26rem;
-          width: 0;
-          display: inline-block;
-          margin-right: 0.08rem;
-        }
+    .info {
+      background: $color-highlight-background;
+      padding: 0 0.3rem;
+      .tab {
+        font-size: 0.26rem;
+        height: 0.64rem;
+        border-bottom: 1px solid $color-border;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
         span {
-          font-size: $font-size-medium-x;
-          line-height: 0.42rem;
+          display: inline-block;
+          color: $color-gray;
+          line-height: 0.64rem;
+          width: 30%;
+          text-align: center;
+        }
+        .active {
+          color: $second-color;
+          border-bottom: 1px solid $second-color;
         }
       }
-      .description-detail.rich-text-description{
-        padding: 0.2rem 0;
-        p {
+      .tab1 {
+        .description {
+          background: #fff;
+          .description-title {
+            font-size: 0;
+            .border {
+              border: 2px solid $primary-color;
+              height: 0.26rem;
+              width: 0;
+              display: inline-block;
+              margin-right: 0.08rem;
+            }
+            span {
+              font-size: $font-size-medium-x;
+              line-height: 0.42rem;
+            }
+          }
+          .description-detail.rich-text-description{
+            padding: 0.2rem 0;
+            p {
+              img {
+                max-width: 100%;
+                vertical-align: top !important;
+              }
+            }
+          }
+        }
+      }
+      .tab2 {
+        .item {
+          width: 100%;
+          /*height: 0.72rem;*/
+          font-size: $font-size-medium-x;
+          line-height: 0.72rem;
+          border-bottom: 1px solid #eee;
+          display: flex;
+          align-items: center;
+          span:first-child {
+            /*margin-right: 0.3rem;*/
+            width: 30%;
+            /*display: inline-block;*/
+          }
+          span:last-child {
+            flex: 1;
+          }
           img {
-            max-width: 100%;
-            vertical-align: top !important;
+            height: 0.21rem;
+          }
+          &:last-child{
+            border-bottom: none;
+            justify-content: space-between;
+          }
+        }
+      }
+      .tab3 {
+        .item {
+          width: 100%;
+          font-size: $font-size-medium-x;
+          border-bottom: 1px solid #eee;
+          padding: 0.18rem 0;
+          display: flex;
+          align-items: center;
+          .userPhoto {
+            width: 0.6rem;
+            height: 0.5rem;
+            margin-right: 0.1rem;
+          }
+          .info {
+            display: inline-block;
+            font-size: 0;
+            flex: 1;
+            padding: 0;
+            .name {
+              font-size: 0.22rem;
+              margin-bottom: 0.1rem;
+              font-weight: 500;
+            }
+            .date {
+              font-size: 0.18rem;
+              color: #999;
+            }
           }
         }
       }

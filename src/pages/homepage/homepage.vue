@@ -418,7 +418,7 @@
           this.params.categoryCode = this.categorysSub[this.indexSub].key;
         }
         this.loading = true;
-        return getListUserTree(this.params).then((userTree) => {
+        getListUserTree(this.params).then((userTree) => {
           this.userTree = userTree;
           this.loading = false;
         }, () => { this.loading = false; });

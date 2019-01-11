@@ -2,6 +2,9 @@
   <div class="home-wrapper">
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
+        <div class="search-wrapper">
+          <search :right="searchRight" @focus="go('/search')"></search>
+        </div>
         <div class="slider-wrapper">
           <slider :loop="loop">
             <div class="home-slider" v-for="item in banners" :key="item.code">
@@ -12,51 +15,45 @@
         <div class="notices">
           <img class="tit" src="./notice@2x.png">
           <div class="notice-wrap">
-            <div class="border"></div>
+            <!--<div class="border"></div>-->
             <div class="title notice" v-for="item in noticeList" v-show="noticeList.length" @click="go(`/notice-detail?code=${item.code}`)">{{cut(item.title, 15)}}</div>
             <div class="title notice" v-show="!noticeList.length">暂无公告</div>
           </div>
           <div class="more" @click="go('/notices')">更多</div>
         </div>
-        <div class="mall-list">
-          <!--<div class="icon-item" @click="goProList(item)" v-for="item in proType">-->
-            <!--<img :src="formatImg(item.pic)">-->
-            <!--<p>{{item.name}}</p>-->
-          <!--</div>-->
-          <category-scroll
-            :Type="'mall'"
-            :currentIndex="currentIndex"
-            :categorys="proType"
-            @select="selectCategory"
-          ></category-scroll>
-        </div>
-        <div class="emotion-article" @click="go('/emotion-channel')">
-          <img src="./emotion@2x.png">
-          <div class="text">
-            <p class="Chinese">优选推文，情感频道</p>
-            <p class="English">Preferred tweets, emotional channels</p>
-          </div>
-          <!--<img src="./emotion@2x.png" class="emotion">-->
-          <img src="./more@2x.png" class="more">
-        </div>
-        <!--<div class="bulletin" v-for="item in bulletinList">-->
-          <!--<img src="./bulletin@2x.png">-->
-          <!--<div class="border"></div>-->
-          <!--<div class="title">{{item.title}}</div>-->
-          <!--<div class="more">更多</div>-->
+        <!--<div class="mall-list">-->
+          <!--&lt;!&ndash;<div class="icon-item" @click="goProList(item)" v-for="item in proType">&ndash;&gt;-->
+            <!--&lt;!&ndash;<img :src="formatImg(item.pic)">&ndash;&gt;-->
+            <!--&lt;!&ndash;<p>{{item.name}}</p>&ndash;&gt;-->
+          <!--&lt;!&ndash;</div>&ndash;&gt;-->
+          <!--<category-scroll-->
+            <!--:Type="'mall'"-->
+            <!--:currentIndex="currentIndex"-->
+            <!--:categorys="proType"-->
+            <!--@select="selectCategory"-->
+          <!--&gt;</category-scroll>-->
         <!--</div>-->
+        <div class="emotion-article" @click="go('/emotion-channel')">
+          <div class="emotion-top">
+            <span class="emotion-title">情感推文</span>
+            <span class="emotion-more">查看更多<img src="./more@2x.png"/></span>
+          </div>
+          <div class="emotion-img">
+            <img src="./emotion.jpg">
+          </div>
+        </div>
         <scroll-y :contentArr="bulletinList" v-show="bulletinList.length"></scroll-y>
         <div class="gray" v-show="!bulletinList.length"></div>
         <div class="hot" v-show="proList.length">
         <div class="title">
-          <span class="fl hot-title">热门推荐</span>
-          <span class="fr more" @click="go('/hot-product-list')">更多</span>
+          <span class="fl hot-title">古树认养</span>
+          <span class="fr more" @click="go('/product-list')">查看更多<img src="./more@2x.png"/></span>
         </div>
         <div class="proList">
           <div class="item"  v-for="item in proList" @click="go('/product-detail?code='+item.code)">
             <div class="item-top">
               <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-              <div class="sell-type-right" :style="{background: canAdopt(item).canAdoptFlag ? '#23ad8c' : ''}">{{canAdopt(item).noAdoptReason}}</div>
+              <div class="sell-type-right">{{canAdopt(item).noAdoptReason}}</div>
               <img :src="formatImg(item.listPic)" class="hot-pro-img">
               <div class="prograss-bar" v-if="item.sellType === '4'">
                 <div class="nowCount" :style="{width: getWidth(item)+'%'}"></div>
@@ -66,8 +63,7 @@
             </div>
             <div class="hot-pro-text">
               <p class="hot-pro-title">{{item.name}}</p>
-              <p class="hot-pro-introduction">{{formatDate(item.updateDatetime, 'yyyy-MM-dd')}}</p>
-              <p><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.productSpecsList.length > 1">起</span></span></p>
+              <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.productSpecsList.length > 1">起</span></span><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
             </div>
           </div>
         </div>
@@ -76,7 +72,7 @@
         <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
       <!--</div>-->
       </Scroll>
-      <div class="sign" @click="action"></div>
+      <!--<div class="sign" @click="action"></div>-->
     </div>
     <full-loading v-show="loading"></full-loading>
     <m-footer></m-footer>
@@ -95,12 +91,12 @@ import MHeader from 'components/m-header/m-header';
 import CheckIn from 'base/check-in/check-in';
 import ScrollY from 'base/scroll-y/scroll-y';
 import CategoryScroll from 'base/category-scroll/category-scroll';
+import Search from 'components/search/search';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getBanner, getDictList } from 'api/general';
 import { getProductPage, getProductType, signIn, getMessagePage } from 'api/biz';
 import { getUserDetail } from 'api/user';
-// import ScrollY from "../../base/scroll-y/scroll-y";
 export default {
   // name: "home",
   data() {
@@ -125,7 +121,8 @@ export default {
       projectStatusObj: {},
       signTpp: '0',
       signDays: 0,
-      userDetail: {}
+      userDetail: {},
+      searchRight: {}
     };
   },
   methods: {
@@ -350,6 +347,10 @@ export default {
     if (this.$route.path === '/product-detail') {
       return;
     }
+    this.searchRight = {
+      cancel: false,
+      sign: true
+    };
     setTitle('氧林');
     this.pullUpLoad = null;
     this.loading = true;
@@ -384,7 +385,8 @@ export default {
     MHeader,
     CheckIn,
     Scroll,
-    CategoryScroll
+    CategoryScroll,
+    Search
   }
 };
 </script>
@@ -427,6 +429,10 @@ export default {
     left: 0;
     right: 0;
     overflow: auto;
+    .search-wrapper {
+      height: 0.88rem;
+      background: $primary-color;
+    }
     .slider-wrapper {
       background: $color-highlight-background;
       height: 3rem;
@@ -448,35 +454,35 @@ export default {
       position: relative;
       width: 100%;
       height: 0.7rem;
-      /*display: -webkit-box;*/
-      /*overflow-x: scroll;*/
-      /*-webkit-overflow-scrolling:touch;*/
+      background: #ebf6f3;
       .tit {
-        width: 0.6rem;
+        width: 0.74rem;
         height: 0.25rem;
         position: absolute;
         top: 50%;
         left: 0.3rem;
         transform: translateY(-50%);
         z-index: 99;
+        border-left: 3px solid $primary-color;
+        padding-left: 0.14rem;
       }
       .more {
         line-height: 0.33rem;
-        color: #999;
+        color: #23AD8C;
         position: absolute;
         top: 50%;
         right: 0.3rem;
         transform: translateY(-50%);
         z-index: 99;
         font-size: 0.24rem;
+        padding-left: 0.2rem;
+        border-left: 1px solid #23ad8c;
       }
       .notice-wrap{
         display: flex;
         align-items: center;
         font-size: 0.24rem;
         padding: 0.24rem 0.77rem 0.24rem 1.2rem;
-        background: $color-highlight-background;
-        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
@@ -494,26 +500,12 @@ export default {
       .notice {
         align-items: center;
         font-size: 0.24rem;
-        /*padding: 0.24rem 0.3rem;*/
-        padding: 0.24rem 0;
-        background: $color-highlight-background;
         flex: 1;
-        /*position: absolute;*/
-        /*left: 1.24rem;*/
-        /*width: calc(100% - 2.5rem);*/
-        /*overflow: scroll;*/
         .title {
           line-height: 0.33rem;
           flex: 1;
         }
       }
-      /*.notice:nth-child(1){*/
-        /*-webkit-animation: anim1 3s linear infinite;*/
-      /*}*/
-
-      /*.notice:nth-child(2){*/
-        /*-webkit-animation: anim2 3s linear infinite;*/
-      /*}*/
     }
     .icons {
       width: 100%;
@@ -539,32 +531,35 @@ export default {
       }
     }
     .emotion-article {
-      height: 1.94rem;
-      padding: 0 0.3rem;
-      display: flex;
-      align-items: center;
       background: $color-highlight-background;
-      justify-content: space-between;
-      .text {
-        .Chinese {
-          font-size: $font-size-medium-xx;
-          margin-bottom: 0.11rem;
+      padding-bottom: 0.4rem;
+      .emotion-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .emotion-title {
+          font-size: 0.3rem;
+          padding: 0.18rem 0.3rem;
+          font-weight: 500;
         }
-        .English {
-          color: #666;
-          font-size: $font-size-small-s;
-          line-height: $font-size-medium-x;
+        .emotion-more {
+          font-size: 0.24rem;
+          padding: 0.18rem 0.3rem;
+          img {
+            margin-left: 0.2rem;
+            height: 0.18rem;
+          }
         }
       }
-      img {
-        width: 1.06rem;
-      }
-      .more{
-        width: 0.3rem;
-        /*position: absolute;*/
-        /*right: 0.3rem;*/
-        /*line-height: 1.94rem;*/
-        /*margin-top: 0.5rem;*/
+      .emotion-img {
+        width: 100%;
+        height: 2rem;
+        padding: 0 0.3rem;
+        border-radius: 0.3rem;
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
     }
     .bulletins {
@@ -597,8 +592,12 @@ export default {
           flex: 1;
         }
         .more {
-          line-height: 0.33rem;
-          color: #999;
+          font-size: 0.24rem;
+          padding: 0.18rem 0.3rem;
+          img {
+            margin-left: 0.2rem;
+            height: 0.18rem;
+          }
         }
       }
       .bulletin:nth-child(1){
@@ -611,19 +610,25 @@ export default {
     }
 
     .hot {
-      padding: 0.4rem 0.3rem;
+      padding: 0.18rem 0.3rem;
       background: $color-highlight-background;
       .title {
         height: 0.45rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       .hot-title {
         font-size: $font-size-medium-xx;
         line-height: $font-size-large-x;
+        font-weight: 500;
       }
       .more {
-        line-height: 0.33rem;
-        color: #999;
-        font-size: $font-size-small;
+        font-size: 0.24rem;
+        img {
+          margin-left: 0.2rem;
+          height: 0.18rem;
+        }
       }
       .proList {
         background: $color-highlight-background;
@@ -632,11 +637,8 @@ export default {
         flex-wrap: wrap;
         font-size: 0;
         .item {
-          width: 3.3rem;
-          /*height: 4.98rem;*/
+          width: 3.35rem;
           margin-top: 0.24rem;
-          border: 1px solid #e6e6e6;
-          border-radius: 0.04rem;
           display: inline-block;
           position: relative;
           .item-top {
@@ -645,12 +647,11 @@ export default {
               position: absolute;
               left: 0;
               top: 0;
-              background: #F7B524;
-              /*opacity: 0.5;*/
-              padding: 0 0.1rem;
-              height: 0.4rem;
-              font-size: 0.24rem;
-              line-height: 0.4rem;
+              background: $primary-color;
+              padding: 0 0.2rem;
+              height: 0.36rem;
+              font-size: 0.22rem;
+              line-height: 0.36rem;
               text-align: center;
               color: $color-highlight-background;
               border-radius: 0.05rem;
@@ -658,20 +659,21 @@ export default {
             .sell-type-right {
               position: absolute;
               right: 0;
-              top: 0;
-              background: #969998;
-              /*opacity: 0.5;*/
+              bottom: 0.4rem;
+              background: #ec554e;
               padding: 0 0.1rem;
-              height: 0.4rem;
-              font-size: 0.24rem;
-              line-height: 0.4rem;
+              height: 0.36rem;
+              font-size: 0.22rem;
+              line-height: 0.36rem;
               text-align: center;
               color: $color-highlight-background;
-              border-radius: 0.05rem;
+              border-top-left-radius: 0.1rem;
+              border-bottom-left-radius: 0.1rem;
             }
             .hot-pro-img {
               height: 3.3rem;
               width: 100%;
+              border-radius: 0.15rem;
             }
             .prograss-bar {
               width: 100%;
@@ -703,7 +705,7 @@ export default {
             }
           }
           .hot-pro-text {
-            padding: 0 0.2rem;
+            padding: 0 0.1rem;
             p {
               font-size: 0;
               display: flex;
@@ -718,13 +720,12 @@ export default {
             }
             .hot-pro-introduction {
               color: $color-text-l;
-              font-size: $font-size-small;
+              font-size: 0.22rem;
               line-height: $font-size-medium-xx;
               margin-bottom: 0.1rem;
-              /*font-family: 'PingFangSC-Medium';*/
             }
             .hot-pro-price {
-              color: $primary-color;
+              color: #ec554e;
               font-size: $font-size-small;
               line-height: 0.29rem;
               font-weight: bold;

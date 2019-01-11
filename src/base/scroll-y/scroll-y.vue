@@ -3,12 +3,13 @@
     <img src="./bulletin@2x.png">
     <ul class="rollScreen_list" :style = {transform:transform} :class="{rollScreen_list_unanim:num===0}">
       <li class="rollScreen_once" v-for="(item,index) in contentArr" :key=index>
-        <span>{{item.content}}</span>
+        <span>{{item.content.substr(0,15) + '...'}}</span>
       </li>
       <li class="rollScreen_once" v-for="(item,index) in contentArr" :key=index+contentArr.length>
-        <span>{{item.content}}</span>
+        <span>{{item.content.substr(0,15) + '...'}}</span>
       </li>
     </ul>
+    <span class="more" @click="go('/me')">更多</span>
   </div>
 </template>
 
@@ -50,13 +51,18 @@
           _this.num = 0;
         }
       }, 3000);
+    },
+    methods: {
+      go(url) {
+        debugger;
+        // this.$emit('use', items);
+      }
     }
   };
 </script>
 
 <style lang="scss" scoped>
   .rollScreen_container{
-    /*display: inline-block;*/
     display: flex;
     align-items: baseline;
     position:relative;
@@ -66,9 +72,21 @@
     background: #fdf4f3;
     padding: 0 0.3rem;
     img {
-      width: 0.6rem;
+      width: 0.74rem;
       height: 0.25rem;
       margin-right: 0.11rem;
+      border-left: 3px solid #ed544d;
+      padding-left: 0.14rem;
+    }
+    .more {
+      position: absolute;
+      top: 50%;
+      right: 0.3rem;
+      transform: translateY(-50%);
+      color: #ed544d;
+      font-size: 0.24rem;
+      padding-left: 0.2rem;
+      border-left: 1px solid #ed544d;
     }
   }
   .rollScreen_list{
@@ -80,7 +98,6 @@
   .rollScreen_once {
     height: 0.7rem;
     font-size: 0.24rem;
-    /*background: #f0f9f6;*/
     background: #fdf4f3;
     padding: 0.24rem 0.3rem 0.24rem 0.2rem;
     line-height: 0.33rem;

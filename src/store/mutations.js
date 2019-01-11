@@ -19,6 +19,9 @@ const mutations = {
   },
   [types.SET_CURRENT_CON_ORDER](state, order) {
     state.currentConOrder = order;
+  },
+  [types.SET_SEARCH_HISTORY](state, history) {
+    state.searchHistory = history;
   }
   // [types.SET_USER_STATE](state, me) {
   //   state.me = new User(me);

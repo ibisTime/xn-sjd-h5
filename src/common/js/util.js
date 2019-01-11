@@ -88,7 +88,7 @@ export function isUnDefined(value) {
 //   });
 // }
 
-// // 格式化图片地址
+// 格式化图片地址
 export function formatImg(imgs, suffix = '?imageMogr2/auto-orient') {
   if(!imgs) {
     return '';
@@ -110,7 +110,7 @@ export function getdomain(ckey) {
     ckey: 'qiniu_domain'
   });
 }
-// // 根据ckey获取系统参数
+// 根据ckey获取系统参数
 // export function getSystemConfigCkey(ckey) {
 //   if (getSystemConfigCkey[ckey]) {
 //     return Promise.resolve(getSystemConfigCkey[ckey]);
@@ -288,4 +288,9 @@ export function emptyValid(value) {
     result.msg = '不能为空';
   }
   return result;
+}
+
+// 加密手机号
+export function jiami(mobile) {
+  return mobile.substr(0, 3) + '****' + mobile.substr(7);
 }

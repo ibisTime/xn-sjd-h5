@@ -1,6 +1,15 @@
 <template>
   <div class="emotion-channel-wrapper">
     <m-header class="cate-header" title="情感频道" actText="发布" @action="action"></m-header>
+    <div class="tab">
+      <span :class="time ? 'active' : ''" @click="changeTime">按发布时间排序</span>
+      <span :class="!time ? 'active' : ''"  @click="changeTime">按收藏数排序</span>
+      <span @click="changeOfficial">
+        <img src="./unchoosed@2x.png" v-if="!official">
+        <img src="./choosed@2x.png" v-if="official">
+        <span>只看官方推文</span>
+      </span>
+    </div>
     <div class="adopt-list" v-show="list.length">
       <Scroll :data="list"
               :hasMore="hasMore"
@@ -10,7 +19,10 @@
           <div class="info">
             <p class="title">{{item.title}}</p>
             <div class="info-middle"><span>作者：{{item.publishUserName}}</span><span v-show="item.treeName">关联古树：{{item.productName}}({{item.treeName}})</span></div>
-            <p class="prop"><span class="date">{{formatDate(item.publishDatetime)}}</span></p>
+            <p class="prop">
+              <span class="date">{{formatDate(item.publishDatetime, 'yyyy.MM.dd')}}</span>
+              <span><span class="collect">收藏：{{item.collectCount}}</span><span class="laud">点赞{{item.pointCount}}</span></span>
+            </p>
           </div>
         </div>
       </Scroll>
@@ -41,7 +53,9 @@
         limit: 10,
         hasMore: true,
         loading: false,
-        list: []
+        list: [],
+        official: false,
+        time: true
       };
     },
     mounted() {
@@ -55,7 +69,7 @@
         return formatImg(img);
       },
       formatDate(date) {
-        return formatDate(date, 'yyyy-MM-dd');
+        return formatDate(date, 'yyyy.MM.dd');
       },
       go(url) {
         this.$router.push(url);
@@ -102,6 +116,12 @@
           this.start++;
           this.loading = false;
         }).catch(() => { this.loading = false; });
+      },
+      changeOfficial() {
+        this.official = !this.official;
+      },
+      changeTime() {
+        this.time = !this.time;
       }
     },
     components: {
@@ -131,10 +151,27 @@
     .no-result-wrapper {
       margin-top: 0.8rem;
     }
+    .tab {
+      height: 0.8rem;
+      padding: 0.2rem 0.3rem;
+      font-size: 0.28rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.88rem;
+      border-bottom: 1px solid #ebebeb;
+      img {
+        width: 0.2rem;
+        height: 0.2rem;
+      }
+      .active {
+        color: $primary-color;
+      }
+    }
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 0.88rem;
+      top: 1.68rem;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;
@@ -182,8 +219,9 @@
             line-height: 0.33rem;
             color: #999;
             display: flex;
-            .date {
-              flex: 1;
+            justify-content: space-between;
+            .collect,.laud {
+              font-size: 0.22rem;
             }
             .collect {
               margin-right: 0.3rem;

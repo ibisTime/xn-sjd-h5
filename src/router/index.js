@@ -206,6 +206,10 @@ const CompanyAuth = () => import('@/pages/company-auth/company-auth');
 const WxBindMobile = () => import('@/pages/wx-bind-mobile/wx-bind-mobile');
 // 查看物流
 const Logistics = () => import('@/pages/logistics/logistics');
+// 测试
+const Sign = () => import('@/components/sign/sign');
+// 搜索
+const Search = () => import('@/components/search/search');
 export default new Router({
   routes: [
     {
@@ -669,6 +673,18 @@ export default new Router({
     {
       path: '/logistics',
       component: Logistics
+    },
+    // {
+    //   path: '/test',
+    //   component: Test
+    // },
+    {
+      path: '/sign',
+      component: Sign
+    },
+    {
+      path: '/search',
+      component: Search
     }
   ],
   mode: 'hash'

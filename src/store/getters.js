@@ -6,3 +6,4 @@
 export const orderList = state => state.orderList;
 export const preOrderList = state => state.preOrderList;
 export const conOrderList = state => state.conOrderList;
+export const searchHistory = state => state.searchHistory;

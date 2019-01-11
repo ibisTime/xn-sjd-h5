@@ -1,5 +1,6 @@
 <template>
   <div class="home-wrapper">
+    <m-header class="cate-header" title="攻略"></m-header>
     <div class="content" >
       <Scroll :pullUpLoad="pullUpLoad" ref='scroll'>
         <div class="content-wrap rich-text-description" v-html="detail" ref="description"></div>
@@ -99,7 +100,7 @@ export default {
   .content {
     /*margin: 0.88rem 0;*/
     position: absolute;
-    top: 0;
+    top: 0.88rem;
     bottom: 0;
     left: 0;
     right: 0;

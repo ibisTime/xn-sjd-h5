@@ -1,5 +1,6 @@
 <template>
   <div class="adopt-list-wrapper">
+    <m-header class="cate-header" title="订单详情"></m-header>
     <div class="content">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="status" v-show="detail.status === '4'">
@@ -264,7 +265,7 @@
     }
     .content {
       position: absolute;
-      top: 0;
+      top: 0.88rem;
       bottom: 0;
       left: 0;
       right: 0;

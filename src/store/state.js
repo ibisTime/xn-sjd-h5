@@ -1,10 +1,12 @@
+import {loadSearch} from 'common/js/cache';
 const state = {
   user: null,
   cnyAccount: null,
   jfAccount: null,
   orderList: {},
   preOrderList: {},
-  conOrderList: {}
+  conOrderList: {},
+  searchHistory: loadSearch()
 };
 
 export default state;

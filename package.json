@@ -2,7 +2,7 @@
   "name": "sjd",
   "version": "1.0.0",
   "description": "sell project",
-  "author": "tiger.wu@hichengdai.com",
+  "author": "Clare29-",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",

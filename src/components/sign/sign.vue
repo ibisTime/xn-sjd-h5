@@ -4,9 +4,12 @@
       <router-link to="/home/sign/rules" tag="div" class="signRule border-bottom-1px">签到规则</router-link>
       <div class="signIntegral">
         <div class="integralContent">
-          <h3>{{mark}}</h3>
-          <h4>{{jfOwn}}</h4>
-          <p>{{jfText}}</p>
+          <!--<h3>{{mark}}</h3>-->
+          <!--<h4>{{jfOwn}}</h4>-->
+          <!--<p>{{jfText}}</p>-->
+          <h3>签到成功</h3>
+          <h4>12</h4>
+          <p>已获积分</p>
         </div>
       </div>
     </div>
@@ -23,11 +26,12 @@
   import SignMask from 'components/sign-mask/sign-mask';
   import FullLoading from 'base/full-loading/full-loading';
   import {getSystemConfigCkey} from 'api/general';
-  import {sign, signNum, signQuery} from 'api/me';
+  // import {sign, signNum, signQuery} from 'api/me';
   import {getAccount, getSignIntegral} from 'api/account';
-  import {formatAmount, formatDate} from 'common/js/util';
+  import {formatAmount} from 'common/js/util';
+  // import {formatAmount, formatDate} from 'common/js/util';
 
-  const LIMIT = 30;
+  // const LIMIT = 30;
 
   export default {
     data () {
@@ -39,7 +43,7 @@
         jfText: '',
         start: 1,
         signDateList: [],
-        loadingFlag: true
+        loadingFlag: false
       };
     },
     created() {
@@ -48,24 +52,24 @@
     },
     methods: {
       getInitData() {
-        sign().finally(() => {
-          this.signIn();
-        }).catch(() => {});
-        this.getJF();
+        // sign().finally(() => {
+        //   this.signIn();
+        // }).catch(() => {});
+        // this.getJF();
       },
       signIn () {
-        signQuery().then((data) => {
-          this.getSignDate();
-          this.loadingFlag = false;
-          if (data.todaySign) {
-            this.mark = '签到成功';
-          } else {
-            this.mark = '签到失败';
-          }
-        }).catch(() => {
-          this.mark = '未查询到';
-          this.loadingFlag = false;
-        });
+        // signQuery().then((data) => {
+        //   this.getSignDate();
+        //   this.loadingFlag = false;
+        //   if (data.todaySign) {
+        //     this.mark = '签到成功';
+        //   } else {
+        //     this.mark = '签到失败';
+        //   }
+        // }).catch(() => {
+        //   this.mark = '未查询到';
+        //   this.loadingFlag = false;
+        // });
       },
       getJF () {
         getAccount().then((data) => {
@@ -76,11 +80,11 @@
         });
       },
       getSignDate () {
-        signNum(this.start, LIMIT).then((data) => {
-          data.list.forEach((item) => {
-            this.signDateList.push(formatDate(item.signDatetime, 'yyyy-MM-dd'));
-          });
-        });
+        // signNum(this.start, LIMIT).then((data) => {
+        //   data.list.forEach((item) => {
+        //     this.signDateList.push(formatDate(item.signDatetime, 'yyyy-MM-dd'));
+        //   });
+        // });
       },
       showRule () {
         getSystemConfigCkey('cardsTradition').then((data) => {

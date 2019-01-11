@@ -1,5 +1,6 @@
 <template>
   <div class="adopt-list-wrapper">
+    <m-header class="cate-header" title="title"></m-header>
     <div class="adopt-list">
       <scroll ref="scroll"
               :data="dataList"
@@ -44,11 +45,14 @@
       let type = this.$route.query.type || '';
       if(history) {
         setTitle('历史认养人');
+        this.title = '历史认养人';
       } else {
         if(type && type === '3') {
           setTitle('已捐赠名单');
+          this.title = '已捐赠名单';
         } else {
           setTitle('已认养名单');
+          this.title = '已认养名单';
         }
       }
       this.getInitData();
@@ -135,7 +139,7 @@
     .adopt-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 0;
+      top: 0.88rem;
       bottom: 0;
       left: 0.3rem;
       right: 0.3rem;

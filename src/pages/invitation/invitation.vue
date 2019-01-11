@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper">
     <div class="bg">
-      <!--<m-header class="cate-header" title="邀请好友" actText="分享" @action="action"></m-header>-->
+      <m-header class="cate-header" title="邀请好友"></m-header>
       <div class="content">
         <img :src="bgUrl">
         <div class="erweimaPic" id="qrcode"></div>
@@ -51,12 +51,14 @@
           const container = document.getElementById('qrcode');
           // 设置转换二维码图片的参数
           const qr = new QRCode(container, {
+            render: 'canvas',
             width: 474,
             height: 474,
             typeNumber: -1,
             correctLevel: 2,
             background: '#ffffff',
-            foreground: '#000000'
+            foreground: '#000000',
+            src: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300'
           });
           qr.make(this.url);
           this.bgUrl = formatImg(res2.cvalue);
@@ -132,7 +134,7 @@
       /*background-size: 100% 100%;*/
       text-align: center;
       position: fixed;
-      top: 0;
+      top: 0.88rem;
       left: 0;
       bottom: 0;
       width: 100%;

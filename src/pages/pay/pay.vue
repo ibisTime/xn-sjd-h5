@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
     <div class="bg">
-      <!--<m-header class="cate-header" title="支付订单"></m-header>-->
+      <m-header class="cate-header" title="支付订单"></m-header>
       <div class="content">
         <div class="identifyCode" v-show="identifyCode">
           下单识别码：{{identifyCode}}
@@ -36,19 +36,19 @@
             </div>
           </div>
         </div>
-        <div class="gray"></div>
-        <div class="score" v-show="!jishou">
-          <p>积分抵扣</p>
-          <div class="info-item">使用{{formatAmount(rate.jfAmount)}}积分抵扣{{formatAmount(rate.cnyAmount)}}元（剩余{{formatAmount(jf)}}积分）
-            <div class="label">
-              <switch-option class="option" :value="isPublish" @update:value="updatePublish"></switch-option>
-            </div>
-          </div>
-        </div>
-        <div class="score-rules" v-if="type">
-          <p>规则：</p>
-          <p v-for="(item, index) in sysConfig" :key="index">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>
-        </div>
+        <!--<div class="gray"></div>-->
+        <!--<div class="score" v-show="!jishou">-->
+          <!--<p>积分抵扣</p>-->
+          <!--<div class="info-item">使用{{formatAmount(rate.jfAmount)}}积分抵扣{{formatAmount(rate.cnyAmount)}}元（剩余{{formatAmount(jf)}}积分）-->
+            <!--<div class="label">-->
+              <!--<switch-option class="option" :value="isPublish" @update:value="updatePublish"></switch-option>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="score-rules" v-if="type">-->
+          <!--<p>规则：</p>-->
+          <!--<p v-for="(item, index) in sysConfig" :key="index">{{index+1}}.{{item.remark}}:{{item.cvalue}}</p>-->
+        <!--</div>-->
       </div>
       <div class="footer">
         <span>金额：<span v-if="totalPrice">
@@ -692,7 +692,7 @@
         text-align: center;
       }
       .content {
-        padding: 0 0 0 0;
+        padding: 0.88rem 0 0 0;
         margin-bottom: 0.98rem;
         background: #f5f5f5;
         div {

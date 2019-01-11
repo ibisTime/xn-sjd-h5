@@ -1,7 +1,7 @@
 <template>
   <transition name="slide">
     <div class="change-mobile-wrapper">
-      <!--<m-header class="cate-header" title="设置支付密码"></m-header>-->
+      <m-header class="cate-header" title="设置支付密码"></m-header>
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
@@ -33,13 +33,13 @@
   </transition>
 </template>
 <script>
+  import Toast from 'base/toast/toast';
   import MHeader from 'components/m-header/m-header';
   import {sendCaptcha} from 'api/general';
   import {setUserMonPaw, getUserDetail} from 'api/user';
   import {directiveMixin} from 'common/js/mixin';
   import { getCookie } from 'common/js/cookie';
   import { setTitle } from 'common/js/util';
-  import Toast from 'base/toast/toast';
 
   export default {
     mixins: [directiveMixin],
@@ -143,7 +143,7 @@
 
   .change-mobile-wrapper {
     position: fixed;
-    top: 0;
+    top: 0.88rem;
     left: 0;
     width: 100%;
     height: 100%;

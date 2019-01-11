@@ -1,6 +1,7 @@
 <template>
   <transition name="slide">
     <div class="change-mobile-wrapper">
+      <m-header class="cate-header" title="设置登陆密码"></m-header>
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
@@ -28,6 +29,7 @@
   import { getCookie } from 'common/js/cookie';
   import { setTitle } from 'common/js/util';
   import Toast from 'base/toast/toast';
+  import MHeader from 'components/m-header/m-header';
 
   export default {
     mixins: [directiveMixin],
@@ -39,7 +41,9 @@
         captBtnText: '获取验证码',
         mobile: '',
         moneyPaw: '',
-        text: ''
+        text: '',
+        oldLoginPwd: '',
+        newLoginPwd: ''
       };
     },
     mounted() {
@@ -104,7 +108,8 @@
       }
     },
     components: {
-      Toast
+      Toast,
+      MHeader
     }
   };
 </script>
@@ -119,7 +124,7 @@
     height: 100%;
     background: $color-highlight-background;
     .form-wrapper {
-      padding: 0 0.3rem;
+      padding: 0.88rem 0.3rem 0;
       .form-item .item-btn {
         width: 1.68rem;
         padding-right: 0;

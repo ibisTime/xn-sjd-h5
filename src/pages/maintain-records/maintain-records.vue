@@ -1,5 +1,6 @@
 <template>
   <div class="adopt-list-wrapper">
+    <m-header class="cate-header" title="养护记录"></m-header>
     <div class="adopt-list" v-show="mrList.length">
       <Scroll :data="mrList"
               :hasMore="hasMore"
@@ -84,7 +85,7 @@
     position: fixed;
     width: 100%;
     bottom: 0;
-    top: 0;
+    top: 0.88rem;
     left: 0;
     .fl {
       float: left;
