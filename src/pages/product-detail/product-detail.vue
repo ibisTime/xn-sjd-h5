@@ -87,10 +87,10 @@
       </Scroll>
     </div>
     <div class="footer">
-      <button>我的</button>
-      <button @click="showPopUp" v-show="canAdopt()">分享</button>
-      <button @click="showPopUp" v-show="canAdopt()">申请认养</button>
-      <button class="disabled" v-show="!canAdopt()" @click="goLogin()">{{noAdoptReason}}</button>
+      <button @click="go('/me')" class="footer-me">我的</button>
+      <button class="footer-share">分享</button>
+      <button @click="showPopUp" v-show="canAdopt()" class="footer-adopt">申请认养</button>
+      <button class="footer-adopt" v-show="!canAdopt()" @click="goLogin()">{{noAdoptReason}}</button>
     </div>
     <div :class="['mask',flag ? 'show' : '']" @click="genghuan"></div>
     <div :class="['buypart',flag ? 'show' : '']">
@@ -134,11 +134,12 @@
       <div class="other tip" v-if="detail.sellType === '4' && !detail.identifyCode">它还没被认养，快发起集体认养，邀请小伙伴一同参与</div>
       <div class="other tip" v-if="detail.sellType === '4' && detail.identifyCode">此树已经开启集体认养！发起人：<span>{{detail.collectFirstUserName}}</span>，获得识别码即可一同参与</div>
       <div class="buypart-bottom">
-        <div class="confirm" @click="confirm()">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
+        <div class="confirm" @click="showAuthConfirm">确定(总额：¥{{formatAmount(detail.productSpecsList[choosedIndex].price) * number}})</div>
       </div>
     </div>
     <toast ref="toast" :text="text"></toast>
     <full-loading v-show="loading"></full-loading>
+    <confirm-sjd-auth ref="confirm" :title="authTitle" :content="authContent" confirmBtnText='前往认证' cancelBtnText="稍后再去" @confirm="confirm"></confirm-sjd-auth>
     <router-view></router-view>
   </div>
 </template>
@@ -149,6 +150,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import BackOnly from 'components/back-only/back-only';
+import ConfirmSjdAuth from 'base/confirm-sjd-auth/confirm-sjd-auth';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
@@ -184,7 +186,11 @@ export default {
       freeScroll: true,
       click: false,
       tab: 1,
-      adoptList: []
+      adoptList: [],
+      authTitle: '完成操作，需进行实名认证',
+      authContent: ['由于认养古树需要签署政府相关认养协议，认养后还有挂牌等服务来展示您的爱心，所以需要您完成实名认证（个人中心头像右侧)', '请前往选择任意一种方式进行认证。（平台只会公开您的昵称）']
+      // authContent: '由于认养古树需要签署政府相关认养协议，认养后还有挂牌等服务来展示您的爱心，所以需要您完成实名认证（个人中心头像右侧) \n ' +
+      //  '请前往选择任意一种方式进行认证。（平台只会公开您的昵称）'
     };
   },
   methods: {
@@ -218,6 +224,9 @@ export default {
       if(this.noAdoptReason === '您未登录') {
         this.go('/login');
       }
+    },
+    showAuthConfirm() {
+      this.$refs.confirm.show();
     },
     goTreeList() {
       if(this.detail.sellType === '3' || this.detail.sellType === '4') {
@@ -364,7 +373,7 @@ export default {
           this.go(`/my-tree?other=1&currentHolder=${item.currentHolder}&aTCode=${item.code}`);
         }
       } else {
-        this.toastText = '您未登录';
+        this.text = '您未登录';
         this.$refs.toast.show();
         setTimeout(() => {
           this.$router.push('/login');
@@ -500,7 +509,8 @@ export default {
     Slider,
     NoResult,
     BackOnly,
-    Scroll
+    Scroll,
+    ConfirmSjdAuth
   }
 };
 </script>
@@ -701,25 +711,31 @@ export default {
     position: fixed;
     bottom: 0;
     left: 0;
-    padding: 0 0.3rem;
     display: flex;
     justify-content: space-between;
     background: $color-highlight-background;
     border-top: 1px solid $color-border;
-    align-items: center;
+    /*align-items: center;*/
     button {
-      display: inline-block;
-      /*width: 3.2rem;*/
-      width: 100%;
-      height: 0.9rem;
-      background: $primary-color;
-      border-radius: 0.08rem;
       color: $color-highlight-background;
       font-size: 0.32rem;
     }
-    .disabled {
-      background: #969998;
+    .footer-me {
+      width: 25%;
+      background: $color-highlight-background;
+      color: #202020;
     }
+    .footer-share {
+      width: 25%;
+      background: $primary-color;
+    }
+    .footer-adopt {
+      width: 50%;
+      background: $second-color;
+    }
+    /*.disabled {*/
+      /*background: #969998;*/
+    /*}*/
   }
   .mask {
     width: 100%;

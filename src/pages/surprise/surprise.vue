@@ -5,6 +5,9 @@
       <div class="pic">
         <img :src="formatImg()">
       </div>
+      <div class="tip">
+        您想把这棵树转赠给谁的话，就填入TA的账号吧
+      </div>
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-label">赠送对象</div>
@@ -110,8 +113,18 @@
         height: 100%;
       }
     }
+    .tip {
+      background: #FDF4D6;
+      width: 100%;
+      height: 0.7rem;
+      font-size: 0.24rem;
+      color: #666;
+      line-height: 0.7rem;
+      padding: 0 0.3rem;
+    }
     .form-wrapper {
       padding: 0 0.3rem;
+      font-weight: 500;
       .form-item {
         .item-btn {
           width: 1.68rem;

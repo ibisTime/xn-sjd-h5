@@ -207,7 +207,7 @@ const WxBindMobile = () => import('@/pages/wx-bind-mobile/wx-bind-mobile');
 // 查看物流
 const Logistics = () => import('@/pages/logistics/logistics');
 // 测试
-const Sign = () => import('@/components/sign/sign');
+const Sign = () => import('@/pages/sign/sign');
 // 搜索
 const Search = () => import('@/components/search/search');
 export default new Router({

@@ -1,13 +1,13 @@
 <template>
   <div class="home-wrapper">
-    <div class="content" @click="go('/homepage?type=1')">
+    <div class="content">
       <div class="me" @click.stop.prevent="change">
         <img :src="src">
       </div>
       <img src="./charts@2x.png" alt="" class="charts" @click.stop.prevent="go('/allCharts')">
-      <!--<div @click="go('/homepage?type=1')" class="block t1"></div>-->
-      <!--<div @click="go('/homepage?type=2')" class="block t2"></div>-->
-      <!--<div @click="go('/homepage?type=3')" class="block t3"></div>-->
+      <div @click="go('/homepage')" class="block t1"></div>
+      <div @click="go('/charts')" class="block t2"></div>
+      <div @click="go('/my-article')" class="block t3"></div>
       <!--<div @click="go('/homepage?type=4')" class="block t4"></div>-->
     </div>
     <div class="side" v-show="flag">
@@ -20,26 +20,34 @@
           </div>
         </div>
         <div class="me-content-list">
-          <div class="item" @click="go('/userInfo')">
-            <img src="./change-avatar@2x.png">
-            <span>完善资料</span>
-          </div>
+          <!--<div class="item" @click="go('/userInfo')">-->
+            <!--<img src="./change-avatar@2x.png">-->
+            <!--<span>完善资料</span>-->
+          <!--</div>-->
           <div class="item" @click="go('/carbon-bubble')">
             <img src="./carbon-bubble@2x.png">
             <span>我的碳泡泡<img src="./new@2x.png"/></span>
           </div>
-          <div class="item" @click="go('/my-article')">
-            <img src="./romantic-story@2x.png">
-            <span>我的浪漫故事<img src="./new@2x.png"/></span>
-          </div>
+          <!--<div class="item" @click="go('/my-article')">-->
+            <!--<img src="./romantic-story@2x.png">-->
+            <!--<span>我的浪漫故事<img src="./new@2x.png"/></span>-->
+          <!--</div>-->
           <div class="item" @click="go('/gift')">
             <img src="./gift@2x.png">
             <span>我的礼物<img src="./new@2x.png"/></span>
           </div>
-          <div class="item" @click="go('/charts')">
-            <img src="./notify@2x.png">
-            <span>我的好友<img src="./new@2x.png"/></span>
+          <div class="item" @click="go('/message')">
+            <img src="./notice@2x.png">
+            <span>我的通知<img src="./new@2x.png"/></span>
           </div>
+          <div class="item" @click="go('/settings')">
+            <img src="./setting@2x.png">
+            <span>设置</span>
+          </div>
+          <!--<div class="item" @click="go('/charts')">-->
+            <!--<img src="./notify@2x.png">-->
+            <!--<span>我的好友<img src="./new@2x.png"/></span>-->
+          <!--</div>-->
         </div>
       </div>
     </div>
@@ -216,16 +224,16 @@ export default {
     }
     .t2 {
       left: 0;
-      top: 4.5rem;
+      top: 3.5rem;
     }
     .t3 {
-      top: 3rem;
-      right: 0.5rem;
+      top: 4rem;
+      right: 0rem;
     }
-    .t4 {
-      right: 0.5rem;
-      top: 7rem;
-    }
+    /*.t4 {*/
+      /*right: 0.5rem;*/
+      /*top: 7rem;*/
+    /*}*/
   }
   .side {
     width: 100%;

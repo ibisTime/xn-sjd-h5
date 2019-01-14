@@ -10,7 +10,7 @@
             <i v-show="query" class="close-icon" @click="clearInput"></i>
           </div>
           <div class="cancel" @click="back" v-if="right.cancel">取消</div>
-          <div class="sign"><img src="./sign@2x.png" v-if="right.sign"></div>
+          <div class="sign" @click="go('/sign')"><img src="./sign@2x.png" v-if="right.sign"></div>
         </div>
       </header>
       <div v-show="query" class="result-wrapper">
@@ -119,6 +119,9 @@
       },
       focus() {
         this.$emit('focus');
+      },
+      go(url) {
+        url && this.$router.push(url);
       },
       ...mapActions([
         'saveSearchHistory',

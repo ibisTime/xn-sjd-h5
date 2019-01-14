@@ -33,6 +33,20 @@
             <!--@select="selectCategory"-->
           <!--&gt;</category-scroll>-->
         <!--</div>-->
+        <div class="navigation">
+          <div class="icons">
+            <img src="./tree@2x.png">
+            <p>古树名木</p>
+          </div>
+          <div class="icons">
+            <img src="./mall@2x.png">
+            <p>商场</p>
+          </div>
+          <div class="icons">
+            <img src="./chart@2x.png">
+            <p>排行榜</p>
+          </div>
+        </div>
         <div class="emotion-article" @click="go('/emotion-channel')">
           <div class="emotion-top">
             <span class="emotion-title">情感推文</span>
@@ -507,25 +521,20 @@ export default {
         }
       }
     }
-    .icons {
+    .navigation {
       width: 100%;
-      height: 2.25rem;
-      /*padding-top: 0.26rem;*/
-      padding: 0.26rem 0.3rem;
       background: #fff;
       display: flex;
-      margin-bottom: 0.2rem;
-      .icon-item {
+      padding-bottom: 0.2rem;
+      .icons {
         display: inline;
         flex: 1;
         text-align: center;
         img {
-          width: 1rem;
-          height: 1rem;
-          border-radius: 50%;
+          width: 0.66rem;
+          height: 0.66rem;
         }
         p {
-          color: #666;
           font-size: 0.24rem;
         }
       }

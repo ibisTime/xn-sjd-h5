@@ -5,7 +5,7 @@
       <ul>
         <!--点击会触发pickpre函数，重新刷新当前日期 @click(vue v-on:click缩写) -->
         <!-- <li class="arrow" @click="pickPre(currentYear,currentMonth)">❮</li> -->
-        <li class="year-month">
+        <li class="year-month" v-show="whichMonth">
             <span class="choose-year">{{ currentYear }} 年</span>
             <span class="choose-month">{{ currentMonth}} 月</span>
         </li>
@@ -50,6 +50,10 @@
         default: function () {
           return [];
         }
+      },
+      whichMonth: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -57,7 +61,8 @@
         currentDay: 1,
         currentMonth: 1,
         currentYear: 1970,
-        days: []
+        days: [],
+        whichMonth: false
       };
     },
     created: function() {  // 在vue初始化时调用
@@ -133,19 +138,21 @@
   @import "~common/scss/mixin";
 
   #calendar{
-    margin: 0.3rem;
+    /*margin: 0.3rem;*/
     text-align: center;
     font-size: $font-size-medium;
 
     .weekPannel{
-      padding: 0.28rem;
+      /*padding: 0.28rem;*/
       .weekdays{
       width: 100%;
       height: 0.42rem;
       line-height: 0.42rem;
       padding: 0 0.26rem;
-      background-color: #F2F2F2;
-      border-radius: 0.21rem;
+      /*background-color: #F2F2F2;*/
+      /*border-radius: 0.21rem;*/
+      display: flex;
+      justify-content: space-around;
         li{
           float: left;
           margin-right: 0.64rem;
@@ -159,6 +166,9 @@
         .days{
           width: 100%;
           height: 5rem;
+          display: flex;
+          justify-content: space-around;
+          flex-wrap: wrap;
           li{
             float: left;
             width: 0.9rem;
