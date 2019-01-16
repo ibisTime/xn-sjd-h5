@@ -209,7 +209,13 @@ const Logistics = () => import('@/pages/logistics/logistics');
 // 测试
 const Sign = () => import('@/pages/sign/sign');
 // 搜索
-const Search = () => import('@/components/search/search');
+const Search = () => import('@/pages/search/search');
+const Test = () => import('@/pages/test/test');
+// 我的通知
+const Message = () => import('@/pages/message/message');
+// 商场-我的
+const MallMe = () => import('@/pages/mall-me/mall-me');
+const PublishCategories = () => import('@/pages/publish-categories/publish-categories');
 export default new Router({
   routes: [
     {
@@ -674,10 +680,10 @@ export default new Router({
       path: '/logistics',
       component: Logistics
     },
-    // {
-    //   path: '/test',
-    //   component: Test
-    // },
+    {
+      path: '/test',
+      component: Test
+    },
     {
       path: '/sign',
       component: Sign
@@ -685,6 +691,18 @@ export default new Router({
     {
       path: '/search',
       component: Search
+    },
+    {
+      path: '/message',
+      component: Message
+    },
+    {
+      path: '/mall-me',
+      component: MallMe
+    },
+    {
+      path: '/mall-type',
+      component: PublishCategories
     }
   ],
   mode: 'hash'

@@ -23,7 +23,7 @@
         <img src="./more@2x.png" class="fr more">
       </div>
       <div class="item" @click="go('/userInfo')">
-        <span>完善资料</span>
+        <span>个人资料</span>
         <img src="./more@2x.png" class="fr more">
       </div>
       <div class="item" @click="go('/address')">

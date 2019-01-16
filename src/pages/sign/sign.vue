@@ -218,6 +218,7 @@
     background: $color-highlight-background;
     border-radius: 0.1rem;
     padding: 0.3rem;
+    overflow: hidden;
 
 		.active {
       position: relative;

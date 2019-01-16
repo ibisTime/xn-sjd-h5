@@ -58,7 +58,7 @@
     },
     data() {
       return {
-        showFlag: true,
+        showFlag: false,
         priceIndex: -1,
         minPrice: '',
         maxPrice: '',
@@ -194,6 +194,7 @@
     height: 100%;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
 
     &.filter-fade-enter-active {
       animation: filter-fadein 0.3s;

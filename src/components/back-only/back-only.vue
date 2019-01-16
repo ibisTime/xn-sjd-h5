@@ -1,5 +1,5 @@
 <template>
-  <div class="head-wrapper" @click.stop>
+  <div class="head-wrapper" @click.stop :style="{top: top}">
     <div class="inner" :class="innerCls">
       <i v-if="showBack" class="icon-back" @click="back"></i>
       <h2>{{title}}</h2>
@@ -30,6 +30,10 @@
       actImg: {
         type: String,
         default: ''
+      },
+      top: {
+        type: String,
+        default: '0'
       }
     },
     computed: {

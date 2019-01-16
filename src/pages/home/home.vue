@@ -38,7 +38,7 @@
             <img src="./tree@2x.png">
             <p>古树名木</p>
           </div>
-          <div class="icons">
+          <div class="icons" @click="go('/mall')">
             <img src="./mall@2x.png">
             <p>商场</p>
           </div>
@@ -525,10 +525,10 @@ export default {
       width: 100%;
       background: #fff;
       display: flex;
+      justify-content: space-around;
       padding-bottom: 0.2rem;
       .icons {
         display: inline;
-        flex: 1;
         text-align: center;
         img {
           width: 0.66rem;

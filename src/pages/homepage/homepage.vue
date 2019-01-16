@@ -1,6 +1,7 @@
 <template>
   <div class="me-wrapper">
     <!--<m-header class="cate-header" :title="title" actText="分享" @action="action"></m-header>-->
+    <back-only></back-only>
     <div class="out-content">
       <div class="bg">
         <div class="content">
@@ -9,23 +10,31 @@
               <div class="me-info">
                 <div class="userPhoto" :style="getImgSyl(userInfo.photo)"></div>
                 <div class="text">
-                  <p>
-                    <span>{{userInfo.nickname}}</span>
-                    <span class="lv">LV{{userInfo.level}}</span>
-                    <span class="follow" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '取消关注' : '加关注'}}</span></p>
+                  <p class="userName"><span>{{userInfo.nickname}}</span></p>
+                  <p class="info">
+                    <span class="info-level">LV{{userInfo.level}} 初探翠林</span>
+                    <span class="info-friend">好友：10</span>
+                    <span class="info-friend-button" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '已是好友' : '申请好友'}}</span>
+                  </p>
+                  <p class="autograph"><span>简介：乱七八糟</span></p>
+                  <!--<span class="lv">LV{{userInfo.level}}</span>-->
+                  <!--<span class="follow" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '取消关注' : '加关注'}}</span>-->
                 </div>
               </div>
-              <div class="category-wrapper bg-transparent">
-                <category-scroll :currentIndex="currentIndex"
-                                 :categorys="categorys"
-                                 @select="selectCategory"></category-scroll>
-                <category-scroll :currentIndex="currentIndexSub"
-                                 :categorys="categorysSub"
-                                 @select="selectCategorySub"></category-scroll>
-              </div>
+              <!--<div class="category-wrapper bg-transparent">-->
+                <!--<category-scroll :currentIndex="currentIndex"-->
+                                 <!--:categorys="categorys"-->
+                                 <!--@select="selectCategory"></category-scroll>-->
+                <!--<category-scroll :currentIndex="currentIndexSub"-->
+                                 <!--:categorys="categorysSub"-->
+                                 <!--@select="selectCategorySub"></category-scroll>-->
+              <!--</div>-->
             </div>
           </div>
         </div>
+      </div>
+      <div class="select">
+        <category-sjd-homepage></category-sjd-homepage>
       </div>
       <div class="scroll-section">
         <Scroll ref="scroll"
@@ -35,14 +44,18 @@
           <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
             <div class="item" v-for="item in userTree">
               <div class="tree-info" @click="goMyTree(item)">
-                <p class="tree-name">{{item.tree.productName}}({{item.treeNumber}})</p>
-                <!--<p class="tree-name" v-show="item.tree.sellType === '3'">{{item.treeNumber}}-{{item.specsName}}</p>-->
-                <p class="tree-about"></p>
+                <p class="tree-name"><span>{{item.tree.productName}}</span><span>2018.12.24-2019.12.24</span></p>
+                <!--<p class="tree-name"><span>{{item.tree.productName}}({{item.treeNumber}})</span><span>2018.12.24-2019.12.24</span></p>-->
+                <p class="tree-about">
+                  <span>杭州市 淳安县</span>
+                  <span>还剩余<span class="surplus-days">100</span>天认养到期</span>
+                </p>
               </div>
-              <div class="map" @click="go('/map?code=' + item.code)">
-                <img src="./map@2x.png" alt="">
-                <p>查看地图</p>
-              </div>
+              <img src="./more@2x.png">
+              <!--<div class="map" @click="go('/map?code=' + item.code)">-->
+                <!--<img src="./map@2x.png" alt="">-->
+                <!--<p>查看地图</p>-->
+              <!--</div>-->
             </div>
             <no-result v-show="!loading && !(userTree && userTree.length)" title="还没有认养树" class="no-result-wrapper"></no-result>
           </div>
@@ -87,17 +100,17 @@
                   </div>
                   <!-- type  类型 biz_log_type:（1赠送碳泡泡/2留言/3收取碳泡泡） -->
                   <div class="daily-content-item-info" v-if="item.type === '1'">
-                    <img src="./zengsong@2x.png" alt="">
+                    <img src="./zengsong@2x.png">
                     <p class="activity"><span>{{getName(item)}}</span>赠送<span>{{get2Name(item)}}</span>{{formatAmount(item.quantity)}}g</p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
                   <div class="daily-content-item-info" v-if="item.type === '2'">
-                    <img src="./message@2x.png" alt="">
+                    <img src="./message@2x.png">
                     <p class="activity"><span>{{getName(item)}}</span>留言{{formatAmount(item.quantity)}}g</p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
                   <div class="daily-content-item-info" v-if="item.type === '3'">
-                    <img src="./steal@2x.png" alt="">
+                    <img src="./steal@2x.png">
                     <p class="activity"><span>{{getName(item)}}</span>收取<span>{{get2Name(item)}}</span>{{formatAmount(item.quantity)}}g</p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
@@ -121,8 +134,12 @@
                     </div>
                     <span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>
                   </div>
-                  <div class="daily-content-item-info" v-if="item.type === '5' || item.type === '6' || item.type === '8'">
-                    <!--<img src="./steal@2x.png" alt="">-->
+                  <div class="daily-content-item-info" v-if="item.type === '5' || item.type === '6'">
+                    <p class="activity"><span>{{item.note}}</span></p>
+                    <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
+                  </div>
+                  <div class="daily-content-item-info" v-if="item.type === '8'">
+                    <img src="./new-bubble@2x.png">
                     <p class="activity"><span>{{item.note}}</span></p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
@@ -188,10 +205,12 @@
   import Toast from 'base/toast/toast';
   import MHeader from 'components/m-header/m-header';
   import NoResult from 'base/no-result/no-result';
+  import BackOnly from 'components/back-only/back-only';
   import { getUser, getHasRelationship, addRelationship, cancelRelationship } from 'api/user';
   import { getListUserTree, getProductType, getComparison, getPageJournal } from 'api/biz';
   import {formatAmount, formatDate, formatImg, setTitle, getUserId} from 'common/js/util';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
+  import CategorySjdHomepage from 'components/category-sjd-homepage/category-sjd-homepage';
 
   export default {
     data() {
@@ -521,6 +540,8 @@
       }
     },
     components: {
+      CategorySjdHomepage,
+      BackOnly,
       Scroll,
       MHeader,
       NoResult,
@@ -545,11 +566,6 @@
     .fr {
       float: right;
     }
-    .head-wrapper {
-      background: url("./bg@2x.png") no-repeat;
-      /*background-position: left;*/
-      /*<!--background-position: -0.2rem;-->*/
-    }
     .category-wrapper {
       width: 100%;
       z-index: 100;
@@ -565,7 +581,7 @@
     }
     .out-content {
       .bg {
-        background: url("./bg@2x.png") no-repeat;
+        background: $primary-color;
         background-size: 100% 100%;
         .title {
           font-size: 0.36rem;
@@ -577,52 +593,79 @@
           padding: 0.43rem 0 0;
           .in-content {
             .card {
-              /*height: 3.2rem;*/
               border-radius: 0.12rem;
-              /*margin-bottom: 0.25rem;*/
               padding: 0.2rem 0 0 0;
               .me-info {
+                color: $color-highlight-background;
                 text-align: center;
                 .userPhoto {
-                  width: 1.3rem;
-                  height: 1.3rem;
-                  margin-bottom: 0.34rem;
+                  width: 1.2rem;
+                  height: 1.2rem;
+                  margin-bottom: 0.2rem;
                   border: 2px solid $color-highlight-background;
                 }
                 .text {
-                  vertical-align: middle;
-                  margin-bottom: 0.32rem;
-                  p {
-                    margin-bottom: 0.69rem;
+                  .userName {
+                    margin-bottom: 0.14rem;
                     font-size: 0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    span:first-child {
-                      font-size: $font-size-medium-xx;
-                      color: $color-highlight-background;
+                    span {
+                      font-size: 0.36rem;
                     }
                   }
-                  .lv {
-                    background: #FEAE62;
-                    border-radius: 0.06rem;
-                    line-height: 0.33rem;
-                    display: inline-block;
-                    color: #fff;
-                    font-size: 0.24rem;
-                    margin-left: 0.23rem;
-                    padding: 0 0.1rem;
+                  .info {
+                    font-size: 0.22rem;
+                    margin-bottom: 0.2rem;
+                    .info-level {
+                      border-right: 1px solid $color-highlight-background;
+                      padding-right: 0.2rem;
+                    }
+                    .info-friend {
+                      margin: 0 0.1rem;
+                    }
+                    .info-friend-button {
+                      background: rgb(248, 181, 81);
+                      border-radius: 2px;
+                      font-size: 0.12rem;
+                      padding: 0.05rem;
+                    }
                   }
-                  .follow{
-                    background: #FEAE62;
-                    border-radius: 0.06rem;
-                    line-height: 0.33rem;
-                    display: inline-block;
-                    color: #fff;
-                    font-size: 0.24rem;
-                    margin-left: 0.23rem;
-                    padding: 0 0.1rem;
+                  .autograph {
+                    font-size: 0.22rem;
+                    padding-bottom: 0.4rem;
                   }
+                  /*<!--vertical-align: middle;-->*/
+                  /*<!--margin-bottom: 0.32rem;-->*/
+                  /*<!--p {-->*/
+                    /*<!--margin-bottom: 0.69rem;-->*/
+                    /*<!--font-size: 0;-->*/
+                    /*<!--display: flex;-->*/
+                    /*<!--align-items: center;-->*/
+                    /*<!--justify-content: center;-->*/
+                    /*<!--span:first-child {-->*/
+                      /*<!--font-size: $font-size-medium-xx;-->*/
+                      /*<!--color: $color-highlight-background;-->*/
+                    /*<!--}-->*/
+                  /*<!--}-->*/
+                  /*<!--.lv {-->*/
+                    /*<!--background: #FEAE62;-->*/
+                    /*<!--border-radius: 0.06rem;-->*/
+                    /*<!--line-height: 0.33rem;-->*/
+                    /*<!--display: inline-block;-->*/
+                    /*<!--color: #fff;-->*/
+                    /*<!--font-size: 0.24rem;-->*/
+                    /*<!--margin-left: 0.23rem;-->*/
+                    /*<!--padding: 0 0.1rem;-->*/
+                  /*<!--}-->*/
+                  /*<!--.follow{-->*/
+                    /*<!--background: #FEAE62;-->*/
+                    /*<!--border-radius: 0.06rem;-->*/
+                    /*<!--line-height: 0.33rem;-->*/
+                    /*<!--display: inline-block;-->*/
+                    /*<!--color: #fff;-->*/
+                    /*<!--font-size: 0.24rem;-->*/
+                    /*<!--margin-left: 0.23rem;-->*/
+                    /*<!--padding: 0 0.1rem;-->*/
+                  /*<!--}-->*/
                 }
               }
               .triangle {
@@ -649,7 +692,7 @@
       }
       .scroll-section {
         position: absolute;
-        top: 5.3rem;
+        top: 4.5rem;
         bottom: 0;
         left: 0;
         right: 0;
@@ -664,13 +707,11 @@
           /*right: 0.3rem;*/
           .item {
             width: 100%;
-            height: 1.6rem;
             font-size: $font-size-medium-x;
-            line-height: 1.6rem;
             border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
-            padding: 0.3rem 0;
+            padding: 0.38rem 0;
             .tree-info {
               flex: 1;
               display: flex;
@@ -679,13 +720,24 @@
               .tree-name {
                 font-size: $font-size-medium-x;
                 line-height: $font-size-medium-x;
-                margin-bottom: 0.21rem;
-                font-family: PingFangSC-Semibold;
+                margin-bottom: 0.16rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                span:nth-child(2) {
+                  color: $color-gray;
+                }
               }
               .tree-about {
-                color: #666;
+                color: $color-gray;
                 font-size: $font-size-small;
                 line-height: $font-size-small;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                .surplus-days {
+                  color: $second-color;
+                }
               }
             }
             .map {
@@ -702,6 +754,10 @@
                 font-size: $font-size-small;
                 line-height: $font-size-small;
               }
+            }
+            img {
+              height: 0.3rem;
+              margin-left: 0.2rem;
             }
           }
         }
@@ -757,7 +813,7 @@
                     }
                     .name {
                       color: #999;
-                      font-size: 0.22rem;
+                      font-size: 0.24rem;
                     }
                     .activity {
                       font-size: 0.28rem;
@@ -768,19 +824,19 @@
                     }
                   }
                   img {
-                    width: 0.36rem;
-                    margin-right: 0.24rem;
+                    width: 0.22rem;
+                    margin-right: 0.14rem;
                   }
                   .activity {
-                    font-size: $font-size-medium;
+                    font-size: 0.22rem;
                     flex: 1;
                     span {
                       font-family: PingFangSC-Semibold;
-                      margin-right: 0.2rem;
+                      margin-right: 0.1rem;
                     }
                   }
                   .time {
-                    font-size: $font-size-small;
+                    font-size: 0.2rem;
                     line-height: 0.33rem;
                     color: #999;
                   }
@@ -820,7 +876,7 @@
                 .border {
                   width: 0;
                   border-right: 1px solid #eee;
-                  height: 0.5rem;
+                  height: 0.28rem;
                   margin-left: 0.35rem;
                 }
               }

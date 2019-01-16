@@ -294,3 +294,16 @@ export function emptyValid(value) {
 export function jiami(mobile) {
   return mobile.substr(0, 3) + '****' + mobile.substr(7);
 }
+
+// 剪切字符串加...
+export function cut(str, num) {
+  if(str) {
+    if(str.length > num) {
+      return str.slice(0, num) + '...';
+    } else {
+      return str;
+    }
+  } else {
+    return;
+  }
+}

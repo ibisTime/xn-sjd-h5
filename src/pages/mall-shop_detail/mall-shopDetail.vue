@@ -1,17 +1,23 @@
 <template>
   <div class="shop-wrapper_det">
+    <div class="tab">
+      <span @click="changeTab(0)" :class="[tab === 0 ? 'active': '']">商品</span>
+      <span @click="changeTab(1)" :class="[tab === 1 ? 'active': '']">图文详情</span>
+      <span @click="changeTab(2)" :class="[tab === 2 ? 'active': '']">评价</span>
+    </div>
     <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
       <div class="content">
-        <div class="slider-wrapper">
-          <slider :loop="loop">
-            <div class="home-slider" v-for="(item, index) in bannerPic" :key="index">
-              <a :href="'javascript:void(0)'" :style="getImgSyl(item ? item : '')"></a>
-            </div>
-          </slider>
-        </div>
         <!-- <div class="shop-head">
         </div> -->
-        <div class="shop-conAll">
+        <div class="shop-conAll" v-show="tab === 0">
+          <div class="slider-wrapper">
+            <slider :loop="loop">
+              <div class="home-slider" v-for="(item, index) in bannerPic" :key="index">
+                <a :href="'javascript:void(0)'" :style="getImgSyl(item ? item : '')"></a>
+              </div>
+            </slider>
+            <back-only top="0.8rem"></back-only>
+          </div>
           <div class="shop-det">
             <p class="shop-price"><span>￥{{formatAmount(shopDetData.minPrice)}}</span> - <span>￥{{formatAmount(shopDetData.maxPrice)}}</span></p>
             <p class="shop-msg">{{shopDetData.name}}</p>
@@ -37,12 +43,28 @@
               </div>
             </div>
           </div>
-          <div class="shop-js">
-            <div class="js-head">
-              <p><span></span> 图文介绍</p>
-              <div class="description-detail" v-html="shopDetData.description" ref="description"></div>
+        </div>
+        <div class="shop-js" v-show="tab === 1">
+          <div class="js-head">
+            <p><span></span> 图文介绍</p>
+            <div class="description-detail" v-html="shopDetData.description" ref="description"></div>
+          </div>
+        </div>
+        <div class="com-list" v-show="tab === 2">
+          <div class="com-singer" v-for="(item, index) in commentList" :key="index">
+            <div class="sing-head">
+              <div class="s-head_left">
+                <div class="l-img" :style="getImgSyl(userMsgList[index].photo ? userMsgList[index].photo : '', 'u')"></div>
+              </div>
+              <div class="s-head_right">
+                <p>{{userMsgList[index].nickname}} <span class="fr">{{formatDate(item.commentDatetime)}}</span></p>
+              </div>
+            </div>
+            <div class="sing-con" v-html="item.content">
+
             </div>
           </div>
+          <p></p>
         </div>
       </div>
     </Scroll>
@@ -124,6 +146,7 @@ import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import Slider from 'base/slider/slider';
+import BackOnly from 'components/back-only/back-only';
 export default {
   data() {
     return {
@@ -162,7 +185,8 @@ export default {
       },
       isCartType: '0',             // 无规格 0 点外购物车  1 点外立即购买
       shopName: '',                // 店铺名称
-      setSpecsName: ''
+      setSpecsName: '',
+      tab: 0
     };
   },
   created() {
@@ -218,6 +242,9 @@ export default {
     },
     go(url) {
       this.$router.push(url);
+    },
+    changeTab(index) {
+      this.tab = index;
     },
     getImgSyl(imgs, type) {
       let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
@@ -384,6 +411,7 @@ export default {
   mounted() {
   },
   components: {
+    BackOnly,
     FullLoading,
     Toast,
     Scroll,
@@ -406,6 +434,23 @@ export default {
   }
   .fr {
     float: right;
+  }
+  .tab {
+    height: 0.8rem;
+    font-size: 0.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: $color-highlight-background;
+    span {
+      color: #666;
+      line-height: 0.42rem;
+    }
+    .active {
+      color: $mall-color;
+      border-bottom: 1px solid $mall-color;
+      padding-bottom: 0.04rem;
+    }
   }
   .content {
     overflow: auto;
@@ -435,20 +480,20 @@ export default {
     }
     .shop-conAll{
       padding: 0 0 1.31rem;
-      font-family: PingFangSC-Semibold;
+      /*font-family: PingFangSC-Semibold;*/
       letter-spacing: 0.0025rem;
       .shop-det{
         background-color: #fff;
         padding: 0.3rem 0.3rem 0;
         margin-bottom: 0.2rem;
         .shop-price{
-          font-size: 0.32rem;
-          color: #23AD8C;
+          font-size: 0.3rem;
+          color: $mall-color;
           letter-spacing: 0.0025px;
           margin-bottom: 0.31rem;
         }
         .shop-msg{
-          font-size: 0.32rem;
+          font-size: 0.3rem;
           color: #333333;
           letter-spacing: 0.0025rem;
           margin-bottom: 0.3rem;
@@ -456,7 +501,7 @@ export default {
         .or-msg{
           display: flex;
           justify-content: space-between;
-          font-size: 0.26rem;
+          font-size: 0.24rem;
           color: #999999;
           letter-spacing: 0.002rem;
           padding-bottom: 0.3rem;
@@ -510,24 +555,6 @@ export default {
           }
         }
       }
-      .shop-js{
-        padding: 0.3rem;
-        background-color: #fff;
-        .js-head{
-          p{
-            font-size: 0.32rem;
-            color: #333333;
-            margin-bottom: 0.2rem;
-            span{
-              display: inline-block;
-              width: 0.06rem;
-              height: 0.32rem;
-              background-color: #23AD8C;
-              vertical-align: top;
-            }
-          }
-        }
-      }
     }
     .description-detail{
       font-size: 0.3rem;
@@ -535,6 +562,88 @@ export default {
       img{
         max-width: 100%;
         vertical-align: bottom;
+      }
+    }
+    .shop-js{
+      padding: 0.3rem;
+      background-color: #fff;
+      .js-head{
+        p{
+          font-size: 0.32rem;
+          color: #333333;
+          margin-bottom: 0.2rem;
+          span{
+            display: inline-block;
+            width: 0.06rem;
+            height: 0.32rem;
+            background-color: $mall-color;
+            vertical-align: top;
+          }
+        }
+      }
+    }
+    .com-singer{
+      width: 100%;
+      padding: 0.3rem;
+      background-color: #fff;
+      .sing-head{
+        display: flex;
+        height: 0.66rem;
+        align-items: center;
+        .s-head_left{
+          width: 0.66rem;
+          height: 0.66rem;
+          margin-right: 0.16rem;
+          .l-img{
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+            background-size: 100% 100%;
+            background-image: url('./shop.png');
+          }
+        }
+        .s-head_right{
+          width: 85%;
+          font-size: 0.3rem;
+          color: #999999;
+          letter-spacing: 0.0022rem;
+          span{
+            font-size: 0.26rem;
+          }
+        }
+      }
+      .sing-foo{
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.26rem;
+        color: #999999;
+        .s-foo_left{
+          letter-spacing: 0.2px;
+        }
+        .s-foo_right{
+          display: flex;
+          p{
+            margin-left: 0.4rem;
+            vertical-align: middle;
+            span{
+              display: inline-block;
+              width: 0.3rem;
+              height: 0.3rem;
+              background-size: 100% 100%;
+              margin-right: 0.1rem;
+              vertical-align: middle;
+            }
+            .pl{
+              width: auto;
+            }
+            .foo-pl{
+              background-image: url('./pl.png');
+            }
+            .foo-z{
+              background-image: url('./dz.png');
+            }
+          }
+        }
       }
     }
   }
@@ -578,7 +687,7 @@ export default {
           width: 100%;
         }
         .r-head{
-          color: #23AD8C;
+          color: $mall-color;
           font-size: 0.3rem;
           .iconX{
             width: 0.34rem;
@@ -620,7 +729,7 @@ export default {
         }
         .set-index{
           color: #fff;
-          background-color: #23AD8C;
+          background-color: $mall-color;
         }
       }
     }
@@ -660,7 +769,7 @@ export default {
       height: 0.9rem;
       line-height: 0.9rem;
       width: 100%;
-      background-color: #23AD8C;
+      background-color: $mall-color;
       color: #fff;
       text-align: center;
       border-radius: 0.1rem;
@@ -685,7 +794,7 @@ export default {
         background-color: #554F5B;
       }
       .ljgm{
-        background-color: #23AD8C;
+        background-color: $mall-color;
       }
     }
   }
@@ -716,7 +825,7 @@ export default {
               background-size: 100% 100%;
             }
             .dp-img{
-              background-image: url('./dp.png');
+              background-image: url('./dp@2x.png');
             }
             .kf-img{
               background-image: url('./kf.png');
@@ -741,7 +850,7 @@ export default {
           background-color: #554F5B;
         }
         .buy{
-          background-color: #23AD8C;
+          background-color: $mall-color;
         }
       }
     }

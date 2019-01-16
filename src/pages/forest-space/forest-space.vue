@@ -127,7 +127,7 @@ export default {
   },
   mounted() {
     this.pullUpLoad = null;
-    setTitle('我的林空间');
+    setTitle('我的氧圈');
     let userId = getCookie('userId');
     this.src = require('./../../common/image/avatar@2x.png');
     if(userId) {

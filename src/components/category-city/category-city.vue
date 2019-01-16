@@ -1,6 +1,6 @@
 <template>
   <transition name="city-fade">
-    <div v-show="showFlag" class="city-picker-wrapper" @click="hide">
+    <div v-show="showFlag" class="city-picker-wrapper" @click="hide" :style="{top : top}">
       <div class="position-wrapper border-top-1px border-bottom-1px" @click.stop>
         <div class="left" @click="selectPos">
           <div class="top">当前位置</div>
@@ -63,6 +63,10 @@
       outAreaIndex: {
         type: Number,
         default: 0
+      },
+      top: {
+        type: String,
+        default: '1.68rem'
       }
     },
     data() {
@@ -280,6 +284,7 @@
     bottom: 0;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
 
     &.city-fade-enter-active {
       animation: city-fadein 0.3s;

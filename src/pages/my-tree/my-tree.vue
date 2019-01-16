@@ -50,7 +50,7 @@
             <img src="./danmu@2x.png" @click="danmu" >
             <img src="./juanzeng@2x.png" @click="juanzeng">
           </div>
-          <img src="./romantic-story@2x.png" class="romantic-story" v-show="!other" @click="go('/emotion-channel?treeNo=' + treeDetail.tree.treeNumber)">
+          <img src="./story@2x.png" class="romantic-story" v-show="!other" @click="go('/emotion-channel?treeNo=' + treeDetail.tree.treeNumber)">
         </div>
         <!-- 能量比拼 -->
         <div class="battle" v-if="other === '1'" v-show="other === '1'">
@@ -82,9 +82,9 @@
         <div class="tab" v-show="!other">
           <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">最新动态</span>
           <span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>
-          <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
+          <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">树木详情</span>
         </div>
-        <!-- 用户 - 最新动态/认养人/古树详情 -->
+        <!-- 用户 - 最新动态/认养人/树木详情 -->
         <div class="tab-panel" v-show="!other">
           <!-- 最新动态 -->
             <div class="dynamic" v-show="tab === 0">
@@ -158,7 +158,7 @@
               <span></span><span>{{auth.introduce || '暂无简介'}}</span><span class="adoptHomePage" @click="goAdoptHomePage">去认养人主页<img src="./arrow.png"/></span>
             </div>
           </div>
-            <!-- 古树详情 -->
+            <!-- 树木详情 -->
             <div class="tree-detail" v-show="tab === 2">
             <!--<div class="item">-->
               <!--<span>古树昵称</span><span>樟子松鼠</span>-->
@@ -200,7 +200,7 @@
             <!--<span>TA的动态</span>-->
             <span :class="tab === 0 ? 'active' : ''" @click="changeTab(0)">TA的动态</span>
             <span :class="tab === 1 ? 'active' : ''" @click="changeTab(1)">认养人介绍</span>
-            <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">古树详情</span>
+            <span :class="tab === 2 ? 'active' : ''" @click="changeTab(2)">树木详情</span>
           </div>
           <div class="daily" v-show="tab === 0">
             <div class="daily-content">
@@ -261,7 +261,7 @@
               <span></span><span>{{auth.introduce || '暂无简介'}}</span><span class="adoptHomePage" @click="goAdoptHomePage">去认养人主页<img src="./arrow.png"/></span>
             </div>
           </div>
-          <!-- 古树详情 -->
+          <!-- 树木详情 -->
           <div class="tree-detail" v-show="tab === 2">
             <!--<div class="item">-->
             <!--<span>古树昵称</span><span>樟子松鼠</span>-->

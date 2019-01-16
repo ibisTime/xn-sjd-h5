@@ -1,7 +1,7 @@
 <template>
   <div class="me-wrapper full-screen-wrapper">
     <div class="bg">
-      <m-header class="cate-header" title="完善资料" actText="保存" @action="action"></m-header>
+      <m-header class="cate-header" title="个人资料" actText="保存" @action="action"></m-header>
       <div class="scroll-section">
         <Scroll :pullUpLoad="pullUpLoad">
         <div class="content">
@@ -24,16 +24,16 @@
                 <input type="number" name="age" v-model="age" placeholder="请输入年龄">
                 <span v-show="errors.has('age')" class="error-tip">{{errors.first('age')}}</span>
               </div>
-              <div class="item-input-wrapper">
-                <span class="mr50">真实姓名</span>
-                <input type="text" name="realName" v-model="realName" placeholder="请输入真实姓名">
-                <span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>
-              </div>
-              <div class="item-input-wrapper">
-                <span class="mr50">身份证号</span>
-                <input type="text" name="idNo" v-model="idNo" placeholder="请输入身份证号">
-                <span v-show="errors.has('idNo')" class="error-tip">{{errors.first('idNo')}}</span>
-              </div>
+              <!--<div class="item-input-wrapper">-->
+                <!--<span class="mr50">真实姓名</span>-->
+                <!--<input type="text" name="realName" v-model="realName" placeholder="请输入真实姓名">-->
+                <!--<span v-show="errors.has('realName')" class="error-tip">{{errors.first('realName')}}</span>-->
+              <!--</div>-->
+              <!--<div class="item-input-wrapper">-->
+                <!--<span class="mr50">身份证号</span>-->
+                <!--<input type="text" name="idNo" v-model="idNo" placeholder="请输入身份证号">-->
+                <!--<span v-show="errors.has('idNo')" class="error-tip">{{errors.first('idNo')}}</span>-->
+              <!--</div>-->
               <div class="item-input-wrapper">
                 <span class="mr50">出生日期</span>
                 <date-picker class="item-input"
@@ -59,7 +59,7 @@
   import Toast from 'base/toast/toast';
   import FullLoading from 'base/full-loading/full-loading';
   import DatePicker from 'base/date-picker/date-picker';
-  import {emptyValid} from 'common/js/util';
+  import {emptyValid, setTitle} from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
   import { getUserDetail, completeInfo } from 'api/user';
 
@@ -73,8 +73,8 @@
         nickname: '',
         sex: '',
         age: '',
-        realName: '',
-        idNo: '',
+        // realName: '',
+        // idNo: '',
         token: '',
         uploadUrl: '',
         multiple: false,
@@ -113,9 +113,9 @@
           completeInfo({
             gender: this.sex,
             age: this.age,
-            realName: this.realName,
+            // realName: this.realName,
             nickname: this.nickname,
-            idNo: this.idNo,
+            // idNo: this.idNo,
             birthday: date || ''
           })
         ]).then(([res3]) => {
@@ -133,6 +133,7 @@
       }
     },
     mounted() {
+      setTitle('个人资料');
       this.userId = getCookie('userId');
       this.uploadUrl = 'http://up-z0.qiniu.com';
       Promise.all([
@@ -144,8 +145,8 @@
         this.nickname = this.user.nickname || '';
         this.sex = this.user.gender ? this.user.gender === '1' ? '男' : '女' || '男' : '';
         this.age = this.user.age || '';
-        this.realName = this.user.realName || '';
-        this.idNo = this.user.idNo || '';
+        // this.realName = this.user.realName || '';
+        // this.idNo = this.user.idNo || '';
         this.year = this.user.birthday.split('-')[0];
         this.month = this.user.birthday.split('-')[1];
         this.day = this.user.birthday.split('-')[2];

@@ -28,23 +28,49 @@
         </div>
         <p class="hr"></p>
         <div class="mall-content">
+          <div class="activity">
+            <img src="./activity.jpg" >
+          </div>
           <div class="con-head">
-            <h5>热门推荐 <router-link to="/mall-shopList?location=1" class="fr">更多</router-link></h5>
+            <h5>热门推荐 <router-link to="/mall-shopList?location=1" class="fr">查看更多</router-link></h5>
             <div class="shop-list">
                 <div class="con-list">
-                  <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, index) in hotShopList" :key="index">
-                    <div class="con-sing_img">
-                      <div class="sing-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>
-                      <div class="con-txt">
-                        <h5>{{shopItem.name}}</h5>
-                        <div class="con-foo">
-                          <p>￥{{formatAmount(shopItem.minPrice)}}起
-                            <span
-                              class="icon fr"
-                              @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"
-                            ></span>
-                          </p>
+                  <!--<div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, index) in hotShopList" :key="index">-->
+                    <!--<div class="con-sing_img">-->
+                      <!--<div class="sing-img" :style="getImgSyl(shopItem.listPic ? shopItem.listPic : '')"></div>-->
+                      <!--<div class="con-txt">-->
+                        <!--<h5>{{shopItem.name}}</h5>-->
+                        <!--<div class="con-foo">-->
+                          <!--<p>￥{{formatAmount(shopItem.minPrice)}}起-->
+                            <!--<span-->
+                              <!--class="icon fr"-->
+                              <!--@click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"-->
+                            <!--&gt;</span>-->
+                          <!--</p>-->
+                        <!--</div>-->
+                      <!--</div>-->
+                    <!--</div>-->
+                  <!--</div>-->
+                  <div class="hot-big">
+                    <div class="left" @click="toShopDet(hotShopList[0].code, hotShopList[0].shopCode)">
+                      <div class="title">{{hotShopList[0].name}}</div>
+                      <div class="text">辅助文字</div>
+                      <div class="sing-img" :style="getImgSyl(hotShopList[0].listPic ? hotShopList[0].listPic : '')"></div>
+                    </div>
+                    <div class="right">
+                      <div class="right-top" @click="toShopDet(hotShopList[0].code, hotShopList[0].shopCode)">
+                        <div class="right-left">
+                          <div class="title">{{hotShopList[1].name}}</div>
+                          <div class="text">辅助文字</div>
                         </div>
+                        <div class="sing-img" :style="getImgSyl(hotShopList[1].listPic ? hotShopList[1].listPic : '')"></div>
+                      </div>
+                      <div class="right-bottom" @click="toShopDet(hotShopList[0].code, hotShopList[0].shopCode)">
+                        <div class="right-left">
+                          <div class="title">{{hotShopList[2].name}}</div>
+                          <div class="text">辅助文字</div>
+                        </div>
+                        <div class="sing-img" :style="getImgSyl(hotShopList[2].listPic ? hotShopList[2].listPic : '')"></div>
                       </div>
                     </div>
                   </div>
@@ -58,16 +84,16 @@
       </div>
       <!--<router-view v-show="isAll"></router-view>-->
     </Scroll>
-    <div class="go-cart" @click.stop="toCartFn">
+    <div class="go-cart" @click.stop="toHomeFn">
       <p v-if="iscart"></p>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
-    <m-footer></m-footer>
+    <m-footer-sjd-mall></m-footer-sjd-mall>
   </div>
 </template>
 <script>
-import MFooter from 'components/m-footer/m-footer';
+import MFooterSjdMall from 'components/m-footer-sjd-mall/m-footer-sjd-mall';
 import FullLoading from 'base/full-loading/full-loading';
 import Scroll from 'base/scroll/scroll';
 import Slider from 'base/slider/slider';
@@ -220,13 +246,13 @@ export default {
     tomore() {
       this.isAll = true;
     },
-    toCartFn() {
+    toHomeFn() {
       if(!getUserId()) {
         this.textMsg = '请先登录';
         this.$refs.toast.show();
         return;
       }
-      this.go('/mall-shopCart');
+      this.go('/home');
     },
     // 获取热门商品
     getHotShop() {
@@ -250,7 +276,7 @@ export default {
     }
   },
   components: {
-    MFooter,
+    MFooterSjdMall,
     FullLoading,
     Toast,
     Scroll,
@@ -352,9 +378,18 @@ export default {
         }
       }
     }
+    .mall-list {
+      padding: 0.44rem 0;
+    }
     .mall-content{
       background-color: #fff;
       padding: 0.32rem 0.3rem 0;
+      .activity {
+        margin-bottom: 0.3rem;
+        img {
+          width: 100%;
+        }
+      }
       .con-head{
         .shop-list{
           /*height: 5rem;*/
@@ -363,63 +398,122 @@ export default {
         >h5{
           margin-bottom: 0.24rem;
           font-family: PingFangSC-Semibold;
-          font-size: 0.36rem;
-          color: #666;
+          font-size: 0.32rem;
+          color: #333;
           letter-spacing: 0.01rem;
           font-weight: 600;
           a{
             font-family: PingFang-SC-Medium;
-            font-size: 0.26rem;
+            font-size: 0.24rem;
             color: #999999;
             letter-spacing: 0.01rem;
           }
         }
         .con-list{
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          .con-sing{
-            width: 48%;
-            box-sizing: border-box;
-            font-size: 0.32rem;
-            border: 1px solid #E6E6E6;
-            border-radius: 4px;
-            padding-bottom: 0.3rem;
-            margin-bottom: 0.3rem;
-          }
-          .sing-img{
+          .hot-big {
+            border: 1px solid #ebebeb;
+            display: flex;
+            align-items: center;
             width: 100%;
-            height: 2.3rem;
-            margin-bottom: 0.2rem;
-            background-size: 100% 100%;
-            background-image: url('./shop.png');
-          }
-          .con-txt{
-            padding: 0 0.35rem 0 0.2rem;
-          }
-          h5{
-            font-family: PingFangSC-Medium;
-            color: #333;
-            font-size: 0.32rem;
-            font-weight: 600;
-            letter-spacing: 0.01rem;
-          }
-          .con-foo{
-            margin-top: 0.16rem;
-            font-family: DIN-Bold;
-            color: #23AD8C;
-            letter-spacing: 0.01rem;
-            line-height: 0.3rem;
-            font-size: 0.3rem;
-            font-weight: bold;
-            .icon{
-              display: inline-block;
-              width: 0.28rem;
-              height: 0.23rem;
-              background-size: 100% 100%;
-              background-image: url('./shopCart.png')
+            .left {
+              display: flex;
+              flex: 1;
+              flex-direction: column;
+              align-items: center;
+              .title {
+                font-size: 0.3rem;
+                color: #333;
+                margin-bottom: 0.16rem;
+              }
+              .text {
+                font-size: 0.24rem;
+                color: #666;
+                margin-bottom: 0.16rem;
+              }
+              .sing-img {
+                width: 3.16rem;
+                height: 2.36rem;
+                background-size: 100% 100%;
+                background-image: url('./shop.png');
+              }
+            }
+            .right {
+              border-left: 1px solid #ebebeb;
+              display: flex;
+              align-items: center;
+              flex-direction: column;
+              flex: 1;
+              .right-top,.right-bottom {
+                padding: 0.32rem 0.3rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+              }
+              .right-top {
+                border-bottom: 1px solid #ebebeb;
+              }
+              .right-left {
+                .title {
+                  font-size: 0.28rem;
+                  color: #333;
+                  margin-bottom: 0.1rem;
+                }
+                .text {
+                  font-size: 0.24rem;
+                  color: #666;
+                }
+              }
+              .sing-img {
+                width: 1.5rem;
+                height: 1.5rem;
+                background-size: 100% 100%;
+                background-image: url('./shop.png');
+              }
             }
           }
+          /*.con-sing{*/
+            /*width: 48%;*/
+            /*box-sizing: border-box;*/
+            /*font-size: 0.32rem;*/
+            /*border: 1px solid #E6E6E6;*/
+            /*border-radius: 4px;*/
+            /*padding-bottom: 0.3rem;*/
+            /*margin-bottom: 0.3rem;*/
+          /*}*/
+          /*.sing-img{*/
+            /*width: 100%;*/
+            /*height: 2.3rem;*/
+            /*margin-bottom: 0.2rem;*/
+            /*background-size: 100% 100%;*/
+            /*background-image: url('./shop.png');*/
+          /*}*/
+          /*.con-txt{*/
+            /*padding: 0 0.35rem 0 0.2rem;*/
+          /*}*/
+          /*h5{*/
+            /*font-family: PingFangSC-Medium;*/
+            /*color: #333;*/
+            /*font-size: 0.32rem;*/
+            /*font-weight: 600;*/
+            /*letter-spacing: 0.01rem;*/
+          /*}*/
+          /*.con-foo{*/
+            /*margin-top: 0.16rem;*/
+            /*font-family: DIN-Bold;*/
+            /*color: #23AD8C;*/
+            /*letter-spacing: 0.01rem;*/
+            /*line-height: 0.3rem;*/
+            /*font-size: 0.3rem;*/
+            /*font-weight: bold;*/
+            /*.icon{*/
+              /*display: inline-block;*/
+              /*width: 0.28rem;*/
+              /*height: 0.23rem;*/
+              /*background-size: 100% 100%;*/
+              /*background-image: url('./shopCart.png')*/
+            /*}*/
+          /*}*/
         }
       }
     }
@@ -427,10 +521,10 @@ export default {
   .go-cart{
     position: fixed;
     bottom: 1.3rem;
-    right: 0.3rem;
-    width: 1.3rem;
-    height: 1.3rem;
-    background-image: url('./1.png');
+    left: 0.3rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    background-image: url('./back-home@2x.png');
     background-size: 100% 100%;
     p{
       width: 0.2rem;
