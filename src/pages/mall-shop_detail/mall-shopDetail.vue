@@ -5,7 +5,10 @@
       <span @click="changeTab(1)" :class="[tab === 1 ? 'active': '']">图文详情</span>
       <span @click="changeTab(2)" :class="[tab === 2 ? 'active': '']">评价</span>
     </div>
-    <Scroll ref="scroll" :pullUpLoad="pullUpLoad">
+    <Scroll ref="scroll"
+            :data="commentList"
+            :hasMore="hasMore"
+            @pullingUp="getCommemtDataFn">
       <div class="content">
         <!-- <div class="shop-head">
         </div> -->
@@ -32,7 +35,7 @@
           </div>
           <div class="shop-pj" v-if="commentData.content">
             <div class="pj-head">
-              <p>评价 <span class="fr pj-all" @click="toComment">查看全部 ></span></p>
+              <p>评价 <span class="fr pj-all" @click="changeTab(2)">查看全部 ></span></p>
             </div>
             <div class="pj-content">
               <div class="con-head">
@@ -50,14 +53,14 @@
             <div class="description-detail" v-html="shopDetData.description" ref="description"></div>
           </div>
         </div>
-        <div class="com-list" v-show="tab === 2">
+        <div class="com-list" v-show="tab === 2 && commentList.length">
           <div class="com-singer" v-for="(item, index) in commentList" :key="index">
             <div class="sing-head">
               <div class="s-head_left">
-                <div class="l-img" :style="getImgSyl(userMsgList[index].photo ? userMsgList[index].photo : '', 'u')"></div>
+                <div class="l-img" :style="getImgSyl(item.photo ? item.photo : '', 'u')"></div>
               </div>
               <div class="s-head_right">
-                <p>{{userMsgList[index].nickname}} <span class="fr">{{formatDate(item.commentDatetime)}}</span></p>
+                <p>{{item.nickname}} <span class="fr">{{formatDate(item.commentDatetime)}}</span></p>
               </div>
             </div>
             <div class="sing-con" v-html="item.content">
@@ -65,6 +68,11 @@
             </div>
           </div>
           <p></p>
+        </div>
+        <div class="com-list" v-show="!commentList.length && !hasMore">
+          <div class="mall-content">
+            <no-result class="no-result-wrapper" title="暂无评论"></no-result>
+          </div>
         </div>
       </div>
     </Scroll>
@@ -147,6 +155,7 @@ import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import Slider from 'base/slider/slider';
 import BackOnly from 'components/back-only/back-only';
+import NoResult from 'base/no-result/no-result';
 export default {
   data() {
     return {
@@ -162,12 +171,12 @@ export default {
       bannerPic: [],
       logistics: {},   // 邮寄方式
       detailDescription: '',
-      config: {      // 评论参数
-        start: 1,
-        limit: 1,
-        commodityCode: '',
-        status: 'D'
-      },
+      // config: {      // 评论参数
+      //   start: 1,
+      //   limit: 1,
+      //   commodityCode: '',
+      //   status: 'D'
+      // },
       commentDatetime: '',
       commentData: {},       // 评论数据
       specsList: [],          // 产品规格
@@ -186,7 +195,17 @@ export default {
       isCartType: '0',             // 无规格 0 点外购物车  1 点外立即购买
       shopName: '',                // 店铺名称
       setSpecsName: '',
-      tab: 0
+      tab: 0,
+      commentList: [],
+      userMsgList: [],
+      start: 1,
+      hasMore: true,
+      config: {      // 评论参数
+        start: 1,
+        limit: 6,
+        commodityCode: '',
+        statusList: ['D', 'B']
+      }
     };
   },
   created() {
@@ -197,11 +216,13 @@ export default {
     this.shopCode = this.$route.query.shopCode;
     this.config.commodityCode = this.code;
     this.addCartConfig.commodityCode = this.code;
+    this.getCommemtDataFn();
     Promise.all([
       getDictList('logistics'),  // 获取邮寄方式
       getShopDetail(this.code),       // 获取商品详情
       getCommemtData(this.config)     // 获取评论
     ]).then(([res1, res2, res3]) => {
+      this.commentList = res3.list;
       this.loading = false;
       res1.forEach(item => {
         this.logistics[item.dkey] = item.dvalue;
@@ -380,6 +401,25 @@ export default {
       if(this.isLogin()) {
         this.go(`/store-service?user2=${this.shopDetData.sellUserId}`);
       }
+    },
+    getCommemtDataFn() {
+      this.config.start = this.start;
+      getCommemtData(this.config).then(data => {
+        if (data.totalPage <= this.start) {
+          this.hasMore = false;
+        }
+        this.commentList = [...this.commentList, ...data.list];
+        this.start ++;
+        // data.list.forEach(item => {
+        //   getUser(item.userId).then(res => {
+        //     this.userMsgList.push(res);
+        //     console.log(this.userMsgList);
+        //   });
+        // });
+        this.loading = false;
+      }, () => {
+        this.loading = false;
+      });
     }
     // 富文本滚动
     // _refreshScroll() {
@@ -415,7 +455,8 @@ export default {
     FullLoading,
     Toast,
     Scroll,
-    Slider
+    Slider,
+    NoResult
   }
 };
 </script>

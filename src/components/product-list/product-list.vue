@@ -4,37 +4,36 @@
       <search :left="searchLeft"></search>
     </div>
     <div class="header clearfix category-wrapper">
-      <!--<category-scroll :currentIndex="currentIndex"-->
-                       <!--:categorys="categorys"-->
-                       <!--@select="selectCategory"></category-scroll>-->
-      <!--<category-scroll :currentIndex="currentIndexSub"-->
-                       <!--:categorys="categorysSub"-->
-                       <!--@select="selectCategorySub"></category-scroll>-->
-      <category-sjd-pro-list></category-sjd-pro-list>
+      <category-scroll :currentIndex="currentIndex"
+                       :categorys="categorys"
+                       @select="selectCategory"></category-scroll>
+      <category-scroll :currentIndex="currentIndexSub"
+                       :categorys="categorysSub"
+                       @select="selectCategorySub"></category-scroll>
     </div>
     <div class="content">
       <div class="hot" v-show="proList.length">
         <Scroll :data="proList"
                 :hasMore="hasMore"
                 @pullingUp="getPageOrders">
-          <div class="proList">
-            <div class="item" @click="go('/product-list/product-detail?code='+item.code)" v-for="item in proList">
-              <div class="item-top">
-                <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-                <div class="sell-type-right">{{canAdopt(item).noAdoptReason}}</div>
-                <img :src="formatImg(item.listPic)" class="hot-pro-img">
-                <div class="prograss-bar" v-if="item.sellType === '4'">
-                  <div class="nowCount" :style="{width: getWidth(item)+'%'}"></div>
-                  <div class="totalCount"></div>
-                  <div class="prograss-text"><span>{{item.nowCount}}/{{item.raiseCount}}</span></div>
-                </div>
-              </div>
-              <div class="hot-pro-text">
-                <p class="hot-pro-title">{{item.name}}</p>
-                <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.productSpecsList.length > 1">起</span></span><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
+        <div class="proList">
+          <div class="item" @click="go('/product-list/product-detail?code='+item.code)" v-for="item in proList">
+            <div class="item-top">
+              <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
+              <div class="sell-type-right">{{canAdopt(item).noAdoptReason}}</div>
+              <img :src="formatImg(item.listPic)" class="hot-pro-img">
+              <div class="prograss-bar" v-if="item.sellType === '4'">
+                <div class="nowCount" :style="{width: getWidth(item)+'%'}"></div>
+                <div class="totalCount"></div>
+                <div class="prograss-text"><span>{{item.nowCount}}/{{item.raiseCount}}</span></div>
               </div>
             </div>
+            <div class="hot-pro-text">
+              <p class="hot-pro-title">{{item.name}}</p>
+              <p><span class="hot-pro-price">¥{{formatAmount(item.minPrice)}}<span v-if="item.productSpecsList.length > 1">起</span></span><span class="hot-pro-introduction">{{item.province}} {{item.city}}</span></p>
+            </div>
           </div>
+        </div>
         </Scroll>
       </div>
       <div class="mall-content">
@@ -59,7 +58,6 @@ import { getCookie } from 'common/js/cookie';
 import { getDictList } from 'api/general';
 import { getProductPage, getProductType } from 'api/biz';
 import { getUserDetail } from 'api/user';
-import CategorySjdProList from 'components/category-sjd-proList/category-sjd-proList';
 export default {
   data() {
     return {
@@ -253,8 +251,7 @@ export default {
           categoryCode: this.selectdType,
           statusList: [4, 5, 6],
           orderDir: 'asc',
-          orderColumn: 'buyable',
-          name: this.query
+          orderColumn: 'buyable'
         })
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
@@ -281,7 +278,6 @@ export default {
     this.loading = true;
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
-    this.query = this.$route.query.query || '';
     setTitle('认养列表');
     Promise.all([
       getDictList('sell_type'),
@@ -323,7 +319,6 @@ export default {
     }).catch(() => { this.loading = false; });
   },
   components: {
-    CategorySjdProList,
     FullLoading,
     Toast,
     Slider,
@@ -354,10 +349,11 @@ export default {
     height: 0.88rem;
   }
   .category-wrapper {
-    /*position: absolute;*/
+    position: absolute;
     top: 0.88rem;
     left: 0;
     width: 100%;
+    height: 1.6rem;
     z-index: 100;
     overflow: hidden;
     line-height: 0.8rem;
@@ -381,7 +377,7 @@ export default {
       padding: 0 0.3rem 0;
       background: $color-highlight-background;
       position: absolute;
-      top: 1.7rem;
+      top: 2.48rem;
       bottom: 0;
       left: 0;
       right: 0;
@@ -442,7 +438,6 @@ export default {
                 background: #23AD8C;
                 height: 100%;
                 max-width: 100%;
-                position: absolute;
               }
               .totalCount {
                 display: inline;

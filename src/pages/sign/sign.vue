@@ -1,30 +1,42 @@
 <template>
   <div class="sign-wrapper">
-  	<div class="jf-wrapper">
-      <back-only class="cate-header" title="签到"></back-only>
-      <!--<router-link to="/home/sign/rules" tag="div" class="signRule border-bottom-1px">签到规则</router-link>-->
-      <!--<div class="signIntegral">-->
-        <!--<div class="integralContent">-->
-          <!--&lt;!&ndash;<h3>{{mark}}</h3>&ndash;&gt;-->
-          <!--&lt;!&ndash;<h4>{{jfOwn}}</h4>&ndash;&gt;-->
-          <!--&lt;!&ndash;<p>{{jfText}}</p>&ndash;&gt;-->
-          <!--<h3>签到成功</h3>-->
-          <!--<h4>12</h4>-->
-          <!--<p>已获积分</p>-->
-        <!--</div>-->
-      <!--</div>-->
-      <div class="top">
-        <div class="title">
-          <span class="real-title">每日签到</span>
-          <span class="info">本月已连续签到3天，累计5天</span>
+    <back-only class="cate-header" title="签到"></back-only>
+    <scroll ref="scroll" :pullUpLoad="pullUpLoad">
+      <div class="jf-wrapper">
+        <div class="top">
+          <div class="title">
+            <span class="real-title">每日签到</span>
+            <span class="info">本月已连续签到3天，累计5天</span>
+          </div>
+          <div class="tips">连续签到越多，奖励越丰富</div>
+          <div class="prograssBar">
+            <!--<div class="gifts">-->
+              <!--<span class="gift-icon" v-for="item in giftList"></span>-->
+            <!--</div>-->
+            <!--<div class="line">-->
+              <!--<div class="nowCount" :style="{width: getWidth()+'%'}"></div>-->
+              <!--<div class="totalCount"></div>-->
+            <!--</div>-->
+            <div class="giftList">
+              <div class="giftItem" v-for="item in giftList">
+                <span class="gift-icon"></span>
+                <div class="line">
+                  <!--<div class="nowCount" :style="{width: getWidth()+'%'}"></div>-->
+                  <div class="totalCount"></div>
+                  <span class="dot"></span>
+                </div>
+                <p class="gift-day">{{item.day}}天</p>
+                <p class="gift-gift">{{item.gift}}</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="tips">连续签到越多，奖励越丰富</div>
-        <div class="prograssBar"></div>
       </div>
-    </div>
-    <div class="date-wrapper">
+      <div class="date-wrapper">
       <calendar :dates="signDateList" :whichMonth="whichMonth"></calendar>
+      <button class="sign" @click="signIn">马上签到</button>
     </div>
+    </scroll>
     <router-view></router-view>
     <sign-mask ref="mask" :text="text" :isHtml="isHtml"></sign-mask>
     <full-loading v-show="loadingFlag"></full-loading>
@@ -39,6 +51,7 @@
   // import {sign, signNum, signQuery} from 'api/me';
   import {getAccount, getSignIntegral} from 'api/account';
   import {formatAmount} from 'common/js/util';
+  import Scroll from 'base/scroll/scroll';
   // import {formatAmount, formatDate} from 'common/js/util';
 
   // const LIMIT = 30;
@@ -46,6 +59,7 @@
   export default {
     data () {
       return {
+        pullUpLoad: false,
         activeClass: '',
         text: '',
         mark: '',
@@ -54,7 +68,30 @@
         start: 1,
         signDateList: [],
         loadingFlag: false,
-        whichMonth: false
+        whichMonth: false,
+        nowDay: 25,
+        giftList: [{
+          day: 3,
+          gift: '10碳泡泡'
+        }, {
+          day: 5,
+          gift: '30碳泡泡'
+        }, {
+          day: 7,
+          gift: '5积分'
+        }, {
+          day: 15,
+          gift: '15积分'
+        }, {
+          day: 30,
+          gift: '30积分'
+        }, {
+          day: 90,
+          gift: '200积分'
+        }, {
+          day: 180,
+          gift: '90积分'
+        }]
       };
     },
     created() {
@@ -67,8 +104,11 @@
         //   this.signIn();
         // }).catch(() => {});
         // this.getJF();
+        // this.signDateList = ['2019-01-01', '2019-01-02', '2019-01-03'];
       },
       signIn () {
+        // this.signDateList = ['2019-01-01', '2019-01-02', '2019-01-03'];
+        this.signDateList = [['2018-12-31', '2019-01-01'], ['2019-01-04', '2019-01-05', '2019-01-06']];
         // signQuery().then((data) => {
         //   this.getSignDate();
         //   this.loadingFlag = false;
@@ -81,6 +121,19 @@
         //   this.mark = '未查询到';
         //   this.loadingFlag = false;
         // });
+      },
+      getWidth() {
+        let daysList = [];
+        this.giftList.map((item) => {
+          daysList.push(item.day);
+        });
+        let x;
+        daysList.map((z, index) => {
+          if(daysList[index] < this.nowDay && daysList[index + 1] > this.nowDay) {
+            x = index;
+          }
+        });
+        return (this.nowDay - daysList[x]) / (daysList[x + 1] - daysList[x]) * 100;
       },
       getJF () {
         getAccount().then((data) => {
@@ -107,6 +160,7 @@
       }
     },
     components: {
+      Scroll,
       calendar,
       SignMask,
       FullLoading,
@@ -128,7 +182,7 @@
 
 	.jf-wrapper {
 		width: 100%;
-    height: 6.2rem;
+    height: 5.6rem;
 		background-size: 100% 100%;
   	@include bg-image('background');
   	color: #fff;
@@ -197,10 +251,88 @@
         }
       }
       .tips {
-
+        margin-bottom: 0.4rem;
       }
       .prograssBar {
-        height: 1rem;
+        .giftList {
+          display: flex;
+          justify-content: space-around;
+          .giftItem {
+            display: inline-block;
+            text-align: center;
+            flex: 1;
+            .gift-icon {
+              display: inline-block;
+              width: 0.46rem;
+              height: 0.46rem;
+              @include bg-image('gift');
+              background-size: 100% 100%;
+              margin-bottom: 0.1rem;
+            }
+            .line {
+              margin-bottom: 0.2rem;
+              .totalCount {
+                /*border-radius: 0.4rem;*/
+                background: rgba(255, 255, 255, 0.3);
+                height: 0.1rem;
+              }
+              .nowCount {
+                background: $color-highlight-background;
+                height: 0.1rem;
+                position: absolute;
+                /*border-radius: 0.04rem;*/
+              }
+              .dot {
+                display: inline-block;
+                width: 0.24rem;
+                height: 0.24rem;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                position: relative;
+                top :-0.16rem
+              }
+            }
+            .gift-day {
+              margin-bottom: 0.1rem;
+              position: relative;
+              top :-0.16rem
+            }
+            .gift-gift {
+              display: inline;
+              font-size: 0.22rem;
+              padding: 0.01rem;
+              border-radius: 0.06rem;
+              background: rgb(25, 118, 112);
+              position: relative;
+              top :-0.16rem
+            }
+          }
+        }
+        /*<!--height: 1rem;-->*/
+        /*<!--.gifts {-->*/
+          /*<!--display: flex;-->*/
+          /*<!--align-items: center;-->*/
+          /*<!--justify-content: space-between;-->*/
+          /*<!--margin-bottom: 0.2rem;-->*/
+          /*<!--.gift-icon {-->*/
+            /*<!--display: inline-block;-->*/
+            /*<!--width: 0.46rem;-->*/
+            /*<!--height: 0.46rem;-->*/
+            /*<!--@include bg-image('gift');-->*/
+            /*<!--background-size: 100% 100%;-->*/
+          /*<!--}-->*/
+        /*<!--}-->*/
+        /*<!--.totalCount {-->*/
+          /*<!--border-radius: 0.4rem;-->*/
+          /*<!--background: rgba(255, 255, 255, 0.3);-->*/
+          /*<!--height: 0.1rem;-->*/
+        /*<!--}-->*/
+        /*<!--.nowCount {-->*/
+          /*<!--background: $color-highlight-background;-->*/
+          /*<!--height: 0.1rem;-->*/
+          /*<!--position: absolute;-->*/
+          /*<!--border-radius: 0.04rem;-->*/
+        /*<!--}-->*/
       }
     }
 	}
@@ -231,6 +363,15 @@
       padding: 0.1rem;
       border: 0.02rem solid #48b0fb;
       border-radius: 50%;
+    }
+    .sign {
+      background: $second-color;
+      color: $color-highlight-background;
+      font-size: 0.3rem;
+      border-radius: 0.08rem;
+      width: 100%;
+      height: 0.9rem;
+      margin-top: 0.7rem;
     }
 	}
 }

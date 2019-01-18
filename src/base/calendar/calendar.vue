@@ -27,12 +27,10 @@
         <ul class="days">
         <li v-for="dayobject in days">
           <span v-if="isGray(dayobject)">
-            <span v-if="dayobject.sign" class="other-month active">{{ dayobject.day.getDate() }}<i></i></span>
-            <span v-else class="other-month">{{ dayobject.day.getDate() }}</span>
+            <span class="other-month" :class="getClass(dayobject)">{{ dayobject.day.getDate() }}</span>
           </span>
           <span v-else>
-            <span v-if="dayobject.sign" class="active">{{ dayobject.day.getDate() }}<i></i></span>
-            <span v-else>{{ dayobject.day.getDate() }}</span>
+            <span :class="getClass(dayobject)">{{ dayobject.day.getDate() }}</span>
           </span>
         </li>
       </ul>
@@ -61,8 +59,7 @@
         currentDay: 1,
         currentMonth: 1,
         currentYear: 1970,
-        days: [],
-        whichMonth: false
+        days: []
       };
     },
     created: function() {  // 在vue初始化时调用
@@ -111,6 +108,57 @@
         var d = day;
         if(d < 10) d = '0' + d;
         return y + '-' + m + '-' + d;
+      },
+      getClass(item) {
+        let classArr = [];
+        if(item.sign) {
+          classArr.push('active');
+        }
+        /*
+        // if(item.first && item.sign && item.day.getDay() !== 6) {
+        //   classArr.push('first');
+        // }
+        // if(item.first_2 && item.sign && item.day.getDay() !== 6) {
+        //   classArr.push('first_2');
+        // }
+        // if((item.last && item.day.getDay() !== 0) || (item.sign && item.day.getDay() === 6)) {
+        //   // 最后一个： 1。数组的最后一个 且不是周一
+        //   //           2。周六签到
+        //   if(!item.first_2 && !item.first) {
+        //     classArr.push('last');
+        //   }
+        // }
+        // if(item.last_2 && item.day.getDay() !== 0 || item.sign && item.day.getDay() === 6) {
+        //   if(!item.first_2 && !item.first) {
+        //     classArr.push('last_2');
+        //   }
+        // }
+        // if(item.sign && !item.first && !item.last && item.day.getDay() !== 6 && item.sign && item.day.getDay() !== 0 && !item.first_2 && !item.last_2) {
+        //   classArr.push('middle');
+        // }
+*/
+        if(item.first && item.sign && item.day.getDay() !== 6 || (item.sign && item.day.getDay() === 0 && !item.last)) {
+          classArr.push('f');
+        }
+        // if(item.first_2 && item.sign && item.day.getDay() !== 6) {
+        //   classArr.push('first_2');
+        // }
+        if((item.last && item.day.getDay() !== 0) || (item.sign && item.day.getDay() === 6)) {
+          // 最后一个： 1。数组的最后一个 且不是周一
+          //           2。周六签到
+          if(!item.first_2 && !item.first) {
+            classArr.push('l');
+          }
+        }
+        // if(item.last_2 && item.day.getDay() !== 0 || item.sign && item.day.getDay() === 6) {
+        //   if(!item.first_2 && !item.first) {
+        //     classArr.push('last_2');
+        //   }
+        // }
+        if(item.sign && !item.first && !item.last && item.day.getDay() !== 6 && item.sign && item.day.getDay() !== 0 && !item.first_2 && !item.last_2) {
+          classArr.push('middle');
+        }
+        return classArr.join(' ');
       }
     },
     watch: {
@@ -119,14 +167,43 @@
           let day = this.days[i].day;
           let str = this.formatDate(day.getFullYear(), day.getMonth() + 1, day.getDate());
           for (let j = 0; j < newVal.length; j++) {
-            if (newVal[j] === str) {
-              this.days.splice(i, 1, {
-                day,
-                sign: true
+            if(newVal[j] instanceof Array) {
+              newVal[j].map((item, index) => {
+                if (item === str) {
+                  // if(newVal[j].length === 2) {
+                  //   this.days.splice(i, 1, {
+                  //     day,
+                  //     sign: true,
+                  //     first_2: index === 0,
+                  //     last_2: index === newVal[j].length - 1
+                  //   });
+                  // } else {
+                  //   this.days.splice(i, 1, {
+                  //     day,
+                  //     sign: true,
+                  //     first: index === 0,
+                  //     last: index === newVal[j].length - 1
+                  //   });
+                  // }
+                  this.days.splice(i, 1, {
+                    day,
+                    sign: true,
+                    first: index === 0,
+                    last: index === newVal[j].length - 1
+                  });
+                }
               });
-              break;
+            } else {
+              if (newVal[j] === str) {
+                this.days.splice(i, 1, {
+                  day,
+                  sign: true
+                });
+                break;
+              }
             }
           }
+          console.log(this.days);
         }
       }
     }
@@ -171,7 +248,7 @@
           flex-wrap: wrap;
           li{
             float: left;
-            width: 0.9rem;
+            width: 0.8rem;
             height: 0.9rem;
             line-height: 0.5rem;
             padding: 0.2rem;
@@ -199,15 +276,57 @@
             }
             .active{
               position: relative;
-              top:-0.3rem;;
-              left: -0.3rem;
+              top: -0.2rem;
+              left: -0.2rem;
               display: inline-block;
-              width: 0.7rem;
-              height: 0.7rem;
+              width: 0.46rem;
+              height: 0.46rem;
               margin: 0.2rem;
-              padding: 0.1rem;
-              border: 0.02rem solid #48b0fb;
-              border-radius: 50%;
+              border-radius: 2rem;
+              background: $primary-color;
+              color: $color-highlight-background;
+            }
+            .first {
+              border-bottom-right-radius: 0;
+              border-top-right-radius: 0;
+            }
+            .last {
+              border-bottom-left-radius: 0;
+              border-top-left-radius: 0;
+            }
+            .middle {
+              border-radius: 0;
+              width: 340%;
+              position: relative;
+              left: -170%;
+            }
+            .first_2 {
+              border-bottom-right-radius: 0;
+              border-top-right-radius: 0;
+              width: 200%;
+              position: relative;
+              left: -80%;
+            }
+            .last_2 {
+              border-bottom-left-radius: 0;
+              border-top-left-radius: 0;
+              width: 200%;
+              position: relative;
+              left: -100%;
+            }
+
+
+
+
+            .f {
+              width: 300%;
+              position: relative;
+              left: -132%;
+            }
+            .l {
+              width: 300%;
+              position: relative;
+              left: -160%;
             }
           }
         }

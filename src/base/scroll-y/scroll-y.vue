@@ -54,8 +54,9 @@
     },
     methods: {
       go(url) {
-        debugger;
-        // this.$emit('use', items);
+        // debugger;
+        // // this.$emit('use', items);
+        this.$router.push('/bulletin');
       }
     }
   };

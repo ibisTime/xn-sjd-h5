@@ -94,8 +94,8 @@
       }
       >i {
         display: inline-block;
-        width: 0.44rem;
-        height: 0.44rem;
+        width: 0.42rem;
+        height: 0.42rem;
         background-repeat: no-repeat;
         background-size: contain;
         background-position: center;

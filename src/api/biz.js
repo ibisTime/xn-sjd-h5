@@ -765,3 +765,19 @@ export function readArticle(code) {
   });
 }
 
+// 添加搜索历史
+export function addSearchHistory(data) {
+  return fetch(629650, {
+    userId: getUserId(),
+    ...data
+  });
+}
+
+// 列表查询搜索历史
+export function getSearchHistoryList(type) {
+  return fetch(629657, {
+    userId: getUserId(),
+    type
+  });
+}
+

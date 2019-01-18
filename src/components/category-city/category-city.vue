@@ -1,13 +1,13 @@
 <template>
   <transition name="city-fade">
     <div v-show="showFlag" class="city-picker-wrapper" @click="hide" :style="{top : top}">
-      <div class="position-wrapper border-top-1px border-bottom-1px" @click.stop>
-        <div class="left" @click="selectPos">
-          <div class="top">当前位置</div>
-          <div class="text">{{position}}</div>
-        </div>
-        <div class="right" @click="refresh">刷新</div>
-      </div>
+      <!--<div class="position-wrapper border-top-1px border-bottom-1px" @click.stop v-show="isPosition">-->
+        <!--<div class="left" @click="selectPos">-->
+          <!--<div class="top">当前位置</div>-->
+          <!--<div class="text">{{position}}</div>-->
+        <!--</div>-->
+        <!--<div class="right" @click="refresh">刷新</div>-->
+      <!--</div>-->
       <div class="content" @click.stop>
         <div class="inner">
           <div class="province item">
@@ -67,6 +67,10 @@
       top: {
         type: String,
         default: '1.68rem'
+      },
+      isPosition: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -341,7 +345,7 @@
 
     .content {
       position: absolute;
-      top: 1.36rem;
+      top: 0;
       left: 0;
       width: 100%;
       height: 7.2rem;
@@ -371,6 +375,7 @@
         .province {
           li{
             padding-left: 0.3rem;
+            font-size: 0.3rem;
 
             &.active {
               background: #fff;

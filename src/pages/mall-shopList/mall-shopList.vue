@@ -1,6 +1,15 @@
 <template>
   <div class="mall-wrapper" @click.stop>
     <div class="content">
+      <header>
+        <div class="inner">
+          <div class="search">
+            <div class="search-icon"></div>
+            <input v-focus type="text" ref="searchInput" placeholder="请输入商品名称" v-model="query" @click="focus"/>
+            <i v-show="query" class="close-icon" @click="clearInput"></i>
+          </div>
+        </div>
+      </header>
         <div class="head-nav">
           <category-scroll
             :currentIndex="currentIndex"
@@ -22,10 +31,14 @@
               <div class="shop-singer" @click="toShopDet(item.code, item.shopCode)" v-for="(item, index) in hotShopList" :key="index">
                   <div class="sing-img" :style="getImgSyl(item.listPic ? item.listPic : '')"></div>
                   <div class="shop-det">
-                      <h5>{{item.name}}</h5>
-                      <p>￥{{formatAmount(item.minPrice)}} 起
-                        <span class="fr icon" @click.stop="addListCart(item.code, item.name, item.specsList[0].id, item.specsList[0].name)"></span>
-                      </p>
+                    <h5>{{item.name}}</h5>
+                    <div class="con-type">
+                      <span class="label">销量 28</span>
+                      <span class="place">杭州市</span>
+                    </div>
+                    <p>￥{{formatAmount(item.minPrice)}} 起
+                      <span class="fr icon" @click.stop="addListCart(item.code, item.name, item.specsList[0].id, item.specsList[0].name)"></span>
+                    </p>
                   </div>
               </div>
             </div>
@@ -90,7 +103,8 @@ export default {
       storeTypeCode: '',
       setIndex: 0,
       typeIndex: '',
-      location: ''
+      location: '',
+      query: ''
     };
   },
   created() {
@@ -129,6 +143,12 @@ export default {
     },
     go(url) {
       this.$router.push(url);
+    },
+    focus() {
+      this.$emit('focus');
+    },
+    clearInput() {
+      this.query = '';
     },
     getImgSyl(imgs, type) {
       let pic = imgs ? formatImg(imgs) : type === 'u' ? 'static/avatar@2x.png' : 'static/default.png';
@@ -268,12 +288,76 @@ export default {
   .fr {
     float: right;
   }
+  header {
+    height: 0.88rem;
+    padding: 0.14rem 0 0.14rem 0.3rem;
+    /*<!--border-bottom: 1px solid $color-border;-->*/
+
+    .inner {
+      height: 0.6rem;
+      display: flex;
+      align-items: center;
+      .back {
+        height: 0.32rem;
+        margin-right: 0.2rem;
+      }
+      .search {
+        flex: 1;
+        height: 0.6rem;
+        display: flex;
+        align-items: center;
+        border-radius: 0.3rem;
+        background: #f3f4f8;
+        margin-right: 0.3rem;
+
+        .search-icon {
+          flex: 0 0 0.54rem;
+          height: 0.34rem;
+          background-repeat: no-repeat;
+          background-position: 0.2rem center;
+          background-size: 0.24rem;
+          @include bg-image('search');
+        }
+
+        input {
+          flex: 1;
+          font-size: $font-size-medium;
+          background: transparent;
+        }
+
+        .close-icon {
+          display: inline-block;
+          width: 0.7rem;
+          height: 0.34rem;
+          background-size: 0.3rem;
+          background-position: center;
+          background-repeat: no-repeat;
+          @include bg-image('close');
+        }
+      }
+
+      .cancel {
+        padding: 0 0.3rem;
+        height: 0.6rem;
+        line-height: 0.6rem;
+        font-size: $font-size-medium-xx;
+      }
+      .sign {
+        height: 100%;
+        font-size: 0;
+        img {
+          margin: 0 0.3rem;
+          height: 0.52rem;
+        }
+      }
+    }
+  }
   .icon{
     display: inline-block;
-    width: 0.38rem;
-    height: 0.33rem;
+    width: 0.28rem;
+    height: 0.22rem;
     background-size: 100% 100%;
-    background-image: url('./shopCart.png');
+    @include bg-image('cart');
   }
   .content {
     overflow: auto;
@@ -295,8 +379,8 @@ export default {
                     border-bottom: 0.01rem solid transparent;
                 }
                 .on{
-                    color: #23AD8C;
-                    border-color: #23AD8C;
+                    color: $mall-color;
+                    border-color: $mall-color;
                 }
             }
         }
@@ -312,32 +396,48 @@ export default {
         justify-content: space-between;
         flex-wrap: wrap;
         .shop-singer{
-            width: 48%;
-            padding-bottom: 0.3rem;
-            margin-bottom: 0.3rem;
-            border: 0.01rem solid #E6E6E6;
-            border-radius: 0.06rem;
-            overflow: hidden;
-            .sing-img{
-                height: 2.3rem;
-                background-image: url('./shop.png');
-                background-size: 100% 100%;
-                margin-bottom: 0.3rem;
+          width: 48%;
+          padding-bottom: 0.3rem;
+          margin-bottom: 0.3rem;
+          border-radius: 0.06rem;
+          overflow: hidden;
+          border: 1px solid $color-border;
+          border-top: none;
+          .sing-img{
+              height: 2.3rem;
+              background-image: url('./shop.png');
+              background-size: 100% 100%;
+              margin-bottom: 0.3rem;
+          }
+          .shop-det{
+            padding: 0 0.3rem 0 0.2rem;
+            .con-type {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 0.18rem;
+              .label {
+                color: $mall-color;
+                font-size: 0.22rem;
+                padding: 0.07rem;
+                border: 1px solid $mall-color;
+              }
+              .place {
+                font-size: 0.22rem;
+                color: #b3b3b3;
+              }
             }
-            .shop-det{
-                padding: 0 0.3rem 0 0.2rem;
-                >h5{
-                    font-size: 0.34rem;
-                    font-weight: 600;
-                    margin-bottom: 0.3rem;
-                    letter-spacing: 0.02rem;
-                }
-                p{
-                    font-size: 0.32rem;
-                    color: #23AD8C;
-                    font-weight: 600;
-                }
-            }
+              >h5{
+                  font-size: 0.34rem;
+                  font-weight: 600;
+                  margin-bottom: 0.1rem;
+                  letter-spacing: 0.02rem;
+              }
+              p{
+                  font-size: 0.32rem;
+                  color: $mall-color;
+              }
+          }
         }
     }
   }
