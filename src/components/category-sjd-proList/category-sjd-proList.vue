@@ -7,9 +7,6 @@
         <span @click="smallClick">树级<img src="./down-unchoosed@2x.png"/></span>
         <span @click="areaClick">树龄排序<img src="./down-unchoosed@2x.png"/></span>
         <span @click="filterClick">筛选<img src="./down-unchoosed@2x.png"/></span>
-        <!--<div @click="showOrder"><span>{{orderText}}</span><img :src="getOrderImg()"/></div>-->
-        <!--<div @click="showType"><span>{{typeText}}</span><img :src="getTypeImg()"/></div>-->
-        <!--<div class="my-consignment" @click="go('/consignment-order')">我的寄售订单</div>-->
       </div>
       <div class="more" v-show="order">
         <p v-for="(item, index) in orderList" @click="checkedOrder(index)" :class="{active: orderIndex === index}"><span>{{item.value}}</span><img
@@ -28,7 +25,7 @@
                     :outAreaIndex="areaIndex"
                     @cityChose="cityChose"
                     top="1.6rem"
-                    isPosition="isPosition"></category-city>
+                    :cityData1="provinceList"></category-city>
     <category-filter ref="filterCategory"
                      @confirm="handleFilter"
                      :outMinPrice="minPrice"
@@ -54,10 +51,6 @@
 
   export default {
     props: {
-      // categorys: {
-      //   type: Array,
-      //   default: []
-      // },
       currentIndex: {
         type: Number,
         default: 0
@@ -73,6 +66,12 @@
       bgColor: {
         type: String,
         default: ''
+      },
+      provinceList: {
+        type: Array,
+        default: function () {
+          return [];
+        }
       }
     },
     data() {
@@ -114,11 +113,11 @@
         isFree: false,
         isNew: false,
         bigCode: this.$route.query.code || '1',
-        smallCode: '',
-        isPosition: false
+        smallCode: ''
       };
     },
     mounted() {
+      console.log(this.provinceList);
       this.orderText = this.orderList[0].value;
       this.getVariety();
     },
@@ -195,6 +194,7 @@
         this.smallName = name;
       },
       cityChose(prov, city, area, provIdx, cityIdx, areaIdx) {
+        debugger;
         this.province = prov;
         this.provIndex = provIdx;
         this.city = city;
@@ -239,6 +239,10 @@
         } else {
           this.$refs.smallCategory.hide();
         }
+      },
+      resetQuery() {
+        this.start = 1;
+        this.$emit('getPageOrder');
       }
     },
     components: {

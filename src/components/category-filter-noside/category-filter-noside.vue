@@ -3,15 +3,22 @@
     <div v-show="showFlag" class="filters-wrapper" @click="hide">
       <div class="content" @click.stop>
         <scroll :pullUpLoad="pullUpLoad" ref="scroll">
+          <div class="title">快捷筛选（可多选）</div>
           <div class="items">
-            <div class="title">认养状态</div>
-            <div class="item" :class="can1" @click="choseCan(1)">可认养</div>
-            <div class="item" :class="can0" @click="choseCan(0)">不可认养</div>
+            <div class="item" :class="freeCls" @click="choseFree">包邮</div>
+            <div class="item" :class="newCls" @click="choseNew">全新</div>
+          </div>
+          <div class="title">价格范围</div>
+          <div class="price-select">
+            <div class="price"><input type="tel" @input="handleMinInput" v-model="minPrice"/></div>
+            <div class="split"></div>
+            <div class="price"><input type="tel" @input="handleMaxInput" v-model="maxPrice"/></div>
           </div>
           <div class="items">
-            <div class="title">树种</div>
-            <div class="item" :class="freeCls" @click="choseFree">樟树</div>
-            <div class="item" :class="newCls" @click="choseNew">柏树</div>
+            <div v-for="(item,index) in priceList"
+                 @click="chosePrice(index)"
+                 class="item"
+                 :class="priceCls(index)">{{item.text}}</div>
           </div>
         </scroll>
         <div class="footer" @click.stop>
@@ -56,17 +63,15 @@
         minPrice: '',
         maxPrice: '',
         isFree: false,
-        isNew: false,
-        can: '2'
+        isNew: false
       };
     },
     computed: {
-      can1() {
-        return this.can === '1' ? 'active' : '';
+      freeCls() {
+        return this.isFree ? 'active' : '';
       },
-      can0() {
-        debugger;
-        return this.can === '0' ? 'active' : '';
+      newCls() {
+        return this.isNew ? 'active' : '';
       }
     },
     created() {
@@ -114,22 +119,12 @@
       choseFree() {
         this.isFree = !this.isFree;
       },
-      choseCan(index) {
-        // debugger;
-        if(index === 0) {
-          if(this.can === '0') {
-            this.can = '2';
-          } else {
-            this.can = '0';
-          }
-        } else {
-          if(this.can === '1') {
-            this.can = '2';
-          } else {
-            this.can = '1';
-          }
-        }
-        console.log(this.can);
+      choseNew() {
+        this.isNew = !this.isNew;
+      },
+      chosePrice(index) {
+        this.priceIndex = this.priceIndex === index ? -1 : index;
+        this.minPrice = this.maxPrice = '';
       },
       reset() {
         this.minPrice = this.maxPrice = '';
@@ -138,7 +133,39 @@
       },
       confirm() {
         this.hide();
-        // this.$emit('confirm', this.priceIndex, this.isFree, this.isNew);
+        let min = this.minPrice;
+        let max = this.maxPrice;
+        if (~this.priceIndex) {
+          min = '0';
+          max = this.priceList[this.priceIndex].value;
+        } else {
+          if (this.isUndefined(min) || this.isUndefined(max)) {
+            if (!this.isUndefined(min)) {
+              min = +min * 1000 + '';
+            }
+            if (!this.isUndefined(max)) {
+              max = +max * 1000 + '';
+            }
+          } else {
+            min = +min * 1000;
+            max = +max * 1000;
+            if (min > max) {
+              [min, max] = [max + '', min + ''];
+            } else {
+              min += '';
+              max += '';
+            }
+          }
+        }
+        this.$emit('confirm', min, max, this.priceIndex, this.isFree, this.isNew);
+      },
+      handleMinInput() {
+        this.priceIndex = -1;
+        this.minPrice = this.minPrice.replace(/[^\d]+/ig, '');
+      },
+      handleMaxInput() {
+        this.priceIndex = -1;
+        this.maxPrice = this.maxPrice.replace(/[^\d]+/ig, '');
       },
       hide() {
         this.showFlag = false;
@@ -160,34 +187,33 @@
   @import "~common/scss/variable";
 
   .filters-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.6);
     z-index: 1;
-    position: absolute;
-    top: 1.8rem;
-    left: 0;
-    right: 0;
-    font-size: 0.26rem;
 
     &.filter-fade-enter-active {
       animation: filter-fadein 0.3s;
       .content {
-        /*animation: filter-slide 0.3s;*/
+        animation: filter-slide 0.3s;
       }
     }
 
     .content {
       position: absolute;
       right: 0;
-      top: 0;
-      font-size: 0.26rem;
-      background: #fff;
-      left: 0;
       height: 100%;
+      width: 6.7rem;
+      padding-right: 0.3rem;
+      font-size: $font-size-medium-s;
+      background: #fff;
 
       .title {
+        padding-top: 0.25rem;
         padding-left: 0.2rem;
       }
 
@@ -222,6 +248,8 @@
       }
 
       .items {
+        padding-top: 0.3rem;
+
         .item {
           display: inline-block;
           margin-left: 0.2rem;
@@ -229,28 +257,26 @@
           min-width: 1.8rem;
           height: 0.6rem;
           line-height: 0.6rem;
-          border-radius: 0.06rem;
+          border-radius: 0.05rem;
           text-align: center;
-          background: #fff;
-          border: 1px solid $second-color;
+          background: #f2f3f7;
 
           &.active {
-            color: $second-color;
-            background: rgb(255, 236, 236);
+            color: $primary-color;
+            background: #eaf6fe;
           }
         }
       }
 
       .footer {
-        display: -webkit-box;
-        display: -ms-flexbox;
         display: flex;
-        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
         height: 0.9rem;
         line-height: 0.9rem;
-        font-size: 0.32rem;
-        position: fixed;
-        bottom: 0;
+        font-size: $font-size-medium-xx;
 
         .reset {
           flex: 1;
@@ -260,10 +286,10 @@
         }
 
         .confirm {
-          flex: 1;
+          width: 4.5rem;
           text-align: center;
           color: #fff;
-          background: $second-color;
+          background: $primary-color;
         }
       }
     }

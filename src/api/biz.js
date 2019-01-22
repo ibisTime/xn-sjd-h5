@@ -781,3 +781,8 @@ export function getSearchHistoryList(type) {
   });
 }
 
+// 列表查询搜索历史
+export function getProductAreaList(type) {
+  return fetch(629028, {});
+}
+

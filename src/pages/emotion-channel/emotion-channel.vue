@@ -2,8 +2,8 @@
   <div class="emotion-channel-wrapper">
     <m-header class="cate-header" title="情感频道" actText="发布" @action="action"></m-header>
     <div class="tab">
-      <span :class="time ? 'active' : ''" @click="changeTime">按发布时间排序</span>
-      <span :class="!time ? 'active' : ''"  @click="changeTime">按收藏数排序</span>
+      <span :class="time ? 'active' : ''" @click="byWhat(0)">按发布时间排序</span>
+      <span :class="collect ? 'active' : ''"  @click="byWhat(1)">按收藏数排序</span>
       <span @click="changeOfficial">
         <img src="./unchoosed@2x.png" v-if="!official">
         <img src="./choosed@2x.png" v-if="official">
@@ -55,7 +55,8 @@
         loading: false,
         list: [],
         official: false,
-        time: true
+        time: false,
+        collect: false
       };
     },
     mounted() {
@@ -96,16 +97,20 @@
       },
       getPageOrders() {
         this.loading = true;
-        getArticlePage({
+        this.config = {
           start: this.start,
           limit: this.limit,
           status: '5',
           openLevel: '1',
           queryUserId: getUserId(),
-          orderDir: 'asc',
-          orderColumn: 'order_no',
+          orderDir: this.time || this.collect ? 'desc' : 'asc',
+          orderColumn: this.time ? 'publish_datetime' : this.collect ? 'collect_count' : 'order_no',
           treeNo: this.treeNo
-        }).then((res) => {
+        };
+        if(this.official) {
+          this.config.type = 1;
+        }
+        getArticlePage(this.config).then((res) => {
           if (res.list.length < this.limit || res.totalCount <= this.limit) {
             this.hasMore = false;
           }
@@ -119,9 +124,23 @@
       },
       changeOfficial() {
         this.official = !this.official;
+        this.start = 1;
+        this.limit = 10;
+        this.list = [];
+        this.getPageOrders();
       },
-      changeTime() {
-        this.time = !this.time;
+      byWhat(index) {
+        if(index === 0) {
+          this.collect = false;
+          this.time = !this.time;
+        } else {
+          this.time = false;
+          this.collect = !this.collect;
+        }
+        this.start = 1;
+        this.limit = 10;
+        this.list = [];
+        this.getPageOrders();
       }
     },
     components: {

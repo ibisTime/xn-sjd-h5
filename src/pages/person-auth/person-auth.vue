@@ -12,12 +12,12 @@
         <div class="form-item border-bottom-1px">
           <div class="item-label">身份证号</div>
           <div class="item-input-wrapper">
-            <input type="text" class="item-input" v-model="perConfig.idNo" name="idCard" v-validate="'required|idNo'" placeholder="请输入身份证号">
+            <input type="text" class="item-input" v-model="perConfig.idNo" name="idCard" v-validate="'required|idCard'" placeholder="请输入身份证号">
             <span v-show="errors.has('idCard')" class="error-tip">{{errors.first('idCard')}}</span>
           </div>
         </div>
         <div class="text">
-          <textarea v-model="perConfig.introduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="说些什么吧，这会在您的空间内展示"></textarea>
+          <textarea v-model="perConfig.introduce" ref="textarea" v-validate="'required|max:20'" class="item-input" placeholder="说些什么吧，这会在您的空间内展示"></textarea>
         </div>
         <div class="avatar-box">
           <div class="avatar">

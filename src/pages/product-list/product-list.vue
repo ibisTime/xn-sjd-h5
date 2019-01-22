@@ -10,7 +10,9 @@
       <!--<category-scroll :currentIndex="currentIndexSub"-->
                        <!--:categorys="categorysSub"-->
                        <!--@select="selectCategorySub"></category-scroll>-->
-      <category-sjd-pro-list></category-sjd-pro-list>
+      <category-sjd-pro-list :provinceList="provinceList"
+                             @getPageOrder="getPageOrders"
+      ></category-sjd-pro-list>
     </div>
     <div class="content">
       <div class="hot" v-show="proList.length">
@@ -57,7 +59,7 @@ import CategoryScroll from 'base/category-scroll/category-scroll';
 import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getDictList } from 'api/general';
-import { getProductPage, getProductType } from 'api/biz';
+import { getProductPage, getProductType, getProductAreaList } from 'api/biz';
 import { getUserDetail } from 'api/user';
 import CategorySjdProList from 'components/category-sjd-proList/category-sjd-proList';
 export default {
@@ -89,7 +91,8 @@ export default {
       indexSub: 0,
       searchLeft: {
         back: true
-      }
+      },
+      provinceList: []
     };
   },
   methods: {
@@ -291,8 +294,9 @@ export default {
         status: 1,
         typeList: ['0', '1']
       }),
-      getDictList('product_status')
-    ]).then(([res1, res2, res3]) => {
+      getDictList('product_status'),
+      getProductAreaList()
+    ]).then(([res1, res2, res3, res4]) => {
       res1.map((item) => {
         this.sellTypeObj[item.dkey] = item.dvalue;
       });
@@ -315,6 +319,57 @@ export default {
           this.currentIndex = index;
         }
       });
+      console.log(res4);
+      let provinceList = [];
+      res4.map((item) => {
+        if(provinceList.length) {
+          this.hasProvince = false;
+          provinceList.map((province) => {
+            if(province.name === item.province) {
+              // 有省
+              let cityList = province.sub;
+              cityList.map((city) => {
+                if(city.name === item.city) {
+                  // 有市
+                  city.sub.push({
+                    name: item.area
+                  });
+                } else {
+                  province.push({
+                    name: item.city,
+                    sub: [{
+                      name: item.area
+                    }]
+                  });
+                }
+              });
+              this.hasProvince = true;
+            }
+          });
+          if(!this.hasProvince) {
+            provinceList.push({
+              name: item.province,
+              sub: [{
+                name: item.city,
+                sub: [{
+                  name: item.area
+                }]
+              }]
+            });
+          }
+        } else {
+          provinceList.push({
+            name: item.province,
+            sub: [{
+              name: item.city,
+              sub: [{
+                name: item.area
+              }]
+            }]
+          });
+        }
+      });
+      this.provinceList = provinceList;
       this.loading = false;
       this.getSubType();
       if(this.userId) {

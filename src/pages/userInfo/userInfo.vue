@@ -42,6 +42,10 @@
                              :day="day"
                              @change="updateDate"></date-picker>
               </div>
+              <div class="item-input-wrapper text">
+                <textarea v-model="introduce" name="introduce" ref="textarea" v-validate="'required|max:20'" class="item-input" placeholder="说些什么吧，这会在您的空间内展示"></textarea>
+                <span v-show="errors.has('introduce')" class="error-tip">{{errors.first('introduce')}}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -177,6 +181,17 @@
     .fr {
       float: right;
     }
+    .text {
+      padding-top: 0.3rem;
+      border-bottom: 1px solid $color-border;
+      .item-input {
+        padding: 0.05rem 0.1rem;
+        min-height: 3rem !important;
+        font-size: 0.3rem;
+        color: #333;
+        width: 100%;
+      }
+    }
     .bg {
       background-size: contain;
       .scroll-section {
@@ -208,8 +223,6 @@
               }
               div {
                 width: 100%;
-                height: 1.1rem;
-                font-size: $font-size-medium-x;
                 line-height: 1.1rem;
                 border-bottom: 1px solid #eee;
                 color: #333;

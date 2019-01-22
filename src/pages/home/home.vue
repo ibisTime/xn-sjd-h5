@@ -21,39 +21,39 @@
           </div>
           <div class="more" @click="go('/notices')">更多</div>
         </div>
-        <!--<div class="mall-list">-->
-          <!--&lt;!&ndash;<div class="icon-item" @click="goProList(item)" v-for="item in proType">&ndash;&gt;-->
-            <!--&lt;!&ndash;<img :src="formatImg(item.pic)">&ndash;&gt;-->
-            <!--&lt;!&ndash;<p>{{item.name}}</p>&ndash;&gt;-->
-          <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <div class="navigation">
+          <div class="icons" @click="go(item.url)" v-for="item in navigateList">
+            <img :src="formatImg(item.pic)">
+            <p>{{item.name}}</p>
+          </div>
           <!--<category-scroll-->
             <!--:Type="'mall'"-->
             <!--:currentIndex="currentIndex"-->
             <!--:categorys="proType"-->
             <!--@select="selectCategory"-->
           <!--&gt;</category-scroll>-->
-        <!--</div>-->
-        <div class="navigation">
-          <div class="icons">
-            <img src="./tree@2x.png">
-            <p>古树名木</p>
-          </div>
-          <div class="icons" @click="go('/mall')">
-            <img src="./mall@2x.png">
-            <p>商场</p>
-          </div>
-          <div class="icons">
-            <img src="./chart@2x.png">
-            <p>排行榜</p>
-          </div>
         </div>
+        <!--<div class="navigation">-->
+          <!--<div class="icons">-->
+            <!--<img src="./tree@2x.png">-->
+            <!--<p>古树名木</p>-->
+          <!--</div>-->
+          <!--<div class="icons" @click="go('/mall')">-->
+            <!--<img src="./mall@2x.png">-->
+            <!--<p>商场</p>-->
+          <!--</div>-->
+          <!--<div class="icons">-->
+            <!--<img src="./chart@2x.png">-->
+            <!--<p>排行榜</p>-->
+          <!--</div>-->
+        <!--</div>-->
         <div class="emotion-article" @click="go('/emotion-channel')">
           <div class="emotion-top">
             <span class="emotion-title">情感推文</span>
             <span class="emotion-more">查看更多<img src="./more@2x.png"/></span>
           </div>
           <div class="emotion-img">
-            <img src="./emotion.jpg">
+            <img :src="formatImg(articlePic)">
           </div>
         </div>
         <scroll-y :contentArr="bulletinList" v-show="bulletinList.length"></scroll-y>
@@ -108,7 +108,7 @@ import CategoryScroll from 'base/category-scroll/category-scroll';
 import Search from 'components/search/search';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
-import { getBanner, getDictList } from 'api/general';
+import { getBanner, getDictList, getConfigPage } from 'api/general';
 import { getProductPage, getProductType, signIn, getMessagePage } from 'api/biz';
 import { getUserDetail } from 'api/user';
 export default {
@@ -136,7 +136,9 @@ export default {
       signTpp: '0',
       signDays: 0,
       userDetail: {},
-      searchRight: {}
+      searchRight: {},
+      navigateList: [],
+      articlePic: ''
     };
   },
   methods: {
@@ -236,10 +238,13 @@ export default {
           orderColumn: 'create_datetime',
           orderDir: 'desc'
         }),
-        // getBulletinList(),
         getDictList('sell_type'),
-        getDictList('product_status')
-      ]).then(([res1, res2, res3, res4, res5, res6, res7]) => {
+        getDictList('product_status'),
+        getBanner({
+          type: '8'
+        }),
+        getConfigPage({type: 'SYS_TXT', ckey: 'ARTICLE_PIC'})
+      ]).then(([res1, res2, res3, res4, res5, res6, res7, res8, res9]) => {
         this.banners = res1;
         if(this.banners.length > 1) {
           this.loop = true;
@@ -262,6 +267,8 @@ export default {
         res7.map((item) => {
           this.projectStatusObj[item.dkey] = item.dvalue;
         });
+        this.navigateList = res8;
+        this.articlePic = res9.list[0].cvalue;
       }).catch(() => { this.loading = false; });
     },
     canAdopt(item) {
@@ -533,6 +540,7 @@ export default {
         img {
           width: 0.66rem;
           height: 0.66rem;
+          border-radius: 50%;
         }
         p {
           font-size: 0.24rem;

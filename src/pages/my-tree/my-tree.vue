@@ -50,7 +50,7 @@
             <img src="./danmu@2x.png" @click="danmu" >
             <img src="./juanzeng@2x.png" @click="juanzeng">
           </div>
-          <img src="./story@2x.png" class="romantic-story" v-show="!other" @click="go('/emotion-channel?treeNo=' + treeDetail.tree.treeNumber)">
+          <img src="./story@2x.png" class="romantic-story" @click="go('/emotion-channel?treeNo=' + treeDetail.tree.treeNumber)">
         </div>
         <!-- 能量比拼 -->
         <div class="battle" v-if="other === '1'" v-show="other === '1'">
@@ -353,30 +353,6 @@
             <img :src="formatImg(item.pic)">
           </div>
         </Scroll>
-        <!--<div class="prop-item" @click="showDanmu(2)">-->
-          <!--<span>给你点个赞</span>-->
-          <!--<img src="./7@2x.png">-->
-        <!--</div>-->
-        <!--<div class="prop-item" @click="showDanmu(3)">-->
-          <!--<span>我控制不住我自己啊~</span>-->
-          <!--<img src="./2@2x.png">-->
-        <!--</div>-->
-        <!--<div class="prop-item" @click="showDanmu(4)">-->
-          <!--<span>勤快的宝宝有能量~</span>-->
-          <!--<img src="./3@2x.png">-->
-        <!--</div>-->
-        <!--<div class="prop-item" @click="showDanmu(5)">-->
-          <!--<span>我对你已绝望</span>-->
-          <!--<img src="./4@2x.png">-->
-        <!--</div>-->
-        <!--<div class="prop-item" @click="showDanmu(6)">-->
-          <!--<span>你行行好，别把我的能量全收走，可以吗~</span>-->
-          <!--<img src="./5@2x.png">-->
-        <!--</div>-->
-        <!--<div class="prop-item" @click="showDanmu(7)">-->
-          <!--<span>你怎么每天这么勤快呢</span>-->
-          <!--<img src="./6@2x.png">-->
-        <!--</div>-->
       </div>
     </div>
     <convert v-show="convertFlag" :propsDetail="propsData.buyItem" @close="close('convertFlag')" @convertSuccess="convertSuccess"></convert>
@@ -401,7 +377,7 @@ import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
-        getListProps, buyProps, getPropsOrder, useProps, getAccount, getPropsUsedRecordList, getDanmuList,
+        getListProps, buyProps, getPropsOrder, getAccount, getPropsUsedRecordList, getDanmuList,
         sendDanmu } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import { getUserDetail } from 'api/user';
@@ -894,25 +870,25 @@ export default {
         if(res.length) {
           res.map((item) => {
             if(item.toolCode === code) {
-              useProps({
-                toolOrderCode: item.code,
-                adoptTreeCode: this.adoptTreeCode
-              }).then((res) => {
-                if(res.isSuccess) {
-                  this.text = '使用成功';
-                  this.$refs.toast.show();
-                }
-                this.loading = false;
-                this.close('convertSuccessFlag');
-                // 再重新获取道具
-                this.getPropList({
-                  adoptTreeCode: this.adoptTreeCode
-                });
-                // 重新获取积分
-                this.getJF();
-                // 有可能是一键收取的道具，所以要再次获取碳泡泡
-                this.getTppList({adoptTreeCode: this.adoptTreeCode});
-              }).catch(() => { this.loading = false; });
+              // useProps({
+              //   toolOrderCode: item.code,
+              //   adoptTreeCode: this.adoptTreeCode
+              // }).then((res) => {
+              //   if(res.isSuccess) {
+              //     this.text = '使用成功';
+              //     this.$refs.toast.show();
+              //   }
+              //   this.loading = false;
+              //   this.close('convertSuccessFlag');
+              //   // 再重新获取道具
+              //   this.getPropList({
+              //     adoptTreeCode: this.adoptTreeCode
+              //   });
+              //   // 重新获取积分
+              //   this.getJF();
+              //   // 有可能是一键收取的道具，所以要再次获取碳泡泡
+              //   this.getTppList({adoptTreeCode: this.adoptTreeCode});
+              // }).catch(() => { this.loading = false; });
             }
           });
         }
@@ -1141,7 +1117,7 @@ export default {
         justify-content: space-between;
         position: absolute;
         bottom: 0.28rem;
-        right: 0.3rem;
+        right: 1.8rem;
         img {
           width: 0.72rem;
           height: 0.76rem;

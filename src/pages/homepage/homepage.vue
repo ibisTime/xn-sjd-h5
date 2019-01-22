@@ -13,7 +13,7 @@
                   <p class="userName"><span>{{userInfo.nickname}}</span></p>
                   <p class="info">
                     <span class="info-level">LV{{userInfo.level}} 初探翠林</span>
-                    <span class="info-friend">好友：10</span>
+                    <span class="info-friend">好友：{{userInfo.friendCount}}</span>
                     <span class="info-friend-button" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '已是好友' : '申请好友'}}</span>
                   </p>
                   <p class="autograph"><span>简介：乱七八糟</span></p>
@@ -335,6 +335,7 @@
         ]).then(([userInfo, productType, res3]) => {
           this.loading = false;
           this.userInfo = userInfo;
+          console.log(this.userInfo);
 
           productType.map(item => {
             this.categorys.push({

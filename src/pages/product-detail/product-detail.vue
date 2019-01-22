@@ -460,7 +460,7 @@ export default {
           }),
           getAdoptList({
             productCode: this.code,
-            statusList: [1, 2, 3]
+            statusList: [2, 3, 4]
           })
         ]).then(([res1, res2, res3]) => {
           this.loading = false;
