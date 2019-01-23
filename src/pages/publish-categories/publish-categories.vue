@@ -35,7 +35,7 @@
   import MHeader from 'components/m-header/m-header';
   // import {mapMutations, mapGetters} from 'vuex';
   // import {SET_PUBLISH_CATEGORY} from 'store/mutation-types';
-  import {getCategories} from 'api/biz';
+  // import {getCategories} from 'api/biz';
 
   export default {
     data() {
@@ -71,26 +71,26 @@
     // },
     methods: {
       getInitData() {
-        if (this.publishCategory) {
-          this.leftCode = this.publishCategory.parentCode;
-          Promise.all([
-            getCategories(0),
-            this.getSmallCategories(this.publishCategory.parentCode)
-          ]).then(([left]) => {
-            this.list = left;
-            this.list = ['分类1', '分类2'];
-          }).catch(() => {
-            this.rLoadingFlag = false;
-          });
-        } else {
-          getCategories(0).then((data) => {
-            this.list = data;
-            if (data.length) {
-              this.leftCode = data[0].code;
-              this.getSmallCategories(data[0].code);
-            }
-          });
-        }
+        // if (this.publishCategory) {
+        //   this.leftCode = this.publishCategory.parentCode;
+        //   Promise.all([
+        //     getCategories(0),
+        //     this.getSmallCategories(this.publishCategory.parentCode)
+        //   ]).then(([left]) => {
+        //     this.list = left;
+        //     this.list = ['分类1', '分类2'];
+        //   }).catch(() => {
+        //     this.rLoadingFlag = false;
+        //   });
+        // } else {
+        //   getCategories(0).then((data) => {
+        //     this.list = data;
+        //     if (data.length) {
+        //       this.leftCode = data[0].code;
+        //       this.getSmallCategories(data[0].code);
+        //     }
+        //   });
+        // }
       },
       getSmallCategories(code) {
         if (this.rightData[code]) {
@@ -100,20 +100,20 @@
         }
         this.rightList = [];
         this.rLoadingFlag = true;
-        return getCategories(code).then((data) => {
-          this.rightData[code] = data;
-          if (!this.list || this.leftCode === code) {
-            this.rightList = data;
-          }
-          this.rLoadingFlag = false;
-          if (this.publishCategory && this.publishCategory.parentCode === code) {
-            this.rightCode = this.publishCategory.code;
-          } else {
-            this.rightCode = '';
-          }
-        }).catch(() => {
-          this.rLoadingFlag = false;
-        });
+        // return getCategories(code).then((data) => {
+        //   this.rightData[code] = data;
+        //   if (!this.list || this.leftCode === code) {
+        //     this.rightList = data;
+        //   }
+        //   this.rLoadingFlag = false;
+        //   if (this.publishCategory && this.publishCategory.parentCode === code) {
+        //     this.rightCode = this.publishCategory.code;
+        //   } else {
+        //     this.rightCode = '';
+        //   }
+        // }).catch(() => {
+        //   this.rLoadingFlag = false;
+        // });
       },
       choseMenu(code, index) {
         this.leftCode = code;

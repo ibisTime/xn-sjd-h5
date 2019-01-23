@@ -213,6 +213,7 @@ const Search = () => import('@/pages/search/search');
 const Test = () => import('@/pages/test/test');
 // 我的通知
 const Message = () => import('@/pages/message/message');
+const MessageDetail = () => import('@/pages/message-detail/message-detail');
 // 商场-我的
 const MallMe = () => import('@/pages/mall-me/mall-me');
 const PublishCategories = () => import('@/pages/publish-categories/publish-categories');
@@ -695,6 +696,10 @@ export default new Router({
     {
       path: '/message',
       component: Message
+    },
+    {
+      path: '/message-detail',
+      component: MessageDetail
     },
     {
       path: '/mall-me',

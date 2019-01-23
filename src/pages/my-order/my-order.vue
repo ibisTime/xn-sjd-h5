@@ -1,9 +1,9 @@
 <template>
   <div class="adopt-list-wrapper">
     <div class="category-wrapper">
-      <category-scroll :currentIndex="currentIndexSell"
-                       :categorys="categorysSell"
-                       @select="selectCategorySell"></category-scroll>
+      <!--<category-scroll :currentIndex="currentIndexSell"-->
+                       <!--:categorys="categorysSell"-->
+                       <!--@select="selectCategorySell"></category-scroll>-->
       <category-scroll :currentIndex="currentIndex"
                        :categorys="categorysStatus"
                        @select="selectCategory"></category-scroll>
@@ -393,7 +393,7 @@
       width: 100%;
       z-index: 100;
       overflow: hidden;
-      height: 1.8em;
+      height: 0.9em;
       line-height: 0.9rem;
       background: #fff;
       border-bottom: 1px solid $color-border;
@@ -448,7 +448,7 @@
     .order-list {
       background: $color-highlight-background;
       position: absolute;
-      top: 1.98rem;
+      top: 1.08rem;
       bottom: 0;
       left: 0;
       right: 0;

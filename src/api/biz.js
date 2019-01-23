@@ -44,9 +44,10 @@ export function placeOrder (data) {
   });
 }
 
-// 下单认养订单
+// 签到
 export function signIn (data) {
   return fetch(805140, {
+    userId: getUserId(),
     ...data
   });
 }
@@ -786,3 +787,15 @@ export function getProductAreaList(type) {
   return fetch(629028, {});
 }
 
+// 月份签到天数统计
+export function monthSignCount(data) {
+  return fetch(629906, {
+    userId: getUserId(),
+    ...data
+  });
+}
+
+// 列表查询认养产品品种
+export function getPinzhongList() {
+  return fetch(629029, {});
+}

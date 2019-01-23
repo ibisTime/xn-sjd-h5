@@ -29,13 +29,14 @@
                     :outAreaIndex="areaIndex"
                     @cityChose="cityChose"
                     top="4.48rem"></category-city>
-    <category-filter ref="filterCategory"
+    <category-filter-homepage ref="filterCategory"
                      @confirm="handleFilter"
                      :outMinPrice="minPrice"
                      :outMaxPrice="maxPrice"
                      :outPriceIndex="priceIndex"
                      :outIsFree="isFree"
-                     :outIsNew="isNew"></category-filter>
+                     :outIsNew="isNew"
+                     :varietyList="varietyList"></category-filter-homepage>
     <category-small ref="smallCategory"
                     @hide="handleSmallHide"
                     @confirm="handleConfirm"
@@ -49,7 +50,7 @@
   // import BScroll from 'better-scroll';
   import { getVarietyList } from 'api/biz';
   import CategoryCity from 'components/category-city/category-city';
-  import CategoryFilter from 'components/category-filter/category-filter';
+  import CategoryFilterHomepage from 'components/category-filter-homepage/category-filter-homepage';
   import CategorySmall from 'components/category-small/category-small';
 
   export default {
@@ -114,7 +115,8 @@
         isFree: false,
         isNew: false,
         bigCode: this.$route.query.code || '',
-        smallCode: ''
+        smallCode: '',
+        varietyList: []
       };
     },
     mounted() {
@@ -237,7 +239,7 @@
     },
     components: {
       CategoryCity,
-      CategoryFilter,
+      CategoryFilterHomepage,
       CategorySmall
     }
   };

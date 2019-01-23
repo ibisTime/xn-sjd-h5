@@ -18,6 +18,25 @@
           <div class="title-second"><span class="price">¥{{formatAmount(detail.minPrice)}}</span><span class="place">杭州市 淳安县</span></div>
         </div>
         <div class="gray"></div>
+        <div class="prograss-bar" v-if="detail.sellType === '4'">
+          <div class="top">
+            <div class="line">
+              <div class="nowCount" :style="{width: getWidth()+'%'}"></div>
+            </div>
+            <div class="percent">{{(detail.nowCount/detail.raiseCount)*100}}%</div>
+          </div>
+          <div class="bottom">
+            <div class="bottom-item">
+              <p class="bottom-item-first">目标份数/份</p>
+              <p>{{detail.raiseCount}}</p>
+            </div>
+            <div class="bottom-item">
+              <p class="bottom-item-first">已募集份数/份</p>
+              <p>{{detail.nowCount}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="gray" v-if="detail.sellType === '4'"></div>
         <div class="info">
           <div class="tab">
             <span @click="tab = 1" :class="tab === 1 ? 'active' : ''">图文详情</span>
@@ -219,6 +238,9 @@ export default {
       if (this.number >= 2) {
         this.number--;
       }
+    },
+    getWidth() {
+      return (this.detail.nowCount / this.detail.raiseCount) * 100;
     },
     goLogin() {
       if(this.noAdoptReason === '您未登录') {
@@ -581,6 +603,7 @@ export default {
           color: $color-highlight-background;
           border-radius: 0.2rem;
           padding: 0 0.1rem;
+          margin-right: 0.1rem;
         }
       }
       .title-second {
@@ -594,6 +617,49 @@ export default {
         .place {
           color: $color-gray;
           font-size: 0.22rem;
+        }
+      }
+    }
+    .prograss-bar {
+      padding: 0.3rem;
+      .top {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.3rem;
+        text-align: center;
+        .line {
+          flex: 1;
+          height: 0.1rem;
+          background: rgb(238, 238, 238);
+          border-radius: 0.05rem;
+          border: 1px solid $second-color;
+          .nowCount {
+            background: $second-color;
+            height: 100%;
+          }
+        }
+        .percent {
+          padding-left: 0.3rem;
+          font-size: 0.3rem;
+          color: rgb(51, 51, 51);
+        }
+      }
+      .bottom {
+        display: flex;
+        align-items: center;
+        .bottom-item {
+          flex: 1;
+          text-align: center;
+          p {
+            font-size: 0.3rem;
+            color: rgb(51, 51, 51);
+            font-weight: 500;
+          }
+          .bottom-item-first {
+            font-size: 0.22rem;
+            font-weight: 300;
+            margin-bottom: 0.1rem;
+          }
         }
       }
     }

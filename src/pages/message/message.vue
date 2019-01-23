@@ -5,9 +5,9 @@
         :pullUpLoad="pullUpLoad"
         :data="list"
         @pullingUp="getList">
-        <div class="item" @click="go('/notice-detail?code=' + item.code)" v-for="item in list" v-show="list.length">
+        <div class="item" @click="go('/message-detail?code=' + item.code)" v-for="item in list" v-show="list.length">
           <div class="info">
-            <p class="top"><span class="name">{{cut(item.title,6)}}</span><span class="status">{{formatDate(item.publishDatetime)}}</span></p>
+            <p class="top"><span class="name">{{cut(item.title,6)}}</span><span class="status">{{formatDate(item.createDatetime)}}</span></p>
             <!--<p class="date">{{cut(item.content, 14)}}</p>-->
           </div>
         </div>
@@ -23,7 +23,7 @@
   import FullLoading from 'base/full-loading/full-loading';
   import NoResult from 'base/no-result/no-result';
   import { getMessagePage } from 'api/biz';
-  import { formatDate, setTitle } from 'common/js/util';
+  import { formatDate, setTitle, getUserId } from 'common/js/util';
 
   export default {
     data() {
@@ -62,10 +62,11 @@
             start: this.start,
             limit: this.limit,
             status: '1',
-            type: '1',
+            type: '4',
             object: 'C',
             orderDir: 'desc',
-            orderColumn: 'create_datetime'
+            orderColumn: 'create_datetime',
+            userId: getUserId()
           }).then((res) => {
             if (res.totalPage <= this.start) {
               this.hasMore = false;

@@ -4,9 +4,10 @@
       <div class="content" @click.stop>
         <scroll :pullUpLoad="pullUpLoad" ref="scroll">
           <div class="items">
-            <div class="title">认养状态</div>
-            <div class="item" :class="can1" @click="choseCan(1)">可认养</div>
-            <div class="item" :class="can0" @click="choseCan(0)">不可认养</div>
+            <div class="title">树级</div>
+            <div class="item" :class="can1" @click="choseCan(1)">一级</div>
+            <div class="item" :class="can2" @click="choseCan(2)">二级</div>
+            <div class="item" :class="can3" @click="choseCan(3)">三级</div>
           </div>
           <div class="items">
             <div class="title">树种</div>
@@ -26,6 +27,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import {isUnDefined} from 'common/js/util';
+  import { getPinzhongList } from 'api/biz';
 
   export default {
     props: {
@@ -64,7 +66,7 @@
         maxPrice: '',
         isFree: false,
         isNew: false,
-        can: '2',
+        can: '4',
         variety: ''
       };
     },
@@ -72,14 +74,23 @@
       can1() {
         return this.can === '1' ? 'active' : '';
       },
-      can0() {
-        return this.can === '0' ? 'active' : '';
+      can2() {
+        return this.can === '2' ? 'active' : '';
+      },
+      can3() {
+        return this.can === '3' ? 'active' : '';
       }
     },
     created() {
       this.pullUpLoad = null;
+      this.getPinzhongList();
     },
     methods: {
+      getPinzhongList() {
+        getPinzhongList().then((res) => {
+          this.varietyList = res;
+        }).catch(() => {});
+      },
       isUndefined(value) {
         return isUnDefined(value);
       },
@@ -90,19 +101,26 @@
         this.isFree = !this.isFree;
       },
       choseCan(index) {
-        if(index === 0) {
-          if(this.can === '0') {
-            this.can = '2';
-          } else {
-            this.can = '0';
-          }
-        } else {
+        if(index === 1) {
           if(this.can === '1') {
-            this.can = '2';
+            this.can = '4';
           } else {
             this.can = '1';
           }
+        } else if(index === 2) {
+          if(this.can === '2') {
+            this.can = '4';
+          } else {
+            this.can = '2';
+          }
+        } else if(index === 3) {
+          if(this.can === '3') {
+            this.can = '4';
+          } else {
+            this.can = '3';
+          }
         }
+        console.log(this.can);
       },
       choseVariety(item) {
         this.variety = item.variety;
@@ -144,7 +162,7 @@
     background: rgba(0, 0, 0, 0.6);
     z-index: 1;
     position: absolute;
-    top: 1.8rem;
+    top: 4.48rem;
     left: 0;
     right: 0;
     font-size: 0.26rem;
@@ -164,9 +182,11 @@
       background: #fff;
       left: 0;
       height: 100%;
+      padding: 0.3rem 0 0;
 
       .title {
         padding-left: 0.2rem;
+        padding-bottom: 0.2rem;
       }
 
       .price-select {

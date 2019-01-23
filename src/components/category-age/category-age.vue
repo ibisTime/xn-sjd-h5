@@ -4,21 +4,10 @@
       <div class="content" @click.stop>
         <scroll :pullUpLoad="pullUpLoad" ref="scroll">
           <div class="items">
-            <div class="title">认养状态</div>
-            <div class="item" :class="can1" @click="choseCan(1)">可认养</div>
-            <div class="item" :class="can0" @click="choseCan(0)">不可认养</div>
-          </div>
-          <div class="items">
-            <div class="title">树种</div>
-            <!--<div class="item">樟树</div>-->
-            <!--<div class="item">柏树</div>-->
-            <div class="item" v-for="item in varietyList" @click="choseVariety(item)" :class="varietyClass(item)">{{item.variety}}</div>
+            <div class="item" :class="can1" @click="choseCan(1)">从大到小</div>
+            <div class="item" :class="can0" @click="choseCan(0)">从小到大</div>
           </div>
         </scroll>
-        <div class="footer" @click.stop>
-          <div class="reset" @click="reset">重置</div>
-          <div class="confirm" @click="confirm">确认</div>
-        </div>
       </div>
     </div>
   </transition>
@@ -103,6 +92,9 @@
             this.can = '1';
           }
         }
+        this.order = this.can;
+        this.hide();
+        this.$emit('confirm', this.order);
       },
       choseVariety(item) {
         this.variety = item.variety;
@@ -163,7 +155,6 @@
       font-size: 0.26rem;
       background: #fff;
       left: 0;
-      height: 100%;
 
       .title {
         padding-left: 0.2rem;

@@ -53,7 +53,7 @@
   import CategoryCity from 'components/category-city/category-city';
   import CategorySmall from 'components/category-small/category-small';
   import CategoryFilter from 'components/category-filter/category-filter';
-  import {getPageGoods} from 'api/biz';
+  // import {getPageGoods} from 'api/biz';
   import {initShare} from 'common/js/weixin';
   import {setTitle, getShareImg} from 'common/js/util';
 
@@ -173,13 +173,13 @@
           this.hasMore = true;
           this.goodsList = [];
         }
-        getPageGoods(param).then((data) => {
-          this.goodsList = this.goodsList.concat(data.list);
-          if (this.limit > data.list.length || this.limit >= data.totalCount) {
-            this.hasMore = false;
-          }
-          this.start++;
-        });
+        // getPageGoods(param).then((data) => {
+        //   this.goodsList = this.goodsList.concat(data.list);
+        //   if (this.limit > data.list.length || this.limit >= data.totalCount) {
+        //     this.hasMore = false;
+        //   }
+        //   this.start++;
+        // });
       },
       areaClick() {
         this.areaActive = !this.areaActive;

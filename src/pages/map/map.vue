@@ -106,9 +106,8 @@
             this.initMap();
             this.loading = false;
           }).catch((msg) => {
-            debugger;
             console.log(msg);
-            this.text = msg;
+            this.text = msg.toString();
             this.$refs.toast.show();
             setTimeout(() => {
               this.$router.back();

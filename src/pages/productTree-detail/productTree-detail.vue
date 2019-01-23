@@ -5,25 +5,25 @@
       <Scroll :pullUpLoad="pullUpLoad">
       <div class="info">
         <div class="item">
-          <span>古树编码</span><span>{{detail.treeNumber}}</span>
+          <span>树木编码</span><span>{{detail.treeNumber}}</span>
         </div>
         <div class="item">
-          <span>古树产地</span><span>{{detail.originPlace}}</span>
+          <span>树木产地</span><span>{{detail.originPlace}}</span>
         </div>
         <div class="item">
-          <span>古树学名</span><span>{{detail.scientificName}}</span>
+          <span>树木学名</span><span>{{detail.scientificName}}</span>
         </div>
         <div class="item">
-          <span>古树品种</span><span>{{detail.variety}}</span>
+          <span>树木品种</span><span>{{detail.variety}}</span>
         </div>
         <div class="item">
-          <span>古树级别</span><span>{{detail.rank}}</span>
+          <span>树木级别</span><span>{{detail.rank}}</span>
         </div>
         <div class="item">
-          <span>古树树龄</span><span>{{detail.age}}</span>
+          <span>树木树龄</span><span>{{detail.age}}</span>
         </div>
         <div class="item" @click="go('/map?treeCode=' + detail.code)">
-          <span>古树定位</span>
+          <span>树木定位</span>
           <div class="map">
             <img src="./map@2x.png" alt="">
             <p>查看地图</p>

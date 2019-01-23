@@ -53,19 +53,19 @@
           </div>
         </div>
         <div class="asset">
-          <div class="asset-item">
+          <div class="asset-item" @click.stop="go('/money?accountNumber=' + cnyAccountNumber + '&amount=' + cny)">
             <span class="asset-name">余额</span>
-            <span class="asset-num">38930</span>
+            <span class="asset-num">{{formatAmount(cny)}}</span>
           </div>
           <div class="wing"></div>
-          <div class="asset-item carbon-bubble">
+          <div class="asset-item carbon-bubble" @click="go('/carbon-bubble?accountNumber=' + tppAccountNumber + '&amount=' + tpp)">
             <span class="asset-name">碳泡泡</span>
-            <span class="asset-num">38930</span>
+            <span class="asset-num">{{formatAmount(tpp)}}</span>
           </div>
           <div class="wing"></div>
-          <div class="asset-item">
+          <div class="asset-item" @click.stop="go('/score')">
             <span class="asset-name">积分</span>
-            <span class="asset-num">38930</span>
+            <span class="asset-num">{{formatAmount(jf)}}</span>
           </div>
         </div>
       </div>
@@ -73,11 +73,11 @@
     <div class="gray"></div>
     <div class="me-list" ref="description">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
-        <div class="item" @click="go('/carbon-bubble?accountNumber=' + tppAccountNumber + '&amount=' + tpp)">
-          <img src="./carbon-bubble@2x.png"  class="me-list-icon">
-          <span>我的碳泡泡</span>
-          <img src="./more@2x.png" class="fr more">
-        </div>
+        <!--<div class="item">-->
+          <!--<img src="./carbon-bubble@2x.png"  class="me-list-icon">-->
+          <!--<span>我的碳泡泡</span>-->
+          <!--<img src="./more@2x.png" class="fr more">-->
+        <!--</div>-->
         <div class="wing"></div>
         <div class="item" @click="go('/homepage')">
           <img src="./adopt@2x.png" class="me-list-icon">

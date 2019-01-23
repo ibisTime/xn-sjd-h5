@@ -54,15 +54,15 @@
     props: {
       outProvIndex: {
         type: Number,
-        default: 0
+        default: 1
       },
       outCityIndex: {
         type: Number,
-        default: 0
+        default: 1
       },
       outAreaIndex: {
         type: Number,
-        default: 0
+        default: 1
       },
       top: {
         type: String,
@@ -83,6 +83,7 @@
       return {
         showFlag: false,
         provList: [],
+        cityList: [],
         areaList: [],
         provIndex: 0,
         cityIndex: 0,
@@ -110,17 +111,15 @@
     },
     created() {
       this.pullUpLoad = null;
-      setTimeout(() => {
-        this.initScroll();
-      }, 5000);
+      // this.provList = this.cityData1;
+      this.initScroll();
     },
     methods: {
       initScroll() {
-        if (!this.provList.length && !this.cityData1.length) {
-          this._creatList(cityData, this.provList);
-        } else {
+        if (!this.provList.length) {
           this._creatList(this.cityData1, this.provList);
         }
+        // debugger;
         if (this.outProvIndex) {
           this.areaList = [];
           this.cityList = [];
@@ -130,16 +129,12 @@
           this.provIndex = this.outProvIndex;
           this.cityIndex = this.outCityIndex;
           this.areaIndex = this.outAreaIndex;
-          if (this.outProvIndex !== 0) {
-            this._creatList(this.cityData1[this.outProvIndex].sub, this.cityList);
-            this._creatList(this.cityData1[this.outProvIndex].sub[this.outCityIndex].sub, this.areaList);
-            setTimeout(() => {
-              this.$refs.cityScroll.scrollToElement(this.$refs.city[this.outCityIndex], 200, false, true);
-              this.$refs.areaScroll.scrollToElement(this.$refs.area[this.outAreaIndex], 200, false, true);
-            }, 40);
-          } else {
-            this.areaList = this.cityList = [];
-          }
+          this._creatList(this.cityData1[this.outProvIndex].sub, this.cityList);
+          this._creatList(this.cityData1[this.outProvIndex].sub[this.outCityIndex].sub, this.areaList);
+          setTimeout(() => {
+            this.$refs.cityScroll.scrollToElement(this.$refs.city[this.outCityIndex], 200, false, true);
+            this.$refs.areaScroll.scrollToElement(this.$refs.area[this.outAreaIndex], 200, false, true);
+          }, 40);
         }
       },
       _creatList(obj, list) {
@@ -155,7 +150,7 @@
         if (!flag) {
           this.$refs.provScroll.scrollToElement(this.$refs.prov[index], 200, false, true);
         }
-        let _cityList = this.cityData1[index];
+        let _cityList = cityData[index];
         this.cityIndex = 0;
         this.areaIndex = 0;
         this.cityList = [];
@@ -164,7 +159,7 @@
           this.cityIndex = 0;
           this.areaIndex = -1;
           this._creatList(_cityList.sub, this.cityList);
-          let _areaList = this.cityData1[index].sub[0];
+          let _areaList = cityData[index].sub[0];
           if (_areaList.hasOwnProperty('sub')) {
             this._creatList(_areaList.sub, this.areaList);
           }
@@ -180,8 +175,8 @@
         }
         this.areaIndex = -1;
         this.areaList = [];
-        if (this.cityData1[this.provIndex].sub[index].hasOwnProperty('sub')) {
-          var _areaList = this.cityData1[this.provIndex].sub[index];
+        if (cityData[this.provIndex].sub[index].hasOwnProperty('sub')) {
+          var _areaList = cityData[this.provIndex].sub[index];
           this._creatList(_areaList.sub, this.areaList);
         }
       },

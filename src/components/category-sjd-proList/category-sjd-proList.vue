@@ -5,7 +5,7 @@
       <div class="type">
         <span @click="areaClick">所在地区<img src="./down-unchoosed@2x.png"/></span>
         <span @click="smallClick">树级<img src="./down-unchoosed@2x.png"/></span>
-        <span @click="areaClick">树龄排序<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="ageClick">树龄排序<img src="./down-unchoosed@2x.png"/></span>
         <span @click="filterClick">筛选<img src="./down-unchoosed@2x.png"/></span>
       </div>
       <div class="more" v-show="order">
@@ -32,21 +32,33 @@
                      :outMaxPrice="maxPrice"
                      :outPriceIndex="priceIndex"
                      :outIsFree="isFree"
-                     :outIsNew="isNew"></category-filter>
+                     :outIsNew="isNew"
+                     :varietyList="varietyList"
+    ></category-filter>
     <category-small ref="smallCategory"
                     @hide="handleSmallHide"
                     @confirm="handleConfirm"
                     @firstUpdateBigName="firstUpdateBigName"
                     :outSmallCode="smallCode"
                     :outBigCode="bigCode"></category-small>
+    <category-age ref="ageCategory"
+                     @confirm="handleAge"
+                     :outMinPrice="minPrice"
+                     :outMaxPrice="maxPrice"
+                     :outPriceIndex="priceIndex"
+                     :outIsFree="isFree"
+                     :outIsNew="isNew"
+                     :varietyList="varietyList"
+    ></category-age>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   // import BScroll from 'better-scroll';
-  import { getVarietyList } from 'api/biz';
+  import { getPinzhongList } from 'api/biz';
   import CategoryCity from 'components/category-city/category-city';
   import CategoryFilter from 'components/category-filter/category-filter';
+  import CategoryAge from 'components/category-age/category-age';
   import CategorySmall from 'components/category-small/category-small';
 
   export default {
@@ -102,24 +114,25 @@
           value: '全部品种'
         }],
         province: '',
-        provIndex: 0,
+        provIndex: 1,
         city: '',
-        cityIndex: 0,
+        cityIndex: 1,
         area: '',
-        areaIndex: 0,
+        areaIndex: 1,
         minPrice: '',
         maxPrice: '',
         priceIndex: -1,
         isFree: false,
         isNew: false,
         bigCode: this.$route.query.code || '1',
-        smallCode: ''
+        smallCode: '',
+        varietyList: []
       };
     },
     mounted() {
       console.log(this.provinceList);
       this.orderText = this.orderList[0].value;
-      this.getVariety();
+      this.getPinzhongList();
     },
     methods: {
       showOrder() {
@@ -156,19 +169,9 @@
         this.close();
         this.$router.push(url);
       },
-      getVariety() {
-        getVarietyList({
-          status: 0,
-          type: 2,
-          minQuality: 0
-        }).then((res) => {
-          res.map((item, index) => {
-            this.typeList.push({
-              key: index,
-              value: item.variety
-            });
-          });
-          this.typeText = this.typeList[0].value;
+      getPinzhongList() {
+        getPinzhongList().then((res) => {
+          this.varietyList = res;
         }).catch(() => {});
       },
       sendMessage() {
@@ -194,7 +197,6 @@
         this.smallName = name;
       },
       cityChose(prov, city, area, provIdx, cityIdx, areaIdx) {
-        debugger;
         this.province = prov;
         this.provIndex = provIdx;
         this.city = city;
@@ -205,18 +207,13 @@
       },
 
       filterClick() {
-        this.$refs.cityPicker.hide();
+        // this.$refs.cityPicker.hide();
         this.$refs.filterCategory.show();
         this.$refs.smallCategory.hide();
       },
 
-      handleFilter(min, max, priceIndex, isFree, isNew) {
-        this.minPrice = min;
-        this.maxPrice = max;
-        this.priceIndex = priceIndex;
-        this.isFree = isFree;
-        this.isNew = isNew;
-        this.resetQuery();
+      handleFilter(can, variety) {
+        this.$emit('filterConfirm', can, variety);
       },
 
       areaClick() {
@@ -243,12 +240,19 @@
       resetQuery() {
         this.start = 1;
         this.$emit('getPageOrder');
+      },
+      ageClick() {
+        this.$refs.ageCategory.show();
+      },
+      handleAge(order) {
+        this.$emit('ageConfirm', order);
       }
     },
     components: {
       CategoryCity,
       CategoryFilter,
-      CategorySmall
+      CategorySmall,
+      CategoryAge
     }
   };
 </script>

@@ -42,7 +42,7 @@
   import {mapGetters, mapActions} from 'vuex';
   // import {debounce} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
-  import {getPageGoods} from 'api/biz';
+  // import {getPageGoods} from 'api/biz';
 
   export default {
     mixins: [directiveMixin],
@@ -90,13 +90,13 @@
     },
     methods: {
       search() {
-        getPageGoods({
-          start: 1,
-          limit: 10,
-          name: this.query
-        }).then((data) => {
-          this.list = data.list;
-        });
+        // getPageGoods({
+        //   start: 1,
+        //   limit: 10,
+        //   name: this.query
+        // }).then((data) => {
+        //   this.list = data.list;
+        // });
       },
       addQuery(query) {
         this.query = query;

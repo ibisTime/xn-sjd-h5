@@ -335,8 +335,6 @@
         ]).then(([userInfo, productType, res3]) => {
           this.loading = false;
           this.userInfo = userInfo;
-          console.log(this.userInfo);
-
           productType.map(item => {
             this.categorys.push({
               key: item.code,

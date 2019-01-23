@@ -26,11 +26,12 @@
       <div class="dayPanel">
         <ul class="days">
         <li v-for="dayobject in days">
-          <span v-if="isGray(dayobject)">
-            <span class="other-month" :class="getClass(dayobject)">{{ dayobject.day.getDate() }}</span>
-          </span>
-          <span v-else>
-            <span :class="getClass(dayobject)">{{ dayobject.day.getDate() }}</span>
+          <!--<span v-if="isGray(dayobject)">-->
+            <!--<span class="other-month" :class="getClass(dayobject)">{{ dayobject.day.getDate() }}</span>-->
+          <!--</span>-->
+          <span v-if="!isGray(dayobject)">
+            <span :class="getClass(dayobject)" v-if="dayobject.day.toString() === curTime.toString()" class="today">今天</span>
+            <span :class="getClass(dayobject)" v-if="dayobject.day.toString() !== curTime.toString()">{{ dayobject.day.getDate() }}</span>
           </span>
         </li>
       </ul>
@@ -59,7 +60,8 @@
         currentDay: 1,
         currentMonth: 1,
         currentYear: 1970,
-        days: []
+        days: [],
+        curTime: null
       };
     },
     created: function() {  // 在vue初始化时调用
@@ -69,6 +71,7 @@
       initData: function() {
         let currentWeek = 1;
         this.d = new Date();
+        console.log(this.d);
         let day = this.d.getDate();
         this.d.setDate(1);
         this.currentDay = this.d.getDate();
@@ -96,6 +99,14 @@
           });
         }
         this.currentIndex = day + currentWeek - 1;
+        this.curTime = new Date();
+        this.days.map((item) => {
+          if(item.day.toString() === this.curTime.toString()) {
+            console.log(item.day);
+            console.log(this.curTime);
+            console.log(1);
+          }
+        });
       },
       isGray(dayobject) {
         return dayobject.day.getMonth() + 1 !== this.currentMonth;
@@ -111,51 +122,20 @@
       },
       getClass(item) {
         let classArr = [];
+        this.active = false;
         if(item.sign) {
           classArr.push('active');
+          this.active = true;
         }
-        /*
-        // if(item.first && item.sign && item.day.getDay() !== 6) {
-        //   classArr.push('first');
-        // }
-        // if(item.first_2 && item.sign && item.day.getDay() !== 6) {
-        //   classArr.push('first_2');
-        // }
-        // if((item.last && item.day.getDay() !== 0) || (item.sign && item.day.getDay() === 6)) {
-        //   // 最后一个： 1。数组的最后一个 且不是周一
-        //   //           2。周六签到
-        //   if(!item.first_2 && !item.first) {
-        //     classArr.push('last');
-        //   }
-        // }
-        // if(item.last_2 && item.day.getDay() !== 0 || item.sign && item.day.getDay() === 6) {
-        //   if(!item.first_2 && !item.first) {
-        //     classArr.push('last_2');
-        //   }
-        // }
-        // if(item.sign && !item.first && !item.last && item.day.getDay() !== 6 && item.sign && item.day.getDay() !== 0 && !item.first_2 && !item.last_2) {
-        //   classArr.push('middle');
-        // }
-*/
-        if(item.first && item.sign && item.day.getDay() !== 6 || (item.sign && item.day.getDay() === 0 && !item.last)) {
+        if(item.first === '1' && item.sign && item.day.getDay() !== 6 || (item.sign && item.day.getDay() === 0 && item.last === '0')) {
           classArr.push('f');
         }
-        // if(item.first_2 && item.sign && item.day.getDay() !== 6) {
-        //   classArr.push('first_2');
-        // }
-        if((item.last && item.day.getDay() !== 0) || (item.sign && item.day.getDay() === 6)) {
+        if(item.last === '1' && item.day.getDay() !== 0) {
           // 最后一个： 1。数组的最后一个 且不是周一
           //           2。周六签到
-          if(!item.first_2 && !item.first) {
-            classArr.push('l');
-          }
+          classArr.push('l');
         }
-        // if(item.last_2 && item.day.getDay() !== 0 || item.sign && item.day.getDay() === 6) {
-        //   if(!item.first_2 && !item.first) {
-        //     classArr.push('last_2');
-        //   }
-        // }
-        if(item.sign && !item.first && !item.last && item.day.getDay() !== 6 && item.sign && item.day.getDay() !== 0 && !item.first_2 && !item.last_2) {
+        if(item.sign && item.first === '0' && item.last === '0' && item.day.getDay() !== 6 && item.sign && item.day.getDay() !== 0) {
           classArr.push('middle');
         }
         return classArr.join(' ');
@@ -163,6 +143,7 @@
     },
     watch: {
       dates(newVal) {
+        // console.log(newVal);
         for (let i = 0; i <= this.currentIndex && i < this.days.length; i++) {
           let day = this.days[i].day;
           let str = this.formatDate(day.getFullYear(), day.getMonth() + 1, day.getDate());
@@ -170,26 +151,11 @@
             if(newVal[j] instanceof Array) {
               newVal[j].map((item, index) => {
                 if (item === str) {
-                  // if(newVal[j].length === 2) {
-                  //   this.days.splice(i, 1, {
-                  //     day,
-                  //     sign: true,
-                  //     first_2: index === 0,
-                  //     last_2: index === newVal[j].length - 1
-                  //   });
-                  // } else {
-                  //   this.days.splice(i, 1, {
-                  //     day,
-                  //     sign: true,
-                  //     first: index === 0,
-                  //     last: index === newVal[j].length - 1
-                  //   });
-                  // }
                   this.days.splice(i, 1, {
                     day,
                     sign: true,
-                    first: index === 0,
-                    last: index === newVal[j].length - 1
+                    first: index === 0 ? '1' : '0',
+                    last: index === newVal[j].length - 1 ? '1' : '0'
                   });
                 }
               });
@@ -203,7 +169,7 @@
               }
             }
           }
-          console.log(this.days);
+          // console.log(this.days);
         }
       }
     }
@@ -296,9 +262,9 @@
             }
             .middle {
               border-radius: 0;
-              width: 340%;
+              width: 320%;
               position: relative;
-              left: -170%;
+              left: -160%;
             }
             .first_2 {
               border-bottom-right-radius: 0;
@@ -328,6 +294,9 @@
               position: relative;
               left: -160%;
             }
+          }
+          .today {
+            font-size: 0.22rem;
           }
         }
       }

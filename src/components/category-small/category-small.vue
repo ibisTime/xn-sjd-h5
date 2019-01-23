@@ -33,7 +33,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import Loading from 'base/loading/loading';
-  import {getCategories} from 'api/biz';
+  // import {getCategories} from 'api/biz';
 
   export default {
     props: {
@@ -72,31 +72,31 @@
     methods: {
       getInitData() {
         if (this.outBigCode) {
-          Promise.all([
-            getCategories(0),
-            this.getSmallCategories(this.outBigCode)
-          ]).then(([left]) => {
-            left.forEach(item => {
-              if (item.code === this.outBigCode) {
-                this.$emit('firstUpdateBigName', item.name);
-              }
-            });
-            this.bigList = left;
-            this.bigList.unshift({
-              code: '',
-              name: '全部'
-            });
-          }).catch(() => {
-            this.rLoadingFlag = false;
-          });
+          // Promise.all([
+          //   getCategories(0),
+          //   this.getSmallCategories(this.outBigCode)
+          // ]).then(([left]) => {
+          //   left.forEach(item => {
+          //     if (item.code === this.outBigCode) {
+          //       this.$emit('firstUpdateBigName', item.name);
+          //     }
+          //   });
+          //   this.bigList = left;
+          //   this.bigList.unshift({
+          //     code: '',
+          //     name: '全部'
+          //   });
+          // }).catch(() => {
+          //   this.rLoadingFlag = false;
+          // });
         } else {
-          getCategories(0).then((data) => {
-            this.bigList = data;
-            this.bigList.unshift({
-              code: '',
-              name: '全部'
-            });
-          });
+          // getCategories(0).then((data) => {
+          //   this.bigList = data;
+          //   this.bigList.unshift({
+          //     code: '',
+          //     name: '全部'
+          //   });
+          // });
         }
       },
       getSmallCategories(code) {
@@ -107,19 +107,19 @@
         }
         this.smallList = [];
         this.rLoadingFlag = true;
-        return getCategories(code).then((data) => {
-          data.unshift({
-            code: '',
-            name: '全部'
-          });
-          if (this.bigCode === code) {
-            this.smallList = data;
-          }
-          this.smallData[code] = data;
-          this.rLoadingFlag = false;
-        }).catch(() => {
-          this.rLoadingFlag = false;
-        });
+        // return getCategories(code).then((data) => {
+        //   data.unshift({
+        //     code: '',
+        //     name: '全部'
+        //   });
+        //   if (this.bigCode === code) {
+        //     this.smallList = data;
+        //   }
+        //   this.smallData[code] = data;
+        //   this.rLoadingFlag = false;
+        // }).catch(() => {
+        //   this.rLoadingFlag = false;
+        // });
       },
       choseMenu(code, index) {
         this.bigCode = code;

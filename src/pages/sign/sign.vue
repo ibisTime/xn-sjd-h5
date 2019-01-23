@@ -6,7 +6,7 @@
         <div class="top">
           <div class="title">
             <span class="real-title">每日签到</span>
-            <span class="info">本月已连续签到3天，累计5天</span>
+            <span class="info">本月已连续签到{{continueSignCount}}天，累计{{monthSignCount}}天</span>
           </div>
           <div class="tips">连续签到越多，奖励越丰富</div>
           <div class="prograssBar">
@@ -18,15 +18,15 @@
               <!--<div class="totalCount"></div>-->
             <!--</div>-->
             <div class="giftList">
-              <div class="giftItem" v-for="item in giftList">
+              <div class="giftItem" v-for="(item, index) in giftList">
                 <span class="gift-icon"></span>
                 <div class="line">
-                  <!--<div class="nowCount" :style="{width: getWidth()+'%'}"></div>-->
-                  <div class="totalCount"></div>
+                  <div class="nowCount" :style="{width: item.width+'%'}" :class="getLineClass(index)"></div>
+                  <div class="totalCount" :class="getLineClass(index)"></div>
                   <span class="dot"></span>
                 </div>
                 <p class="gift-day">{{item.day}}天</p>
-                <p class="gift-gift">{{item.gift}}</p>
+                <p class="gift-gift">{{item.number}}{{item.gift}}</p>
               </div>
             </div>
           </div>
@@ -40,6 +40,7 @@
     <router-view></router-view>
     <sign-mask ref="mask" :text="text" :isHtml="isHtml"></sign-mask>
     <full-loading v-show="loadingFlag"></full-loading>
+    <check-in v-show="showCheckIn" @close="close" :signTpp="signTpp" :signDays="signDays"></check-in>
   </div>
 </template>
 <script>
@@ -47,19 +48,16 @@
   import SignMask from 'components/sign-mask/sign-mask';
   import FullLoading from 'base/full-loading/full-loading';
   import BackOnly from 'components/back-only/back-only';
-  import {getSystemConfigCkey} from 'api/general';
-  // import {sign, signNum, signQuery} from 'api/me';
-  import {getAccount, getSignIntegral} from 'api/account';
-  import {formatAmount} from 'common/js/util';
+  import { monthSignCount, signIn, getContinueSignList } from 'api/biz';
+  import { getSystemConfigPage } from 'api/general';
+  import {formatAmount, formatDate, getUserId} from 'common/js/util';
   import Scroll from 'base/scroll/scroll';
-  // import {formatAmount, formatDate} from 'common/js/util';
-
-  // const LIMIT = 30;
+  import CheckIn from 'base/check-in/check-in';
 
   export default {
     data () {
       return {
-        pullUpLoad: false,
+        pullUpLoad: null,
         activeClass: '',
         text: '',
         mark: '',
@@ -72,26 +70,38 @@
         nowDay: 25,
         giftList: [{
           day: 3,
-          gift: '10碳泡泡'
+          gift: '碳泡泡',
+          width: 0
         }, {
           day: 5,
-          gift: '30碳泡泡'
+          gift: '碳泡泡',
+          width: 0
         }, {
           day: 7,
-          gift: '5积分'
+          gift: '积分',
+          width: 0
         }, {
           day: 15,
-          gift: '15积分'
+          gift: '积分',
+          width: 0
         }, {
           day: 30,
-          gift: '30积分'
+          gift: '积分',
+          width: 0
         }, {
           day: 90,
-          gift: '200积分'
+          gift: '碳泡泡',
+          width: 0
         }, {
           day: 180,
-          gift: '90积分'
-        }]
+          gift: '积分',
+          width: 0
+        }],
+        continueSignCount: 0,
+        monthSignCount: 0,
+        showCheckIn: false,
+        signTpp: '0',
+        signDays: 0
       };
     },
     created() {
@@ -100,63 +110,185 @@
     },
     methods: {
       getInitData() {
-        // sign().finally(() => {
-        //   this.signIn();
-        // }).catch(() => {});
-        // this.getJF();
-        // this.signDateList = ['2019-01-01', '2019-01-02', '2019-01-03'];
+        // let curTime = formatDate(new Date());
+        let startTime = formatDate(this.getMonth().firstDay);
+        let endTime = formatDate(this.getMonth().lastDay);
+        this.loading = true;
+        Promise.all([
+          monthSignCount({
+            createStartDatetime: startTime,
+            createEndDatetime: endTime
+          }),
+          getContinueSignList({
+            createStartDatetime: startTime,
+            createEndDatetime: endTime
+          }),
+          getSystemConfigPage({
+            start: 1,
+            limit: 10,
+            type: 'SIGN_RULE',
+            orderColumn: 'id',
+            orderDir: 'asc'
+          })
+        ]).then(([res1, res2, res3]) => {
+          this.loading = false;
+          this.monthSignCount = res1.monthSignCount;
+          this.continueSignCount = res1.continueSignCount;
+          // this.handleSignList(res2);
+          // this.signDateList = [['2019-01-03', '2019-01-04', '2019-01-05'], ['2019-01-09', '2019-01-10'], '2019-01-13'];
+          this.signDateList = this.handleSignList(res2);
+          res3.list.map((item, index) => {
+            this.giftList[index].gift = `${item.cvalue}${this.giftList[index].gift}`;
+          });
+          this.getWidth();
+        }).catch(() => {
+          this.loading = false;
+        });
+      },
+      handleSignList(list) {
+        let newArr = [];
+        list.map((item) => {
+          if(item.signResList.length > 1) {
+            let insideArr = [];
+            item.signResList.map((realDay) => {
+              insideArr.push(this.formatDate(realDay));
+            });
+            insideArr.reverse();
+            newArr.push(insideArr);
+          } else {
+            newArr.push(this.formatDate(item.signResList[0]));
+          }
+        });
+        newArr = newArr.reverse();
+        return newArr;
+      },
+      close() {
+        this.showCheckIn = false;
+        this.getInitData();
+      },
+      formatDate(date) {
+        return formatDate(date, 'yyyy-MM-dd');
+      },
+      getMonth() {
+        let date = new Date();
+        let y = date.getFullYear();
+        let m = date.getMonth();
+        let firstDay = new Date(y, m, 1);
+        let lastDay = new Date(y, m + 1, 0);
+        return {
+          firstDay: firstDay,
+          lastDay: lastDay
+        };
+      },
+      getLineClass(index) {
+        if(index === 0) {
+          return 'line-first';
+        }
+        if(index === this.giftList.length - 1) {
+          return 'line-last';
+        }
+        return '';
       },
       signIn () {
         // this.signDateList = ['2019-01-01', '2019-01-02', '2019-01-03'];
-        this.signDateList = [['2018-12-31', '2019-01-01'], ['2019-01-04', '2019-01-05', '2019-01-06']];
-        // signQuery().then((data) => {
-        //   this.getSignDate();
-        //   this.loadingFlag = false;
-        //   if (data.todaySign) {
-        //     this.mark = '签到成功';
-        //   } else {
-        //     this.mark = '签到失败';
-        //   }
-        // }).catch(() => {
-        //   this.mark = '未查询到';
-        //   this.loadingFlag = false;
-        // });
+        // this.signDateList = [['2018-12-31', '2019-01-01'], ['2019-01-04', '2019-01-05', '2019-01-06']];
+        if (getUserId()) {
+          this.loading = true;
+          signIn({
+            client: 'h5'
+          }).then((res) => {
+            this.signTpp = formatAmount(res.tppAmount);
+            this.signDays = res.signDays;
+            this.showCheckIn = true;
+            this.loading = false;
+          }).catch(() => {
+            this.loading = false;
+          });
+        } else {
+          this.text = '您未登录';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
+        }
       },
       getWidth() {
+        // this.continueSignCount;  // 连续签到天数
+        // _this.continueSignCount = 25;
+        let _this = this;
+        _this.count = _this.continueSignCount;
         let daysList = [];
-        this.giftList.map((item) => {
+        _this.giftList.map((item) => {
           daysList.push(item.day);
         });
         let x;
+        let y;
         daysList.map((z, index) => {
-          if(daysList[index] < this.nowDay && daysList[index + 1] > this.nowDay) {
-            x = index;
+          if(daysList[index] === this.count) {
+            // 正好在某一节点
+            if(index === 0) {
+              y = '0';
+            } else {
+              y = index;
+            }
+          } else if(daysList[index] < this.count && daysList[index + 1] > this.count) {
+            // 在两节点之间
+            if(index === 0) {
+              x = '0';
+            } else {
+              x = index;
+            }
           }
         });
-        return (this.nowDay - daysList[x]) / (daysList[x + 1] - daysList[x]) * 100;
-      },
-      getJF () {
-        getAccount().then((data) => {
-          getSignIntegral(data[1].accountNumber, '02').then((data) => {
-            this.jfOwn = formatAmount(data.totalAmount);
-            this.jfText = '已获积分';
+        console.log(x, y);
+        if(x) {
+          x = x === '0' ? 0 : x;
+          let realPrecent = (_this.count - daysList[x]) / (daysList[x + 1] - daysList[x]);
+          _this.giftList.map((item, index) => {
+            if(index < x) {
+              item.width = 100;
+            } else if(index > x + 1) {
+              item.width = 0;
+            } else if(index === x) {
+              if(realPrecent > 0.5) {
+                item.width = 100;
+              } else if (realPrecent < 0.5) {
+                item.width = 50 + (_this.count - _this.giftList[index].day) / ((_this.giftList[index + 1].day - _this.giftList[index].day) / 2) * 50;
+              } else {
+                item.width = 100;
+              }
+            } else if(index === x + 1) {
+              if(realPrecent > 0.5) {
+                item.width = 50 * (realPrecent - 0.5);
+              } else{
+                item.width = 0;
+              }
+            }
           });
-        });
-      },
-      getSignDate () {
-        // signNum(this.start, LIMIT).then((data) => {
-        //   data.list.forEach((item) => {
-        //     this.signDateList.push(formatDate(item.signDatetime, 'yyyy-MM-dd'));
-        //   });
-        // });
-      },
-      showRule () {
-        getSystemConfigCkey('cardsTradition').then((data) => {
-          this.text = data.cvalue;
-        }).catch(() => {
-          this.text = '暂无';
-        });
-        this.$refs.mask.show();
+        } else if(y) {
+          y = y === '0' ? 0 : y;
+          _this.giftList.map((item, index) => {
+            if(index < y) {
+              item.width = 100;
+            } else if(index > y) {
+              item.width = 0;
+            } else if(index === y) {
+              item.width = 50;
+            }
+          });
+        } else {
+          if(_this.count < daysList[0]) {
+            _this.giftList.map((item) => {
+              item.width = 0;
+            });
+            _this.giftList[0].width = 50 * (_this.count / _this.giftList[0].day);
+          } else if(_this.count > daysList[daysList.length - 1]) {
+            _this.giftList.map((item) => {
+              item.width = 100;
+            });
+            _this.giftList[_this.giftList.length - 1].width = 75;
+          }
+        }
       }
     },
     components: {
@@ -164,7 +296,8 @@
       calendar,
       SignMask,
       FullLoading,
-      BackOnly
+      BackOnly,
+      CheckIn
     }
   };
 </script>
@@ -271,6 +404,15 @@
             }
             .line {
               margin-bottom: 0.2rem;
+              position: relative;
+              .line-first {
+                border-bottom-left-radius: 0.04rem;
+                border-top-left-radius: 0.04rem;
+              }
+              .line-last {
+                border-bottom-right-radius: 0.04rem;
+                border-top-right-radius: 0.04rem;
+              }
               .totalCount {
                 /*border-radius: 0.4rem;*/
                 background: rgba(255, 255, 255, 0.3);
@@ -287,7 +429,8 @@
                 width: 0.24rem;
                 height: 0.24rem;
                 border-radius: 50%;
-                background: rgba(255, 255, 255, 0.3);
+                /*background: rgba(255, 255, 255, 0.3);*/
+                background: #fff;
                 position: relative;
                 top :-0.16rem
               }
@@ -371,7 +514,6 @@
       border-radius: 0.08rem;
       width: 100%;
       height: 0.9rem;
-      margin-top: 0.7rem;
     }
 	}
 }

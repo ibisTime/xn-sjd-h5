@@ -12,6 +12,8 @@
                        <!--@select="selectCategorySub"></category-scroll>-->
       <category-sjd-pro-list :provinceList="provinceList"
                              @getPageOrder="getPageOrders"
+                             @filterConfirm="filterConfirm"
+                             @ageConfirm="ageConfirm"
       ></category-sjd-pro-list>
     </div>
     <div class="content">
@@ -236,29 +238,34 @@ export default {
       }).catch(() => { this.loading = false; });
     },
     getPageOrders() {
-      if(this.categorys[this.index].key === 'all') {
-        this.parentCategoryCode = '';
-        this.selectdType = '';
-      } else if(this.categorysSub[this.indexSub].key === 'all') {
-        this.parentCategoryCode = this.categorys[this.index].key;
-        this.selectdType = '';
-      } else {
-        this.parentCategoryCode = '';
-        this.selectdType = this.categorysSub[this.indexSub].key;
-      }
+      // if(this.categorys[this.index].key === 'all') {
+      //   this.parentCategoryCode = '';
+      //   this.selectdType = '';
+      // } else if(this.categorysSub[this.indexSub].key === 'all') {
+      //   this.parentCategoryCode = this.categorys[this.index].key;
+      //   this.selectdType = '';
+      // } else {
+      //   this.parentCategoryCode = '';
+      //   this.selectdType = this.categorysSub[this.indexSub].key;
+      // }
       this.loading = true;
+      let config = {
+        start: this.start,
+        limit: this.limit,
+        // sellType: sellType,
+        // parentCategoryCode: this.parentCategoryCode,
+        // categoryCode: this.selectdType,
+        statusList: [4, 5, 6],
+        name: this.query
+      };
+      if(this.can !== '2') {
+        config.adoptStatus = this.can;
+      }
+      if(this.variety !== '') {
+        config.variety = this.variety;
+      }
       Promise.all([
-        getProductPage({
-          start: this.start,
-          limit: this.limit,
-          // sellType: sellType,
-          parentCategoryCode: this.parentCategoryCode,
-          categoryCode: this.selectdType,
-          statusList: [4, 5, 6],
-          orderDir: 'asc',
-          orderColumn: 'buyable',
-          name: this.query
-        })
+        getProductPage(config)
       ]).then(([res1]) => {
         if (res1.list.length < this.limit || res1.totalCount <= this.limit) {
           this.hasMore = false;
@@ -277,6 +284,21 @@ export default {
       }).then((res) => {
         this.userDetail = res;
       });
+    },
+    filterConfirm(can, variety) {
+      this.start = 1;
+      this.limit = 10;
+      this.proList = [];
+      this.can = can;
+      this.variety = variety;
+      this.getPageOrders();
+    },
+    ageConfirm(order) {
+      this.start = 1;
+      this.limit = 10;
+      this.proList = [];
+      this.order = order;
+      this.getPageOrders();
     }
   },
   mounted() {
