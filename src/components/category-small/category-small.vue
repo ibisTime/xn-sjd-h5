@@ -33,6 +33,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import Loading from 'base/loading/loading';
+  import { getDictList, getSystemConfigCkey } from 'api/general';
   // import {getCategories} from 'api/biz';
 
   export default {
@@ -72,31 +73,37 @@
     methods: {
       getInitData() {
         if (this.outBigCode) {
-          // Promise.all([
-          //   getCategories(0),
-          //   this.getSmallCategories(this.outBigCode)
-          // ]).then(([left]) => {
-          //   left.forEach(item => {
-          //     if (item.code === this.outBigCode) {
-          //       this.$emit('firstUpdateBigName', item.name);
-          //     }
-          //   });
-          //   this.bigList = left;
-          //   this.bigList.unshift({
-          //     code: '',
-          //     name: '全部'
-          //   });
-          // }).catch(() => {
-          //   this.rLoadingFlag = false;
-          // });
+          Promise.all([
+            getDictList('TREE_LEVEL'),
+            this.getSmallCategories(this.outBigCode)
+          ]).then(([realLeft]) => {
+            let left = [];
+            realLeft.map((item) => {
+              left.push({
+                code: item.dkey,
+                name: item.dvalue
+              });
+            });
+            left.forEach(item => {
+              if (item.code === this.outBigCode) {
+                this.$emit('firstUpdateBigName', item.name);
+              }
+            });
+            this.bigList = left;
+          }).catch(() => {
+            this.rLoadingFlag = false;
+          });
         } else {
-          // getCategories(0).then((data) => {
-          //   this.bigList = data;
-          //   this.bigList.unshift({
-          //     code: '',
-          //     name: '全部'
-          //   });
-          // });
+          getDictList('TREE_LEVEL').then((realLeft) => {
+            let left = [];
+            realLeft.map((item) => {
+              left.push({
+                code: item.dkey,
+                name: item.dvalue
+              });
+            });
+            this.bigList = left;
+          });
         }
       },
       getSmallCategories(code) {
@@ -107,19 +114,21 @@
         }
         this.smallList = [];
         this.rLoadingFlag = true;
-        // return getCategories(code).then((data) => {
-        //   data.unshift({
-        //     code: '',
-        //     name: '全部'
-        //   });
-        //   if (this.bigCode === code) {
-        //     this.smallList = data;
-        //   }
-        //   this.smallData[code] = data;
-        //   this.rLoadingFlag = false;
-        // }).catch(() => {
-        //   this.rLoadingFlag = false;
-        // });
+        return getSystemConfigCkey(code).then((data) => {
+          let smallData = [];
+          if (this.bigCode === code) {
+            // this.smallList = data;
+            smallData.push({
+              code: '1',
+              name: `${data.cvalue}年`
+            });
+          }
+          // this.smallData[code] = data;
+          this.smallList = smallData;
+          this.rLoadingFlag = false;
+        }).catch(() => {
+          this.rLoadingFlag = false;
+        });
       },
       choseMenu(code, index) {
         this.bigCode = code;
@@ -157,7 +166,7 @@
         this.bigCode = this.outBigCode;
         this.smallCode = this.outSmallCode;
         let bigIndex = this.bigList.findIndex((item) => {
-          return item.code === this.bigCode;
+          return item.code.toString() === this.bigCode;
         });
         setTimeout(() => {
           this.$refs.leftScroll.scrollToElement(this.$refs.leftMenu[bigIndex], 200, false, true);
@@ -221,6 +230,7 @@
     bottom: 0;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
 
     &.small-fade-enter-active {
       animation: small-fadein 0.3s;

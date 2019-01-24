@@ -4,19 +4,10 @@
     <div class="consignment-category">
       <div class="type">
         <span @click="areaClick">所在地区<img src="./down-unchoosed@2x.png"/></span>
-        <span @click="smallClick">树级<img src="./down-unchoosed@2x.png"/></span>
-        <span @click="ageClick">树龄排序<img src="./down-unchoosed@2x.png"/></span>
+        <!--<span @click="smallClick">树级<img src="./down-unchoosed@2x.png"/></span>-->
+        <!--<span @click="ageClick">树龄排序<img src="./down-unchoosed@2x.png"/></span>-->
         <span @click="filterClick">筛选<img src="./down-unchoosed@2x.png"/></span>
       </div>
-      <div class="more" v-show="order">
-        <p v-for="(item, index) in orderList" @click="checkedOrder(index)" :class="{active: orderIndex === index}"><span>{{item.value}}</span><img
-          src="./choosed.png" v-show="orderIndex === index"></p>
-      </div>
-      <div class="more" v-show="type">
-        <p v-for="(item, index) in typeList" @click="checkedType(index)" :class="{active: typeIndex === index}"><span>{{item.value}}</span><img
-          src="./choosed.png" v-show="typeIndex === index"></p>
-      </div>
-      <div class="black" v-show="order || type" @click="close"></div>
     </div>
     <category-city ref="cityPicker"
                     @hide="handleHide"
@@ -35,21 +26,21 @@
                      :outIsNew="isNew"
                      :varietyList="varietyList"
     ></category-filter>
-    <category-small ref="smallCategory"
-                    @hide="handleSmallHide"
-                    @confirm="handleConfirm"
-                    @firstUpdateBigName="firstUpdateBigName"
-                    :outSmallCode="smallCode"
-                    :outBigCode="bigCode"></category-small>
-    <category-age ref="ageCategory"
-                     @confirm="handleAge"
-                     :outMinPrice="minPrice"
-                     :outMaxPrice="maxPrice"
-                     :outPriceIndex="priceIndex"
-                     :outIsFree="isFree"
-                     :outIsNew="isNew"
-                     :varietyList="varietyList"
-    ></category-age>
+    <!--<category-small ref="smallCategory"-->
+                    <!--@hide="handleSmallHide"-->
+                    <!--@confirm="handleConfirm"-->
+                    <!--@firstUpdateBigName="firstUpdateBigName"-->
+                    <!--:outSmallCode="smallCode"-->
+                    <!--:outBigCode="bigCode"></category-small>-->
+    <!--<category-age ref="ageCategory"-->
+                     <!--@confirm="handleAge"-->
+                     <!--:outMinPrice="minPrice"-->
+                     <!--:outMaxPrice="maxPrice"-->
+                     <!--:outPriceIndex="priceIndex"-->
+                     <!--:outIsFree="isFree"-->
+                     <!--:outIsNew="isNew"-->
+                     <!--:varietyList="varietyList"-->
+    <!--&gt;</category-age>-->
   </div>
 </template>
 
@@ -116,15 +107,15 @@
         province: '',
         provIndex: 1,
         city: '',
-        cityIndex: 1,
+        cityIndex: 0,
         area: '',
-        areaIndex: 1,
+        areaIndex: 0,
         minPrice: '',
         maxPrice: '',
         priceIndex: -1,
         isFree: false,
         isNew: false,
-        bigCode: this.$route.query.code || '1',
+        bigCode: this.$route.query.code || '0',
         smallCode: '',
         varietyList: []
       };
@@ -135,75 +126,34 @@
       this.getPinzhongList();
     },
     methods: {
-      showOrder() {
-        if (this.type) {
-          this.type = !this.type;
-        }
-        this.order = !this.order;
-      },
-      showType() {
-        if (this.order) {
-          this.order = !this.order;
-        }
-        this.type = !this.type;
-      },
-      checkedOrder(index) {
-        this.orderIndex = index;
-        this.orderBy = this.orderList[index].key;
-        this.orderText = this.orderList[index].value;
-        this.order = !this.order;
-        this.sendMessage();
-      },
-      checkedType(index) {
-        this.typeIndex = index;
-        this.pinzhong = this.typeList[index].value;
-        this.typeText = this.typeList[index].value;
-        this.type = !this.type;
-        this.sendMessage();
-      },
-      close() {
-        this.order = false;
-        this.type = false;
-      },
-      go(url) {
-        this.close();
-        this.$router.push(url);
-      },
       getPinzhongList() {
         getPinzhongList().then((res) => {
           this.varietyList = res;
         }).catch(() => {});
       },
-      sendMessage() {
-        this.$emit('sendMessage', this.orderBy, this.pinzhong);
-      },
-
       handleHide() {
         this.areaActive = false;
       },
-
       handleSmallHide() {
         this.smallActive = false;
       },
-
       handleConfirm(bigCode, smallCode, smallName) {
         this.bigCode = bigCode;
         this.smallCode = smallCode;
         this.smallName = smallName;
         this.resetQuery();
       },
-
       firstUpdateBigName(name) {
         this.smallName = name;
       },
       cityChose(prov, city, area, provIdx, cityIdx, areaIdx) {
         this.province = prov;
-        this.provIndex = provIdx;
+        // this.provIndex = provIdx;
         this.city = city;
-        this.cityIndex = cityIdx;
+        // this.cityIndex = cityIdx;
         this.area = area;
-        this.areaIndex = areaIdx;
-        this.resetQuery();
+        // this.areaIndex = areaIdx;
+        this.$emit('cityConfirm', prov, city, area);
       },
 
       filterClick() {
@@ -218,7 +168,7 @@
 
       areaClick() {
         this.areaActive = !this.areaActive;
-        this.$refs.smallCategory.hide();
+        // this.$refs.smallCategory.hide();
         if (this.areaActive) {
           this.$refs.cityPicker.show();
           this.$refs.cityPicker.initScroll();
@@ -229,7 +179,7 @@
 
       smallClick() {
         this.smallActive = !this.smallActive;
-        this.$refs.cityPicker.hide();
+        // this.$refs.cityPicker.hide();
         if (this.smallActive) {
           this.$refs.smallCategory.show();
           this.$refs.smallCategory.initData();
@@ -281,7 +231,7 @@
         display: flex;
         align-items: center;
         border-bottom: 1px solid $color-border;
-        justify-content: space-between;
+        justify-content: space-around;
         padding: 0 0.2rem;
         span {
           font-size: 0.3rem;

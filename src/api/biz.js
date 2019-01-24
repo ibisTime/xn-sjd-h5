@@ -799,3 +799,8 @@ export function monthSignCount(data) {
 export function getPinzhongList() {
   return fetch(629029, {});
 }
+
+// 列表查询认养权树种
+export function getAdoptVarietyList() {
+  return fetch(629210, {});
+}

@@ -66,7 +66,9 @@ import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
 import { formatImg, setTitle, getUserId, clearUser } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
+import {initShare} from 'common/js/weixin';
 import { getUserDetail } from 'api/user';
+import { share } from 'api/biz';
 export default {
   // name: "home",
   data() {
@@ -123,10 +125,48 @@ export default {
           this.$router.push('/login');
         }, 1000);
       }
+    },
+    getInitWXSDKConfig() {
+      this.loading = true;
+      initShare({
+        title: '我的氧圈',
+        desc: '加入氧林，寄情古树，探寻更多古韵风情\n',
+        link: location.href.split('#')[0] + '/#/froest-space?userReferee=' + this.userDetail.mobile + '&type=U',
+        imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
+        success: (res) => {
+          this.channel = '';
+          if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+            this.channel = 0;
+          } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+            this.channel = 1;
+          } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+            this.channel = 2;
+          } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+            this.channel = 3;
+          }
+          share(this.channel, '我的氧圈').then((res) => {
+            if(res.code) {
+              this.text = '分享成功';
+              this.$refs.toast.show();
+            }
+          }).then(() => {});
+        }
+      }, (data) => {
+        this.isWxConfiging = false;
+        this.wxData = data;
+        this.loading = false;
+      }, (msg) => {
+        alert(msg);
+        this.isWxConfiging = false;
+        this.wxData = null;
+        this.loading = false;
+      });
     }
   },
   mounted() {
     this.pullUpLoad = null;
+    this.isWxConfiging = false;
+    this.wxData = null;
     setTitle('我的氧圈');
     let userId = getCookie('userId');
     this.src = require('./../../common/image/avatar@2x.png');
@@ -137,6 +177,9 @@ export default {
         this.src = formatImg(this.user.photo) || require('./../../common/image/avatar@2x.png');
         this.loading = false;
       }).catch(() => { this.loading = false; });
+    }
+    if(!this.isWxConfiging && !this.wxData) {
+      this.getInitWXSDKConfig();
     }
   },
   components: {

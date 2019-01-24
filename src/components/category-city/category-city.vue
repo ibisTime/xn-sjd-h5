@@ -117,7 +117,7 @@
     methods: {
       initScroll() {
         if (!this.provList.length) {
-          this._creatList(this.cityData1, this.provList);
+          this._creatList(cityData, this.provList);
         }
         // debugger;
         if (this.outProvIndex) {
@@ -129,8 +129,8 @@
           this.provIndex = this.outProvIndex;
           this.cityIndex = this.outCityIndex;
           this.areaIndex = this.outAreaIndex;
-          this._creatList(this.cityData1[this.outProvIndex].sub, this.cityList);
-          this._creatList(this.cityData1[this.outProvIndex].sub[this.outCityIndex].sub, this.areaList);
+          this._creatList(cityData[this.outProvIndex].sub, this.cityList);
+          this._creatList(cityData[this.outProvIndex].sub[this.outCityIndex].sub, this.areaList);
           setTimeout(() => {
             this.$refs.cityScroll.scrollToElement(this.$refs.city[this.outCityIndex], 200, false, true);
             this.$refs.areaScroll.scrollToElement(this.$refs.area[this.outAreaIndex], 200, false, true);

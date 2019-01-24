@@ -14,6 +14,7 @@
                              @getPageOrder="getPageOrders"
                              @filterConfirm="filterConfirm"
                              @ageConfirm="ageConfirm"
+                             @cityConfirm="cityConfirm"
       ></category-sjd-pro-list>
     </div>
     <div class="content">
@@ -94,7 +95,10 @@ export default {
       searchLeft: {
         back: true
       },
-      provinceList: []
+      provinceList: [],
+      province: '',   // 筛选的省
+      city: '',   // 筛选的市
+      area: ''   // 筛选的区
     };
   },
   methods: {
@@ -264,6 +268,11 @@ export default {
       if(this.variety !== '') {
         config.variety = this.variety;
       }
+      if(this.province && this.city && this.area) {
+        config.province = this.province;
+        config.city = this.city;
+        config.area = this.area;
+      }
       Promise.all([
         getProductPage(config)
       ]).then(([res1]) => {
@@ -298,6 +307,15 @@ export default {
       this.limit = 10;
       this.proList = [];
       this.order = order;
+      this.getPageOrders();
+    },
+    cityConfirm(prov, city, area) {
+      this.province = prov;
+      this.city = city;
+      this.area = area;
+      this.start = 1;
+      this.limit = 10;
+      this.proList = [];
       this.getPageOrders();
     }
   },
@@ -341,7 +359,6 @@ export default {
           this.currentIndex = index;
         }
       });
-      console.log(res4);
       let provinceList = [];
       res4.map((item) => {
         if(provinceList.length) {

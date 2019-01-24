@@ -34,7 +34,9 @@
         </div>
       </div>
       <div class="select">
-        <category-sjd-homepage></category-sjd-homepage>
+        <category-sjd-homepage
+          @filterConfirm="filterConfirm"
+          @cityConfirm="cityConfirm"></category-sjd-homepage>
       </div>
       <div class="scroll-section">
         <Scroll ref="scroll"
@@ -44,11 +46,11 @@
           <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
             <div class="item" v-for="item in userTree">
               <div class="tree-info" @click="goMyTree(item)">
-                <p class="tree-name"><span>{{item.tree.productName}}</span><span>2018.12.24-2019.12.24</span></p>
+                <p class="tree-name"><span>{{item.tree.productName}}</span><span>{{formatDate(item.startDatetime, 'yyyy.MM.dd')}} - {{formatDate(item.endDatetime, 'yyyy.MM.dd')}}</span></p>
                 <!--<p class="tree-name"><span>{{item.tree.productName}}({{item.treeNumber}})</span><span>2018.12.24-2019.12.24</span></p>-->
                 <p class="tree-about">
-                  <span>杭州市 淳安县</span>
-                  <span>还剩余<span class="surplus-days">100</span>天认养到期</span>
+                  <span>{{item.tree.city}} {{item.tree.area}}</span>
+                  <span>还剩余<span class="surplus-days">{{getDaysCount(formatDate(item.startDatetime, 'yyyy.MM.dd'), formatDate(new Date(), 'yyyy.MM.dd'))}}</span>天认养到期</span>
                 </p>
               </div>
               <img src="./more@2x.png">
@@ -143,34 +145,8 @@
                     <p class="activity"><span>{{item.note}}</span></p>
                     <p class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</p>
                   </div>
-                  <!--<p v-show="item.type === '5' || item.type === '6'">-->
-                    <!--<span class="name">{{item.note}}</span>-->
-                    <!--<span class="activity"></span><span class="time">{{formatDate(item.createDatetime, 'hh:mm')}}</span>-->
-                  <!--</p>-->
                   <div class="border"></div>
                 </div>
-                <!--<div class="daily-content-item">-->
-                <!--<div class="daily-content-item-info">-->
-                <!--<img src="./protect@2x.png" alt="">-->
-                <!--<p class="activity"><span>{{this.other ? 'TA的好友' : '珊珊'}}</span>使用了保护罩</p>-->
-                <!--<p class="time">19:00</p>-->
-                <!--</div>-->
-                <!--<div class="border"></div>-->
-                <!--</div>-->
-                <!--<div class="daily-content-item">-->
-                <!--<div class="daily-content-item-message">-->
-                <!--<div class="message-border">-->
-                <!--<img src="./head.png" alt="" class="head">-->
-                <!--<div class="message-text">-->
-                <!--<p class="name">{{this.other ? 'TA的好友' : '珊珊'}}</p>-->
-                <!--<p class="activity">来收取能量，被保护罩阻挡了</p>-->
-                <!--</div>-->
-                <!--<img src="./cover@2x.png" alt="" class="cover">-->
-                <!--</div>-->
-                <!--<p class="time">19:00</p>-->
-                <!--</div>-->
-                <!--<div class="border"></div>-->
-                <!--</div>-->
                 <no-result v-show="!(dynamicsList && dynamicsList.length)" title="暂无动态" class="no-result-wrapper"></no-result>
               </div>
             </div>
@@ -244,7 +220,12 @@
           limit: 5,
           hasMore: true
         }, // 动态
-        dynamicsList: [] // 动态数据
+        dynamicsList: [], // 动态数据
+        level: '',    // 筛选的树级
+        variety: '', // 筛选的树种,
+        province: '', // 筛选的省,
+        city: '', // 筛选的市,
+        area: '' // 筛选的区
       };
     },
     mounted() {
@@ -265,6 +246,16 @@
       formatImg(img) {
         // return formatImg(img);
         return img ? formatImg(img) : defaltAvatarImg;
+      },
+      getDaysCount(sDate1, sDate2) {
+        var dateSpan,
+          iDays;
+        sDate1 = Date.parse(sDate1);
+        sDate2 = Date.parse(sDate2);
+        dateSpan = sDate2 - sDate1;
+        dateSpan = Math.abs(dateSpan);
+        iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
+        return iDays;
       },
       getName(item) {
         if(item.userInfo.userId === this.currentHolder) {
@@ -428,13 +419,24 @@
           currentHolder: this.currentHolder,
           statusList: ['1', '2', '3']
         };
-        if(this.categorys[this.index].key === 'all') {
-          this.params.parentCategoryCode = '';
-        } else if(this.categorysSub[this.indexSub].key === 'all') {
-          this.params.parentCategoryCode = this.categorys[this.index].key;
-        } else {
-          this.params.categoryCode = this.categorysSub[this.indexSub].key;
+        if(this.level) {
+          this.params.treeLevel = this.level;
         }
+        if(this.variety) {
+          this.params.variety = this.variety;
+        }
+        if(this.province && this.city && this.area) {
+          this.params.province = this.province;
+          this.params.city = this.city;
+          this.params.area = this.area;
+        }
+        // if(this.categorys[this.index].key === 'all') {
+        //   this.params.parentCategoryCode = '';
+        // } else if(this.categorysSub[this.indexSub].key === 'all') {
+        //   this.params.parentCategoryCode = this.categorys[this.index].key;
+        // } else {
+        //   this.params.categoryCode = this.categorysSub[this.indexSub].key;
+        // }
         this.loading = true;
         getListUserTree(this.params).then((userTree) => {
           this.userTree = userTree;
@@ -536,6 +538,19 @@
       },
       jiami(mobile) {
         return mobile.substr(0, 3) + '****' + mobile.substr(7);
+      },
+      filterConfirm(level, variety) {
+        this.level = level;
+        this.variety = variety;
+        this.userTree = [];
+        this.getUserTree();
+      },
+      cityConfirm(prov, city, area) {
+        this.province = prov;
+        this.city = city;
+        this.area = area;
+        this.userTree = [];
+        this.getUserTree();
       }
     },
     components: {

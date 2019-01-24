@@ -1,17 +1,13 @@
 <template>
   <div class="category">
-    <!--<div class="check-in-wrapper"></div>-->
-    <div class="consignment-category">
+       <div class="consignment-category">
       <div class="type">
         <span class="title">认养的树</span>
         <span class="type-item">
           <span @click="areaClick">所在地区</span>
           <span @click="filterClick">筛选</span>
         </span>
-        <!--<div @click="showOrder"><span>{{orderText}}</span><img :src="getOrderImg()"/></div>-->
-        <!--<div @click="showType"><span>{{typeText}}</span><img :src="getTypeImg()"/></div>-->
-        <!--<div class="my-consignment" @click="go('/consignment-order')">我的寄售订单</div>-->
-      </div>
+              </div>
       <div class="more" v-show="order">
         <p v-for="(item, index) in orderList" @click="checkedOrder(index)" :class="{active: orderIndex === index}"><span>{{item.value}}</span><img
           src="./choosed.png" v-show="orderIndex === index"></p>
@@ -36,22 +32,17 @@
                      :outPriceIndex="priceIndex"
                      :outIsFree="isFree"
                      :outIsNew="isNew"
-                     :varietyList="varietyList"></category-filter-homepage>
-    <category-small ref="smallCategory"
-                    @hide="handleSmallHide"
-                    @confirm="handleConfirm"
-                    @firstUpdateBigName="firstUpdateBigName"
-                    :outSmallCode="smallCode"
-                    :outBigCode="bigCode"></category-small>
-  </div>
+                     :varietyList="varietyList"
+                              :treeLevel="treeLevel"
+    ></category-filter-homepage>
+      </div>
 </template>
 
 <script type="text/ecmascript-6">
-  // import BScroll from 'better-scroll';
-  import { getVarietyList } from 'api/biz';
+  import { getAdoptVarietyList } from 'api/biz';
+  import { getDictList } from 'api/general';
   import CategoryCity from 'components/category-city/category-city';
   import CategoryFilterHomepage from 'components/category-filter-homepage/category-filter-homepage';
-  import CategorySmall from 'components/category-small/category-small';
 
   export default {
     props: {
@@ -104,7 +95,7 @@
           value: '全部品种'
         }],
         province: '',
-        provIndex: 0,
+        provIndex: 1,
         city: '',
         cityIndex: 0,
         area: '',
@@ -116,12 +107,13 @@
         isNew: false,
         bigCode: this.$route.query.code || '',
         smallCode: '',
-        varietyList: []
+        varietyList: [],
+        treeLevel: []
       };
     },
     mounted() {
       this.orderText = this.orderList[0].value;
-      this.getVariety();
+      this.getInitData();
     },
     methods: {
       showOrder() {
@@ -164,21 +156,6 @@
         this.close();
         this.$router.push(url);
       },
-      getVariety() {
-        getVarietyList({
-          status: 0,
-          type: 2,
-          minQuality: 0
-        }).then((res) => {
-          res.map((item, index) => {
-            this.typeList.push({
-              key: index,
-              value: item.variety
-            });
-          });
-          this.typeText = this.typeList[0].value;
-        }).catch(() => {});
-      },
       sendMessage() {
         this.$emit('sendMessage', this.orderBy, this.pinzhong);
       },
@@ -203,44 +180,53 @@
       },
       cityChose(prov, city, area, provIdx, cityIdx, areaIdx) {
         this.province = prov;
-        this.provIndex = provIdx;
+        // this.provIndex = provIdx;
         this.city = city;
-        this.cityIndex = cityIdx;
+        // this.cityIndex = cityIdx;
         this.area = area;
-        this.areaIndex = areaIdx;
-        this.resetQuery();
+        // this.areaIndex = areaIdx;
+        // this.resetQuery();
+        this.$emit('cityConfirm', prov, city, area);
       },
 
       filterClick() {
         this.$refs.cityPicker.hide();
         this.$refs.filterCategory.show();
-        this.$refs.smallCategory.hide();
+        // this.$refs.smallCategory.hide();
       },
 
-      handleFilter(min, max, priceIndex, isFree, isNew) {
-        this.minPrice = min;
-        this.maxPrice = max;
-        this.priceIndex = priceIndex;
-        this.isFree = isFree;
-        this.isNew = isNew;
-        this.resetQuery();
+      handleFilter(level, variety) {
+        this.$emit('filterConfirm', level, variety);
       },
 
       areaClick() {
         this.areaActive = !this.areaActive;
-        this.$refs.smallCategory.hide();
+        // this.$refs.smallCategory.hide();
         if (this.areaActive) {
           this.$refs.cityPicker.show();
           this.$refs.cityPicker.initScroll();
         } else {
           this.$refs.cityPicker.hide();
         }
+      },
+      getInitData() {
+        Promise.all([
+          getAdoptVarietyList(),
+          getDictList('TREE_LEVEL')
+        ]).then(([res1, res2]) => {
+          this.varietyList = res1;
+          res2.map((item) => {
+            this.treeLevel.push({
+              code: item.dkey,
+              name: item.dvalue
+            });
+          });
+        }).catch(() => {});
       }
     },
     components: {
       CategoryCity,
-      CategoryFilterHomepage,
-      CategorySmall
+      CategoryFilterHomepage
     }
   };
 </script>
@@ -307,7 +293,6 @@
         z-index: 1;
         position: relative;
         font-size: 0.3rem;
-        /*line-height: 1rem;*/
         background: #ffffff;
         p {
           height: 1rem;

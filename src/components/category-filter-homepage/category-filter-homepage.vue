@@ -5,14 +5,10 @@
         <scroll :pullUpLoad="pullUpLoad" ref="scroll">
           <div class="items">
             <div class="title">树级</div>
-            <div class="item" :class="can1" @click="choseCan(1)">一级</div>
-            <div class="item" :class="can2" @click="choseCan(2)">二级</div>
-            <div class="item" :class="can3" @click="choseCan(3)">三级</div>
+            <div class="item" v-for="item in treeLevel" @click="choseLevel(item)" :class="levelClass(item)">{{item.name}}</div>
           </div>
           <div class="items">
             <div class="title">树种</div>
-            <!--<div class="item">樟树</div>-->
-            <!--<div class="item">柏树</div>-->
             <div class="item" v-for="item in varietyList" @click="choseVariety(item)" :class="varietyClass(item)">{{item.variety}}</div>
           </div>
         </scroll>
@@ -27,7 +23,7 @@
 <script>
   import Scroll from 'base/scroll/scroll';
   import {isUnDefined} from 'common/js/util';
-  import { getPinzhongList } from 'api/biz';
+  // import { getPinzhongList } from 'api/biz';
 
   export default {
     props: {
@@ -56,6 +52,12 @@
         default: () => {
           return [];
         }
+      },
+      treeLevel: {
+        type: Array,
+        default: () => {
+          return [];
+        }
       }
     },
     data() {
@@ -66,31 +68,21 @@
         maxPrice: '',
         isFree: false,
         isNew: false,
-        can: '4',
-        variety: ''
+        variety: '',
+        level: ''
       };
-    },
-    computed: {
-      can1() {
-        return this.can === '1' ? 'active' : '';
-      },
-      can2() {
-        return this.can === '2' ? 'active' : '';
-      },
-      can3() {
-        return this.can === '3' ? 'active' : '';
-      }
     },
     created() {
       this.pullUpLoad = null;
-      this.getPinzhongList();
+      console.log(this.treeLevel);
+      // this.getPinzhongList();
     },
     methods: {
-      getPinzhongList() {
-        getPinzhongList().then((res) => {
-          this.varietyList = res;
-        }).catch(() => {});
-      },
+      // getPinzhongList() {
+      //   getPinzhongList().then((res) => {
+      //     this.varietyList = res;
+      //   }).catch(() => {});
+      // },
       isUndefined(value) {
         return isUnDefined(value);
       },
@@ -100,41 +92,25 @@
       choseFree() {
         this.isFree = !this.isFree;
       },
-      choseCan(index) {
-        if(index === 1) {
-          if(this.can === '1') {
-            this.can = '4';
-          } else {
-            this.can = '1';
-          }
-        } else if(index === 2) {
-          if(this.can === '2') {
-            this.can = '4';
-          } else {
-            this.can = '2';
-          }
-        } else if(index === 3) {
-          if(this.can === '3') {
-            this.can = '4';
-          } else {
-            this.can = '3';
-          }
-        }
-        console.log(this.can);
-      },
       choseVariety(item) {
         this.variety = item.variety;
+      },
+      choseLevel(item) {
+        this.level = item.code;
       },
       varietyClass(item) {
         return this.variety === item.variety ? 'active' : '';
       },
+      levelClass(item) {
+        return this.level === item.code ? 'active' : '';
+      },
       reset() {
         this.variety = '';
-        this.can = '2';
+        this.level = '';
       },
       confirm() {
         this.hide();
-        this.$emit('confirm', this.can, this.variety);
+        this.$emit('confirm', this.level, this.variety);
       },
       hide() {
         this.showFlag = false;
@@ -142,9 +118,6 @@
       show() {
         this.showFlag = true;
         this.initData();
-      },
-      priceCls(index) {
-        return this.priceIndex === index ? 'active' : '';
       }
     },
     components: {

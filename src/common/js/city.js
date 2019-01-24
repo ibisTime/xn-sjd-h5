@@ -26,8 +26,6 @@ const cityData = [{
       'name': '迎江区'
     }, {
       'name': '岳西县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '蚌埠市',
@@ -45,8 +43,6 @@ const cityData = [{
       'name': '五河县'
     }, {
       'name': '禹会区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '亳州市',
@@ -58,8 +54,6 @@ const cityData = [{
       'name': '谯城区'
     }, {
       'name': '涡阳县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '巢湖市',
@@ -73,8 +67,6 @@ const cityData = [{
       'name': '庐江县'
     }, {
       'name': '无为县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '池州市',
@@ -86,8 +78,6 @@ const cityData = [{
       'name': '青阳县'
     }, {
       'name': '石台县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '滁州市',
@@ -107,8 +97,6 @@ const cityData = [{
       'name': '全椒县'
     }, {
       'name': '天长市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '阜阳市',
@@ -128,8 +116,6 @@ const cityData = [{
       'name': '颍上县'
     }, {
       'name': '颍州区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '合肥市',
@@ -153,8 +139,6 @@ const cityData = [{
       'name': '蜀山区'
     }, {
       'name': '瑶海区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '淮北市',
@@ -166,8 +150,6 @@ const cityData = [{
       'name': '濉溪县'
     }, {
       'name': '相山区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '淮南市',
@@ -185,8 +167,6 @@ const cityData = [{
       'name': '田家庵区'
     }, {
       'name': '谢家集区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '黄山市',
@@ -204,8 +184,6 @@ const cityData = [{
       'name': '休宁县'
     }, {
       'name': '黟县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '六安市',
@@ -221,8 +199,6 @@ const cityData = [{
       'name': '舒城县'
     }, {
       'name': '裕安区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '马鞍山市',
@@ -234,8 +210,6 @@ const cityData = [{
       'name': '金家庄区'
     }, {
       'name': '雨山区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宿州市',
@@ -249,8 +223,6 @@ const cityData = [{
       'name': '萧县'
     }, {
       'name': '墉桥区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '铜陵市',
@@ -262,8 +234,6 @@ const cityData = [{
       'name': '铜官山区'
     }, {
       'name': '铜陵县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '芜湖市',
@@ -281,8 +251,6 @@ const cityData = [{
       'name': '芜湖县'
     }, {
       'name': '弋江区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宣城市',
@@ -300,8 +268,6 @@ const cityData = [{
       'name': '宁国市'
     }, {
       'name': '宣州区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -344,8 +310,6 @@ const cityData = [{
       'name': '宣武区'
     }, {
       'name': '延庆县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -378,8 +342,6 @@ const cityData = [{
       'name': '台江区'
     }, {
       'name': '永泰县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '龙岩市',
@@ -397,8 +359,6 @@ const cityData = [{
       'name': '永定县'
     }, {
       'name': '漳平市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '南平市',
@@ -422,8 +382,6 @@ const cityData = [{
       'name': '延平区'
     }, {
       'name': '政和县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宁德市',
@@ -445,8 +403,6 @@ const cityData = [{
       'name': '柘荣县'
     }, {
       'name': '周宁县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '莆田市',
@@ -460,8 +416,6 @@ const cityData = [{
       'name': '仙游县'
     }, {
       'name': '秀屿区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '泉州市',
@@ -487,8 +441,6 @@ const cityData = [{
       'name': '石狮市'
     }, {
       'name': '永春县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '三明市',
@@ -516,8 +468,6 @@ const cityData = [{
       'name': '永安市'
     }, {
       'name': '尤溪县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '厦门市',
@@ -533,8 +483,6 @@ const cityData = [{
       'name': '同安区'
     }, {
       'name': '翔安区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '漳州市',
@@ -560,8 +508,6 @@ const cityData = [{
       'name': '漳浦县'
     }, {
       'name': '诏安县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -578,8 +524,6 @@ const cityData = [{
       'name': '靖远县'
     }, {
       'name': '平川区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '定西市',
@@ -597,8 +541,6 @@ const cityData = [{
       'name': '渭源县'
     }, {
       'name': '漳县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '甘南藏族自治州',
@@ -618,8 +560,6 @@ const cityData = [{
       'name': '舟曲县'
     }, {
       'name': '卓尼县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '金昌市',
@@ -627,8 +567,6 @@ const cityData = [{
       'name': '金川区'
     }, {
       'name': '永昌县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '酒泉市',
@@ -646,8 +584,6 @@ const cityData = [{
       'name': '肃州区'
     }, {
       'name': '玉门市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '兰州市',
@@ -667,8 +603,6 @@ const cityData = [{
       'name': '永登县'
     }, {
       'name': '榆中县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '临夏回族自治州',
@@ -688,8 +622,6 @@ const cityData = [{
       'name': '临夏县'
     }, {
       'name': '永靖县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '陇南市',
@@ -711,8 +643,6 @@ const cityData = [{
       'name': '武都区'
     }, {
       'name': '西和县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '平凉市',
@@ -730,8 +660,6 @@ const cityData = [{
       'name': '灵台县'
     }, {
       'name': '庄浪县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '庆阳市',
@@ -751,8 +679,6 @@ const cityData = [{
       'name': '镇原县'
     }, {
       'name': '正宁县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '天水市',
@@ -770,8 +696,6 @@ const cityData = [{
       'name': '武山县'
     }, {
       'name': '张家川回族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '武威市',
@@ -783,8 +707,6 @@ const cityData = [{
       'name': '民勤县'
     }, {
       'name': '天祝藏族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '张掖市',
@@ -800,8 +722,6 @@ const cityData = [{
       'name': '山丹县'
     }, {
       'name': '肃南裕固族自治县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -816,8 +736,6 @@ const cityData = [{
       'name': '饶平县'
     }, {
       'name': '湘桥区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '佛山市',
@@ -831,8 +749,6 @@ const cityData = [{
       'name': '三水区'
     }, {
       'name': '顺德区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '广州市',
@@ -862,8 +778,6 @@ const cityData = [{
       'name': '越秀区'
     }, {
       'name': '增城市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '河源市',
@@ -879,8 +793,6 @@ const cityData = [{
       'name': '源城区'
     }, {
       'name': '紫金县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '东莞市',
@@ -920,8 +832,6 @@ const cityData = [{
       'name': '惠阳区'
     }, {
       'name': '龙门县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '江门市',
@@ -939,8 +849,6 @@ const cityData = [{
       'name': '台山市'
     }, {
       'name': '新会区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '揭阳市',
@@ -958,8 +866,6 @@ const cityData = [{
       'name': '普宁市'
     }, {
       'name': '榕城区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '茂名市',
@@ -975,8 +881,6 @@ const cityData = [{
       'name': '茂南区'
     }, {
       'name': '信宜市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '梅州市',
@@ -996,8 +900,6 @@ const cityData = [{
       'name': '五华县'
     }, {
       'name': '兴宁市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '清远市',
@@ -1017,8 +919,6 @@ const cityData = [{
       'name': '阳山县'
     }, {
       'name': '英德市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '汕头市',
@@ -1036,8 +936,6 @@ const cityData = [{
       'name': '龙湖区'
     }, {
       'name': '南澳县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '汕尾市',
@@ -1051,8 +949,6 @@ const cityData = [{
       'name': '陆丰市'
     }, {
       'name': '陆河县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '韶关市',
@@ -1076,8 +972,6 @@ const cityData = [{
       'name': '新丰县'
     }, {
       'name': '浈江区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '深圳市',
@@ -1093,8 +987,6 @@ const cityData = [{
       'name': '南山区'
     }, {
       'name': '盐田区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '阳江市',
@@ -1106,8 +998,6 @@ const cityData = [{
       'name': '阳东县'
     }, {
       'name': '阳西县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '云浮市',
@@ -1121,8 +1011,6 @@ const cityData = [{
       'name': '云安县'
     }, {
       'name': '云城区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '湛江市',
@@ -1148,8 +1036,6 @@ const cityData = [{
       'name': '霞山区'
     }, {
       'name': '徐闻县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '肇庆市',
@@ -1169,8 +1055,6 @@ const cityData = [{
       'name': '怀集县'
     }, {
       'name': '四会市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '珠海市',
@@ -1180,8 +1064,6 @@ const cityData = [{
       'name': '金湾区'
     }, {
       'name': '香洲区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -1212,8 +1094,6 @@ const cityData = [{
       'name': '西林县'
     }, {
       'name': '右江区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '北海市',
@@ -1225,8 +1105,6 @@ const cityData = [{
       'name': '铁山港区'
     }, {
       'name': '银海区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '崇左市',
@@ -1244,8 +1122,6 @@ const cityData = [{
       'name': '凭祥市'
     }, {
       'name': '天等县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '防城港市',
@@ -1257,8 +1133,6 @@ const cityData = [{
       'name': '港口区'
     }, {
       'name': '上思县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '贵港市',
@@ -1272,8 +1146,6 @@ const cityData = [{
       'name': '平南县'
     }, {
       'name': '覃塘区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '桂林市',
@@ -1311,8 +1183,6 @@ const cityData = [{
       'name': '永福县'
     }, {
       'name': '资源县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '河池市',
@@ -1338,8 +1208,6 @@ const cityData = [{
       'name': '天峨县'
     }, {
       'name': '宜州市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '贺州市',
@@ -1351,8 +1219,6 @@ const cityData = [{
       'name': '昭平县'
     }, {
       'name': '钟山县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '来宾市',
@@ -1368,8 +1234,6 @@ const cityData = [{
       'name': '忻城县'
     }, {
       'name': '兴宾区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '柳州市',
@@ -1393,8 +1257,6 @@ const cityData = [{
       'name': '三江侗族自治县'
     }, {
       'name': '鱼峰区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '南宁市',
@@ -1422,8 +1284,6 @@ const cityData = [{
       'name': '兴宁区'
     }, {
       'name': '邕宁区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '钦州市',
@@ -1435,8 +1295,6 @@ const cityData = [{
       'name': '钦北区'
     }, {
       'name': '钦南区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '梧州市',
@@ -1454,8 +1312,6 @@ const cityData = [{
       'name': '藤县'
     }, {
       'name': '万秀区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '玉林市',
@@ -1471,8 +1327,6 @@ const cityData = [{
       'name': '兴业县'
     }, {
       'name': '玉州区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -1491,8 +1345,6 @@ const cityData = [{
       'name': '镇宁布依族苗族自治县'
     }, {
       'name': '紫云苗族布依族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '毕节地区',
@@ -1512,8 +1364,6 @@ const cityData = [{
       'name': '威宁彝族回族苗族自治县'
     }, {
       'name': '织金县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '贵阳市',
@@ -1537,8 +1387,6 @@ const cityData = [{
       'name': '修文县'
     }, {
       'name': '云岩区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '六盘水市',
@@ -1550,8 +1398,6 @@ const cityData = [{
       'name': '水城县'
     }, {
       'name': '钟山区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '黔东南苗族侗族自治州',
@@ -1587,8 +1433,6 @@ const cityData = [{
       'name': '天柱县'
     }, {
       'name': '镇远县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '黔南布依族苗族自治州',
@@ -1616,8 +1460,6 @@ const cityData = [{
       'name': '三都水族自治县'
     }, {
       'name': '瓮安县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '黔西南布依族苗族自治州',
@@ -1637,8 +1479,6 @@ const cityData = [{
       'name': '兴义市'
     }, {
       'name': '贞丰县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '铜仁地区',
@@ -1662,8 +1502,6 @@ const cityData = [{
       'name': '印江土家族苗族自治县'
     }, {
       'name': '玉屏侗族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '遵义市',
@@ -1695,8 +1533,6 @@ const cityData = [{
       'name': '正安县'
     }, {
       'name': '遵义县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -1737,8 +1573,6 @@ const cityData = [{
       'name': '五指山市'
     }, {
       'name': '西沙群岛'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '海口市',
@@ -1750,8 +1584,6 @@ const cityData = [{
       'name': '琼山区'
     }, {
       'name': '秀英区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -1808,8 +1640,6 @@ const cityData = [{
       'name': '易县'
     }, {
       'name': '涿州市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '沧州市',
@@ -1845,8 +1675,6 @@ const cityData = [{
       'name': '盐山县'
     }, {
       'name': '运河区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '承德市',
@@ -1872,8 +1700,6 @@ const cityData = [{
       'name': '兴隆县'
     }, {
       'name': '鹰手营子矿区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '邯郸市',
@@ -1915,8 +1741,6 @@ const cityData = [{
       'name': '武安市'
     }, {
       'name': '永年县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '衡水市',
@@ -1942,8 +1766,6 @@ const cityData = [{
       'name': '武邑县'
     }, {
       'name': '枣强县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '廊坊市',
@@ -1967,8 +1789,6 @@ const cityData = [{
       'name': '香河县'
     }, {
       'name': '永清县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '秦皇岛市',
@@ -1988,8 +1808,6 @@ const cityData = [{
       'name': '青龙满族自治县'
     }, {
       'name': '山海关区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '石家庄市',
@@ -2039,8 +1857,6 @@ const cityData = [{
       'name': '赵县'
     }, {
       'name': '正定县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '唐山市',
@@ -2072,8 +1888,6 @@ const cityData = [{
       'name': '玉田县'
     }, {
       'name': '遵化市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '邢台市',
@@ -2115,8 +1929,6 @@ const cityData = [{
       'name': '新河县'
     }, {
       'name': '邢台县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '张家口市',
@@ -2154,8 +1966,6 @@ const cityData = [{
       'name': '张北县'
     }, {
       'name': '涿鹿县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -2180,8 +1990,6 @@ const cityData = [{
       'name': '文峰区'
     }, {
       'name': '殷都区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '鹤壁市',
@@ -2195,8 +2003,6 @@ const cityData = [{
       'name': '淇县'
     }, {
       'name': '山城区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '焦作市',
@@ -2218,8 +2024,6 @@ const cityData = [{
       'name': '修武县'
     }, {
       'name': '中站区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '开封市',
@@ -2243,8 +2047,6 @@ const cityData = [{
       'name': '尉氏县'
     }, {
       'name': '禹王台区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '洛阳市',
@@ -2278,8 +2080,6 @@ const cityData = [{
       'name': '伊川县'
     }, {
       'name': '宜阳县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '漯河市',
@@ -2293,8 +2093,6 @@ const cityData = [{
       'name': '源汇区'
     }, {
       'name': '召陵区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '南阳市',
@@ -2324,8 +2122,6 @@ const cityData = [{
       'name': '新野县'
     }, {
       'name': '镇平县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '平顶山市',
@@ -2349,8 +2145,6 @@ const cityData = [{
       'name': '叶县'
     }, {
       'name': '湛河区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '濮阳市',
@@ -2366,8 +2160,6 @@ const cityData = [{
       'name': '清丰县'
     }, {
       'name': '台前县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '三门峡市',
@@ -2383,8 +2175,6 @@ const cityData = [{
       'name': '渑池县'
     }, {
       'name': '义马市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '商丘市',
@@ -2406,8 +2196,6 @@ const cityData = [{
       'name': '虞城县'
     }, {
       'name': '柘城县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '新乡市',
@@ -2435,8 +2223,6 @@ const cityData = [{
       'name': '延津县'
     }, {
       'name': '原阳县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '信阳市',
@@ -2460,8 +2246,6 @@ const cityData = [{
       'name': '息县'
     }, {
       'name': '新县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '许昌市',
@@ -2477,8 +2261,6 @@ const cityData = [{
       'name': '鄢陵县'
     }, {
       'name': '禹州市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '郑州市',
@@ -2506,8 +2288,6 @@ const cityData = [{
       'name': '中牟县'
     }, {
       'name': '中原区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '周口市',
@@ -2531,8 +2311,6 @@ const cityData = [{
       'name': '西华县'
     }, {
       'name': '项城市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '驻马店市',
@@ -2556,8 +2334,6 @@ const cityData = [{
       'name': '驿城区'
     }, {
       'name': '正阳县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -2582,8 +2358,6 @@ const cityData = [{
       'name': '肇源县'
     }, {
       'name': '肇州县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '大兴安岭地区',
@@ -2601,8 +2375,6 @@ const cityData = [{
       'name': '塔河县'
     }, {
       'name': '新林区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '哈尔滨市',
@@ -2642,8 +2414,6 @@ const cityData = [{
       'name': '延寿县'
     }, {
       'name': '依兰县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '鹤岗市',
@@ -2663,8 +2433,6 @@ const cityData = [{
       'name': '兴安区'
     }, {
       'name': '兴山区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '黑河市',
@@ -2680,8 +2448,6 @@ const cityData = [{
       'name': '五大连池市'
     }, {
       'name': '逊克县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '鸡西市',
@@ -2703,8 +2469,6 @@ const cityData = [{
       'name': '麻山区'
     }, {
       'name': '密山市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '佳木斯市',
@@ -2728,8 +2492,6 @@ const cityData = [{
       'name': '同江市'
     }, {
       'name': '向阳区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '牡丹江市',
@@ -2753,8 +2515,6 @@ const cityData = [{
       'name': '西安区'
     }, {
       'name': '阳明区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '七台河市',
@@ -2766,8 +2526,6 @@ const cityData = [{
       'name': '桃山区'
     }, {
       'name': '新兴区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '齐齐哈尔市',
@@ -2803,8 +2561,6 @@ const cityData = [{
       'name': '铁锋区'
     }, {
       'name': '依安县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '双鸭山市',
@@ -2824,8 +2580,6 @@ const cityData = [{
       'name': '四方台区'
     }, {
       'name': '友谊县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '绥化市',
@@ -2849,8 +2603,6 @@ const cityData = [{
       'name': '望奎县'
     }, {
       'name': '肇东市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '伊春市',
@@ -2888,8 +2640,6 @@ const cityData = [{
       'name': '伊春区'
     }, {
       'name': '友好区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -2902,8 +2652,6 @@ const cityData = [{
       'name': '华容区'
     }, {
       'name': '梁子湖区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '恩施土家族苗族自治州',
@@ -2923,8 +2671,6 @@ const cityData = [{
       'name': '咸丰县'
     }, {
       'name': '宣恩县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '黄冈市',
@@ -2948,8 +2694,6 @@ const cityData = [{
       'name': '浠水县'
     }, {
       'name': '英山县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '黄石市',
@@ -2967,8 +2711,6 @@ const cityData = [{
       'name': '下陆区'
     }, {
       'name': '阳新县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '荆门市',
@@ -2982,8 +2724,6 @@ const cityData = [{
       'name': '沙洋县'
     }, {
       'name': '钟祥市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '荆州市',
@@ -3003,8 +2743,6 @@ const cityData = [{
       'name': '石首市'
     }, {
       'name': '松滋市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '十堰市',
@@ -3024,8 +2762,6 @@ const cityData = [{
       'name': '竹山县'
     }, {
       'name': '竹溪县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '随州市',
@@ -3033,8 +2769,6 @@ const cityData = [{
       'name': '广水市'
     }, {
       'name': '曾都区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '武汉市',
@@ -3064,8 +2798,6 @@ const cityData = [{
       'name': '武昌区'
     }, {
       'name': '新洲区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '咸宁市',
@@ -3081,8 +2813,6 @@ const cityData = [{
       'name': '通山县'
     }, {
       'name': '咸安区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '襄樊市',
@@ -3104,8 +2834,6 @@ const cityData = [{
       'name': '宜城市'
     }, {
       'name': '枣阳市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '孝感市',
@@ -3123,8 +2851,6 @@ const cityData = [{
       'name': '应城市'
     }, {
       'name': '云梦县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宜昌市',
@@ -3154,8 +2880,6 @@ const cityData = [{
       'name': '枝江市'
     }, {
       'name': '秭归县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -3180,8 +2904,6 @@ const cityData = [{
       'name': '雨花区'
     }, {
       'name': '岳麓区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '常德市',
@@ -3203,8 +2925,6 @@ const cityData = [{
       'name': '桃源县'
     }, {
       'name': '武陵区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '郴州市',
@@ -3230,8 +2950,6 @@ const cityData = [{
       'name': '永兴县'
     }, {
       'name': '资兴市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '衡阳市',
@@ -3259,8 +2977,6 @@ const cityData = [{
       'name': '蒸湘区'
     }, {
       'name': '珠晖区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '怀化市',
@@ -3288,8 +3004,6 @@ const cityData = [{
       'name': '芷江侗族自治县'
     }, {
       'name': '中方县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '娄底市',
@@ -3303,8 +3017,6 @@ const cityData = [{
       'name': '双峰县'
     }, {
       'name': '新化县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '邵阳市',
@@ -3332,8 +3044,6 @@ const cityData = [{
       'name': '新宁县'
     }, {
       'name': '新邵县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '湘潭市',
@@ -3347,8 +3057,6 @@ const cityData = [{
       'name': '雨湖区'
     }, {
       'name': '岳塘区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '湘西土家族苗族自治州',
@@ -3368,8 +3076,6 @@ const cityData = [{
       'name': '泸溪县'
     }, {
       'name': '永顺县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '益阳市',
@@ -3385,8 +3091,6 @@ const cityData = [{
       'name': '沅江市'
     }, {
       'name': '资阳区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '永州市',
@@ -3412,8 +3116,6 @@ const cityData = [{
       'name': '双牌县'
     }, {
       'name': '新田县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '岳阳市',
@@ -3435,8 +3137,6 @@ const cityData = [{
       'name': '岳阳县'
     }, {
       'name': '云溪区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '张家界市',
@@ -3448,8 +3148,6 @@ const cityData = [{
       'name': '武陵源区'
     }, {
       'name': '永定区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '株洲市',
@@ -3471,8 +3169,6 @@ const cityData = [{
       'name': '攸县'
     }, {
       'name': '株洲县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -3489,8 +3185,6 @@ const cityData = [{
       'name': '通榆县'
     }, {
       'name': '镇赉县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '白山市',
@@ -3506,8 +3200,6 @@ const cityData = [{
       'name': '靖宇县'
     }, {
       'name': '临江市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '长春市',
@@ -3531,8 +3223,6 @@ const cityData = [{
       'name': '双阳区'
     }, {
       'name': '榆树市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '吉林市',
@@ -3554,8 +3244,6 @@ const cityData = [{
       'name': '舒兰市'
     }, {
       'name': '永吉县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '辽源市',
@@ -3567,8 +3255,6 @@ const cityData = [{
       'name': '龙山区'
     }, {
       'name': '西安区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '四平市',
@@ -3584,8 +3270,6 @@ const cityData = [{
       'name': '铁西区'
     }, {
       'name': '伊通满族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '松原市',
@@ -3599,8 +3283,6 @@ const cityData = [{
       'name': '前郭尔罗斯蒙古族自治县'
     }, {
       'name': '乾安县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '通化市',
@@ -3618,8 +3300,6 @@ const cityData = [{
       'name': '梅河口市'
     }, {
       'name': '通化县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '延边朝鲜族自治州',
@@ -3639,8 +3319,6 @@ const cityData = [{
       'name': '汪清县'
     }, {
       'name': '延吉市'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -3661,8 +3339,6 @@ const cityData = [{
       'name': '新北区'
     }, {
       'name': '钟楼区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '淮安市',
@@ -3682,8 +3358,6 @@ const cityData = [{
       'name': '清浦区'
     }, {
       'name': '盱眙县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '连云港市',
@@ -3701,8 +3375,6 @@ const cityData = [{
       'name': '连云区'
     }, {
       'name': '新浦区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '南京市',
@@ -3732,8 +3404,6 @@ const cityData = [{
       'name': '玄武区'
     }, {
       'name': '雨花台区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '南通市',
@@ -3753,8 +3423,6 @@ const cityData = [{
       'name': '如皋市'
     }, {
       'name': '通州市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '苏州市',
@@ -3780,8 +3448,6 @@ const cityData = [{
       'name': '相城区'
     }, {
       'name': '张家港市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宿迁市',
@@ -3795,8 +3461,6 @@ const cityData = [{
       'name': '宿城区'
     }, {
       'name': '宿豫区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '泰州市',
@@ -3812,8 +3476,6 @@ const cityData = [{
       'name': '泰兴市'
     }, {
       'name': '兴化市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '无锡市',
@@ -3833,8 +3495,6 @@ const cityData = [{
       'name': '锡山区'
     }, {
       'name': '宜兴市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '徐州市',
@@ -3860,8 +3520,6 @@ const cityData = [{
       'name': '新沂市'
     }, {
       'name': '云龙区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '盐城市',
@@ -3883,8 +3541,6 @@ const cityData = [{
       'name': '响水县'
     }, {
       'name': '盐都区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '扬州市',
@@ -3902,8 +3558,6 @@ const cityData = [{
       'name': '维扬区'
     }, {
       'name': '仪征市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '镇江市',
@@ -3919,8 +3573,6 @@ const cityData = [{
       'name': '润州区'
     }, {
       'name': '扬中市'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -3949,8 +3601,6 @@ const cityData = [{
       'name': '宜黄县'
     }, {
       'name': '资溪县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '赣州市',
@@ -3990,8 +3640,6 @@ const cityData = [{
       'name': '于都县'
     }, {
       'name': '章贡区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '吉安市',
@@ -4021,8 +3669,6 @@ const cityData = [{
       'name': '永丰县'
     }, {
       'name': '永新县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '景德镇市',
@@ -4034,8 +3680,6 @@ const cityData = [{
       'name': '乐平市'
     }, {
       'name': '珠山区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '九江市',
@@ -4065,8 +3709,6 @@ const cityData = [{
       'name': '浔阳区'
     }, {
       'name': '永修县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '南昌市',
@@ -4088,8 +3730,6 @@ const cityData = [{
       'name': '西湖区'
     }, {
       'name': '新建县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '萍乡市',
@@ -4103,8 +3743,6 @@ const cityData = [{
       'name': '上栗县'
     }, {
       'name': '湘东区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '上饶市',
@@ -4132,8 +3770,6 @@ const cityData = [{
       'name': '余干县'
     }, {
       'name': '玉山县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '新余市',
@@ -4141,8 +3777,6 @@ const cityData = [{
       'name': '分宜县'
     }, {
       'name': '渝水区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宜春市',
@@ -4166,8 +3800,6 @@ const cityData = [{
       'name': '袁州区'
     }, {
       'name': '樟树市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '鹰潭市',
@@ -4177,8 +3809,6 @@ const cityData = [{
       'name': '余江县'
     }, {
       'name': '月湖区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -4199,8 +3829,6 @@ const cityData = [{
       'name': '铁西区'
     }, {
       'name': '岫岩满族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '本溪市',
@@ -4216,8 +3844,6 @@ const cityData = [{
       'name': '平山区'
     }, {
       'name': '溪湖区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '朝阳市',
@@ -4235,8 +3861,6 @@ const cityData = [{
       'name': '龙城区'
     }, {
       'name': '双塔区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '大连市',
@@ -4260,8 +3884,6 @@ const cityData = [{
       'name': '中山区'
     }, {
       'name': '庄河市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '丹东市',
@@ -4277,8 +3899,6 @@ const cityData = [{
       'name': '振安区'
     }, {
       'name': '振兴区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '抚顺市',
@@ -4296,8 +3916,6 @@ const cityData = [{
       'name': '新宾满族自治县'
     }, {
       'name': '新抚区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '阜新市',
@@ -4315,8 +3933,6 @@ const cityData = [{
       'name': '新邱区'
     }, {
       'name': '彰武县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '葫芦岛市',
@@ -4332,8 +3948,6 @@ const cityData = [{
       'name': '绥中县'
     }, {
       'name': '兴城市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '锦州市',
@@ -4351,8 +3965,6 @@ const cityData = [{
       'name': '太和区'
     }, {
       'name': '义县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '辽阳市',
@@ -4370,8 +3982,6 @@ const cityData = [{
       'name': '太子河区'
     }, {
       'name': '文圣区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '盘锦市',
@@ -4383,8 +3993,6 @@ const cityData = [{
       'name': '双台子区'
     }, {
       'name': '兴隆台区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '沈阳市',
@@ -4414,8 +4022,6 @@ const cityData = [{
       'name': '新民市'
     }, {
       'name': '于洪区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '铁岭市',
@@ -4433,8 +4039,6 @@ const cityData = [{
       'name': '西丰县'
     }, {
       'name': '银州区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '营口市',
@@ -4450,8 +4054,6 @@ const cityData = [{
       'name': '西市区'
     }, {
       'name': '站前区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -4464,8 +4066,6 @@ const cityData = [{
       'name': '阿拉善左旗'
     }, {
       'name': '额济纳旗'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '巴彦淖尔市',
@@ -4483,8 +4083,6 @@ const cityData = [{
       'name': '乌拉特中旗'
     }, {
       'name': '五原县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '包头市',
@@ -4506,8 +4104,6 @@ const cityData = [{
       'name': '石拐区'
     }, {
       'name': '土默特右旗'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '赤峰市',
@@ -4535,8 +4131,6 @@ const cityData = [{
       'name': '翁牛特旗'
     }, {
       'name': '元宝山区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '鄂尔多斯市',
@@ -4556,8 +4150,6 @@ const cityData = [{
       'name': '伊金霍洛旗'
     }, {
       'name': '准格尔旗'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '呼和浩特市',
@@ -4579,8 +4171,6 @@ const cityData = [{
       'name': '新城区'
     }, {
       'name': '玉泉区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '呼伦贝尔市',
@@ -4610,8 +4200,6 @@ const cityData = [{
       'name': '牙克石市'
     }, {
       'name': '扎兰屯市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '通辽市',
@@ -4631,8 +4219,6 @@ const cityData = [{
       'name': '奈曼旗'
     }, {
       'name': '扎鲁特旗'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '乌海市',
@@ -4642,8 +4228,6 @@ const cityData = [{
       'name': '海南区'
     }, {
       'name': '乌达区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '乌兰察布市',
@@ -4669,8 +4253,6 @@ const cityData = [{
       'name': '兴和县'
     }, {
       'name': '卓资县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '锡林郭勒盟',
@@ -4698,8 +4280,6 @@ const cityData = [{
       'name': '正蓝旗'
     }, {
       'name': '正镶白旗'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '兴安盟',
@@ -4715,8 +4295,6 @@ const cityData = [{
       'name': '乌兰浩特市'
     }, {
       'name': '扎赉特旗'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -4733,8 +4311,6 @@ const cityData = [{
       'name': '西吉县'
     }, {
       'name': '原州区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '石嘴山市',
@@ -4744,8 +4320,6 @@ const cityData = [{
       'name': '惠农区'
     }, {
       'name': '平罗县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '吴忠市',
@@ -4757,8 +4331,6 @@ const cityData = [{
       'name': '同心县'
     }, {
       'name': '盐池县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '银川市',
@@ -4774,8 +4346,6 @@ const cityData = [{
       'name': '兴庆区'
     }, {
       'name': '永宁县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '中卫市',
@@ -4785,8 +4355,6 @@ const cityData = [{
       'name': '沙坡头区'
     }, {
       'name': '中宁县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -4805,8 +4373,6 @@ const cityData = [{
       'name': '玛多县'
     }, {
       'name': '玛沁县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '海北藏族自治州',
@@ -4818,8 +4384,6 @@ const cityData = [{
       'name': '门源回族自治县'
     }, {
       'name': '祁连县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '海东地区',
@@ -4835,8 +4399,6 @@ const cityData = [{
       'name': '平安县'
     }, {
       'name': '循化撒拉族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '海南藏族自治州',
@@ -4850,8 +4412,6 @@ const cityData = [{
       'name': '同德县'
     }, {
       'name': '兴海县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '海西蒙古族藏族自治州',
@@ -4871,8 +4431,6 @@ const cityData = [{
       'name': '天峻县'
     }, {
       'name': '乌兰县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '黄南藏族自治州',
@@ -4884,8 +4442,6 @@ const cityData = [{
       'name': '同仁县'
     }, {
       'name': '泽库县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '西宁市',
@@ -4903,8 +4459,6 @@ const cityData = [{
       'name': '湟源县'
     }, {
       'name': '湟中县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '玉树藏族自治州',
@@ -4920,8 +4474,6 @@ const cityData = [{
       'name': '杂多县'
     }, {
       'name': '治多县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -4942,8 +4494,6 @@ const cityData = [{
       'name': '沾化县'
     }, {
       'name': '邹平县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '德州市',
@@ -4969,8 +4519,6 @@ const cityData = [{
       'name': '夏津县'
     }, {
       'name': '禹城市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '东营市',
@@ -4984,8 +4532,6 @@ const cityData = [{
       'name': '垦利县'
     }, {
       'name': '利津县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '菏泽市',
@@ -5007,8 +4553,6 @@ const cityData = [{
       'name': '牡丹区'
     }, {
       'name': '郓城县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '济南市',
@@ -5032,8 +4576,6 @@ const cityData = [{
       'name': '天桥区'
     }, {
       'name': '章丘市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '济宁市',
@@ -5061,8 +4603,6 @@ const cityData = [{
       'name': '鱼台县'
     }, {
       'name': '邹城市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '莱芜市',
@@ -5070,8 +4610,6 @@ const cityData = [{
       'name': '钢城区'
     }, {
       'name': '莱城区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '聊城市',
@@ -5091,8 +4629,6 @@ const cityData = [{
       'name': '莘县'
     }, {
       'name': '阳谷县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '临沂市',
@@ -5120,8 +4656,6 @@ const cityData = [{
       'name': '沂南县'
     }, {
       'name': '沂水县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '青岛市',
@@ -5149,8 +4683,6 @@ const cityData = [{
       'name': '市南区'
     }, {
       'name': '四方区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '日照市',
@@ -5162,8 +4694,6 @@ const cityData = [{
       'name': '岚山区'
     }, {
       'name': '五莲县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '泰安市',
@@ -5179,8 +4709,6 @@ const cityData = [{
       'name': '泰山区'
     }, {
       'name': '新泰市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '威海市',
@@ -5192,8 +4720,6 @@ const cityData = [{
       'name': '乳山市'
     }, {
       'name': '文登市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '潍坊市',
@@ -5221,8 +4747,6 @@ const cityData = [{
       'name': '潍城区'
     }, {
       'name': '诸城市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '烟台市',
@@ -5252,8 +4776,6 @@ const cityData = [{
       'name': '招远市'
     }, {
       'name': '芝罘区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '枣庄市',
@@ -5269,8 +4791,6 @@ const cityData = [{
       'name': '薛城区'
     }, {
       'name': '峄城区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '淄博市',
@@ -5290,8 +4810,6 @@ const cityData = [{
       'name': '周村区'
     }, {
       'name': '淄川区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -5324,8 +4842,6 @@ const cityData = [{
       'name': '武乡县'
     }, {
       'name': '襄垣县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '大同市',
@@ -5351,8 +4867,6 @@ const cityData = [{
       'name': '阳高县'
     }, {
       'name': '左云县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '晋城市',
@@ -5368,8 +4882,6 @@ const cityData = [{
       'name': '阳城县'
     }, {
       'name': '泽州县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '晋中市',
@@ -5395,8 +4907,6 @@ const cityData = [{
       'name': '榆社县'
     }, {
       'name': '左权县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '临汾市',
@@ -5434,8 +4944,6 @@ const cityData = [{
       'name': '翼城县'
     }, {
       'name': '永和县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '吕梁市',
@@ -5465,8 +4973,6 @@ const cityData = [{
       'name': '兴县'
     }, {
       'name': '中阳县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '朔州市',
@@ -5482,8 +4988,6 @@ const cityData = [{
       'name': '应县'
     }, {
       'name': '右玉县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '太原市',
@@ -5507,8 +5011,6 @@ const cityData = [{
       'name': '阳曲县'
     }, {
       'name': '迎泽区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '忻州市',
@@ -5540,8 +5042,6 @@ const cityData = [{
       'name': '忻府区'
     }, {
       'name': '原平市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '阳泉市',
@@ -5555,8 +5055,6 @@ const cityData = [{
       'name': '平定县'
     }, {
       'name': '盂县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '运城市',
@@ -5586,8 +5084,6 @@ const cityData = [{
       'name': '永济市'
     }, {
       'name': '垣曲县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -5614,8 +5110,6 @@ const cityData = [{
       'name': '镇坪县'
     }, {
       'name': '紫阳县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宝鸡市',
@@ -5643,8 +5137,6 @@ const cityData = [{
       'name': '太白县'
     }, {
       'name': '渭滨区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '汉中市',
@@ -5670,8 +5162,6 @@ const cityData = [{
       'name': '洋县'
     }, {
       'name': '镇巴县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '商洛市',
@@ -5689,8 +5179,6 @@ const cityData = [{
       'name': '镇安县'
     }, {
       'name': '柞水县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '铜川市',
@@ -5702,8 +5190,6 @@ const cityData = [{
       'name': '宜君县'
     }, {
       'name': '印台区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '渭南市',
@@ -5729,8 +5215,6 @@ const cityData = [{
       'name': '蒲城县'
     }, {
       'name': '潼关县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '西安市',
@@ -5760,8 +5244,6 @@ const cityData = [{
       'name': '雁塔区'
     }, {
       'name': '周至县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '咸阳市',
@@ -5793,8 +5275,6 @@ const cityData = [{
       'name': '杨凌区'
     }, {
       'name': '永寿县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '延安市',
@@ -5822,8 +5302,6 @@ const cityData = [{
       'name': '志丹县'
     }, {
       'name': '子长县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '榆林市',
@@ -5851,8 +5329,6 @@ const cityData = [{
       'name': '榆阳区'
     }, {
       'name': '子洲县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -5897,8 +5373,6 @@ const cityData = [{
       'name': '杨浦区'
     }, {
       'name': '闸北区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -5931,8 +5405,6 @@ const cityData = [{
       'name': '汶川县'
     }, {
       'name': '小金县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '巴中市',
@@ -5944,8 +5416,6 @@ const cityData = [{
       'name': '平昌县'
     }, {
       'name': '通江县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '成都市',
@@ -5987,8 +5457,6 @@ const cityData = [{
       'name': '新都区'
     }, {
       'name': '新津县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '达州市',
@@ -6006,8 +5474,6 @@ const cityData = [{
       'name': '万源市'
     }, {
       'name': '宣汉县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '德阳市',
@@ -6023,8 +5489,6 @@ const cityData = [{
       'name': '什邡市'
     }, {
       'name': '中江县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '甘孜藏族自治州',
@@ -6064,8 +5528,6 @@ const cityData = [{
       'name': '新龙县'
     }, {
       'name': '雅江县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '广安市',
@@ -6079,8 +5541,6 @@ const cityData = [{
       'name': '武胜县'
     }, {
       'name': '岳池县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '广元市',
@@ -6098,8 +5558,6 @@ const cityData = [{
       'name': '旺苍县'
     }, {
       'name': '元坝区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '乐山市',
@@ -6125,8 +5583,6 @@ const cityData = [{
       'name': '市中区'
     }, {
       'name': '五通桥区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '凉山彝族自治州',
@@ -6164,8 +5620,6 @@ const cityData = [{
       'name': '越西县'
     }, {
       'name': '昭觉县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '泸州市',
@@ -6183,8 +5637,6 @@ const cityData = [{
       'name': '纳溪区'
     }, {
       'name': '叙永县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '眉山市',
@@ -6200,8 +5652,6 @@ const cityData = [{
       'name': '青神县'
     }, {
       'name': '仁寿县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '绵阳市',
@@ -6223,8 +5673,6 @@ const cityData = [{
       'name': '游仙区'
     }, {
       'name': '梓潼县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '内江市',
@@ -6238,8 +5686,6 @@ const cityData = [{
       'name': '威远县'
     }, {
       'name': '资中县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '南充市',
@@ -6261,8 +5707,6 @@ const cityData = [{
       'name': '仪陇县'
     }, {
       'name': '营山县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '攀枝花市',
@@ -6276,8 +5720,6 @@ const cityData = [{
       'name': '西区'
     }, {
       'name': '盐边县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '遂宁市',
@@ -6291,8 +5733,6 @@ const cityData = [{
       'name': '蓬溪县'
     }, {
       'name': '射洪县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '雅安市',
@@ -6312,8 +5752,6 @@ const cityData = [{
       'name': '荥经县'
     }, {
       'name': '雨城区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宜宾市',
@@ -6337,8 +5775,6 @@ const cityData = [{
       'name': '兴文县'
     }, {
       'name': '宜宾县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '资阳市',
@@ -6350,8 +5786,6 @@ const cityData = [{
       'name': '乐至县'
     }, {
       'name': '雁江区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '自贡市',
@@ -6367,8 +5801,6 @@ const cityData = [{
       'name': '沿滩区'
     }, {
       'name': '自流井区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -6411,8 +5843,6 @@ const cityData = [{
       'name': '武清区'
     }, {
       'name': '西青区'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -6433,8 +5863,6 @@ const cityData = [{
       'name': '日土县'
     }, {
       'name': '札达县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '昌都地区',
@@ -6460,8 +5888,6 @@ const cityData = [{
       'name': '芒康县'
     }, {
       'name': '左贡县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '拉萨市',
@@ -6479,8 +5905,6 @@ const cityData = [{
       'name': '尼木县'
     }, {
       'name': '曲水县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '林芝地区',
@@ -6498,8 +5922,6 @@ const cityData = [{
       'name': '米林县'
     }, {
       'name': '墨脱县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '那曲地区',
@@ -6523,8 +5945,6 @@ const cityData = [{
       'name': '申扎县'
     }, {
       'name': '索县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '日喀则地区',
@@ -6564,8 +5984,6 @@ const cityData = [{
       'name': '亚东县'
     }, {
       'name': '仲巴县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '山南地区',
@@ -6593,8 +6011,6 @@ const cityData = [{
       'name': '桑日县'
     }, {
       'name': '扎囊县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -6619,8 +6035,6 @@ const cityData = [{
       'name': '乌什县'
     }, {
       'name': '新和县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '阿勒泰地区',
@@ -6640,8 +6054,6 @@ const cityData = [{
       'name': '吉木乃县'
     }, {
       'name': '青河县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '巴音郭楞蒙古自治州',
@@ -6663,8 +6075,6 @@ const cityData = [{
       'name': '尉犁县'
     }, {
       'name': '焉耆回族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '博尔塔拉蒙古自治州',
@@ -6674,8 +6084,6 @@ const cityData = [{
       'name': '精河县'
     }, {
       'name': '温泉县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '昌吉回族自治州',
@@ -6695,8 +6103,6 @@ const cityData = [{
       'name': '奇台县'
     }, {
       'name': '五家渠市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '哈密地区',
@@ -6706,8 +6112,6 @@ const cityData = [{
       'name': '哈密市'
     }, {
       'name': '伊吾县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '和田地区',
@@ -6727,8 +6131,6 @@ const cityData = [{
       'name': '皮山县'
     }, {
       'name': '于田县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '喀什地区',
@@ -6756,8 +6158,6 @@ const cityData = [{
       'name': '岳普湖县'
     }, {
       'name': '泽普县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '克拉玛依市',
@@ -6769,8 +6169,6 @@ const cityData = [{
       'name': '克拉玛依区'
     }, {
       'name': '乌尔禾区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '克孜勒苏柯尔克孜自治州',
@@ -6782,8 +6180,6 @@ const cityData = [{
       'name': '阿图什市'
     }, {
       'name': '乌恰县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '塔城地区',
@@ -6801,8 +6197,6 @@ const cityData = [{
       'name': '乌苏市'
     }, {
       'name': '裕民县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '吐鲁番地区',
@@ -6812,8 +6206,6 @@ const cityData = [{
       'name': '吐鲁番市'
     }, {
       'name': '托克逊县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '乌鲁木齐市',
@@ -6833,8 +6225,6 @@ const cityData = [{
       'name': '乌鲁木齐县'
     }, {
       'name': '新市区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '伊犁哈萨克自治州',
@@ -6858,8 +6248,6 @@ const cityData = [{
       'name': '伊宁县'
     }, {
       'name': '昭苏县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -6876,8 +6264,6 @@ const cityData = [{
       'name': '施甸县'
     }, {
       'name': '腾冲县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '楚雄彝族自治州',
@@ -6901,8 +6287,6 @@ const cityData = [{
       'name': '永仁县'
     }, {
       'name': '元谋县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '大理白族自治州',
@@ -6930,8 +6314,6 @@ const cityData = [{
       'name': '永平县'
     }, {
       'name': '云龙县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '德宏傣族景颇族自治州',
@@ -6945,8 +6327,6 @@ const cityData = [{
       'name': '瑞丽市'
     }, {
       'name': '盈江县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '迪庆藏族自治州',
@@ -6956,8 +6336,6 @@ const cityData = [{
       'name': '维西傈僳族自治县'
     }, {
       'name': '香格里拉县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '红河哈尼族彝族自治州',
@@ -6987,8 +6365,6 @@ const cityData = [{
       'name': '石屏县'
     }, {
       'name': '元阳县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '昆明市',
@@ -7020,8 +6396,6 @@ const cityData = [{
       'name': '寻甸回族彝族自治县'
     }, {
       'name': '宜良县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '丽江市',
@@ -7035,8 +6409,6 @@ const cityData = [{
       'name': '永胜县'
     }, {
       'name': '玉龙纳西族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '临沧市',
@@ -7056,8 +6428,6 @@ const cityData = [{
       'name': '云县'
     }, {
       'name': '镇康县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '怒江傈僳族自治州',
@@ -7069,8 +6439,6 @@ const cityData = [{
       'name': '兰坪白族普米族自治县'
     }, {
       'name': '泸水县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '普洱市',
@@ -7094,8 +6462,6 @@ const cityData = [{
       'name': '西盟佤族自治县'
     }, {
       'name': '镇沅彝族哈尼族拉祜族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '曲靖市',
@@ -7117,8 +6483,6 @@ const cityData = [{
       'name': '宣威市'
     }, {
       'name': '沾益县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '文山壮族苗族自治州',
@@ -7138,8 +6502,6 @@ const cityData = [{
       'name': '西畴县'
     }, {
       'name': '砚山县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '西双版纳傣族自治州',
@@ -7149,8 +6511,6 @@ const cityData = [{
       'name': '勐海县'
     }, {
       'name': '勐腊县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '玉溪市',
@@ -7172,8 +6532,6 @@ const cityData = [{
       'name': '易门县'
     }, {
       'name': '元江哈尼族彝族傣族自治县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '昭通市',
@@ -7199,8 +6557,6 @@ const cityData = [{
       'name': '昭阳区'
     }, {
       'name': '镇雄县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -7233,8 +6589,6 @@ const cityData = [{
       'name': '萧山区'
     }, {
       'name': '余杭区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '湖州市',
@@ -7248,8 +6602,6 @@ const cityData = [{
       'name': '南浔区'
     }, {
       'name': '吴兴区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '嘉兴市',
@@ -7267,8 +6619,6 @@ const cityData = [{
       'name': '桐乡市'
     }, {
       'name': '秀洲区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '金华市',
@@ -7290,8 +6640,6 @@ const cityData = [{
       'name': '义乌市'
     }, {
       'name': '永康市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '丽水市',
@@ -7313,8 +6661,6 @@ const cityData = [{
       'name': '遂昌县'
     }, {
       'name': '云和县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '宁波市',
@@ -7340,8 +6686,6 @@ const cityData = [{
       'name': '余姚市'
     }, {
       'name': '镇海区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '衢州市',
@@ -7357,8 +6701,6 @@ const cityData = [{
       'name': '龙游县'
     }, {
       'name': '衢江区'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '绍兴市',
@@ -7374,8 +6716,6 @@ const cityData = [{
       'name': '越城区'
     }, {
       'name': '诸暨市'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '台州市',
@@ -7397,8 +6737,6 @@ const cityData = [{
       'name': '仙居县'
     }, {
       'name': '玉环县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '温州市',
@@ -7424,8 +6762,6 @@ const cityData = [{
       'name': '文成县'
     }, {
       'name': '永嘉县'
-    }, {
-      'name': '全部'
     }]
   }, {
     'name': '舟山市',
@@ -7437,8 +6773,6 @@ const cityData = [{
       'name': '普陀区'
     }, {
       'name': '嵊泗县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
@@ -7525,8 +6859,6 @@ const cityData = [{
       'name': '云阳县'
     }, {
       'name': '忠县'
-    }, {
-      'name': '全部'
     }]
   }]
 }, {
