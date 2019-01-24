@@ -158,7 +158,7 @@
     </div>
     <toast ref="toast" :text="text"></toast>
     <full-loading v-show="loading"></full-loading>
-    <confirm-sjd-auth ref="confirm" :title="authTitle" :content="authContent" confirmBtnText='前往认证' cancelBtnText="稍后再去" @confirm="confirm"></confirm-sjd-auth>
+    <confirm-sjd-auth ref="confirm" :title="authTitle" :content="authContent" confirmBtnText='前往认证' cancelBtnText="稍后再去" @confirm="authConfirm" @cancel="authCancel"></confirm-sjd-auth>
     <router-view></router-view>
   </div>
 </template>
@@ -248,7 +248,11 @@ export default {
       }
     },
     showAuthConfirm() {
-      this.$refs.confirm.show();
+      if(!this.userDetail.userExt.personAuthStatus && !this.userDetail.userExt.companyAuthStatus) {
+        this.$refs.confirm.show();
+      } else {
+        this.confirm();
+      }
     },
     goTreeList() {
       if(this.detail.sellType === '3' || this.detail.sellType === '4') {
@@ -422,6 +426,12 @@ export default {
           };
         }
       }, 20);
+    },
+    authConfirm() {
+      this.go('/auth');
+    },
+    authCancel() {
+      this.go('/home');
     },
     getInitWXSDKConfig() {
       this.loading = true;

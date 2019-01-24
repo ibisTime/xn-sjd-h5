@@ -795,6 +795,14 @@ export function monthSignCount(data) {
   });
 }
 
+// 列表查询连续签到
+export function getContinueSignList(data) {
+  return fetch(805146, {
+    userId: getUserId(),
+    ...data
+  });
+}
+
 // 列表查询认养产品品种
 export function getPinzhongList() {
   return fetch(629029, {});

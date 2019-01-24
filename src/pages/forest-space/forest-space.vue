@@ -4,7 +4,7 @@
       <div class="me" @click.stop.prevent="change">
         <img :src="src">
       </div>
-      <img src="./charts@2x.png" alt="" class="charts" @click.stop.prevent="go('/allCharts')">
+      <img src="./charts@2x.png" class="charts" @click.stop.prevent="go('/allCharts')">
       <div @click="go('/homepage')" class="block t1"></div>
       <div @click="go('/charts')" class="block t2"></div>
       <div @click="go('/my-article')" class="block t3"></div>
@@ -104,7 +104,7 @@ export default {
       this.showCheckIn = false;
     },
     go(url) {
-      if(getUserId()) {
+      if(getUserId() || url === '/allCharts') {
         this.$router.push(url);
       } else {
         this.text = '您未登录';
@@ -178,7 +178,7 @@ export default {
         this.loading = false;
       }).catch(() => { this.loading = false; });
     }
-    if(!this.isWxConfiging && !this.wxData) {
+    if(!this.isWxConfiging && !this.wxData && getUserId()) {
       this.getInitWXSDKConfig();
     }
   },

@@ -292,6 +292,12 @@
           });
           this.loading = false;
         }).catch(() => { this.loading = false; });
+      } else {
+        this.text = '您未登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
       }
     },
     components: {

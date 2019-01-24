@@ -1,6 +1,6 @@
 <template>
   <div class="adopt-list-wrapper">
-    <div class="me">
+    <div class="me" v-if="getUserId()">
       <div class="item" @click="goUserHome(userDetail)">
         <div class="order">
           <img v-if="userDetail.rowNo === 1" src="./no1@2x.png">
@@ -19,8 +19,8 @@
         <span class="price fr">{{formatAmount(userDetail.tppAmount)}}碳泡泡</span>
       </div>
     </div>
-    <div class="gray"></div>
-    <div class="adopt-list">
+    <div class="gray" v-if="getUserId()"></div>
+    <div class="adopt-list" :style="{top : getUserId() ? '1.48rem' : '0'}">
       <scroll ref="scroll"
               :data="userList"
               :hasMore="hasMore"
@@ -57,7 +57,6 @@
   import Toast from 'base/toast/toast';
   import { allChart } from 'api/user';
   import {formatAmount, formatDate, formatImg, setTitle, getUserId} from 'common/js/util';
-  import { getCookie } from 'common/js/cookie';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
 
   export default {
@@ -77,10 +76,12 @@
     },
     mounted() {
       setTitle('排行榜');
-      this.userId = getCookie('userId');
       this.getInitData();
     },
     methods: {
+      getUserId() {
+        return getUserId();
+      },
       getInitData() {
         this.getUserList();
       },
@@ -101,7 +102,7 @@
           this.loading = false;
           this.userList = this.userList.concat(res1.list);
           this.userList.map((item) => {
-            if(item.userId === this.userId) {
+            if(item.userId === getUserId()) {
               this.userDetail = item;
             }
           });
@@ -130,10 +131,18 @@
         this.$router.push(url);
       },
       goUserHome(item) {
-        if(item.userId === getUserId()) {
-          this.go(`/homepage`);
+        if(getUserId()) {
+          if(item.userId === getUserId()) {
+            this.go(`/homepage`);
+          } else {
+            this.go(`/homepage?other=1&currentHolder=${item.userId}`);
+          }
         } else {
-          this.go(`/homepage?other=1&currentHolder=${item.userId}`);
+          this.toastText = '您未登录';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
         }
       },
       // 加密

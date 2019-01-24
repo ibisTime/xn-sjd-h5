@@ -32,15 +32,17 @@
         </scroll>
       </div>
       <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
+      <toast ref="toast" :text="text"></toast>
       <router-view></router-view>
     </div>
   </transition>
 </template>
 <script>
+  import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import Confirm from 'base/confirm/confirm';
   import {mapGetters, mapActions} from 'vuex';
-  // import {debounce} from 'common/js/util';
+  import {getUserId} from 'common/js/util';
   import {directiveMixin} from 'common/js/mixin';
   // import {getPageGoods} from 'api/biz';
 
@@ -68,7 +70,8 @@
     data() {
       return {
         query: '',
-        list: []
+        list: [],
+        text: ''
       };
     },
     created() {
@@ -121,7 +124,15 @@
         this.$emit('focus');
       },
       go(url) {
-        url && this.$router.push(url);
+        if(getUserId()) {
+          url && this.$router.push(url);
+        } else {
+          this.text = '您未登录';
+          this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
+        }
       },
       ...mapActions([
         'saveSearchHistory',
@@ -129,6 +140,7 @@
       ])
     },
     components: {
+      Toast,
       Scroll,
       Confirm
     }
