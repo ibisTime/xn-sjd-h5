@@ -44,7 +44,6 @@
             <img src="./map@2x.png" @click="go('/map?code=' + adoptTreeCode)">
             <img src="./prop@2x.png" @click="props" v-show="!other">
             <img src="./strategy@2x.png" @click="go('/strategy')" v-show="!other">
-            <img src="./give@2x.png" @click="goSurprise" v-show="!other">
           </div>
           <div class="icons-other" v-show="other">
             <img src="./danmu@2x.png" @click="danmu" >
@@ -1101,7 +1100,7 @@ export default {
         }
       }
       .icons {
-        width: 4.1rem;
+        width: 2.96rem;
         display: flex;
         justify-content: space-between;
         position: absolute;

@@ -812,3 +812,10 @@ export function getPinzhongList() {
 export function getAdoptVarietyList() {
   return fetch(629210, {});
 }
+
+// 列表查商品发货地/产地
+export function getOriginDeliverList(placeType) {
+  return fetch(629709, {
+    placeType
+  });
+}

@@ -3,47 +3,56 @@
     <!--<div class="check-in-wrapper"></div>-->
     <div class="consignment-category">
       <div class="type">
-        <span @click="areaClick">所在地区<img src="./down-unchoosed@2x.png"/></span>
-        <!--<span @click="smallClick">树级<img src="./down-unchoosed@2x.png"/></span>-->
-        <span @click="ageClick">树龄排序<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="all">全部</span>
+        <span @click="priceClick">价格<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="sellCountClick">销量<img src="./down-unchoosed@2x.png"/></span>
         <span @click="filterClick">筛选<img src="./down-unchoosed@2x.png"/></span>
       </div>
     </div>
-    <category-city ref="cityPicker"
-                    @hide="handleHide"
-                    :outProvIndex="provIndex"
-                    :outCityIndex="cityIndex"
-                    :outAreaIndex="areaIndex"
-                    @cityChose="cityChose"
-                    top="1.6rem"
-                    :cityData1="provinceList"></category-city>
-    <category-filter ref="filterCategory"
+    <!--<category-city ref="cityPicker"-->
+                    <!--@hide="handleHide"-->
+                    <!--:outProvIndex="provIndex"-->
+                    <!--:outCityIndex="cityIndex"-->
+                    <!--:outAreaIndex="areaIndex"-->
+                    <!--@cityChose="cityChose"-->
+                    <!--top="1.6rem"-->
+                    <!--:cityData1="provinceList"></category-city>-->
+    <category-filter-mall ref="filterCategoryMall"
                      @confirm="handleFilter"
                      :outMinPrice="minPrice"
                      :outMaxPrice="maxPrice"
                      :outPriceIndex="priceIndex"
                      :outIsFree="isFree"
                      :outIsNew="isNew"
-                     :varietyList="varietyList"
-    ></category-filter>
+                     :originList="origin"
+                     :deliverList="deliver"
+    ></category-filter-mall>
+    <category-age ref="ageCategory"
+                  :orderColumn="orderColumn"
+                  @ageConfirm="ageConfirm"></category-age>
     <!--<category-small ref="smallCategory"-->
                     <!--@hide="handleSmallHide"-->
                     <!--@confirm="handleConfirm"-->
                     <!--@firstUpdateBigName="firstUpdateBigName"-->
                     <!--:outSmallCode="smallCode"-->
                     <!--:outBigCode="bigCode"></category-small>-->
-    <category-age ref="ageCategory"
-                     @confirm="handleAge"
-                     orderColunm="age"
-    ></category-age>
+    <!--<category-age ref="ageCategory"-->
+                     <!--@confirm="handleAge"-->
+                     <!--:outMinPrice="minPrice"-->
+                     <!--:outMaxPrice="maxPrice"-->
+                     <!--:outPriceIndex="priceIndex"-->
+                     <!--:outIsFree="isFree"-->
+                     <!--:outIsNew="isNew"-->
+                     <!--:varietyList="varietyList"-->
+    <!--&gt;</category-age>-->
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   // import BScroll from 'better-scroll';
-  import { getPinzhongList } from 'api/biz';
+  import { getOriginDeliverList } from 'api/biz';
   import CategoryCity from 'components/category-city/category-city';
-  import CategoryFilter from 'components/category-filter/category-filter';
+  import CategoryFilterMall from 'components/category-filter-mall/category-filter-mall';
   import CategoryAge from 'components/category-age/category-age';
   import CategorySmall from 'components/category-small/category-small';
 
@@ -82,19 +91,6 @@
         moreList: [],
         orderIndex: 0,
         typeIndex: 0,
-        orderList: [{
-          key: 0,
-          value: '全部'
-        }, {
-          key: 1,
-          value: '按时间排'
-        }, {
-          key: 2,
-          value: '按价格排'
-        }, {
-          key: 3,
-          value: '按数量排'
-        }],
         typeList: [{
           key: 'all',
           value: '全部品种'
@@ -112,19 +108,27 @@
         isNew: false,
         bigCode: this.$route.query.code || '0',
         smallCode: '',
-        varietyList: []
+        origin: [],
+        deliver: [],
+        orderColumn: ''
       };
     },
     mounted() {
-      console.log(this.provinceList);
-      this.orderText = this.orderList[0].value;
-      this.getPinzhongList();
+      this.getInitData();
     },
     methods: {
-      getPinzhongList() {
-        getPinzhongList().then((res) => {
-          this.varietyList = res;
-        }).catch(() => {});
+      getInitData() {
+        this.loading = true;
+        Promise.all([
+          getOriginDeliverList('originalPlace'),
+          getOriginDeliverList('deliverPlace')
+        ]).then(([res1, res2]) => {
+          this.origin = res1.placeList;
+          this.deliver = res2.placeList;
+          this.loading = false;
+        }).catch(() => {
+          this.loading = false;
+        });
       },
       handleHide() {
         this.areaActive = false;
@@ -153,49 +157,58 @@
 
       filterClick() {
         // this.$refs.cityPicker.hide();
-        this.$refs.filterCategory.show();
-        this.$refs.smallCategory.hide();
-      },
-
-      handleFilter(can, variety) {
-        this.$emit('filterConfirm', can, variety);
-      },
-
-      areaClick() {
-        this.areaActive = !this.areaActive;
+        this.$refs.ageCategory.hide();
+        this.$refs.filterCategoryMall.show();
         // this.$refs.smallCategory.hide();
-        if (this.areaActive) {
-          this.$refs.cityPicker.show();
-          this.$refs.cityPicker.initScroll();
-        } else {
-          this.$refs.cityPicker.hide();
-        }
       },
 
-      smallClick() {
-        this.smallActive = !this.smallActive;
-        // this.$refs.cityPicker.hide();
-        if (this.smallActive) {
-          this.$refs.smallCategory.show();
-          this.$refs.smallCategory.initData();
-        } else {
-          this.$refs.smallCategory.hide();
-        }
+      handleFilter(params) {
+        this.$emit('filterConfirm', params);
+      },
+      all () {
+        this.$refs.ageCategory.hide();
+        this.$refs.filterCategoryMall.hide();
+        this.$emit('all');
+      },
+      // areaClick() {
+      //   this.areaActive = !this.areaActive;
+      //   // this.$refs.smallCategory.hide();
+      //   if (this.areaActive) {
+      //     this.$refs.cityPicker.show();
+      //     this.$refs.cityPicker.initScroll();
+      //   } else {
+      //     this.$refs.cityPicker.hide();
+      //   }
+      // },
+
+      priceClick() {
+        this.orderColumn = 'min_price';
+        this.$refs.filterCategoryMall.hide();
+        this.$refs.ageCategory.show();
+      },
+      sellCountClick() {
+        this.orderColumn = 'month_sell_count';
+        this.$refs.filterCategoryMall.hide();
+        this.$refs.ageCategory.show();
       },
       resetQuery() {
         this.start = 1;
         this.$emit('getPageOrder');
       },
-      ageClick() {
-        this.$refs.ageCategory.show();
+      // ageClick() {
+      //   this.$refs.ageCategory.show();
+      // },
+      handleAge(order) {
+        this.$emit('ageConfirm', order);
       },
-      handleAge(params) {
+      ageConfirm(params) {
+        console.log(params);
         this.$emit('ageConfirm', params);
       }
     },
     components: {
       CategoryCity,
-      CategoryFilter,
+      CategoryFilterMall,
       CategorySmall,
       CategoryAge
     }

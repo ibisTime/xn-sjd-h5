@@ -80,9 +80,9 @@
               <span v-show="errors.has('zctym')" class="error-tip">{{errors.first('zctym')}}</span>
             </div>
           </div>
-          <div class="text">
-            <textarea v-model="perConfig.companyIntroduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="请输入企业简介(选填)"></textarea>
-          </div>
+          <!--<div class="text">-->
+            <!--<textarea v-model="perConfig.companyIntroduce" ref="textarea" v-validate="'required'" class="item-input" placeholder="请输入企业简介(选填)"></textarea>-->
+          <!--</div>-->
           <div class="avatar-box">
             <div class="avatar">
               <img src="./rzz.png" v-show="photos.length === 0">
@@ -191,7 +191,7 @@
           companyContactMobile: '',   // 企业联系人电话
           companyContactName: '',    // 企业联系人
           companyName: '',       // 企业名称
-          companyIntroduce: '',  // 企业简介
+          // companyIntroduce: '',  // 企业简介
           userId: getUserId()
         },
         pramStatus: ''
@@ -221,7 +221,7 @@
           this.perConfig.companyContactMobile = res2.userExt.companyContactMobile;
           this.perConfig.companyContactName = res2.userExt.companyContactName;
           this.perConfig.companyName = res2.userExt.companyName;
-          this.perConfig.companyIntroduce = res2.userExt.companyIntroduce;
+          // this.perConfig.companyIntroduce = res2.userExt.companyIntroduce;
         }
       }).catch(() => {});
     },

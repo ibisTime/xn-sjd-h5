@@ -6,11 +6,10 @@
           <img src="./back@2x.png" v-if="left.back" class="back" @click="back">
           <div class="search">
             <div class="search-icon"></div>
-            <input type="text" ref="searchInput" placeholder="请输入树木名称" v-model="query" @click="focus"/>
+            <input type="text" ref="searchInput" placeholder="搜索商品" v-model="query" @click="focus"/>
             <i v-show="query" class="close-icon" @click="clearInput"></i>
           </div>
-          <div class="cancel" @click="back" v-if="right.cancel">取消</div>
-          <div class="sign" @click="go('/sign')"><img src="./sign@2x.png" v-if="right.sign"></div>
+          <button class="search-btn" @click="search">搜索</button>
         </div>
       </header>
       <div v-show="query" class="result-wrapper">
@@ -20,31 +19,29 @@
           </ul>
         </scroll>
       </div>
-      <div v-show="searchHistory.length && !query" class="history-wrapper">
+      <div class="history-wrapper">
         <div class="title">
-          <h1>历史搜索</h1>
-          <i class="del-icon" @click="showConfirm"></i>
+          <h1>搜索历史</h1>
+          <!--<i class="del-icon" @click="showConfirm"></i>-->
         </div>
         <scroll @beforeScrollStart="blurInput" :data="searchHistory" ref="historyScroll" :pullUpLoad="pullUpLoad">
           <ul>
-            <li v-for="item in searchHistory" @click="addQuery(item)">{{item}}</li>
+            <li v-for="item in searchHistory" @click="addQuery(item)">{{item.content}}</li>
           </ul>
         </scroll>
       </div>
-      <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
-      <toast ref="toast" :text="text"></toast>
+      <confirm ref="confirm" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
+      <full-loading v-show="loading" :title="title"></full-loading>
       <router-view></router-view>
     </div>
   </transition>
 </template>
 <script>
-  import Toast from 'base/toast/toast';
   import Scroll from 'base/scroll/scroll';
   import Confirm from 'base/confirm/confirm';
-  import {mapGetters, mapActions} from 'vuex';
-  import {getUserId} from 'common/js/util';
+  import FullLoading from 'base/full-loading/full-loading';
   import {directiveMixin} from 'common/js/mixin';
-  // import {getPageGoods} from 'api/biz';
+  import {getSearchHistoryList, addSearchHistory} from 'api/biz';
 
   export default {
     mixins: [directiveMixin],
@@ -71,38 +68,29 @@
       return {
         query: '',
         list: [],
-        text: ''
+        loading: false,
+        title: '正在加载...',
+        searchHistory: []
       };
     },
     created() {
       this.pullUpLoad = null;
-      // this.$watch('query', debounce((newQuery) => {
-      //   if (!newQuery) {
-      //     setTimeout(() => {
-      //       this.$refs.historyScroll.refresh();
-      //     }, 20);
-      //   } else {
-      //     this.search();
-      //   }
-      // }, 200));
-    },
-    computed: {
-      ...mapGetters([
-        'searchHistory'
-      ])
+      this.loading = true;
+      getSearchHistoryList('2').then((res) => {
+        this.searchHistory = res.slice(0, 11);
+        this.loading = false;
+      }).catch(() => {
+        this.loading = true;
+      });
     },
     methods: {
       search() {
-        // getPageGoods({
-        //   start: 1,
-        //   limit: 10,
-        //   name: this.query
-        // }).then((data) => {
-        //   this.list = data.list;
-        // });
+        addSearchHistory({type: 2, content: this.query}).then((res) => {
+          this.go(`/mall-shopList?query=${this.query}`);
+        });
       },
       addQuery(query) {
-        this.query = query;
+        this.query = query.content;
       },
       saveSearch(code) {
         this.saveSearchHistory(this.query);
@@ -121,28 +109,16 @@
         this.$router.back();
       },
       focus() {
-        this.$emit('focus');
+        // this.$emit('focus');
       },
       go(url) {
-        if(getUserId()) {
-          url && this.$router.push(url);
-        } else {
-          this.text = '您未登录';
-          this.$refs.toast.show();
-          setTimeout(() => {
-            this.$router.push('/login');
-          }, 1000);
-        }
-      },
-      ...mapActions([
-        'saveSearchHistory',
-        'clearSearchHistory'
-      ])
+        this.$router.push(url);
+      }
     },
     components: {
-      Toast,
       Scroll,
-      Confirm
+      Confirm,
+      FullLoading
     }
   };
 </script>
@@ -160,12 +136,11 @@
     background: #fff;
 
     header {
-      height: 0.88rem;
-      padding: 0.14rem 0 0.14rem 0.3rem;
-      /*<!--border-bottom: 1px solid $color-border;-->*/
+      padding: 0.14rem 0.3rem 0;
+      margin-bottom: 0.5rem;
 
       .inner {
-        height: 0.6rem;
+        height: 0.72rem;
         display: flex;
         align-items: center;
         .back {
@@ -173,13 +148,13 @@
           margin-right: 0.2rem;
         }
         .search {
+          height: 100%;
           flex: 1;
-          height: 0.6rem;
           display: flex;
           align-items: center;
           border-radius: 0.3rem;
           background: #f3f4f8;
-          margin-right: 0.3rem;
+          margin-right: 0.2rem;
 
           .search-icon {
             flex: 0 0 0.54rem;
@@ -206,7 +181,14 @@
             @include bg-image('close');
           }
         }
-
+        .search-btn {
+          width: 1.2rem;
+          color: $color-highlight-background;
+          font-size: 0.28rem;
+          border-radius: 0.36rem;
+          background: $primary-color;
+          line-height: 0.72rem;
+        }
         .cancel {
           padding: 0 0.3rem;
           height: 0.6rem;
@@ -226,7 +208,7 @@
 
     .history-wrapper {
       position: absolute;
-      top: 0.88rem;
+      top: 0.6rem;
       bottom: 0;
       left: 0;
       right: 0;
@@ -249,8 +231,9 @@
       }
 
       h1 {
-        font-size: $font-size-medium-x;
+        font-size: 0.28rem;
         padding-bottom: 0.34rem;
+        color: #333;
       }
 
       ul {
@@ -261,9 +244,9 @@
           margin-bottom: 0.2rem;
           margin-right: 0.2rem;
           padding: 0.18rem 0.36rem;
-          border-radius: 0.3rem;
-          font-size: $font-size-medium-s;
-          background: #f3f4f8;
+          border-radius: 0.08rem;
+          font-size: 0.28rem;
+          background: #f0f0f0;
         }
       }
     }

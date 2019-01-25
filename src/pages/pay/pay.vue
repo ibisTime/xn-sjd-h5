@@ -3,6 +3,37 @@
     <div class="bg">
       <m-header class="cate-header" title="支付订单"></m-header>
       <div class="content">
+        <div class="detail">
+          <!--<img :src="formatImg(orderDetail.product.listPic)">-->
+          <!--<div class="detail-text">-->
+            <!--<div class="detail-text-top">-->
+              <!--<span class="name">{{orderDetail.product.name}}</span>-->
+              <!--<span class="number">x{{orderDetail.quantity}}</span>-->
+            <!--</div>-->
+            <!--<div class="detail-text-middle">{{orderDetail.product.city}} {{orderDetail.product.city}}</div>-->
+            <!--<div class="detail-text-bottom">-->
+              <!--<span class="specs">规格:{{orderDetail.productSpecsName}}</span>-->
+              <!--<span class="price">¥{{formatAmount(orderDetail.price)}}</span>-->
+            <!--</div>-->
+          <!--</div>-->
+          <div class="info" v-if="!storeCode">
+            <div class="imgWrap" :style="getImgSyl(orderDetail.product.listPic)"></div>
+            <div class="text">
+              <p class="title"><span class="title-title">{{orderDetail.product.name}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
+              <p class="position"><span>{{orderDetail.product.city}} {{orderDetail.product.city}}</span><span class="price">¥{{formatAmount(orderDetail.price)}}</span></p>
+              <div class="props"><span class="duration">规格：{{orderDetail.productSpecsName}}</span><span class="price">¥{{formatAmount(orderDetail.amount)}}</span></div>
+            </div>
+          </div>
+          <div class="info" v-if="storeCode" v-for="item in orderDetail.detailList">
+            <div class="imgWrap" :style="getImgSyl(item.listPic)"></div>
+            <div class="text">
+              <p class="title"><span class="title-title">{{item.commodityName}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
+              <p class="position"><span class="price">¥{{formatAmount(item.price)}}</span></p>
+              <div class="props"><span class="duration">规格：{{item.specsName}}</span><span class="price">¥{{formatAmount(item.amount)}}</span></div>
+            </div>
+          </div>
+          <div class="gray"></div>
+        </div>
         <div class="identifyCode" v-show="identifyCode">
           下单识别码：{{identifyCode}}
           <span>(可在订单页面查看)</span>
@@ -76,13 +107,14 @@
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import FullLoading from 'base/full-loading/full-loading'; // loading
   import { getCookie } from 'common/js/cookie';
-  import { formatAmount, setTitle, getUserId } from 'common/js/util';
+  import { formatAmount, setTitle, getUserId, formatImg } from 'common/js/util';
   import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore,
             getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder, preOrderScore} from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { getConfigPage } from 'api/general';
-  import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible } from 'api/store';         // 商城
+  import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible, moreStoreOrder } from 'api/store';         // 商城
   import { initPay } from 'common/js/weixin';
+  import defaultImg from './tree@3x.png';
 
   export default {
     data() {
@@ -123,7 +155,12 @@
         type: '',
         showWeixin: true,
         isWeixin: true,
-        shopMsgList: []
+        shopMsgList: [],
+        orderDetail: {
+          product: {
+            listPic: ''
+          }
+        }
       };
     },
     mounted() {
@@ -163,6 +200,10 @@
             }
           });
         });
+        moreStoreOrder(this.storeCode).then((res) => {
+          this.orderDetail = res;
+          console.log(this.orderDetail);
+        });
         if(this.storeType === 'more') {
           getMoreDeductible(this.storeCode).then(data => {
             this.rate = data;
@@ -194,6 +235,12 @@
       },
       formatAmount(amount) {
         return formatAmount(amount);
+      },
+      getImgSyl(imgs) {
+        let img = imgs ? formatImg(imgs) : defaultImg;
+        return {
+          backgroundImage: `url(${img})`
+        };
       },
       go(url) {
         this.$router.push(url);
@@ -264,6 +311,7 @@
             this.loading = false;
           }).catch(() => { this.loading = false; });
         }
+        console.log(this.orderDetail);
       },
       getPreInitData() {
         this.loading = true;
@@ -698,6 +746,90 @@
         div {
           padding: 0 0.3rem;
           background: #ffffff;
+        }
+        .detail {
+          width: 100%;
+          /*height: 2.3rem;*/
+          font-size: $font-size-medium-x;
+          line-height: 1.1rem;
+          border-bottom: 1px solid #eee;
+          /*display: flex;*/
+          /*align-items: center;*/
+          .info {
+            display: flex;
+            align-items: center;
+            font-size: 0;
+            padding: 0.3rem 0;
+            .imgWrap {
+              width: 1.5rem;
+              height: 1.5rem;
+              flex: 0 0 1.5rem;
+              margin-right: 0.2rem;
+              border-radius: 0.08rem;
+              position: relative;
+              overflow: hidden;
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: cover;
+            }
+            .text {
+              display: flex;
+              flex-direction: column;
+              width: 100%;
+              padding: 0;
+              .title {
+                font-size: 0.3rem;
+                line-height: 0.42rem;
+                margin-bottom: 0.17rem;
+                display: flex;
+                justify-content: space-between;
+                flex: 1;
+                color: $color-text;
+              }
+              .position {
+                font-size: 0.24rem;
+                line-height: 0.33rem;
+                color: #999;
+                margin-bottom: 0.25rem;
+                display: flex;
+                justify-content: space-between;
+              }
+              .props {
+                font-size: $font-size-small;
+                line-height: 0.33rem;
+                color: #999;
+                display: flex;
+                justify-content: space-between;
+                padding: 0;
+                .price {
+                  font-family: DIN-Bold;
+                  font-size: $font-size-medium-x;
+                  color: #151515;
+                }
+              }
+            }
+          }
+          .btns {
+            padding: 0.18rem 0.3rem;
+            border-top: 1px solid $color-border;
+
+            .btn {
+              font-size: 0.26rem;
+              display: inline-block;
+              margin-left: 0.2rem;
+              padding: 0 0.2rem;
+              height: 0.6rem;
+              line-height: 0.6rem;
+              border: 1px solid $primary-color;
+              border-radius: 0.06rem;
+              color: $primary-color;
+              confirm-wrapper
+              &.cancel {
+                border-color: #ccc;
+                color: $color-text-l;
+              }
+            }
+          }
         }
         .identifyCode {
           font-size: 0.3rem;

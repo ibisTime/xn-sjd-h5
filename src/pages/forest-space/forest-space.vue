@@ -131,7 +131,7 @@ export default {
       initShare({
         title: '我的氧圈',
         desc: '加入氧林，寄情古树，探寻更多古韵风情\n',
-        link: location.href.split('#')[0] + '/#/froest-space?userReferee=' + this.userDetail.mobile + '&type=U',
+        link: location.href.split('#')[0] + '/#/froest-space?userReferee=' + this.user.mobile + '&type=U',
         imgUrl: 'http://image.tree.hichengdai.com/FhDuAJ9CVvOGGgLV6CxfshkWzV9g?imageMogr2/auto-orient/thumbnail/!300x300',
         success: (res) => {
           this.channel = '';

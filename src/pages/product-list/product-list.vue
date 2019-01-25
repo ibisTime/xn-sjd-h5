@@ -273,6 +273,10 @@ export default {
         config.city = this.city;
         config.area = this.area;
       }
+      config = {
+        ...config,
+        ...this.ageParams
+      };
       Promise.all([
         getProductPage(config)
       ]).then(([res1]) => {
@@ -302,11 +306,11 @@ export default {
       this.variety = variety;
       this.getPageOrders();
     },
-    ageConfirm(order) {
+    ageConfirm(params) {
       this.start = 1;
       this.limit = 10;
       this.proList = [];
-      this.order = order;
+      this.ageParams = params;
       this.getPageOrders();
     },
     cityConfirm(prov, city, area) {
@@ -359,58 +363,59 @@ export default {
           this.currentIndex = index;
         }
       });
-      let provinceList = [];
-      res4.map((item) => {
-        if(provinceList.length) {
-          this.hasProvince = false;
-          provinceList.map((province) => {
-            if(province.name === item.province) {
-              // 有省
-              let cityList = province.sub;
-              cityList.map((city) => {
-                if(city.name === item.city) {
-                  // 有市
-                  city.sub.push({
-                    name: item.area
-                  });
-                } else {
-                  province.push({
-                    name: item.city,
-                    sub: [{
-                      name: item.area
-                    }]
-                  });
-                }
-              });
-              this.hasProvince = true;
-            }
-          });
-          if(!this.hasProvince) {
-            provinceList.push({
-              name: item.province,
-              sub: [{
-                name: item.city,
-                sub: [{
-                  name: item.area
-                }]
-              }]
-            });
-          }
-        } else {
-          provinceList.push({
-            name: item.province,
-            sub: [{
-              name: item.city,
-              sub: [{
-                name: item.area
-              }]
-            }]
-          });
-        }
-      });
-      this.provinceList = provinceList;
+      // let provinceList = [];
+      // res4.map((item) => {
+      //   if(provinceList.length) {
+      //     this.hasProvince = false;
+      //     provinceList.map((province) => {
+      //       if(province.name === item.province) {
+      //         // 有省
+      //         let cityList = province.sub;
+      //         cityList.map((city) => {
+      //           if(city.name === item.city) {
+      //             // 有市
+      //             city.sub.push({
+      //               name: item.area
+      //             });
+      //           } else {
+      //             province.push({
+      //               name: item.city,
+      //               sub: [{
+      //                 name: item.area
+      //               }]
+      //             });
+      //           }
+      //         });
+      //         this.hasProvince = true;
+      //       }
+      //     });
+      //     if(!this.hasProvince) {
+      //       provinceList.push({
+      //         name: item.province,
+      //         sub: [{
+      //           name: item.city,
+      //           sub: [{
+      //             name: item.area
+      //           }]
+      //         }]
+      //       });
+      //     }
+      //   } else {
+      //     provinceList.push({
+      //       name: item.province,
+      //       sub: [{
+      //         name: item.city,
+      //         sub: [{
+      //           name: item.area
+      //         }]
+      //       }]
+      //     });
+      //   }
+      // });
+      // this.provinceList = provinceList;
       this.loading = false;
-      this.getSubType();
+      // this.getSubType();
+      this.getPageOrders();
       if(this.userId) {
         this.getUserDetail();
       }

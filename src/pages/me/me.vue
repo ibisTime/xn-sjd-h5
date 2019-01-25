@@ -49,7 +49,7 @@
           </div>
           <div class="text">
             <p class="name">{{userDetail.nickname|| '未设置昵称'}}</p>
-            <p class="autograph">此人很懒，没什么留言</p>
+            <p class="autograph">简介：{{userDetail.introduce || '此人很懒，没什么留言'}}</p>
           </div>
         </div>
         <div class="asset">
@@ -167,7 +167,9 @@
       return {
         loading: false,
         showBack: false,
-        userDetail: {},
+        userDetail: {
+          introduce: ''
+        },
         text: '',
         cny: 0,
         cnyAccountNumber: '',

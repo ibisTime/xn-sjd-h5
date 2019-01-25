@@ -16,7 +16,7 @@
                     <span class="info-friend">好友：{{userInfo.friendCount}}</span>
                     <span class="info-friend-button" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '已是好友' : '申请好友'}}</span>
                   </p>
-                  <p class="autograph"><span>简介：乱七八糟</span></p>
+                  <p class="autograph"><span>简介：{{userInfo.introduce || '此人很懒，没什么留言'}}</span></p>
                   <!--<span class="lv">LV{{userInfo.level}}</span>-->
                   <!--<span class="follow" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '取消关注' : '加关注'}}</span>-->
                 </div>
@@ -50,7 +50,7 @@
                 <!--<p class="tree-name"><span>{{item.tree.productName}}({{item.treeNumber}})</span><span>2018.12.24-2019.12.24</span></p>-->
                 <p class="tree-about">
                   <span>{{item.tree.city}} {{item.tree.area}}</span>
-                  <span>还剩余<span class="surplus-days">{{getDaysCount(formatDate(item.startDatetime, 'yyyy.MM.dd'), formatDate(new Date(), 'yyyy.MM.dd'))}}</span>天认养到期</span>
+                  <span>还剩余<span class="surplus-days">{{getDaysCount(item)}}</span>天认养到期</span>
                 </p>
               </div>
               <img src="./more@2x.png">
@@ -247,7 +247,9 @@
         // return formatImg(img);
         return img ? formatImg(img) : defaltAvatarImg;
       },
-      getDaysCount(sDate1, sDate2) {
+      getDaysCount(item) {
+        let sDate1 = formatDate(item.startDatetime, 'yyyy.MM.dd');
+        let sDate2 = formatDate(new Date(), 'yyyy.MM.dd');
         var dateSpan,
           iDays;
         sDate1 = Date.parse(sDate1);

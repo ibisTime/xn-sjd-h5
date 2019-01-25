@@ -24,13 +24,15 @@
       return {
         pullUpLoad: null,
         loading: false,
+        collectFlag: false,
+        laudFlag: false,
         detail: {},
         contextList: [],
         xyText: ''
       };
     },
     mounted() {
-      setTitle('通知详情');
+      setTitle('快报详情');
       this.pullUpLoad = null;
       let code = this.$route.query.code;
       this.loading = true;
@@ -51,6 +53,16 @@
       },
       go(url) {
         this.$router.push(url);
+      },
+      collect() {
+        // 调接口收藏
+        this.collectFlag = true;
+        // 收藏数+1
+      },
+      laud() {
+        // 调接口点赞
+        this.laudFlag = true;
+        // 点赞数+1
       },
       _refreshScroll() {
         setTimeout(() => {
@@ -123,6 +135,9 @@
         padding-bottom: 0.4rem;
         .date {
           flex: 1;
+        }
+        .collect {
+          margin-right: 0.3rem;
         }
       }
       .context {

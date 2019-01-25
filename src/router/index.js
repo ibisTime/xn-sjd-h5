@@ -157,6 +157,10 @@ const storeService = () => import('@/pages/service/service');
 const Notices = () => import('@/pages/notices/notices');
 // 公告详情
 const NoticeDetail = () => import('@/pages/notice-detail/notice-detail');
+// 快报
+const Bulletin = () => import('@/pages/bulletin/bulletin');
+// 快报详情
+const BulletinDetail = () => import('@/pages/bulletin-detail/bulletin-detail');
 // 地图
 const Map = () => import('@/pages/map/map');
 // 二期
@@ -210,6 +214,7 @@ const Logistics = () => import('@/pages/logistics/logistics');
 const Sign = () => import('@/pages/sign/sign');
 // 搜索
 const Search = () => import('@/pages/search/search');
+const SearchMall = () => import('@/pages/search-mall/search-mall');
 const Test = () => import('@/pages/test/test');
 // 我的通知
 const Message = () => import('@/pages/message/message');
@@ -559,6 +564,14 @@ export default new Router({
       component: NoticeDetail
     },
     {
+      path: '/bulletin',
+      component: Bulletin
+    },
+    {
+      path: '/bulletin-detail',
+      component: BulletinDetail
+    },
+    {
       path: '/map',
       component: Map
     },
@@ -692,6 +705,10 @@ export default new Router({
     {
       path: '/search',
       component: Search
+    },
+    {
+      path: '/search-mall',
+      component: SearchMall
     },
     {
       path: '/message',

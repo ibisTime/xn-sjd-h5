@@ -16,9 +16,9 @@
             <span v-show="errors.has('idCard')" class="error-tip">{{errors.first('idCard')}}</span>
           </div>
         </div>
-        <div class="text">
-          <textarea v-model="perConfig.introduce" ref="textarea" v-validate="'required|max:20'" class="item-input" placeholder="说些什么吧，这会在您的空间内展示"></textarea>
-        </div>
+        <!--<div class="text">-->
+          <!--<textarea v-model="perConfig.introduce" ref="textarea" v-validate="'required|max:20'" class="item-input" placeholder="说些什么吧，这会在您的空间内展示"></textarea>-->
+        <!--</div>-->
         <div class="avatar-box">
           <div class="avatar">
             <img src="./rzz.png" v-show="photos.length === 0">
@@ -96,7 +96,6 @@
           idNo: '',
           idPic: '',  // 正面
           backIdPic: '', // 反面
-          introduce: '',
           realName: '',
           userId: getUserId()
         },
@@ -115,7 +114,7 @@
           this.photos.push({key: res2.userExt.idPic});
           this.photoFm.push({key: res2.userExt.backIdPic});
           this.perConfig.idNo = res2.idNo;
-          this.perConfig.introduce = res2.userExt.introduce;
+          // this.perConfig.introduce = res2.userExt.introduce;
           this.perConfig.realName = res2.realName;
         }
         this.showLoading = false;

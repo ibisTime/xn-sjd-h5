@@ -14,7 +14,7 @@
           <div class="head-search">
             <div class="search">
               <span></span>
-              <input type="text" placeholder="搜索商品" v-model="shopName" @keyup="searchShop">
+              <input type="text" placeholder="搜索商品" v-model="shopName" @keyup="searchShop" @click="searchShop">
             </div>
           </div>
         </div>
@@ -29,9 +29,9 @@
         <p class="hr"></p>
         <div class="mall-content">
           <div class="activity">
-            <img src="./activity.jpg" >
+            <img :src="formatImg(activityPic)" >
           </div>
-          <div class="con-head">
+          <div class="con-head" v-if="hotShopList.length > 3">
             <h5>热门推荐 <router-link to="/mall-shopList?location=1" class="fr">查看更多</router-link></h5>
             <div class="shop-list">
                 <div class="con-list">
@@ -102,7 +102,7 @@ import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
 import { getAllShopData, addShopCart, getShopType, myShopCart } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { getBanner } from 'api/general';
+import { getBanner, getConfigPage } from 'api/general';
 export default {
   data() {
     return {
@@ -145,7 +145,8 @@ export default {
       shopName: '',
       iscart: false,
       shopCode: '',
-      banners: []
+      banners: [],
+      activityPic: ''
     };
   },
   created() {
@@ -172,6 +173,9 @@ export default {
           pic: item.pic
         });
       });
+    });
+    getConfigPage({type: 'SYS_TXT', ckey: 'ACTIVITY_PIC'}).then((res) => {
+      this.activityPic = res.list[0].cvalue;
     });
     if(getUserId()) {
       myShopCart(getUserId()).then(data => {
@@ -201,12 +205,13 @@ export default {
       };
     },
     searchShop() {
-      if(event.keyCode === 13) {
-        this.config.name = this.shopName;
-        this.start = 1;
-        this.hotShopList = [];
-        this.getHotShop();
-      }
+      // if(event.keyCode === 13) {
+      //   this.config.name = this.shopName;
+      //   this.start = 1;
+      //   this.hotShopList = [];
+      //   this.getHotShop();
+      // }
+      this.go('/search-mall');
     },
     getTypeData(code) {
       this.start = 1;
@@ -247,11 +252,11 @@ export default {
       this.isAll = true;
     },
     toHomeFn() {
-      if(!getUserId()) {
-        this.textMsg = '请先登录';
-        this.$refs.toast.show();
-        return;
-      }
+      // if(!getUserId()) {
+      //   this.textMsg = '请先登录';
+      //   this.$refs.toast.show();
+      //   return;
+      // }
       this.go('/home');
     },
     // 获取热门商品
@@ -388,6 +393,7 @@ export default {
         margin-bottom: 0.3rem;
         img {
           width: 100%;
+          height: 2.3rem;
         }
       }
       .con-head{

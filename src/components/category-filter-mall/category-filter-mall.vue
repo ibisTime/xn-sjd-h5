@@ -4,10 +4,24 @@
       <div class="content" @click.stop>
         <scroll :pullUpLoad="pullUpLoad" ref="scroll">
           <div class="items">
-            <div class="item" :class="can1" @click="choseCan(1)">从大到小</div>
-            <div class="item" :class="can0" @click="choseCan(0)">从小到大</div>
+            <div class="title">发货地</div>
+            <div class="item" v-for="item in deliverList" @click="choseDeliver(item)" :class="deliverClass(item)">{{item}}</div>
+          </div>
+          <div class="items">
+            <div class="title">产地</div>
+            <div class="item" v-for="item in originList" @click="choseOrigin(item)" :class="originClass(item)">{{item}}</div>
+          </div>
+          <div class="items">
+            <div class="title">价格区间</div>
+            <div class="input">
+              <input type="text" v-model="minPrice" name="minPrice"> - <input type="text" v-model="maxPrice" name="maxPrice">
+            </div>
           </div>
         </scroll>
+        <div class="footer" @click.stop>
+          <div class="reset" @click="reset">重置</div>
+          <div class="confirm" @click="confirm">确认</div>
+        </div>
       </div>
     </div>
   </transition>
@@ -18,9 +32,37 @@
 
   export default {
     props: {
-      orderColumn: {
+      outMinPrice: {
         type: String,
         default: ''
+      },
+      outMaxPrice: {
+        type: String,
+        default: ''
+      },
+      outPriceIndex: {
+        type: Number,
+        default: -1
+      },
+      outIsFree: {
+        type: Boolean,
+        default: false
+      },
+      outIsNew: {
+        type: Boolean,
+        default: false
+      },
+      originList: {
+        type: Array,
+        default: () => {
+          return [];
+        }
+      },
+      deliverList: {
+        type: Array,
+        default: () => {
+          return [];
+        }
       }
     },
     data() {
@@ -29,19 +71,9 @@
         priceIndex: -1,
         minPrice: '',
         maxPrice: '',
-        isFree: false,
-        isNew: false,
-        can: '2',
-        variety: ''
+        origin: '',
+        deliver: ''
       };
-    },
-    computed: {
-      can1() {
-        return this.can === '1' ? 'active' : '';
-      },
-      can0() {
-        return this.can === '0' ? 'active' : '';
-      }
     },
     created() {
       this.pullUpLoad = null;
@@ -53,47 +85,40 @@
       initData() {
 
       },
-      choseFree() {
-        this.isFree = !this.isFree;
+      choseOrigin(item) {
+        this.origin = item;
       },
-      choseCan(index) {
-        if(index === 0) {
-          if(this.can === '0') {
-            this.can = '2';
-          } else {
-            this.can = '0';
-          }
-        } else {
-          if(this.can === '1') {
-            this.can = '2';
-          } else {
-            this.can = '1';
-          }
-        }
-        this.order = this.can;
-        this.hide();
-        let params = {};
-        if(this.can !== '2') {
-          params = {
-            orderDir: this.can === '1' ? 'desc' : 'asc',
-            orderColumn: this.orderColumn
-          };
-        }
-        this.$emit('ageConfirm', params);
+      choseDeliver(item) {
+        this.deliver = item;
       },
-      choseVariety(item) {
-        this.variety = item.variety;
+      originClass(item) {
+        return this.origin === item ? 'active' : '';
       },
-      varietyClass(item) {
-        return this.variety === item.variety ? 'active' : '';
+      deliverClass(item) {
+        return this.deliver === item ? 'active' : '';
       },
       reset() {
-        this.variety = '';
-        this.can = '2';
+        this.origin = '';
+        this.deliver = '';
+        this.minPrice = '';
+        this.margin = '';
       },
       confirm() {
         this.hide();
-        this.$emit('confirm', this.can, this.variety);
+        let params = {};
+        if(this.origin) {
+          params.originPlace = this.origin;
+        }
+        if(this.deliver) {
+          params.deliverPlace = this.deliver;
+        }
+        if(this.minPrice) {
+          params.minSpecPrice = this.minPrice * 1000;
+        }
+        if(this.maxPrice) {
+          params.maxSpecPrice = this.maxPrice * 1000;
+        }
+        this.$emit('confirm', params);
       },
       hide() {
         this.showFlag = false;
@@ -140,45 +165,17 @@
       font-size: 0.26rem;
       background: #fff;
       left: 0;
+      height: 100%;
 
       .title {
         padding-left: 0.2rem;
-      }
-
-      .price-select {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-right: 0.46rem;
-        margin-top: 0.35rem;
-        padding-left: 0.2rem;
-        height: 0.6rem;
-
-        .price {
-          display: flex;
-          align-items: center;
-          padding: 0 0.1rem;
-          width: 2.6rem;
-          height: 100%;
-          border: 1px solid #dedede;
-
-          input {
-            width: 100%;
-          }
-        }
-
-        .split {
-          width: 0.2rem;
-          flex: 0 0 0.2rem;
-          height: 1px;
-          background: #dedede;
-        }
+        margin-bottom: 0.2rem;
       }
 
       .items {
         .item {
-          /*display: inline-block;*/
-          /*margin-left: 0.2rem;*/
+          display: inline-block;
+          margin-left: 0.2rem;
           margin-bottom: 0.2rem;
           min-width: 1.8rem;
           height: 0.6rem;
@@ -186,11 +183,19 @@
           border-radius: 0.06rem;
           text-align: center;
           background: #fff;
-          /*<!--border: 1px solid $second-color;-->*/
+          border: 1px solid $second-color;
 
           &.active {
             color: $second-color;
             background: rgb(255, 236, 236);
+          }
+        }
+        .input {
+          padding: 0 0.3rem;
+          input {
+            height: 0.6rem;
+            border: 1px solid $color-border;
+            border-radius: 0.2rem;
           }
         }
       }

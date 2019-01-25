@@ -533,7 +533,7 @@ export default {
             font-size: 0.28rem;
             color: #666666;
             span{
-                color: #23AD8C;
+                color: $mall-color;
             }
         }
         .foo-right{
@@ -544,7 +544,7 @@ export default {
             line-height: 0.9rem;
             text-align: center;
             border-radius: 0.12rem;
-            background-color: #23AD8C;
+            background-color: $mall-color;
         }
     }
 }

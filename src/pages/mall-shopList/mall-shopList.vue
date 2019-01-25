@@ -10,18 +10,22 @@
           </div>
         </div>
       </header>
-        <div class="head-nav">
-          <category-scroll
-            :currentIndex="currentIndex"
-            :categorys="shopTypeData"
-            @select="selectCategory"
-          />
-          <category-scroll
-            :currentIndex="currentIndexSub"
-            :categorys="categorysSub"
-            @select="selectCategorySub"
-          />
-        </div>
+        <!--<div class="head-nav">-->
+          <!--<category-scroll-->
+            <!--:currentIndex="currentIndex"-->
+            <!--:categorys="shopTypeData"-->
+            <!--@select="selectCategory"-->
+          <!--/>-->
+          <!--<category-scroll-->
+            <!--:currentIndex="currentIndexSub"-->
+            <!--:categorys="categorysSub"-->
+            <!--@select="selectCategorySub"-->
+          <!--/>-->
+        <!--</div>-->
+      <category-sjd-mall-list
+        @filterConfirm="filterConfirm"
+        @all="all"
+        @ageConfirm="ageConfirm"></category-sjd-mall-list>
         <div class="con-list">
           <Scroll
             :data="hotShopList"
@@ -33,8 +37,8 @@
                   <div class="shop-det">
                     <h5>{{item.name}}</h5>
                     <div class="con-type">
-                      <span class="label">销量 28</span>
-                      <span class="place">杭州市</span>
+                      <span class="label">销量 {{item.monthSellCount}}</span>
+                      <span class="place">{{item.originalPlace}}</span>
                     </div>
                     <p>￥{{formatAmount(item.minPrice)}} 起
                       <span class="fr icon" @click.stop="addListCart(item.code, item.name, item.specsList[0].id, item.specsList[0].name)"></span>
@@ -59,6 +63,7 @@ import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
+import CategorySjdMallList from 'components/category-sjd-mallList/category-sjd-mallList';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getAllShopData, addShopCart, getShopType } from 'api/store';
 export default {
@@ -104,7 +109,8 @@ export default {
       setIndex: 0,
       typeIndex: '',
       location: '',
-      query: ''
+      query: '',
+      filterParams: {}
     };
   },
   created() {
@@ -113,6 +119,7 @@ export default {
     this.shopCode = this.$route.query.code;
     this.typeIndex = this.$route.query.typeIndex;
     this.location = this.$route.query.location;
+    this.query = this.$route.query.query || '';
     if(this.location) {
       this.config.location = this.location;
     }
@@ -224,8 +231,21 @@ export default {
     },
     // 获取热门商品
     getHotShop() {
-      this.config.start = this.start;
-      getAllShopData(this.config).then(data => {
+      let searchConfig = this.config;
+      searchConfig.start = this.start;
+      if(this.query !== '') {
+        searchConfig.name = this.query;
+      } else {
+        if(searchConfig.name) {
+          delete searchConfig.name;
+        }
+      }
+      searchConfig = {
+        ...searchConfig,
+        ...this.filterParams,
+        ...this.ageParams
+      };
+      getAllShopData(searchConfig).then(data => {
         if (data.totalPage <= this.start) {
           this.hasMore = false;
         }
@@ -260,6 +280,27 @@ export default {
           this.$refs.toast.show();
         }
       }
+    },
+    filterConfirm(params) {
+      this.filterParams = params;
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
+    },
+    all() {
+      this.filterParams = {};
+      this.ageParams = {};
+      this.query = '';
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
+    },
+    ageConfirm(params) {
+      this.ageParams = params;
+      this.start = 1;
+      this.hotShopList = [];
+      this.getHotShop();
+      console.log(params);
     }
   },
   components: {
@@ -268,7 +309,8 @@ export default {
     Toast,
     Scroll,
     NoResult,
-    CategoryScroll
+    CategoryScroll,
+    CategorySjdMallList
   }
 };
 </script>
@@ -386,8 +428,8 @@ export default {
         }
     }
     .con-list{
-      height: 12rem;
-      padding-bottom: 2rem;
+      /*height: 12rem;*/
+      /*padding-bottom: 2rem;*/
       overflow: scroll;
     }
     .shop-list{
