@@ -2,7 +2,11 @@ import fetch from 'common/js/fetch';
 
 // 获取商品分类
 export function getShopType(config) {
-  return fetch(629005, config);
+  return fetch(629005, {
+    start: 1,
+    limit: 10,
+    ...config
+  });
 }
 
 // 获取全部商品
@@ -189,4 +193,9 @@ export function orderPostage(config) {
 // 清除未读消息
 export function clearMsg(config) {
   return fetch(629789, config);
+}
+
+// 根据支付组号查订单明细
+export function getMallOrderDetailByGroupCode(payGroupCode) {
+  return fetch(629802, {payGroupCode});
 }

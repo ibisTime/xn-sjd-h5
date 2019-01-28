@@ -58,14 +58,14 @@
                       <div class="sing-img" :style="getImgSyl(hotShopList[0].listPic ? hotShopList[0].listPic : '')"></div>
                     </div>
                     <div class="right">
-                      <div class="right-top" @click="toShopDet(hotShopList[0].code, hotShopList[0].shopCode)">
+                      <div class="right-top" @click="toShopDet(hotShopList[1].code, hotShopList[1].shopCode)">
                         <div class="right-left">
                           <div class="title">{{hotShopList[1].name}}</div>
                           <div class="text">辅助文字</div>
                         </div>
                         <div class="sing-img" :style="getImgSyl(hotShopList[1].listPic ? hotShopList[1].listPic : '')"></div>
                       </div>
-                      <div class="right-bottom" @click="toShopDet(hotShopList[0].code, hotShopList[0].shopCode)">
+                      <div class="right-bottom" @click="toShopDet(hotShopList[2].code, hotShopList[2].shopCode)">
                         <div class="right-left">
                           <div class="title">{{hotShopList[2].name}}</div>
                           <div class="text">辅助文字</div>
@@ -85,7 +85,6 @@
       <!--<router-view v-show="isAll"></router-view>-->
     </Scroll>
     <div class="go-cart" @click.stop="toHomeFn">
-      <p v-if="iscart"></p>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
@@ -532,15 +531,6 @@ export default {
     height: 0.8rem;
     background-image: url('./back-home@2x.png');
     background-size: 100% 100%;
-    p{
-      width: 0.2rem;
-      height: .2rem;
-      border-radius: 100%;
-      background-color: red;
-      position: absolute;
-      top: 0.1rem;
-      right: 0.2rem;
-    }
   }
 }
 </style>

@@ -23,7 +23,10 @@
                :class="rightCls(item.code)"
                v-for="(item,index) in rightList"
                @click="choseCate(item,index)"
-               ref="rightMenu">{{item.name}}</div>
+               ref="rightMenu">
+            <img :src="formatImg(item.pic)" class="right-icon">
+            <span>{{item.name}}</span>
+          </div>
         </scroll>
       </div>
     </div>
@@ -33,6 +36,8 @@
   import Scroll from 'base/scroll/scroll';
   import Loading from 'base/loading/loading';
   import MHeader from 'components/m-header/m-header';
+  import { getProductType } from 'api/biz';
+  import { formatImg } from 'common/js/util';
   // import {mapMutations, mapGetters} from 'vuex';
   // import {SET_PUBLISH_CATEGORY} from 'store/mutation-types';
   // import {getCategories} from 'api/biz';
@@ -40,29 +45,23 @@
   export default {
     data() {
       return {
-        list: [{
-          code: 1,
-          name: '分类1'
-        }, {
-          code: 2,
-          name: '分类2'
-        }],
+        list: [],
         rightData: {},
         leftCode: '',
         rightCode: '',
         rLoadingFlag: true,
-        rightList: [{
-          code: 3,
-          name: '分类3'
-        }, {
-          code: 4,
-          name: '分类4'
-        }]
+        rightList: []     // {
+                          //   code: 3,
+                          //   name: '分类3'
+                          // }, {
+                          //   code: 4,
+                          //   name: '分类4'
+                          // }
       };
     },
     created() {
       this.pullUpLoad = null;
-      // this.getInitData();
+      this.getInitData();
     },
     // computed: {
     //   ...mapGetters([
@@ -70,6 +69,9 @@
     //   ])
     // },
     methods: {
+      formatImg(img) {
+        return formatImg(img);
+      },
       getInitData() {
         // if (this.publishCategory) {
         //   this.leftCode = this.publishCategory.parentCode;
@@ -91,29 +93,56 @@
         //     }
         //   });
         // }
+        Promise.all([
+          getProductType({
+            type: 2,
+            status: 1,
+            orderDir: 'asc',
+            orderColumn: 'order_no',
+            level: 1
+          })
+        ]).then(([res1]) => {
+          if(res1.length) {
+            res1.map((item) => {
+              this.list.push({
+                code: item.code,
+                name: item.name
+              });
+            });
+            this.leftCode = this.list[0].code;
+            this.getSmallCategories(this.list[0].code);
+          }
+        });
       },
       getSmallCategories(code) {
-        if (this.rightData[code]) {
-          this.rightList = this.rightData[code];
-          this.rLoadingFlag = false;
-          return Promise.resolve(this.rightData[code]);
-        }
+        // if (this.rightData[code]) {
+        //   this.rightList = this.rightData[code];
+        //   this.rLoadingFlag = false;
+        //   return Promise.resolve(this.rightData[code]);
+        // }
         this.rightList = [];
         this.rLoadingFlag = true;
-        // return getCategories(code).then((data) => {
-        //   this.rightData[code] = data;
-        //   if (!this.list || this.leftCode === code) {
-        //     this.rightList = data;
-        //   }
-        //   this.rLoadingFlag = false;
-        //   if (this.publishCategory && this.publishCategory.parentCode === code) {
-        //     this.rightCode = this.publishCategory.code;
-        //   } else {
-        //     this.rightCode = '';
-        //   }
-        // }).catch(() => {
-        //   this.rLoadingFlag = false;
-        // });
+        return getProductType({
+          type: 2,
+          status: 1,
+          orderDir: 'asc',
+          orderColumn: 'order_no',
+          level: 2,
+          parentCode: code
+        }).then((data) => {
+          this.rightData[code] = data;
+          if (!this.list || this.leftCode === code) {
+            this.rightList = data;
+          }
+          this.rLoadingFlag = false;
+          if (this.publishCategory && this.publishCategory.parentCode === code) {
+            this.rightCode = this.publishCategory.code;
+          } else {
+            this.rightCode = '';
+          }
+        }).catch(() => {
+          this.rLoadingFlag = false;
+        });
       },
       choseMenu(code, index) {
         this.leftCode = code;
@@ -122,9 +151,10 @@
       },
       choseCate(item, index) {
         this.$refs.rightScroll.scrollToElement(this.$refs.rightMenu[index], 200, false, true);
-        this.setCategory(item);
+        // this.setCategory(item);
         setTimeout(() => {
-          this.$router.back();
+          // this.$router.back();
+          this.$router.push(`/mall-shopList?categoryCode=${item.code}`);
         }, 210);
       },
       leftCls(code) {
@@ -188,11 +218,21 @@
         flex: 1;
         background: #fff;
         color: $color-text-l;
+        padding-top: 0.3rem;
 
         .right-item {
-          height: 0.8rem;
-          line-height: 0.8rem;
+          /*height: 0.8rem;*/
+          /*line-height: 0.8rem;*/
           padding-left: 0.6rem;
+          display: inline-flex;
+          align-items: center;
+          flex-direction: column;
+          margin-bottom: 0.2rem;
+          .right-icon {
+            width: 1.12rem;
+            height: 1.12rem;
+            margin-bottom: 0.1rem;
+          }
 
           &.active {
             color: $color-text;

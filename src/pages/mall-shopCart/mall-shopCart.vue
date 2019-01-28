@@ -12,6 +12,7 @@
               :shopAll="isShopAll"
               :storeSingData="allItem"
               :storeAllShop="shopAllData"
+              :isManage="isManage"
               @shopTatilFn="shopTatilFn"
               @allStoreSetFn="allStoreSetFn"
           >

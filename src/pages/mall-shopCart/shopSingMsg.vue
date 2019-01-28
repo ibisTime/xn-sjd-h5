@@ -10,26 +10,27 @@
                   <!--<p @click.stop="removeShop">删除</p>-->
               <!--</span>-->
           </div>
-        <div class="sing-con" v-for="(singItem, singIndex) in shopSingData" :key="singIndex">
-              <div class="con-left" @click.stop="setShopSing(singIndex, singItem)">
-                  <span class="spl" ref="selShop"></span>
-              </div>
-              <div class="con-right">
-                  <div class="r-left" :style="getImgSyl(singItem.commodityPhoto ? singItem.commodityPhoto : '')">
-                      <div class="l-img"></div>
+        <div class="sing-con" v-for="(singItem, singIndex) in shopSingData" :key="singIndex" :style="{opacity: singItem.status === '1' || isManage ? '' : '0.5'}">
+          <div class="con-left" @click.stop="setShopSing(singIndex, singItem)"  v-if="singItem.status === '1' || isManage">
+              <span class="spl" ref="selShop"></span>
+          </div>
+          <div class="con-left" @click.stop="setShopSing(singIndex, singItem)"  v-else>
+            <!--<span class="spl" ref="selShop"></span>-->
+          </div>
+          <div class="con-right">
+              <div class="r-left" :style="getImgSyl(singItem.commodityPhoto ? singItem.commodityPhoto : '')"></div>
+              <div class="r-con">
+                  <div class="rr-head">{{singItem.commodityName}} <span class="fr num">x{{singItem.quantity}}</span></div>
+                  <div class="rr-con"><span>规格分类：{{singItem.specsName}}</span><span v-if="singItem.status === '0'" class="status">失效</span></div>
+                  <div class="rr-price">¥{{formatAmount(shopPriceList[singIndex])}}
+                      <p class="fr bot">
+                          <span class="jian" @click.stop="minusFn(singIndex)"></span>
+                          <span>{{singItem.quantity}}</span>
+                          <span class="jia" @click.stop="addFn(singIndex)"></span>
+                      </p>
                   </div>
-                  <div class="r-con">
-                      <div class="rr-head">{{singItem.commodityName}} <span class="fr num">x{{singItem.quantity}}</span></div>
-                      <div class="rr-con">规格分类：{{singItem.specsName}}</div>
-                      <div class="rr-price">¥{{formatAmount(shopPriceList[singIndex])}}
-                          <p class="fr bot">
-                              <span class="jian" @click.stop="minusFn(singIndex)"></span>
-                              <span>{{singItem.quantity}}</span>
-                              <span class="jia" @click.stop="addFn(singIndex)"></span>
-                          </p>
-                      </div>
-                  </div>
               </div>
+          </div>
           </div>
       </div>
       <p class="back-co"></p>
@@ -53,6 +54,10 @@ export default {
       default: 0
     },
     shopAll: {
+      type: String,
+      default: ''
+    },
+    isManage: {
       type: String,
       default: ''
     }
@@ -300,8 +305,9 @@ export default {
         padding-bottom: 0.2rem;
         border-top: 0.01rem solid #EBEBEB;
         .con-left{
-            height: 1.5rem;
-            line-height: 1.5rem;
+          height: 1.5rem;
+          line-height: 1.5rem;
+          width: 0.91rem;
         }
         .con-right{
             display: flex;
@@ -329,8 +335,13 @@ export default {
                     }
                 }
                 .rr-con{
-                    font-size: 0.26rem;
-                    color: #999;
+                  font-size: 0.26rem;
+                  color: #999;
+                  display: flex;
+                  justify-content: space-between;
+                  .status {
+                    color: $second-color;
+                  }
                 }
                 .rr-price{
                     font-family: DIN-Bold;

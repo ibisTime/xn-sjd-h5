@@ -1,6 +1,6 @@
 <template>
   <div class="adopt-list-wrapper">
-    <m-header class="cate-header" title="title"></m-header>
+    <m-header class="cate-header" :title="title"></m-header>
     <div class="adopt-list">
       <scroll ref="scroll"
               :data="dataList"

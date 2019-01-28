@@ -120,6 +120,10 @@ export default {
     this.typeIndex = this.$route.query.typeIndex;
     this.location = this.$route.query.location;
     this.query = this.$route.query.query || '';
+    this.categoryCode = this.$route.query.categoryCode || '';    // 从产品分类页跳转过来
+    if(this.categoryCode) {
+      this.config.categoryCode = this.categoryCode;
+    }
     if(this.location) {
       this.config.location = this.location;
     }
@@ -430,10 +434,19 @@ export default {
     .con-list{
       /*height: 12rem;*/
       /*padding-bottom: 2rem;*/
-      overflow: scroll;
+      /*overflow: scroll;*/
+
+      padding: 0 0.3rem 0;
+      background: $color-highlight-background;
+      position: absolute;
+      top: 1.7rem;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: auto;
     }
     .shop-list{
-        padding: 0.4rem 0.3rem;
+        /*padding: 0.4rem 0.3rem;*/
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;

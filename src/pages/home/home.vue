@@ -109,7 +109,7 @@ import Search from 'components/search/search';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getBanner, getDictList, getConfigPage } from 'api/general';
-import { getProductPage, getProductType, signIn, getMessagePage } from 'api/biz';
+import { getProductPage, signIn, getMessagePage } from 'api/biz';
 import { getUserDetail } from 'api/user';
 export default {
   // name: "home",
@@ -218,13 +218,13 @@ export default {
           orderColumn: 'buyable',
           statusList: [4, 5, 6]
         }),
-        getProductType({
-          orderDir: 'asc',
-          orderColumn: 'order_no',
-          status: 1,
-          level: 1,
-          typeList: ['0', '1']
-        }),
+        // getProductType({
+        //   orderDir: 'asc',
+        //   orderColumn: 'order_no',
+        //   status: 1,
+        //   level: 1,
+        //   typeList: ['0', '1']
+        // }),
         getMessagePage({
           status: '1',
           type: '1',
@@ -244,20 +244,20 @@ export default {
           type: '8'
         }),
         getConfigPage({type: 'SYS_TXT', ckey: 'ARTICLE_PIC'})
-      ]).then(([res1, res2, res3, res4, res5, res6, res7, res8, res9]) => {
+      ]).then(([res1, res2, res4, res5, res6, res7, res8, res9]) => {
         this.banners = res1;
         if(this.banners.length > 1) {
           this.loop = true;
         }
         this.proList = res2.list;
-        res3.map((item, index) => {
-          this.proType.push({
-            key: index,
-            value: item.name,
-            code: item.code,
-            pic: item.pic
-          });
-        });
+        // res3.map((item, index) => {
+        //   this.proType.push({
+        //     key: index,
+        //     value: item.name,
+        //     code: item.code,
+        //     pic: item.pic
+        //   });
+        // });
         this.noticeList = res4.list.slice(0, 1);
         this.bulletinList = res5.list;
         this.loading = false;

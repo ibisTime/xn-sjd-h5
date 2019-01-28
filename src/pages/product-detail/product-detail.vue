@@ -12,10 +12,10 @@
         </div>
         <div class="title">
           <p>
-            <span class="sell-type">{{detail.sellType}}</span>
+            <span class="sell-type">{{sellTypeObj[detail.sellType]}}</span>
             {{detail.name}}
           </p>
-          <div class="title-second"><span class="price">¥{{formatAmount(detail.minPrice)}}</span><span class="place">杭州市 淳安县</span></div>
+          <div class="title-second"><span class="price">¥{{formatAmount(detail.minPrice)}}</span><span class="place">{{detail.city}} {{detail.area}}</span></div>
         </div>
         <div class="gray"></div>
         <div class="prograss-bar" v-if="detail.sellType === '4'">
@@ -98,6 +98,7 @@
                 <p class="name">{{item.user.nickname ? item.user.nickname : jiami(item.user.mobile)}}</p>
                 <p class="date">{{formatDate(item.startDatetime, 'yyyy-MM-dd')}}</p>
               </div>
+              <div class="amount">¥{{formatAmount(item.amount)}}</div>
               <!--<span class="price">¥{{formatAmount(item.amount)}} x{{item.userAdoptTreeCount}}</span>-->
             </div>
             <no-result v-show="!(adoptList && adoptList.length)" title="暂无认养" class="no-result-wrapper"></no-result>
@@ -175,6 +176,7 @@ import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getProductDetail, share, getAdoptList } from 'api/biz';
 import { getUserDetail } from 'api/user';
+import { getDictList } from 'api/general';
 export default {
   data() {
     return {
@@ -207,9 +209,8 @@ export default {
       tab: 1,
       adoptList: [],
       authTitle: '完成操作，需进行实名认证',
-      authContent: ['由于认养古树需要签署政府相关认养协议，认养后还有挂牌等服务来展示您的爱心，所以需要您完成实名认证（个人中心头像右侧)', '请前往选择任意一种方式进行认证。（平台只会公开您的昵称）']
-      // authContent: '由于认养古树需要签署政府相关认养协议，认养后还有挂牌等服务来展示您的爱心，所以需要您完成实名认证（个人中心头像右侧) \n ' +
-      //  '请前往选择任意一种方式进行认证。（平台只会公开您的昵称）'
+      authContent: ['由于认养古树需要签署政府相关认养协议，认养后还有挂牌等服务来展示您的爱心，所以需要您完成实名认证（个人中心头像右侧)', '请前往选择任意一种方式进行认证。（平台只会公开您的昵称）'],
+      sellTypeObj: {}
     };
   },
   methods: {
@@ -493,8 +494,9 @@ export default {
           getAdoptList({
             productCode: this.code,
             statusList: [2, 3, 4]
-          })
-        ]).then(([res1, res2, res3]) => {
+          }),
+          getDictList('sell_type')
+        ]).then(([res1, res2, res3, res4]) => {
           this.loading = false;
           this.detail = res1;
           this.detailDescription = res1.description;
@@ -504,6 +506,9 @@ export default {
           if(this.banners.length >= 2) {
             this.loop = true;
           }
+          res4.map((item) => {
+            this.sellTypeObj[item.dkey] = item.dvalue;
+          });
         }).catch(() => { this.loading = false; });
       } else {
         Promise.all([
@@ -611,8 +616,8 @@ export default {
           background: $second-color;
           font-size: 0.22rem;
           color: $color-highlight-background;
-          border-radius: 0.2rem;
-          padding: 0 0.1rem;
+          border-radius: 0.15rem;
+          padding: 0.05rem 0.1rem;
           margin-right: 0.1rem;
         }
       }

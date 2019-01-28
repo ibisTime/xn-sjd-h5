@@ -159,35 +159,32 @@
           </div>
             <!-- 树木详情 -->
             <div class="tree-detail" v-show="tab === 2">
-            <!--<div class="item">-->
-              <!--<span>古树昵称</span><span>樟子松鼠</span>-->
-            <!--</div>-->
-            <div class="item">
-              <span>古树学名</span><span>{{treeDetail.tree ? treeDetail.tree.scientificName : ''}}</span>
-            </div>
-            <div class="item">
-              <span>古树编码</span><span>{{treeDetail.treeNumber}}</span>
-            </div>
-            <div class="item">
-              <span>古树品种</span><span>{{treeDetail.tree ? treeDetail.tree.variety : ''}}</span>
-            </div>
-            <div class="item">
-              <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
-            </div>
-            <div class="item">
-              <span>负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.charger || treeDetail.tree.maintainer.company.chargeMobile : '暂无养护人'}}</span>
-            </div>
-            <!--<div class="item">-->
-              <!--<span>当前认养人</span><span>三级</span>-->
-            <!--</div>-->
-            <div class="item" @click="go('/my-tree/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
-              <span>历史认养人</span>
-              <img src="./more@2x.png" class="fr more">
-            </div>
-            <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
-              <span>养护记录</span>
-              <img src="./more@2x.png" class="fr more">
-            </div>
+              <div class="item">
+                <span>树木名称</span><span>{{treeDetail.tree ? treeDetail.tree.productName : ''}}</span>
+              </div>
+              <div class="item">
+                <span>树木级别</span><span>{{treeDetail.tree ? treeDetail.tree.rank : ''}}</span>
+              </div>
+              <div class="item">
+                <span>树木产地</span><span>{{treeDetail.tree ? treeDetail.tree.originPlace : ''}}</span>
+              </div>
+              <div class="item">
+                <span>认养时间</span><span>{{formatDate(treeDetail.startDatetime, 'yyyy.MM.dd')}}-{{formatDate(treeDetail.endDatetime, 'yyyy.MM.dd')}}</span>
+              </div>
+              <div class="item">
+                <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
+              </div>
+              <div class="item">
+                <span>养护负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.charger || treeDetail.tree.maintainer.company.chargeMobile : '暂无养护人'}}</span>
+              </div>
+              <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
+                <span>养护记录</span>
+                <img src="./more@2x.png" class="fr more">
+              </div>
+              <div class="item" @click="go('/my-tree/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
+                <span>历史认养人</span>
+                <img src="./more@2x.png" class="fr more">
+              </div>
           </div>
           <!--</Scroll>-->
         </div>
@@ -266,29 +263,29 @@
             <!--<span>古树昵称</span><span>樟子松鼠</span>-->
             <!--</div>-->
             <div class="item">
-              <span>古树学名</span><span>{{treeDetail.tree ? treeDetail.tree.scientificName : ''}}</span>
+              <span>树木名称</span><span>{{treeDetail.tree ? treeDetail.tree.productName : ''}}</span>
             </div>
             <div class="item">
-              <span>古树编码</span><span>{{treeDetail.treeNumber}}</span>
+              <span>树木级别</span><span>{{treeDetail.tree ? treeDetail.tree.rank : ''}}</span>
             </div>
             <div class="item">
-              <span>古树品种</span><span>{{treeDetail.tree ? treeDetail.tree.variety : ''}}</span>
+              <span>树木产地</span><span>{{treeDetail.tree ? treeDetail.tree.originPlace : ''}}</span>
+            </div>
+            <div class="item">
+              <span>认养时间</span><span>{{treeDetail.tree ? treeDetail.tree.originPlace : ''}}</span>
             </div>
             <div class="item">
               <span>养护单位</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.name : '暂无养护单位'}}</span>
             </div>
             <div class="item">
-              <span>负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.charger || treeDetail.tree.maintainer.company.chargeMobile : '暂无养护人'}}</span>
-            </div>
-            <!--<div class="item">-->
-            <!--<span>当前认养人</span><span>三级</span>-->
-            <!--</div>-->
-            <div class="item" @click="go('/my-tree/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
-              <span>历史认养人</span>
-              <img src="./more@2x.png" class="fr more">
+              <span>养护负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.charger || treeDetail.tree.maintainer.company.chargeMobile : '暂无养护人'}}</span>
             </div>
             <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
               <span>养护记录</span>
+              <img src="./more@2x.png" class="fr more">
+            </div>
+            <div class="item" @click="go('/my-tree/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
+              <span>历史认养人</span>
               <img src="./more@2x.png" class="fr more">
             </div>
           </div>
@@ -377,7 +374,7 @@ import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
         getListProps, buyProps, getPropsOrder, getAccount, getPropsUsedRecordList, getDanmuList,
-        sendDanmu } from 'api/biz';
+        sendDanmu, useProps } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import { getUserDetail } from 'api/user';
 import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
@@ -565,6 +562,7 @@ export default {
     getTreeDetail() {
       this.loading = true;
       return getUserTreeDetail(this.adoptTreeCode).then((data) => {
+        console.log(data);
         this.treeDetail = data;
         this.loading = false;
       }, () => { this.loading = false; });
@@ -869,25 +867,26 @@ export default {
         if(res.length) {
           res.map((item) => {
             if(item.toolCode === code) {
-              // useProps({
-              //   toolOrderCode: item.code,
-              //   adoptTreeCode: this.adoptTreeCode
-              // }).then((res) => {
-              //   if(res.isSuccess) {
-              //     this.text = '使用成功';
-              //     this.$refs.toast.show();
-              //   }
-              //   this.loading = false;
-              //   this.close('convertSuccessFlag');
-              //   // 再重新获取道具
-              //   this.getPropList({
-              //     adoptTreeCode: this.adoptTreeCode
-              //   });
-              //   // 重新获取积分
-              //   this.getJF();
-              //   // 有可能是一键收取的道具，所以要再次获取碳泡泡
-              //   this.getTppList({adoptTreeCode: this.adoptTreeCode});
-              // }).catch(() => { this.loading = false; });
+              console.log(this.propsData);
+              useProps({
+                toolOrderCode: item.code,
+                adoptTreeCode: this.adoptTreeCode
+              }).then((res) => {
+                if(res.isSuccess) {
+                  this.text = this.propsData.type === 1 ? '已为您收取全部碳泡泡' : '已为您开启保护罩';
+                  this.$refs.toast.show();
+                }
+                this.loading = false;
+                this.close('convertSuccessFlag');
+                // 再重新获取道具
+                this.getPropList({
+                  adoptTreeCode: this.adoptTreeCode
+                });
+                // 重新获取积分
+                this.getJF();
+                // 有可能是一键收取的道具，所以要再次获取碳泡泡
+                this.getTppList({adoptTreeCode: this.adoptTreeCode});
+              }).catch(() => { this.loading = false; });
             }
           });
         }

@@ -87,7 +87,8 @@
         user: {},
         year: '',
         day: '',
-        month: ''
+        month: '',
+        introduce: ''
       };
     },
     methods: {
@@ -108,32 +109,39 @@
       // 保存
       action() {
         let date = this.year ? this.year + '-' + this.month + '-' + this.day : '';
-        this.loading = true;
-        this.loadText = '修改中...';
         this.sex = this.sex === '男' ? '1' : this.sex === '女' ? '0' : '';
         // 修改昵称
         // 完善资料
-        Promise.all([
-          completeInfo({
-            gender: this.sex,
-            age: this.age,
-            // realName: this.realName,
-            nickname: this.nickname,
-            // idNo: this.idNo,
-            birthday: date || ''
-          })
-        ]).then(([res3]) => {
-          this.loading = false;
-          this.sex = this.sex === '1' ? '男' : this.sex === '0' ? '女' : '';
-          // this.sex = this.sex === '男' ? '1' : this.sex === '女' ? '0' : '';
-          if(res3.isSuccess) {
-            this.text = '修改成功';
-            this.$refs.toast.show();
-            setTimeout(() => {
-              this.$router.push('/me');
-            }, 1000);
+        this.$validator.validateAll().then((result) => {
+          if(result) {
+            this.loading = true;
+            this.loadText = '修改中...';
+            Promise.all([
+              completeInfo({
+                gender: this.sex,
+                age: this.age,
+                // realName: this.realName,
+                nickname: this.nickname,
+                // idNo: this.idNo,
+                birthday: date || '',
+                introduce: this.introduce
+              })
+            ]).then(([res3]) => {
+              this.loading = false;
+              this.sex = this.sex === '1' ? '男' : this.sex === '0' ? '女' : '';
+              // this.sex = this.sex === '男' ? '1' : this.sex === '女' ? '0' : '';
+              if(res3.isSuccess) {
+                this.text = '修改成功';
+                this.$refs.toast.show();
+                setTimeout(() => {
+                  this.$router.push('/me');
+                }, 1000);
+              }
+            }).catch(() => { this.loading = false; });
+          } else {
+            this.sex = this.sex === '1' ? '男' : this.sex === '0' ? '女' : '';
           }
-        }).catch(() => { this.loading = false; });
+        });
       }
     },
     mounted() {
@@ -154,6 +162,7 @@
         this.year = this.user.birthday.split('-')[0];
         this.month = this.user.birthday.split('-')[1];
         this.day = this.user.birthday.split('-')[2];
+        this.introduce = this.user.introduce;
       }).catch(() => {});
     },
     components: {

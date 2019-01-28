@@ -8,7 +8,7 @@
           </div>
           <div class="text">
             <p class="name">{{userDetail.nickname|| '未设置昵称'}}</p>
-            <p class="autograph">此人很懒，没什么留言</p>
+            <p class="autograph">简介：{{userDetail.introduce || '此人很懒，没什么留言'}}</p>
           </div>
         </div>
       </div>
@@ -28,12 +28,12 @@
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="wing"></div>
-        <div class="item" @click="go('/my-order')">
+        <div class="item" @click="go('/store-message')">
           <img src="./message@2x.png" class="me-list-icon">
           <span>我的商场消息</span>
           <img src="./more@2x.png" class="fr more">
         </div>
-        <div class="item" @click="go('/my-article')">
+        <div class="item" @click="go('/address')">
           <img src="./address@2x.png" class="me-list-icon">
           <span>我的收货地址</span>
           <img src="./more@2x.png" class="fr more">

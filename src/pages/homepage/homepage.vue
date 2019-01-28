@@ -641,7 +641,7 @@
                     .info-friend-button {
                       background: rgb(248, 181, 81);
                       border-radius: 2px;
-                      font-size: 0.12rem;
+                      font-size: 0.22rem;
                       padding: 0.05rem;
                     }
                   }

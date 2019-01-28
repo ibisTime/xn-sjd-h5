@@ -208,6 +208,11 @@ export default {
     },
     orderOperClick(index) { // 订单操作
       let target = event.target;
+      // if(target.classList.contains('drawback')) { // 申请退款
+      //   this.go('/after-sale?code=' + this.orderList[index].code + '&toCode=' + this.orderDetail.code + '&jfMount=' + this.orderDetail.cnyDeductAmount + '&postalFee=' + this.orderDetail.postalFee);
+      //   // sessionStorage.setItem('toBank', '/store-order');
+      //   // sessionStorage.setItem('storetype', 'store');
+      // }
       if(target.classList.contains('change-site')) { // 修改地址
         this.go('/address?shopCode=' + this.orderList[index].code);
         sessionStorage.setItem('toBank', '/store-order');
@@ -379,7 +384,7 @@ export default {
       .sing-con{
         height: 2.1rem;
         width: 100%;
-        padding: 0 0.3rem;
+        /*padding: 0 0.3rem;*/
         display: flex;
         align-items: center;
         .s-con_left{
@@ -394,37 +399,37 @@ export default {
           }
         }
         .s-con_right{
-            width: 73%;
-            height: 1.6rem;
-            padding-left: 0.2rem;
-            box-sizing: border-box;
-            display: flex;
-            flex-wrap: wrap;
-            align-content: space-around;
-            p{
-                width: 100%;
+          flex: 1;
+          height: 1.6rem;
+          padding-left: 0.2rem;
+          box-sizing: border-box;
+          display: flex;
+          flex-wrap: wrap;
+          align-content: space-around;
+          p{
+            width: 100%;
+            font-size: 0.26rem;
+            color: #999999;
+            letter-spacing: 0.002rem;
+            &:nth-of-type(1){
+              font-size: 0.32rem;
+              color: #333333;
+              letter-spacing: 0.0025rem;
+              font-weight: 600;
+              span{
                 font-size: 0.26rem;
                 color: #999999;
-                letter-spacing: 0.002rem;
-                &:nth-of-type(1){
-                    font-size: 0.32rem;
-                    color: #333333;
-                    letter-spacing: 0.0025rem;
-                    font-weight: 600;
-                    span{
-                        font-size: 0.26rem;
-                        color: #999999;
-                        font-weight: 400;
-                    }
-                }
-                .sp-b{
-                    font-family: DIN-Bold;
-                    font-size: 0.26rem;
-                    color: #333333;
-                    letter-spacing: 0.0023rem;
-                    font-weight: 600;
-                }
+                font-weight: 400;
+              }
             }
+            .sp-b{
+              font-family: DIN-Bold;
+              font-size: 0.26rem;
+              color: #333333;
+              letter-spacing: 0.0023rem;
+              font-weight: 600;
+            }
+          }
         }
       }
       .order-all{

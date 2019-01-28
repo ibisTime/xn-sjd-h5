@@ -3,11 +3,11 @@
        <div class="consignment-category">
       <div class="type">
         <span class="title">认养的树</span>
-        <span class="type-item">
-          <span @click="areaClick">所在地区</span>
-          <span @click="filterClick">筛选</span>
-        </span>
-              </div>
+        <div class="type-item">
+          <span @click="areaClick">所在地区<img src="./down-unchoosed@2x.png"/></span>
+          <span @click="filterClick">筛选<img src="./down-unchoosed@2x.png"/></span>
+        </div>
+      </div>
       <div class="more" v-show="order">
         <p v-for="(item, index) in orderList" @click="checkedOrder(index)" :class="{active: orderIndex === index}"><span>{{item.value}}</span><img
           src="./choosed.png" v-show="orderIndex === index"></p>
@@ -263,9 +263,20 @@
         }
         .type-item {
           font-size: 0.26rem;
+          span:first-child {
+            margin-right: 0.5rem;
+          }
+          span {
+            display: flex;align-items: center;
+            img {
+              width: 0.1rem;
+              height: 0.1rem;
+              margin-left: 0.08rem;
+            }
+          }
         }
         div {
-          width: 33.3%;
+          /*width: 33.3%;*/
           font-size: 0.3rem;
           color: #666;
           letter-spacing: 0.25px;

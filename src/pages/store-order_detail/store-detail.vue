@@ -193,6 +193,11 @@ export default {
     },
     orderOperClick(storeItem) { // 订单操作
       let target = event.target;
+      if(target.classList.contains('drawback')) { // 申请退款
+        this.go('/after-sale?code=' + this.code + '&toCode=' + this.orderDetail.code + '&jfMount=' + this.orderDetail.cnyDeductAmount + '&postalFee=' + this.orderDetail.postalFee);
+        // sessionStorage.setItem('toBank', '/store-order');
+        // sessionStorage.setItem('storetype', 'store');
+      }
       if(target.classList.contains('change-site')) { // 修改地址
         this.toRess();
       }
@@ -271,8 +276,9 @@ export default {
           receiverMobile: data.receiverMobile,
           receiverName: data.receiverName
         };
-        if(data.status === '3' || data.status === '4') {
+        if(data.status === '1' || data.status === '2' || data.status === '3' || data.status === '4') {
           this.ispj = true;
+          console.log(data.detailList);
           data.detailList.forEach((item, index) => {
             if(item.afterSaleStatus && item.status === '0') {
               switch(item.afterSaleStatus) {
@@ -296,6 +302,10 @@ export default {
                   break;
                 case '1':
                   this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
+                  break;
+                case '5':
+                case '6':
+                  this.wcOperHtml.push(`<div class="foo-btn after-sale set-btn">申请退款</div>`);
                   break;
               }
             }

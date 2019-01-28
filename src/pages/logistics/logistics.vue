@@ -64,7 +64,7 @@
         expNo: this.expNo
       }).then(data => {
         if(data.Traces) {
-          this.logisticsData = data.Traces;
+          this.logisticsData = data.Traces.reverse();
           setTimeout(() => {
             let logibox = this.$refs.logibox;
             if(logibox) {
@@ -157,6 +157,8 @@
         position: relative;
         margin-bottom: 0.6rem;
         padding-left: 0.26rem;
+        font-size: 0.3rem;
+        line-height: 0.4rem;
         .logi-p{
           color: #333;
           margin-bottom: 0.2rem;

@@ -108,7 +108,7 @@ export default {
     return {
       loading: true,
       isset: false,
-      setIndex: '',
+      setIndex: '0',
       textMsg: '',
       loadingText: '正在加载中...',
       salesConfig: { // 退货参数
@@ -142,6 +142,7 @@ export default {
     this.toCode = this.$route.query.toCode;
     this.jfMount = this.$route.query.jfMount || 0;
     this.postalFee = this.$route.query.postalFee || 0;
+    this.setSaleFn(this.setIndex);
     oneStoreOrder(this.orderDetailCode).then(data => {
       this.loading = false;
       //  - this.jfMount - this.postalFee
@@ -169,13 +170,14 @@ export default {
       };
     },
     setSaleFn(index) {
+      // debugger;
       this.refundReason = '';
       this.message = '';
-      if (index === this.setIndex) {
-        this.setIndex = '';
-        this.isset = false;
-        return;
-      }
+      // if (index === this.setIndex) {
+      //   this.setIndex = '';
+      //   this.isset = false;
+      //   return;
+      // }
       this.setIndex = index;
       this.isset = true;
     },

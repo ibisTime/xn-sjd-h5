@@ -24,12 +24,27 @@
               <div class="props"><span class="duration">规格：{{orderDetail.productSpecsName}}</span><span class="price">¥{{formatAmount(orderDetail.amount)}}</span></div>
             </div>
           </div>
-          <div class="info" v-if="storeCode" v-for="item in orderDetail.detailList">
+          <div class="info" v-if="storeCode && (storeType === 'one' || type === 'one')" v-for="item in orderDetail.detailList">
             <div class="imgWrap" :style="getImgSyl(item.listPic)"></div>
             <div class="text">
               <p class="title"><span class="title-title">{{item.commodityName}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
-              <p class="position"><span class="price">¥{{formatAmount(item.price)}}</span></p>
-              <div class="props"><span class="duration">规格：{{item.specsName}}</span><span class="price">¥{{formatAmount(item.amount)}}</span></div>
+              <!--<p class="position"><span class="price">¥{{formatAmount(item.price)}}</span></p>-->
+              <div class="props"><span class="duration">规格：{{item.specsName}}</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
+            </div>
+          </div>
+          <div class="mall-info" v-if="storeCode && (storeType === 'more' || type === 'more')" v-for="item in orderDetail">
+            <div class="sing-head">
+              <span class="sp-name">{{item.shop.name}}</span>
+            </div>
+            <div class="sing-con" v-for="(coItem, singIndex) in item.commodityOrderDetails" :key="singIndex">
+              <div class="con-right">
+                <div class="r-left" :style="getImgSyl(coItem.listPic ? coItem.listPic : '')"></div>
+                <div class="r-con">
+                  <div class="rr-head">{{coItem.commodity.name}} <span class="fr num">x{{coItem.quantity}}</span></div>
+                  <div class="rr-con"><span>规格分类：{{coItem.specsName}}</span><span>¥{{formatAmount(coItem.price)}}</span></div>
+                  <!--<div class="rr-price"></div>-->
+                </div>
+              </div>
             </div>
           </div>
           <div class="gray"></div>
@@ -112,7 +127,7 @@
             getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder, preOrderScore} from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { getConfigPage } from 'api/general';
-  import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible, moreStoreOrder } from 'api/store';         // 商城
+  import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible, moreStoreOrder, getMallOrderDetailByGroupCode } from 'api/store';         // 商城
   import { initPay } from 'common/js/weixin';
   import defaultImg from './tree@3x.png';
 
@@ -177,7 +192,7 @@
         this.totalPrice = this.shopMsgList[0].payAmount ? Number(this.shopMsgList[0].payAmount) : Number(sessionStorage.getItem('totalPrice')) * 1000;
       }
       this.storeCode = this.$route.query.code;             // 商城订单code
-      this.storeType = this.$route.query.storeType;
+      this.storeType = this.$route.query.storeType;        // 商城类型：one为直接购买，more为购物车下单
       this.config.code = this.storeCode;
       this.moreConfig.payGroup = this.storeCode;
       if(this.storeCode) {
@@ -200,18 +215,22 @@
             }
           });
         });
-        moreStoreOrder(this.storeCode).then((res) => {
-          this.orderDetail = res;
-          console.log(this.orderDetail);
-        });
         if(this.storeType === 'more') {
+          // 购物车下单
           getMoreDeductible(this.storeCode).then(data => {
             this.rate = data;
           }, () => {});
+          getMallOrderDetailByGroupCode(this.storeCode).then((res) => {
+            this.orderDetail = res;
+          }).catch(() => {});
         }else {
+          // 直接购买下单
           getStoreDeductible(this.storeCode).then(data => {
             this.rate = data;
           }, () => {});
+          moreStoreOrder(this.storeCode).then((res) => {
+            this.orderDetail = res;
+          }).catch(() => {});
         }
         this.getConfig();
         return;
@@ -805,6 +824,106 @@
                   font-family: DIN-Bold;
                   font-size: $font-size-medium-x;
                   color: #151515;
+                }
+              }
+            }
+          }
+          .mall-info {
+            padding: 0;
+            background-color: #fff;
+            .sing-head{
+              height: 0.8rem;
+              line-height: 0.9rem;
+              font-size: 0.26rem;
+              padding: 0;
+              >span{
+                display: inline-block;
+                vertical-align: middle;
+              }
+              .sp-name{
+                color: #333;
+                b{
+                  color: #979797;
+                  font-weight: 400;
+                }
+              }
+              .clr{
+                color: #999;
+                letter-spacing: 0.002rem;
+              }
+            }
+            .sing-con{
+              display: flex;
+              font-size: 0.32rem;
+              padding: 0.3rem 0 0.2rem;
+              border-top: 0.01rem solid #EBEBEB;
+              margin: 0;
+              .con-left{
+                height: 1.5rem;
+                line-height: 1.5rem;
+                width: 0.91rem;
+              }
+              .con-right{
+                display: flex;
+                letter-spacing: 0.0025rem;
+                padding: 0;
+                .r-left{
+                  width: 2rem;
+                  height: 1.5rem;
+                  margin-right: 0.2rem;
+                  background-image: url('./shop.png');
+                  background-position: center;
+                  background-size: cover;
+                }
+                .r-con{
+                  display: flex;
+                  align-content: space-between;
+                  flex-wrap: wrap;
+                  line-height: 0.5rem;
+                  padding: 0;
+                  >div{
+                    width: 100%;
+                  }
+                  .rr-head{
+                    color: #333;
+                    .num{
+                      color: #999;
+                      font-size: 0.24rem;
+                    }
+                  }
+                  .rr-con{
+                    font-size: 0.26rem;
+                    color: #999;
+                    display: flex;
+                    justify-content: space-between;
+                    .status {
+                      color: $second-color;
+                    }
+                  }
+                  .rr-price{
+                    font-family: DIN-Bold;
+                    color: #151515;
+                    .bot{
+                      color: #333;
+                      font-size: 0.24rem;
+                      font-family: PingFang-SC-Heavy;
+                      span{
+                        display: inline-block;
+                        width: 0.36rem;
+                        height: 0.36rem;
+                        line-height: 0.36rem;
+                        vertical-align: middle;
+                        background-size: 100%;
+                        text-align: center;
+                      }
+                      .jia{
+                        background-image: url('./jia.png');
+                      }
+                      .jian{
+                        background-image: url('./jian.png');
+                      }
+                    }
+                  }
                 }
               }
             }
