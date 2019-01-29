@@ -67,7 +67,7 @@
           <div class="item"  v-for="item in proList" @click="go('/product-detail?code='+item.code)">
             <div class="item-top">
               <div class="sell-type">{{sellTypeObj[item.sellType]}}</div>
-              <div class="sell-type-right">{{canAdopt(item).noAdoptReason}}</div>
+              <div class="sell-type-right" :style="{background: canAdopt(item).canAdoptFlag ? '' : '#999'}">{{canAdopt(item).noAdoptReason}}</div>
               <img :src="formatImg(item.listPic)" class="hot-pro-img">
               <div class="prograss-bar" v-if="item.sellType === '4'">
                 <div class="nowCount" :style="{width: getWidth(item)+'%'}"></div>

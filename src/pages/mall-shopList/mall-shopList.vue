@@ -5,7 +5,7 @@
         <div class="inner">
           <div class="search">
             <div class="search-icon"></div>
-            <input v-focus type="text" ref="searchInput" placeholder="请输入商品名称" v-model="query" @click="focus"/>
+            <input type="text" ref="searchInput" placeholder="请输入商品名称" v-model="query" @click="focus"/>
             <i v-show="query" class="close-icon" @click="clearInput"></i>
           </div>
         </div>

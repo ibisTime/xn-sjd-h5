@@ -1,5 +1,5 @@
 <template>
-  <div class="me-wrapper full-screen-wrapper">
+  <div class="me-wrapper">
     <m-header class="cate-header" title="设置"></m-header>
     <div class="scroll-section">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
@@ -101,7 +101,7 @@
     background: #fff;
     position: fixed;
     width: 100%;
-    bottom: 0.98rem;
+    bottom: 0;
     top: 0.88rem;
     left: 0;
     .fl {
@@ -110,41 +110,45 @@
     .fr {
       float: right;
     }
-    .scroll-section {position: absolute;
+    .scroll-section {
+      position: absolute;
       top: 0;
       bottom: 0;
       left: 0;
       right: 0;
       overflow: auto;
-
-      .settings-list {
-        background: $color-highlight-background;
-        padding: 0 0.3rem;
-        margin-bottom: 1.63rem;
-        .item {
-          width: 100%;
-          height: 1.1rem;
-          font-size: $font-size-medium-xx;
-          line-height: 1.1rem;
-          border-bottom: 1px solid #eee;
-          img {
-            height: 0.34rem;
-          }
-          .more {
-            margin-top: 0.3rem;
+      .scroll-content {
+        /*top: 0;*/
+        /*bottom: 2rem;*/
+        .settings-list {
+          background: $color-highlight-background;
+          padding: 0 0.3rem;
+          margin-bottom: 1.63rem;
+          .item {
+            width: 100%;
+            height: 1.1rem;
+            font-size: $font-size-medium-xx;
+            line-height: 1.1rem;
+            border-bottom: 1px solid #eee;
+            img {
+              height: 0.34rem;
+            }
+            .more {
+              margin-top: 0.3rem;
+            }
           }
         }
-      }
-      .btn {
-        padding: 0 0.3rem;
-        button {
-          width: 100%;
-          height: 0.84rem;
-          border: 1px solid $primary-color;
-          color: $primary-color;
-          border-radius: 0.08rem;
-          font-size: $font-size-medium-x;
-          background: $color-highlight-background;
+        .btn {
+          padding: 0 0.3rem;
+          button {
+            width: 100%;
+            height: 0.84rem;
+            border: 1px solid $primary-color;
+            color: $primary-color;
+            border-radius: 0.08rem;
+            font-size: $font-size-medium-x;
+            background: $color-highlight-background;
+          }
         }
       }
     }

@@ -199,3 +199,8 @@ export function clearMsg(config) {
 export function getMallOrderDetailByGroupCode(payGroupCode) {
   return fetch(629802, {payGroupCode});
 }
+
+// 用户撤回售后
+export function cancelAfterSale(code) {
+  return fetch(629774, {code});
+}

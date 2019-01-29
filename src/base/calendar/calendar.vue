@@ -25,7 +25,7 @@
       <!-- 日期 -->
       <div class="dayPanel">
         <ul class="days">
-        <li v-for="dayobject in days">
+        <li v-for="dayobject in days" :class="dayobject.day.toString() === curTime.toString() ? 'today-li' : ''">
           <!--<span v-if="isGray(dayobject)">-->
             <!--<span class="other-month" :class="getClass(dayobject)">{{ dayobject.day.getDate() }}</span>-->
           <!--</span>-->
@@ -71,7 +71,6 @@
       initData: function() {
         let currentWeek = 1;
         this.d = new Date();
-        console.log(this.d);
         let day = this.d.getDate();
         this.d.setDate(1);
         this.currentDay = this.d.getDate();
@@ -100,13 +99,6 @@
         }
         this.currentIndex = day + currentWeek - 1;
         this.curTime = new Date();
-        this.days.map((item) => {
-          if(item.day.toString() === this.curTime.toString()) {
-            console.log(item.day);
-            console.log(this.curTime);
-            console.log(1);
-          }
-        });
       },
       isGray(dayobject) {
         return dayobject.day.getMonth() + 1 !== this.currentMonth;
@@ -143,7 +135,6 @@
     },
     watch: {
       dates(newVal) {
-        // console.log(newVal);
         for (let i = 0; i <= this.currentIndex && i < this.days.length; i++) {
           let day = this.days[i].day;
           let str = this.formatDate(day.getFullYear(), day.getMonth() + 1, day.getDate());
@@ -169,7 +160,6 @@
               }
             }
           }
-          // console.log(this.days);
         }
       }
     }
@@ -212,6 +202,9 @@
           display: flex;
           justify-content: space-around;
           flex-wrap: wrap;
+          .today-li {
+            padding: 0.2rem 0;
+          }
           li{
             float: left;
             width: 0.8rem;

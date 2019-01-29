@@ -3,85 +3,87 @@
     <div class="bg">
       <m-header class="cate-header" title="支付订单"></m-header>
       <div class="content">
-        <div class="detail">
-          <!--<img :src="formatImg(orderDetail.product.listPic)">-->
-          <!--<div class="detail-text">-->
-            <!--<div class="detail-text-top">-->
-              <!--<span class="name">{{orderDetail.product.name}}</span>-->
-              <!--<span class="number">x{{orderDetail.quantity}}</span>-->
+        <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
+          <div class="detail">
+            <!--<img :src="formatImg(orderDetail.product.listPic)">-->
+            <!--<div class="detail-text">-->
+              <!--<div class="detail-text-top">-->
+                <!--<span class="name">{{orderDetail.product.name}}</span>-->
+                <!--<span class="number">x{{orderDetail.quantity}}</span>-->
+              <!--</div>-->
+              <!--<div class="detail-text-middle">{{orderDetail.product.city}} {{orderDetail.product.city}}</div>-->
+              <!--<div class="detail-text-bottom">-->
+                <!--<span class="specs">规格:{{orderDetail.productSpecsName}}</span>-->
+                <!--<span class="price">¥{{formatAmount(orderDetail.price)}}</span>-->
+              <!--</div>-->
             <!--</div>-->
-            <!--<div class="detail-text-middle">{{orderDetail.product.city}} {{orderDetail.product.city}}</div>-->
-            <!--<div class="detail-text-bottom">-->
-              <!--<span class="specs">规格:{{orderDetail.productSpecsName}}</span>-->
-              <!--<span class="price">¥{{formatAmount(orderDetail.price)}}</span>-->
-            <!--</div>-->
-          <!--</div>-->
-          <div class="info" v-if="!storeCode">
-            <div class="imgWrap" :style="getImgSyl(orderDetail.product.listPic)"></div>
-            <div class="text">
-              <p class="title"><span class="title-title">{{orderDetail.product.name}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
-              <p class="position"><span>{{orderDetail.product.city}} {{orderDetail.product.city}}</span><span class="price">¥{{formatAmount(orderDetail.price)}}</span></p>
-              <div class="props"><span class="duration">规格：{{orderDetail.productSpecsName}}</span><span class="price">¥{{formatAmount(orderDetail.amount)}}</span></div>
+            <div class="info" v-if="!storeCode">
+              <div class="imgWrap" :style="getImgSyl(orderDetail.product.listPic)"></div>
+              <div class="text">
+                <p class="title"><span class="title-title">{{orderDetail.product.name}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
+                <p class="position"><span>{{orderDetail.product.city}} {{orderDetail.product.city}}</span><span class="price">¥{{formatAmount(orderDetail.price)}}</span></p>
+                <div class="props"><span class="duration">规格：{{orderDetail.productSpecsName}}</span><span class="price">¥{{formatAmount(orderDetail.amount)}}</span></div>
+              </div>
             </div>
-          </div>
-          <div class="info" v-if="storeCode && (storeType === 'one' || type === 'one')" v-for="item in orderDetail.detailList">
-            <div class="imgWrap" :style="getImgSyl(item.listPic)"></div>
-            <div class="text">
-              <p class="title"><span class="title-title">{{item.commodityName}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
-              <!--<p class="position"><span class="price">¥{{formatAmount(item.price)}}</span></p>-->
-              <div class="props"><span class="duration">规格：{{item.specsName}}</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
+            <div class="info" v-if="storeCode && (storeType === 'one' || type === 'one')" v-for="item in orderDetail.detailList">
+              <div class="imgWrap" :style="getImgSyl(item.listPic)"></div>
+              <div class="text">
+                <p class="title"><span class="title-title">{{item.commodityName}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
+                <!--<p class="position"><span class="price">¥{{formatAmount(item.price)}}</span></p>-->
+                <div class="props"><span class="duration">规格：{{item.specsName}}</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
+              </div>
             </div>
-          </div>
-          <div class="mall-info" v-if="storeCode && (storeType === 'more' || type === 'more')" v-for="item in orderDetail">
-            <div class="sing-head">
-              <span class="sp-name">{{item.shop.name}}</span>
-            </div>
-            <div class="sing-con" v-for="(coItem, singIndex) in item.commodityOrderDetails" :key="singIndex">
-              <div class="con-right">
-                <div class="r-left" :style="getImgSyl(coItem.listPic ? coItem.listPic : '')"></div>
-                <div class="r-con">
-                  <div class="rr-head">{{coItem.commodity.name}} <span class="fr num">x{{coItem.quantity}}</span></div>
-                  <div class="rr-con"><span>规格分类：{{coItem.specsName}}</span><span>¥{{formatAmount(coItem.price)}}</span></div>
-                  <!--<div class="rr-price"></div>-->
+            <div class="mall-info" v-if="storeCode && (storeType === 'more' || type === 'more')" v-for="item in orderDetail">
+              <div class="sing-head">
+                <span class="sp-name">{{item.shop.name}}</span>
+              </div>
+              <div class="sing-con" v-for="(coItem, singIndex) in item.commodityOrderDetails" :key="singIndex">
+                <div class="con-right">
+                  <div class="r-left" :style="getImgSyl(coItem.listPic ? coItem.listPic : '')"></div>
+                  <div class="r-con">
+                    <div class="rr-head">{{coItem.commodity.name}} <span class="fr num">x{{coItem.quantity}}</span></div>
+                    <div class="rr-con"><span>规格分类：{{coItem.specsName}}</span><span>¥{{formatAmount(coItem.price)}}</span></div>
+                    <!--<div class="rr-price"></div>-->
+                  </div>
                 </div>
               </div>
             </div>
+            <div class="gray"></div>
           </div>
-          <div class="gray"></div>
-        </div>
-        <div class="identifyCode" v-show="identifyCode">
-          下单识别码：{{identifyCode}}
-          <span>(可在订单页面查看)</span>
-        </div>
-        <div class="pay-type">
-          <p>支付方式</p>
-          <div class="pay-type-list">
-            <div @click="selectPayType(1)" :style="{ opacity: isWeixin && showWeixin ? '1' : '0.1' }">
-              <img src="./wechat@2x.png">
-              <div class="text">
-                <p>微信</p>
+          <div class="identifyCode" v-show="identifyCode">
+            下单识别码：{{identifyCode}}
+            <span>(可在订单页面查看)</span>
+          </div>
+          <div class="pay-type">
+            <p>支付方式</p>
+            <div class="pay-type-list">
+              <div @click="selectPayType(1)" :style="{ opacity: isWeixin && showWeixin ? '1' : '0.1' }">
+                <img src="./wechat@2x.png">
+                <div class="text">
+                  <p>微信</p>
+                </div>
+                <img class="money fr" src="./choosed@2x.png" v-show="wechat">
+                <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
               </div>
-              <img class="money fr" src="./choosed@2x.png" v-show="wechat">
-              <img class="money fr" src="./unchoosed@2x.png" v-show="!wechat">
-            </div>
-            <div @click="selectPayType(2)">
-              <img src="./alipay@2x.png">
-              <div class="text">
-                <p>支付宝</p>
+              <div @click="selectPayType(2)">
+                <img src="./alipay@2x.png">
+                <div class="text">
+                  <p>支付宝</p>
+                </div>
+                <img class="money fr" src="./choosed@2x.png" v-show="alipay">
+                <img class="money fr" src="./unchoosed@2x.png" v-show="!alipay">
               </div>
-              <img class="money fr" src="./choosed@2x.png" v-show="alipay">
-              <img class="money fr" src="./unchoosed@2x.png" v-show="!alipay">
-            </div>
-            <div @click="selectPayType(3)">
-              <img src="./balance@2x.png">
-              <div class="text">
-                <p>余额支付（剩余¥{{formatAmount(cny)}}）</p>
+              <div @click="selectPayType(3)">
+                <img src="./balance@2x.png">
+                <div class="text">
+                  <p>余额支付（剩余¥{{formatAmount(cny)}}）</p>
+                </div>
+                <img class="money fr" src="./choosed@2x.png" v-show="balance">
+                <img class="money fr" src="./unchoosed@2x.png" v-show="!balance">
               </div>
-              <img class="money fr" src="./choosed@2x.png" v-show="balance">
-              <img class="money fr" src="./unchoosed@2x.png" v-show="!balance">
             </div>
           </div>
-        </div>
+        </Scroll>
         <!--<div class="gray"></div>-->
         <!--<div class="score" v-show="!jishou">-->
           <!--<p>积分抵扣</p>-->
@@ -175,7 +177,8 @@
           product: {
             listPic: ''
           }
-        }
+        },
+        pullUpLoad: null
       };
     },
     mounted() {
@@ -759,12 +762,21 @@
         text-align: center;
       }
       .content {
-        padding: 0.88rem 0 0 0;
+        padding: 0;
         margin-bottom: 0.98rem;
         background: #f5f5f5;
+        position: absolute;
+        top: 0.8rem;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: auto;
         div {
           padding: 0 0.3rem;
           background: #ffffff;
+        }
+        .scroll-content {
+          padding: 0;
         }
         .detail {
           width: 100%;
@@ -867,6 +879,7 @@
                 display: flex;
                 letter-spacing: 0.0025rem;
                 padding: 0;
+                width: 100%;
                 .r-left{
                   width: 2rem;
                   height: 1.5rem;
@@ -881,11 +894,13 @@
                   flex-wrap: wrap;
                   line-height: 0.5rem;
                   padding: 0;
+                  flex: 1;
                   >div{
                     width: 100%;
                   }
                   .rr-head{
                     color: #333;
+                    padding: 0;
                     .num{
                       color: #999;
                       font-size: 0.24rem;
@@ -896,6 +911,7 @@
                     color: #999;
                     display: flex;
                     justify-content: space-between;
+                    padding: 0;
                     .status {
                       color: $second-color;
                     }

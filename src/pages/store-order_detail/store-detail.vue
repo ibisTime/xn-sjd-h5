@@ -64,14 +64,16 @@
 
     <toast ref="toast" :text="textMsg"></toast>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <confirm ref="confirm" text="是否取消售后" confirmBtnText="确定" @confirm="cancelAfterSale"></confirm>
   </div>
 </template>
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
+import Confirm from 'base/confirm/confirm';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { moreStoreOrder, affirmOrder, removeMoreOrder } from 'api/store';
+import { moreStoreOrder, affirmOrder, removeMoreOrder, cancelAfterSale } from 'api/store';
 import { getDictList } from 'api/general';
 export default {
   data() {
@@ -192,11 +194,13 @@ export default {
       };
     },
     orderOperClick(storeItem) { // 订单操作
+      this.currentItem = storeItem;
       let target = event.target;
+      if(target.classList.contains('cancel-after-sale')) { // 取消售后
+        this.$refs.confirm.show();
+      }
       if(target.classList.contains('drawback')) { // 申请退款
         this.go('/after-sale?code=' + this.code + '&toCode=' + this.orderDetail.code + '&jfMount=' + this.orderDetail.cnyDeductAmount + '&postalFee=' + this.orderDetail.postalFee);
-        // sessionStorage.setItem('toBank', '/store-order');
-        // sessionStorage.setItem('storetype', 'store');
       }
       if(target.classList.contains('change-site')) { // 修改地址
         this.toRess();
@@ -278,13 +282,12 @@ export default {
         };
         if(data.status === '1' || data.status === '2' || data.status === '3' || data.status === '4') {
           this.ispj = true;
-          console.log(data.detailList);
           data.detailList.forEach((item, index) => {
             if(item.afterSaleStatus && item.status === '0') {
               switch(item.afterSaleStatus) {
                 case '2':
                   this.orderStuTxt = '售后中';
-                  this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
+                  this.wcOperHtml.push(`<div class="foo-btn">售后中</div><div class="foo-btn cancel-after-sale set-btn">取消售后</div>`);
                   break;
                 case '3':
                   this.orderStuTxt = '退款成功';
@@ -295,19 +298,39 @@ export default {
                   this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn">退款失败</div>`);
                   break;
               }
-            }else {
-              switch(item.status) {
-                case '0':
-                  this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn after-sale set-btn">申请售后</div>`);
-                  break;
-                case '1':
-                  this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
-                  break;
-                case '5':
-                case '6':
+            } else {
+              if(item.status === '0') {
+                this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn after-sale set-btn">申请售后</div>`);
+              } else if(item.status === '1') {
+                this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
+              } else if(item.status === '2') {
+                this.orderStuTxt = '售后中';
+                this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
+              } else if(item.status === '5' || item.status === '6') {
+                if(item.afterSaleStatus === '2') {
+                  this.orderStuTxt = '售后中';
+                  this.wcOperHtml.push(`<div class="foo-btn">售后中</div><div class="foo-btn cancel-after-sale set-btn">取消售后</div>`);
+                } else {
                   this.wcOperHtml.push(`<div class="foo-btn after-sale set-btn">申请退款</div>`);
-                  break;
+                }
+                // this.wcOperHtml.push(`<div class="foo-btn after-sale set-btn">申请退款</div>`);
               }
+              // switch(item.status) {
+              //   case '0':
+              //     this.wcOperHtml.push(`<div class="foo-btn order-pj set-btn">评价</div><div class="foo-btn after-sale set-btn">申请售后</div>`);
+              //     break;
+              //   case '1':
+              //     this.wcOperHtml.push(`<div class="foo-btn">已完成</div>`);
+              //     break;
+              //   case '2':
+              //     this.orderStuTxt = '售后中';
+              //     this.wcOperHtml.push(`<div class="foo-btn">售后中</div>`);
+              //     break;
+              //   case '5':
+              //   case '6':
+              //     this.wcOperHtml.push(`<div class="foo-btn after-sale set-btn">申请退款</div>`);
+              //     break;
+              // }
             }
           });
         }else {
@@ -319,12 +342,20 @@ export default {
       }, () => {
         this.loading = false;
       });
+    },
+    cancelAfterSale() {
+      this.loading = true;
+      cancelAfterSale(this.currentItem.code).then((res) => {
+        this.loading = false;
+        console.log(res);
+      }).catch(() => { this.loading = false; });
     }
   },
   components: {
     FullLoading,
     Toast,
-    Scroll
+    Scroll,
+    Confirm
   },
   beforeDestroy() {
     sessionStorage.removeItem('setRess');
