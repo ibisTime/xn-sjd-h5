@@ -4,7 +4,7 @@
     <div class="consignment-category">
       <div class="type">
         <span @click="areaClick">所在地区<img src="./down-unchoosed@2x.png"/></span>
-        <!--<span @click="smallClick">树级<img src="./down-unchoosed@2x.png"/></span>-->
+        <span @click="smallClick">树级<img src="./down-unchoosed@2x.png"/></span>
         <span @click="ageClick">树龄排序<img src="./down-unchoosed@2x.png"/></span>
         <span @click="filterClick">筛选<img src="./down-unchoosed@2x.png"/></span>
       </div>
@@ -26,12 +26,12 @@
                      :outIsNew="isNew"
                      :varietyList="varietyList"
     ></category-filter>
-    <!--<category-small ref="smallCategory"-->
-                    <!--@hide="handleSmallHide"-->
-                    <!--@confirm="handleConfirm"-->
-                    <!--@firstUpdateBigName="firstUpdateBigName"-->
-                    <!--:outSmallCode="smallCode"-->
-                    <!--:outBigCode="bigCode"></category-small>-->
+    <category-small ref="smallCategory"
+                    @hide="handleSmallHide"
+                    @confirm="handleConfirm"
+                    @firstUpdateBigName="firstUpdateBigName"
+                    :outSmallCode="smallCode"
+                    :outBigCode="bigCode"></category-small>
     <category-age ref="ageCategory"
                      @confirm="handleAge"
                      orderColunm="age"
@@ -110,7 +110,7 @@
         priceIndex: -1,
         isFree: false,
         isNew: false,
-        bigCode: this.$route.query.code || '0',
+        bigCode: this.$route.query.code || 'ALL',
         smallCode: '',
         varietyList: []
       };
@@ -133,10 +133,7 @@
         this.smallActive = false;
       },
       handleConfirm(bigCode, smallCode, smallName) {
-        this.bigCode = bigCode;
-        this.smallCode = smallCode;
-        this.smallName = smallName;
-        this.resetQuery();
+        this.$emit('smallConfirm', bigCode);
       },
       firstUpdateBigName(name) {
         this.smallName = name;
@@ -152,9 +149,10 @@
       },
 
       filterClick() {
-        // this.$refs.cityPicker.hide();
+        this.$refs.cityPicker.hide();
+        this.$refs.ageCategory.hide();
         this.$refs.filterCategory.show();
-        this.$refs.smallCategory.hide();
+        // this.$refs.smallCategory.hide();
       },
 
       handleFilter(can, variety) {
@@ -163,7 +161,9 @@
 
       areaClick() {
         this.areaActive = !this.areaActive;
-        // this.$refs.smallCategory.hide();
+        this.$refs.filterCategory.hide();
+        this.$refs.ageCategory.hide();
+        this.$refs.smallCategory.hide();
         if (this.areaActive) {
           this.$refs.cityPicker.show();
           this.$refs.cityPicker.initScroll();
@@ -174,7 +174,9 @@
 
       smallClick() {
         this.smallActive = !this.smallActive;
-        // this.$refs.cityPicker.hide();
+        this.$refs.filterCategory.hide();
+        this.$refs.cityPicker.hide();
+        this.$refs.ageCategory.hide();
         if (this.smallActive) {
           this.$refs.smallCategory.show();
           this.$refs.smallCategory.initData();
@@ -187,6 +189,9 @@
         this.$emit('getPageOrder');
       },
       ageClick() {
+        this.$refs.filterCategory.hide();
+        this.$refs.cityPicker.hide();
+        this.$refs.smallCategory.hide();
         this.$refs.ageCategory.show();
       },
       handleAge(params) {

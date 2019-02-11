@@ -86,7 +86,6 @@
     methods: {
       search() {
         addSearchHistory({type: 1, content: this.query}).then((res) => {
-          console.log(res);
           this.go(`/product-list?query=${this.query}`);
         });
       },

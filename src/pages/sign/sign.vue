@@ -71,41 +71,49 @@
         giftList: [{
           day: 3,
           gift: '碳泡泡',
+          number: 0,
           width: 0
         }, {
           day: 5,
           gift: '碳泡泡',
+          number: 0,
           width: 0
         }, {
           day: 7,
           gift: '积分',
+          number: 0,
           width: 0
         }, {
           day: 15,
           gift: '积分',
+          number: 0,
           width: 0
         }, {
           day: 30,
           gift: '积分',
+          number: 0,
           width: 0
         }, {
           day: 90,
           gift: '碳泡泡',
+          number: 0,
           width: 0
         }, {
           day: 180,
           gift: '积分',
+          number: 0,
           width: 0
         }],
         continueSignCount: 0,
         monthSignCount: 0,
         showCheckIn: false,
         signTpp: '0',
-        signDays: 0
+        signDays: 0,
+        isHtml: false
       };
     },
-    created() {
-      this.isHtml = true;
+    mounted() {
+      this.isHtml = false;
       this.getInitData();
     },
     methods: {
@@ -138,7 +146,7 @@
           // this.signDateList = [['2019-01-03', '2019-01-04', '2019-01-05'], ['2019-01-09', '2019-01-10'], '2019-01-13'];
           this.signDateList = this.handleSignList(res2);
           res3.list.map((item, index) => {
-            this.giftList[index].gift = `${item.cvalue}${this.giftList[index].gift}`;
+            this.giftList[index].number = item.cvalue;
           });
           this.getWidth();
         }).catch(() => {
@@ -240,7 +248,6 @@
             }
           }
         });
-        console.log(x, y);
         if(x) {
           x = x === '0' ? 0 : x;
           let realPrecent = (_this.count - daysList[x]) / (daysList[x + 1] - daysList[x]);
@@ -277,6 +284,7 @@
             }
           });
         } else {
+          // 既无x也无y，有两种情况满足这种条件，1。在第一个节点之前2。在最后一个节点之后
           if(_this.count < daysList[0]) {
             _this.giftList.map((item) => {
               item.width = 0;
@@ -320,51 +328,6 @@
   	@include bg-image('background');
   	color: #fff;
   	font-size: $font-size-medium;
-
-  	/*<!--.signRule {-->*/
-  		/*<!--position: absolute;-->*/
-  		/*<!--top: 0.4rem;-->*/
-  		/*<!--right: 0.3rem;-->*/
-  	/*<!--}-->*/
-
-  	/*<!--.signIntegral {-->*/
-  		/*<!--position: absolute;-->*/
-  		/*<!--top: 0.4rem;-->*/
-  		/*<!--left: 37%;-->*/
-  		/*<!--width: 2.2rem;-->*/
-  		/*<!--height: 2.2rem;-->*/
-  		/*<!--border-radius: 50%;-->*/
-  		/*<!--background: #65BDFC;-->*/
-
-  		/*<!--.integralContent{-->*/
-        /*<!--display: flex;-->*/
-        /*<!--flex-direction: column;-->*/
-        /*<!--justify-content: center;-->*/
-			  /*<!--position: absolute;-->*/
-    		/*<!--top: 0.12rem;-->*/
-    		/*<!--left: 0.12rem;-->*/
-    		/*<!--width: 1.96rem;-->*/
-    		/*<!--height: 1.96rem;-->*/
-    		/*<!--border-radius: 50%;-->*/
-    		/*<!--background: #fff;-->*/
-        /*<!--color: #48b0fb;-->*/
-        /*<!--text-align: center;-->*/
-
-        /*<!--h3 {-->*/
-          /*<!--font-size: $font-size-medium;-->*/
-        /*<!--}-->*/
-
-        /*<!--h4 {-->*/
-          /*<!--margin-top: 0.22rem;-->*/
-          /*<!--font-size: $font-size-large-s;-->*/
-        /*<!--}-->*/
-
-        /*<!--p {-->*/
-          /*<!--margin-top: 0.11rem;-->*/
-          /*<!--font-size: $font-size-small-ss;-->*/
-        /*<!--}-->*/
-  		/*<!--}-->*/
-  	/*<!--}-->*/
     .top {
       padding: 1.2rem 0.3rem;
       color: $color-highlight-background;
@@ -451,31 +414,6 @@
             }
           }
         }
-        /*<!--height: 1rem;-->*/
-        /*<!--.gifts {-->*/
-          /*<!--display: flex;-->*/
-          /*<!--align-items: center;-->*/
-          /*<!--justify-content: space-between;-->*/
-          /*<!--margin-bottom: 0.2rem;-->*/
-          /*<!--.gift-icon {-->*/
-            /*<!--display: inline-block;-->*/
-            /*<!--width: 0.46rem;-->*/
-            /*<!--height: 0.46rem;-->*/
-            /*<!--@include bg-image('gift');-->*/
-            /*<!--background-size: 100% 100%;-->*/
-          /*<!--}-->*/
-        /*<!--}-->*/
-        /*<!--.totalCount {-->*/
-          /*<!--border-radius: 0.4rem;-->*/
-          /*<!--background: rgba(255, 255, 255, 0.3);-->*/
-          /*<!--height: 0.1rem;-->*/
-        /*<!--}-->*/
-        /*<!--.nowCount {-->*/
-          /*<!--background: $color-highlight-background;-->*/
-          /*<!--height: 0.1rem;-->*/
-          /*<!--position: absolute;-->*/
-          /*<!--border-radius: 0.04rem;-->*/
-        /*<!--}-->*/
       }
     }
 	}

@@ -53,17 +53,19 @@
     </div>
     <toast ref="toast" :text="textMsg"></toast>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <m-footer-sjd-mall></m-footer-sjd-mall>
   </div>
 </template>
 <script>
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { onePageOrder, affirmOrder, removeMoreOrder, orderDetail } from 'api/store';
-import { getDictList } from 'api/general';
 import Scroll from 'base/scroll/scroll';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
+import MFooterSjdMall from 'components/m-footer-sjd-mall/m-footer-sjd-mall';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { onePageOrder, affirmOrder, removeMoreOrder, orderDetail } from 'api/store';
+import { getDictList } from 'api/general';
 export default {
   data() {
     return {
@@ -308,7 +310,8 @@ export default {
     Toast,
     Scroll,
     NoResult,
-    CategoryScroll
+    CategoryScroll,
+    MFooterSjdMall
   }
 };
 </script>
@@ -334,7 +337,7 @@ export default {
   .content {
     position: absolute;
     top: 0;
-    bottom: 0;
+    bottom: 0.98rem;
     left: 0;
     right: 0;
     font-family: PingFangSC-Regular;

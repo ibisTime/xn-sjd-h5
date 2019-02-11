@@ -91,7 +91,6 @@
         this.go(`/yushou-address-list?tihuo=1&number=${this.number}&code=${this.code}`);
       },
       goLogistics(item) {
-        console.log(this.logisCompany);
         let logisData = {
           statusTxt: this.presellLogisticsStatus[item.status],
           shopPic: this.detail.presellProduct.listPic,

@@ -10,7 +10,7 @@
               <div class="me-info">
                 <div class="userPhoto" :style="getImgSyl(userInfo.photo)"></div>
                 <div class="text">
-                  <p class="userName"><span>{{userInfo.nickname}}</span></p>
+                  <p class="userName"><span>{{userInfo.nickname}}</span><img v-if="userInfo.gender" :src="genderIcon"></p>
                   <p class="info">
                     <span class="info-level">LV{{userInfo.level}} 初探翠林</span>
                     <span class="info-friend">好友：{{userInfo.friendCount}}</span>
@@ -33,16 +33,16 @@
           </div>
         </div>
       </div>
-      <div class="select">
-        <category-sjd-homepage
-          @filterConfirm="filterConfirm"
-          @cityConfirm="cityConfirm"></category-sjd-homepage>
-      </div>
       <div class="scroll-section">
         <Scroll ref="scroll"
                 :data="dynamicsList"
                 :hasMore="dynamics.hasMore"
                 @pullingUp="getDynamicsList">
+          <div class="select">
+            <category-sjd-homepage
+              @filterConfirm="filterConfirm"
+              @cityConfirm="cityConfirm"></category-sjd-homepage>
+          </div>
           <div class="tree-list" :style="{ top: type === 3 ? '5.46rem' : '4.66rem' }">
             <div class="item" v-for="item in userTree">
               <div class="tree-info" @click="goMyTree(item)">
@@ -54,10 +54,6 @@
                 </p>
               </div>
               <img src="./more@2x.png">
-              <!--<div class="map" @click="go('/map?code=' + item.code)">-->
-                <!--<img src="./map@2x.png" alt="">-->
-                <!--<p>查看地图</p>-->
-              <!--</div>-->
             </div>
             <no-result v-show="!loading && !(userTree && userTree.length)" title="还没有认养树" class="no-result-wrapper"></no-result>
           </div>
@@ -172,6 +168,7 @@
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="text"></toast>
+    <m-footer :ismsg="ismsg"></m-footer>
   </div>
 </template>
 <script>
@@ -182,15 +179,19 @@
   import MHeader from 'components/m-header/m-header';
   import NoResult from 'base/no-result/no-result';
   import BackOnly from 'components/back-only/back-only';
+  import MFooter from 'components/m-footer/m-footer';
   import { getUser, getHasRelationship, addRelationship, cancelRelationship } from 'api/user';
   import { getListUserTree, getProductType, getComparison, getPageJournal } from 'api/biz';
   import {formatAmount, formatDate, formatImg, setTitle, getUserId} from 'common/js/util';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
+  import male from './male@2x.png';
+  import female from './female@2x.png';
   import CategorySjdHomepage from 'components/category-sjd-homepage/category-sjd-homepage';
 
   export default {
     data() {
       return {
+        ismsg: false,
         text: '',
         type: 0,
         emotion: 1,
@@ -198,6 +199,7 @@
         loading: false,
         loadingText: '',
         toastText: '',
+        // genderIcon: '',
         other: 0,      // 是否好友的主页
         currentHolder: '', // userId 好友
         title: '我的主页',
@@ -227,6 +229,11 @@
         city: '', // 筛选的市,
         area: '' // 筛选的区
       };
+    },
+    computed: {
+      genderIcon() {
+        return this.userInfo.gender === '1' ? male : female;
+      }
     },
     mounted() {
       setTitle('我的主页');
@@ -308,6 +315,21 @@
       getInitData() {
         this.currentHolder = this.$route.query.currentHolder || getUserId();
         this.other = this.$route.query.other || 0;  // 是否别人的主页
+        this.params = {
+          currentHolder: this.currentHolder,
+          statusList: ['1', '2', '3']
+        };
+        if(this.level) {
+          this.params.treeLevel = this.level;
+        }
+        if(this.variety) {
+          this.params.variety = this.variety;
+        }
+        if(this.province && this.city && this.area) {
+          this.params.province = this.province;
+          this.params.city = this.city;
+          this.params.area = this.area;
+        }
         this.loading = true;
         Promise.all([
           getUser(this.currentHolder),
@@ -324,8 +346,9 @@
             status: '1',
             level: '2',
             type: '1'
-          })
-        ]).then(([userInfo, productType, res3]) => {
+          }),
+          getListUserTree(this.params)
+        ]).then(([userInfo, productType, res3, userTree]) => {
           this.loading = false;
           this.userInfo = userInfo;
           productType.map(item => {
@@ -341,8 +364,9 @@
             });
           });
           this.type = this.categorys[this.index].key;
+          this.userTree = userTree;
           this.getSubType();
-          this.getUserTree();
+          // this.getUserTree();
           this.getDynamicsList();
         }).catch(() => { this.loading = false; });
         // 不是当前用户
@@ -563,7 +587,8 @@
       NoResult,
       FullLoading,
       Toast,
-      CategoryScroll
+      CategoryScroll,
+      MFooter
     }
   };
 </script>
@@ -624,8 +649,13 @@
                   .userName {
                     margin-bottom: 0.14rem;
                     font-size: 0;
+                    min-height: 0.36rem;
                     span {
                       font-size: 0.36rem;
+                    }
+                    img {
+                      width: 0.34rem;
+                      margin-left: 0.1rem;
                     }
                   }
                   .info {
@@ -708,8 +738,8 @@
       }
       .scroll-section {
         position: absolute;
-        top: 4.5rem;
-        bottom: 0;
+        top: 3.8rem;
+        bottom: 0.98rem;
         left: 0;
         right: 0;
         overflow: auto;

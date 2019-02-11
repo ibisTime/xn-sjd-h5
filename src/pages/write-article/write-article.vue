@@ -128,7 +128,6 @@
       autosize(obj) {
         // let el = obj;
         setTimeout(() => {
-          // console.log(1);
           this.$refs.textarea.style.cssText = 'height:auto; padding:0';
           // for box-sizing other than "content-box" use:
           // el.style.cssText = '-moz-box-sizing:content-box';
@@ -216,7 +215,6 @@
           return;
         }
         this.currentItem = item;
-        console.log(this.currentItem);
         this.$refs.photoEdit.show();
       },
       /**
@@ -342,8 +340,6 @@
         return this.photos.length ? '' : 'no-photo';
       },
       curUrl() {
-        // return this.currentItem ? this.currentItem.preview : '';
-        console.log(this.currentItem);
         console.log(this.currentItem ? formatImg(this.currentItem.key) : '');
         return this.currentItem ? formatImg(this.currentItem.key) : '';
       },

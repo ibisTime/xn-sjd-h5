@@ -357,6 +357,7 @@
     <juanzeng v-show="juanzengFlag" @close="close('juanzengFlag')" @juanzengSuccess="juanzengSuccess" :quantity="String(presentTppQuantity)"></juanzeng>
     <toast ref="toast" :text="text" :delay="3000"></toast>
     <full-loading v-show="loading"></full-loading>
+    <m-footer :ismsg="ismsg"></m-footer>
     <router-view></router-view>
   </div>
 </template>
@@ -372,6 +373,7 @@ import ConvertSuccess from 'base/convert-success/convert-success';
 import Certification from 'base/certification/certification';
 import Juanzeng from 'base/juanzeng/juanzeng';
 import MHeader from 'components/m-header/m-header';
+import MFooter from 'components/m-footer/m-footer';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
         getListProps, buyProps, getPropsOrder, getAccount, getPropsUsedRecordList, getDanmuList,
         sendDanmu, useProps } from 'api/biz';
@@ -384,6 +386,7 @@ import defaltAvatarImg from './../../common/image/avatar@2x.png';
 export default {
   data() {
     return {
+      ismsg: false,
       title: '我的树',
       loading: false,
       toastText: '',
@@ -562,7 +565,6 @@ export default {
     getTreeDetail() {
       this.loading = true;
       return getUserTreeDetail(this.adoptTreeCode).then((data) => {
-        console.log(data);
         this.treeDetail = data;
         this.loading = false;
       }, () => { this.loading = false; });
@@ -905,6 +907,7 @@ export default {
     Slider,
     NoResult,
     MHeader,
+    MFooter,
     Scroll,
     PropScroll,
     Convert,
@@ -933,7 +936,7 @@ export default {
     /*margin: 0.88rem 0;*/
     position: absolute;
     top: 0;
-    bottom: 0;
+    bottom: 0.98rem;
     left: 0;
     right: 0;
     overflow: auto;

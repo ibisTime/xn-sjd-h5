@@ -410,12 +410,6 @@ export default {
         }
         this.commentList = [...this.commentList, ...data.list];
         this.start ++;
-        // data.list.forEach(item => {
-        //   getUser(item.userId).then(res => {
-        //     this.userMsgList.push(res);
-        //     console.log(this.userMsgList);
-        //   });
-        // });
         this.loading = false;
       }, () => {
         this.loading = false;

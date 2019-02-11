@@ -436,7 +436,7 @@ export default {
       /*padding-bottom: 2rem;*/
       /*overflow: scroll;*/
 
-      padding: 0 0.3rem 0;
+      padding: 0.3rem 0.3rem 0;
       background: $color-highlight-background;
       position: absolute;
       top: 1.7rem;

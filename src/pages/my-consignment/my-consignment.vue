@@ -189,7 +189,6 @@ export default {
             this.loading = false;
           }).catch((msg) => { console.log(msg); this.loading = false; });
         }
-        // console.log(this.deriveList);
       }
     },
     getUserDetail() {

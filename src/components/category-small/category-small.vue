@@ -7,10 +7,10 @@
                 :pullUpLoad="pullUpLoad"
                 :data="bigList"
                 :class="leftWrapCls">
-          <loading v-show="!bigList.length" class="loading" title=""></loading>
+          <loading v-show="!bigList.length" class="loading"></loading>
           <div v-for="(item,index) in bigList"
                class="menu-item"
-               :class="leftCls(item.code)"
+               :class="item.code === bigCode ? 'active' : ''"
                @click="choseMenu(item.code,index)"
                ref="leftMenu">{{item.name}}</div>
         </scroll>
@@ -19,7 +19,7 @@
                 :data="smallList"
                 :pullUpLoad="pullUpLoad"
                 :class="rightWrapCls">
-          <loading v-show="rLoadingFlag" class="loading" title=""></loading>
+          <loading v-show="rLoadingFlag" class="loading"></loading>
           <div class="right-item"
                :class="rightCls(item.code)"
                v-for="(item,index) in smallList"
@@ -55,7 +55,8 @@
         bigList: [],
         smallData: {},
         smallList: [],
-        rLoadingFlag: true
+        rLoadingFlag: true,
+        pullUpLoad: null
       };
     },
     computed: {
@@ -66,7 +67,7 @@
         return this.bigCode ? '' : 'flex0';
       }
     },
-    created() {
+    mounted() {
       this.pullUpLoad = null;
       this.getInitData();
     },
@@ -77,7 +78,10 @@
             getDictList('TREE_LEVEL'),
             this.getSmallCategories(this.outBigCode)
           ]).then(([realLeft]) => {
-            let left = [];
+            let left = [{
+              code: 'ALL',
+              name: '全部'
+            }];
             realLeft.map((item) => {
               left.push({
                 code: item.dkey,
@@ -95,7 +99,10 @@
           });
         } else {
           getDictList('TREE_LEVEL').then((realLeft) => {
-            let left = [];
+            let left = [{
+              code: 'all',
+              name: '全部'
+            }];
             realLeft.map((item) => {
               left.push({
                 code: item.dkey,
@@ -103,10 +110,18 @@
               });
             });
             this.bigList = left;
+            setTimeout(() => {
+              this.choseMenu(this.bigList[0].code, 0);
+            }, 1000);
           });
         }
       },
       getSmallCategories(code) {
+        if(code === 'ALL') {
+          this.smallList = [];
+          this.rLoadingFlag = false;
+          return;
+        }
         if (this.smallData[code]) {
           this.smallList = this.smallData[code];
           this.rLoadingFlag = false;
@@ -133,10 +148,10 @@
       choseMenu(code, index) {
         this.bigCode = code;
         this.$refs.leftScroll.scrollToElement(this.$refs.leftMenu[index], 200, false, true);
-        if (code) {
+        if (code !== 'ALL') {
           this.getSmallCategories(code);
         } else {
-          this.$emit('confirm', '', '', '全部');
+          this.$emit('confirm', 'ALL');
           this.hide();
         }
       },

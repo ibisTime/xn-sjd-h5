@@ -25,7 +25,7 @@
       <!-- 日期 -->
       <div class="dayPanel">
         <ul class="days">
-        <li v-for="dayobject in days" :class="dayobject.day.toString() === curTime.toString() ? 'today-li' : ''">
+        <li v-for="dayobject in days">
           <!--<span v-if="isGray(dayobject)">-->
             <!--<span class="other-month" :class="getClass(dayobject)">{{ dayobject.day.getDate() }}</span>-->
           <!--</span>-->
@@ -290,6 +290,8 @@
           }
           .today {
             font-size: 0.22rem;
+            transform: scale(0.8);
+            white-space: nowrap;
           }
         }
       }

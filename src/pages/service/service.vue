@@ -240,7 +240,7 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0.98rem;
+    bottom: 0;
     width: 100%;
     background-color: #F0F0F0;
     .scroll{
@@ -320,7 +320,7 @@ export default {
   }
   .service-input {
     position: fixed;
-    bottom: 0.5rem;
+    bottom: 0;
     left: 0;
     width: 100%;
     height: 0.98rem;

@@ -42,6 +42,7 @@
     <toast :text="toastText" ref="toast"></toast>
     <!--<router-view @updateNum="handleUpdateNum"></router-view>-->
     <full-loading v-show="fetching" :title="fetchText"></full-loading>
+    <m-footer :ismsg="ismsg"></m-footer>
     <router-view></router-view>
   </div>
 </template>
@@ -52,6 +53,7 @@
   import NoResult from 'base/no-result/no-result'; // 暂无数据
   import FullLoading from 'base/full-loading/full-loading'; // loading
   import Toast from 'base/toast/toast'; // 已加载完/加载时的loading
+  import MFooter from 'components/m-footer/m-footer';
   import ConfirmInput from 'base/confirm-input/confirm-input';
   import {mapGetters, mapMutations, mapActions} from 'vuex';
   import {SET_ORDER_LIST, SET_CURRENT_ORDER} from 'store/mutation-types';
@@ -64,6 +66,7 @@
   export default {
     data() {
       return {
+        ismsg: false,
         type: 0,
         status: 0,
         currentCode: '',
@@ -275,9 +278,6 @@
           this.cancelOrder(text);
         }
       },
-      // handleUpdateNum(type) {
-      //   this.$emit('updateNum', type);
-      // },
       cancelOrder(text) {
         this.fetchText = '取消中...';
         if(this.curItem.product.sellType === '4') {
@@ -353,7 +353,8 @@
       NoResult,
       FullLoading,
       Toast,
-      ConfirmInput
+      ConfirmInput,
+      MFooter
     }
   };
 </script>
@@ -363,7 +364,7 @@
     background: #fff;
     position: fixed;
     width: 100%;
-    bottom: 0;
+    bottom: 0.98rem;
     top: 0;
     left: 0;
     .fl {

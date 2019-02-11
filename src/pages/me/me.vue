@@ -1,49 +1,12 @@
 <template>
   <div class="me-wrapper">
     <div class="bg">
-      <!--<m-header class="cate-header" title="我的" :showBack="showBack"></m-header>-->
-      <!--<div class="content">-->
-        <!--<div class="in-content">-->
-          <!--<div :class="['card',getUserId() ? '' : 'card-bg']">-->
-            <!--<div class="info" @click="go('/settings')" v-if="getUserId()">-->
-              <!--<img :src="src" class="head" @click.stop="go(`/userAvatar`)">-->
-              <!--<div class="text">-->
-                <!--<p><span>{{cut(userDetail.nickname,6) || '未设置昵称'}}</span><span class="lv">LV {{userDetail.level}}</span></p>-->
-                <!--<p class="mobile">{{userDetail.mobile}}</p>-->
-                <!--&lt;!&ndash;<p class="mobile" v-show="userDetail.email">{{userDetail.email}}</p>&ndash;&gt;-->
-              <!--</div>-->
-              <!--&lt;!&ndash;<img src="./more@2x.png" class="me-more fr">&ndash;&gt;-->
-            <!--</div>-->
-            <!--<div class="account" v-if="getUserId()">-->
-              <!--<div class="money fl" @click.stop="go('/money?accountNumber=' + cnyAccountNumber + '&amount=' + cny)">-->
-                <!--<p class="number">{{formatAmount(cny)}}</p>-->
-                <!--<p class="text">余额</p>-->
-              <!--</div>-->
-              <!--<div class="line fl"></div>-->
-              <!--<div class="score fl" @click.stop="go('/score')">-->
-                <!--<p class="number">{{formatAmount(jf)}}</p>-->
-                <!--<p class="text">积分</p>-->
-              <!--</div>-->
-            <!--</div>-->
-            <!--<div class="auth" @click="toAuth" v-show="isLogin">-->
-              <!--&lt;!&ndash;<img src="./auth@2x.png">&ndash;&gt;-->
-              <!--<img src="./no-auth@2x.png">-->
-              <!--<span>{{rzText}}</span>-->
-            <!--</div>-->
-            <!--<div class="noUser">-->
-              <!--<button class="login" @click="$router.push('/login')">登录</button>-->
-              <!--<button class="register" @click="$router.push('/register')">注册</button>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
       <div class="top">
         <div class="info">
           <div class="avatar">
             <img :src="src" class="head" @click.stop="go(`/userAvatar`)">
             <div class="auth" @click="toAuth" v-show="isLogin">
               <img src="./auth@2x.png">
-              <!--<img src="./no-auth@2x.png">-->
               <span>{{rzText}}</span>
             </div>
           </div>
@@ -73,11 +36,6 @@
     <div class="gray"></div>
     <div class="me-list" ref="description">
       <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
-        <!--<div class="item">-->
-          <!--<img src="./carbon-bubble@2x.png"  class="me-list-icon">-->
-          <!--<span>我的碳泡泡</span>-->
-          <!--<img src="./more@2x.png" class="fr more">-->
-        <!--</div>-->
         <div class="wing"></div>
         <div class="item" @click="go('/homepage')">
           <img src="./adopt@2x.png" class="me-list-icon">
@@ -90,39 +48,6 @@
           <span>我的认养订单</span>
           <img src="./more@2x.png" class="fr more">
         </div>
-        <!--<div class="white"></div>-->
-        <!--<div class="item" @click="go('/consignment-hall')">-->
-          <!--<img src="./consignment-hall@2x.png" class="me-list-icon">-->
-          <!--<span>寄售大厅</span>-->
-          <!--<img src="./more@2x.png" class="fr more">-->
-        <!--</div>-->
-        <!--<div class="item" @click="go('/my-consignment')">-->
-          <!--<img src="./my-consignment@2x.png" class="me-list-icon">-->
-          <!--<span>我的预售资产</span>-->
-          <!--<img src="./more@2x.png" class="fr more">-->
-        <!--</div>-->
-        <!--<div class="item" @click="go('/booking-order')">-->
-          <!--<img src="./booking-order@2x.png" class="me-list-icon">-->
-          <!--<span>我的预售订单</span>-->
-          <!--<img src="./more@2x.png" class="fr more">-->
-        <!--</div>-->
-        <!--<div class="white"></div>-->
-        <!--<div class="item" @click="go('/mall-shopCart')">-->
-          <!--<img src="./cart.png" class="me-list-icon">-->
-          <!--<span>我的购物车</span>-->
-          <!--<img src="./more@2x.png" class="fr more">-->
-        <!--</div>-->
-        <!--<div class="item" @click="go('/store-order')">-->
-          <!--<img src="./order@2x.png" class="me-list-icon">-->
-          <!--<span>我的商城订单</span>-->
-          <!--<img src="./more@2x.png" class="fr more">-->
-        <!--</div>-->
-        <!--<div class="item" @click="go('/store-message')">-->
-          <!--<img src="./message.png" class="me-list-icon">-->
-          <!--<span>我的商城消息 <i class="fr msg" v-show="ismsg"></i></span>-->
-          <!--<img src="./more@2x.png" class="fr more">-->
-        <!--</div>-->
-        <!--<div class="white"></div>-->
         <div class="item" @click="go('/my-article')">
           <img src="./article@2x.png" class="me-list-icon">
           <span>我的文章</span>

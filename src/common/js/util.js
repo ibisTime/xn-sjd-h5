@@ -68,27 +68,6 @@ export function isUnDefined(value) {
 }
 
 // 格式化图片地址
-// export function formatImg(imgs, suffix = '?imageMogr2/auto-orient') {
-//   if(!imgs) {
-//     return '';
-//   }
-//   getdomain('qiniu_domain').then((res) => {
-//     let img = imgs.split(/\|\|/)[0];
-//
-//     if (!/^http|^data:image/i.test(img)) {
-//       let index = img.indexOf('?imageMogr2');
-//       if (index !== -1) {
-//         suffix = img.substr(index);
-//         img = img.substr(0, index);
-//       }
-//       img = sessionStorage.getItem('url') + '/' + encodeURIComponent(img) + suffix;
-//     }
-//     console.log(img);
-//     return img;
-//   });
-// }
-
-// 格式化图片地址
 export function formatImg(imgs, suffix = '?imageMogr2/auto-orient') {
   if(!imgs) {
     return '';

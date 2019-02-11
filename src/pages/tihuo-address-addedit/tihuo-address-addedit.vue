@@ -206,7 +206,6 @@
         }
       },
       _addAddress(param) {
-        console.log(sessionStorage.getItem('tihuo-address'));
         if(!sessionStorage.getItem('tihuo-address')) {
           let arr = [];
           arr.push(param);

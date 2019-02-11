@@ -218,7 +218,6 @@ export default {
       }),
       getDictList('presell_product_status')
     ]).then(([res2, res3]) => {
-      // console.log(res2);
       res2.map((item) => {
         this.categorys.push({
           value: item.name,

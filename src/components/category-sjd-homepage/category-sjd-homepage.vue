@@ -24,7 +24,7 @@
                     :outCityIndex="cityIndex"
                     :outAreaIndex="areaIndex"
                     @cityChose="cityChose"
-                    top="4.48rem"></category-city>
+                    top="0.8rem"></category-city>
     <category-filter-homepage ref="filterCategory"
                      @confirm="handleFilter"
                      :outMinPrice="minPrice"

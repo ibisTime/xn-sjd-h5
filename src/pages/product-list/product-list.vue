@@ -15,6 +15,7 @@
                              @filterConfirm="filterConfirm"
                              @ageConfirm="ageConfirm"
                              @cityConfirm="cityConfirm"
+                             @smallConfirm="smallConfirm"
       ></category-sjd-pro-list>
     </div>
     <div class="content">
@@ -268,6 +269,9 @@ export default {
       if(this.variety !== '') {
         config.variety = this.variety;
       }
+      if(this.treeLevel !== '') {
+        config.treeLevel = this.treeLevel;
+      }
       if(this.province && this.city && this.area) {
         config.province = this.province;
         config.city = this.city;
@@ -317,6 +321,17 @@ export default {
       this.province = prov;
       this.city = city;
       this.area = area;
+      this.start = 1;
+      this.limit = 10;
+      this.proList = [];
+      this.getPageOrders();
+    },
+    smallConfirm(bigCode) {
+      if(bigCode !== 'ALL') {
+        this.treeLevel = bigCode;
+      } else {
+        this.treeLevel = '';
+      }
       this.start = 1;
       this.limit = 10;
       this.proList = [];

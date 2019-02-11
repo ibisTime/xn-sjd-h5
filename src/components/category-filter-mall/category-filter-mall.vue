@@ -146,7 +146,7 @@
     background: rgba(0, 0, 0, 0.6);
     z-index: 1;
     position: absolute;
-    top: 1.8rem;
+    top: 1.68rem;
     left: 0;
     right: 0;
     font-size: 0.26rem;
@@ -166,6 +166,7 @@
       background: #fff;
       left: 0;
       height: 100%;
+      padding-top: 0.3rem;
 
       .title {
         padding-left: 0.2rem;

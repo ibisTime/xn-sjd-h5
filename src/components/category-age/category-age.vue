@@ -121,7 +121,7 @@
     background: rgba(0, 0, 0, 0.6);
     z-index: 1;
     position: absolute;
-    top: 1.8rem;
+    top: 1.68rem;
     left: 0;
     right: 0;
     font-size: 0.26rem;

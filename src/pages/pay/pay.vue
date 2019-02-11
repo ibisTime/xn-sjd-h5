@@ -333,7 +333,6 @@
             this.loading = false;
           }).catch(() => { this.loading = false; });
         }
-        console.log(this.orderDetail);
       },
       getPreInitData() {
         this.loading = true;

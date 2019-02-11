@@ -74,7 +74,6 @@
     },
     created() {
       this.pullUpLoad = null;
-      console.log(this.treeLevel);
       // this.getPinzhongList();
     },
     methods: {
@@ -135,7 +134,7 @@
     background: rgba(0, 0, 0, 0.6);
     z-index: 1;
     position: absolute;
-    top: 4.48rem;
+    top: 0.8rem;
     left: 0;
     right: 0;
     font-size: 0.26rem;
@@ -154,7 +153,7 @@
       font-size: 0.26rem;
       background: #fff;
       left: 0;
-      height: 100%;
+      /*height: 100%;*/
       padding: 0.3rem 0 0;
 
       .title {
@@ -220,7 +219,7 @@
         height: 0.9rem;
         line-height: 0.9rem;
         font-size: 0.32rem;
-        position: fixed;
+        position: relative;
         bottom: 0;
 
         .reset {

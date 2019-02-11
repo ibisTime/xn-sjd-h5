@@ -32,7 +32,6 @@
     </div>
     <full-loading v-show="loading"></full-loading>
     <toast ref="toast" :text="text"></toast>
-    <!--<router-view></router-view>-->
   </div>
 </template>
 <script>

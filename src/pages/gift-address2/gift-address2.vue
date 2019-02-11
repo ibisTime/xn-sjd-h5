@@ -173,14 +173,6 @@
                 code: this.code,
                 addressCode: this.currentItem.code
               })
-              // addAddress({
-              //   addressee: this.receiver,
-              //   mobile: this.mobile,
-              //   province: this.province,
-              //   city: this.city,
-              //   district: this.district,
-              //   detailAddress: this.address
-              // })
             ]).then(([res1]) => {
               this.loading = false;
               if(res1.isSuccess) {

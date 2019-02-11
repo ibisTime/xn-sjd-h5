@@ -195,7 +195,6 @@ export default {
       this.goProList(this.proType[index]);
     },
     goProList(item) {
-      console.log(item);
       if(item.value === '果树预售') {
         this.go('/booking-product-list?typeCode=' + item.code);
       } else {

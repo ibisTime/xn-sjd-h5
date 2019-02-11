@@ -347,7 +347,6 @@ export default {
       this.loading = true;
       cancelAfterSale(this.currentItem.code).then((res) => {
         this.loading = false;
-        console.log(res);
       }).catch(() => { this.loading = false; });
     }
   },

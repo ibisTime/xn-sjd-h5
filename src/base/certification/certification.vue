@@ -6,7 +6,7 @@
         <img src="./close@2x.png" class="close" @click="close">
         <div ref="prop">
           <div ref="propGroup">
-            <div class="full-loading" v-for="item in certificationArr" ref="propItem">
+            <div class="full-loading" v-for="item in certificationArr" ref="propItem" :style="getImgSyl()">
               <img :src="head" class="head">
               <p class="name">{{name}}</p>
               <p class="description">你已于{{formatDate(item.startDatetime)}}认养的{{item.tree.scientificName}}，已被认领，种植在{{item.tree.province}}{{item.tree.city}}{{item.tree.area}}。</p>
@@ -21,7 +21,8 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-  import {formatDate} from 'common/js/util';
+  import {formatDate, formatImg} from 'common/js/util';
+  import defaltImg from './bg@2x.png';
   export default {
     props: {
       certificationArr: {
@@ -44,6 +45,12 @@
       },
       close() {
         this.$emit('close');
+      },
+      getImgSyl() {
+        let img = this.certificationArr[0].certificateTemplate ? formatImg(this.certificationArr[0].certificateTemplate) : defaltImg;
+        return {
+          backgroundImage: `url(${img})`
+        };
       }
     }
   };
@@ -79,7 +86,7 @@
         /*z-index: 1;*/
         text-align: center;
         /*margin-right: 25px;*/
-        background: url("./bg@2x.png") no-repeat;
+        /*background: url("./bg@2x.png") no-repeat;*/
         background-size: 100% 100%;
         &:last-child {
           margin-right: 0;
