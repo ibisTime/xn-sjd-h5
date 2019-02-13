@@ -8,7 +8,7 @@
           </div>
           <div class="text">
             <p class="name">{{userDetail.nickname|| '未设置昵称'}}</p>
-            <p class="autograph">简介：{{userDetail.introduce || '此人很懒，没什么留言'}}</p>
+            <p class="autograph">简介：{{cut(userDetail.introduce, 20) || '此人很懒，没什么留言'}}</p>
           </div>
         </div>
       </div>
@@ -56,11 +56,9 @@
   import MHeader from 'components/m-header/m-header';
   import MFooterSjdMall from 'components/m-footer-sjd-mall/m-footer-sjd-mall';
   import Scroll from 'base/scroll/scroll';
-  import { formatAmount, formatImg, setTitle, getUserId, clearUser } from 'common/js/util';
+  import { formatImg, setTitle, getUserId, clearUser, cut } from 'common/js/util';
   import {getCookie} from 'common/js/cookie';
   import {getUserDetail} from 'api/user';
-  import { getAccount } from 'api/biz';
-  import { isThreeMsg } from 'api/store';
 
   export default {
     data() {
@@ -69,51 +67,23 @@
         showBack: false,
         userDetail: {},
         text: '',
-        cny: 0,
-        cnyAccountNumber: '',
-        jf: 0,
-        jfAccountNumber: '',
-        tpp: 0,
-        tppAccountNumber: '',
         src: '',
         config: {
           user1: getUserId()
         },
-        ismsg: false,
-        rzText: '未认证',
-        rzStatus: '0',
         isLogin: false
       };
     },
     created() {
       this.pullUpLoad = null;
       this._refreshScroll();
-      if(getUserId()) {
-        this.isLogin = true;
-        isThreeMsg(this.config).then(data => {
-          if(data.existsUnread !== '0') {
-            this.ismsg = true;
-          }
-        });
-      }
     },
     methods: {
+      cut(str, num) {
+        return cut(str, num);
+      },
       getUserId() {
         return getUserId();
-      },
-      formatAmount(amount) {
-        return formatAmount(amount);
-      },
-      cut(str, num) {
-        if(str) {
-          if(str.length > num) {
-            return str.slice(0, num) + '...';
-          } else {
-            return str;
-          }
-        } else {
-          return;
-        }
       },
       go(url) {
         if(getUserId()) {
@@ -157,41 +127,18 @@
       if(userId) {
         this.loading = true;
         Promise.all([
-          getUserDetail({userId: userId}),
-          getAccount({
-            userId: userId
-          })
-        ]).then(([res1, res2]) => {
+          getUserDetail({userId: userId})
+        ]).then(([res1]) => {
           this.userDetail = res1;
-          if(res1.userExt) {
-            if(res1.userExt.personAuthStatus) {
-              this.rzText = '已个人认证';
-              this.rzStatus = '2';
-            }else if(res1.userExt.companyAuthStatus) {
-              this.rzText = '已企业认证';
-              this.rzStatus = '3';
-            }else {
-              this.rzText = '未认证';
-              this.rzStatus = '0';
-            }
-          }
           this.src = formatImg(this.userDetail.photo) || require('./../../common/image/avatar@2x.png');
-          res2.list.map((item) => {
-            if(item.currency === 'CNY') {
-              this.cny = item.amount;
-              this.cnyAccountNumber = item.accountNumber;
-            }
-            if(item.currency === 'JF') {
-              this.jf = item.amount;
-              this.jfAccountNumber = item.accountNumber;
-            }
-            if(item.currency === 'TPP') {
-              this.tpp = item.amount;
-              this.tppAccountNumber = item.accountNumber;
-            }
-          });
           this.loading = false;
         }).catch(() => { this.loading = false; });
+      } else {
+        this.text = '您未登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
       }
     },
     components: {
@@ -266,8 +213,8 @@
       position: absolute;
       top: 4.2rem;
       bottom: 0;
-      left: 0rem;
-      right: 0rem;
+      left: 0;
+      right: 0;
       overflow: auto;
       padding: 0 0.3rem;
       .item {

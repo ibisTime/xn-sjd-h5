@@ -12,7 +12,7 @@
           </div>
           <div class="text">
             <p class="name">{{userDetail.nickname|| '未设置昵称'}}</p>
-            <p class="autograph">简介：{{userDetail.introduce || '此人很懒，没什么留言'}}</p>
+            <p class="autograph">简介：{{cut(userDetail.introduce, 20) || '此人很懒，没什么留言'}}</p>
           </div>
         </div>
         <div class="asset">
@@ -81,7 +81,7 @@
   import MHeader from 'components/m-header/m-header';
   import MFooter from 'components/m-footer/m-footer';
   import Scroll from 'base/scroll/scroll';
-  import { formatAmount, formatImg, setTitle, getUserId, clearUser } from 'common/js/util';
+  import { formatAmount, formatImg, setTitle, getUserId, clearUser, cut } from 'common/js/util';
   import {getCookie} from 'common/js/cookie';
   import {getUserDetail} from 'api/user';
   import { getAccount } from 'api/biz';
@@ -125,22 +125,14 @@
       }
     },
     methods: {
+      cut(str, num) {
+        return cut(str, num);
+      },
       getUserId() {
         return getUserId();
       },
       formatAmount(amount) {
         return formatAmount(amount);
-      },
-      cut(str, num) {
-        if(str) {
-          if(str.length > num) {
-            return str.slice(0, num) + '...';
-          } else {
-            return str;
-          }
-        } else {
-          return;
-        }
       },
       go(url) {
         if(getUserId()) {

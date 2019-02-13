@@ -33,20 +33,6 @@
             <!--@select="selectCategory"-->
           <!--&gt;</category-scroll>-->
         </div>
-        <!--<div class="navigation">-->
-          <!--<div class="icons">-->
-            <!--<img src="./tree@2x.png">-->
-            <!--<p>古树名木</p>-->
-          <!--</div>-->
-          <!--<div class="icons" @click="go('/mall')">-->
-            <!--<img src="./mall@2x.png">-->
-            <!--<p>商场</p>-->
-          <!--</div>-->
-          <!--<div class="icons">-->
-            <!--<img src="./chart@2x.png">-->
-            <!--<p>排行榜</p>-->
-          <!--</div>-->
-        <!--</div>-->
         <div class="emotion-article" @click="go('/emotion-channel')">
           <div class="emotion-top">
             <span class="emotion-title">情感推文</span>
@@ -82,16 +68,11 @@
           </div>
         </div>
       </div>
-      <!--<div class="mall-content">-->
-        <!--<no-result v-show="!currentList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>-->
-      <!--</div>-->
       </Scroll>
-      <!--<div class="sign" @click="action"></div>-->
     </div>
     <full-loading v-show="loading"></full-loading>
     <m-footer></m-footer>
     <toast ref="toast" :text="text"></toast>
-    <check-in v-show="showCheckIn" @close="close" :signTpp="signTpp" :signDays="signDays"></check-in>
   </div>
 </template>
 <script>
@@ -100,16 +81,13 @@ import Scroll from 'base/scroll/scroll';
 import FullLoading from 'base/full-loading/full-loading';
 import MFooter from 'components/m-footer/m-footer';
 import Slider from 'base/slider/slider';
-import NoResult from 'base/no-result/no-result';
 import MHeader from 'components/m-header/m-header';
-import CheckIn from 'base/check-in/check-in';
 import ScrollY from 'base/scroll-y/scroll-y';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import Search from 'components/search/search';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
-import { getCookie } from 'common/js/cookie';
 import { getBanner, getDictList, getConfigPage } from 'api/general';
-import { getProductPage, signIn, getMessagePage } from 'api/biz';
+import { getProductPage, getMessagePage } from 'api/biz';
 import { getUserDetail } from 'api/user';
 export default {
   // name: "home",
@@ -124,7 +102,6 @@ export default {
       showBack: false,
       proList: [],
       proType: [],
-      showCheckIn: false,
       pullUpLoad: null,
       banners: [],
       // proType: [],
@@ -133,8 +110,6 @@ export default {
       bulletinList: [],
       sellTypeObj: {},
       projectStatusObj: {},
-      signTpp: '0',
-      signDays: 0,
       userDetail: {},
       searchRight: {},
       navigateList: [],
@@ -160,31 +135,6 @@ export default {
       } else {
         return str;
       }
-    },
-    // 签到
-    action() {
-      let userId = getCookie('userId');
-      if(userId) {
-        this.loading = true;
-        signIn({
-          userId: userId,
-          client: 'h5'
-        }).then((res) => {
-          this.signTpp = formatAmount(res.tppAmount);
-          this.signDays = res.signDays;
-          this.showCheckIn = true;
-          this.loading = false;
-        }).catch(() => { this.loading = false; });
-      } else {
-        this.text = '您未登录';
-        this.$refs.toast.show();
-        setTimeout(() => {
-          this.$router.push('/login');
-        }, 1000);
-      }
-    },
-    close() {
-      this.showCheckIn = false;
     },
     go(url) {
       this.$router.push(url);
@@ -387,7 +337,6 @@ export default {
         }
       }).catch(() => {
         this.loading = false;
-        this.relogin = true;
       });
     }
     this.getInitData();
@@ -401,9 +350,7 @@ export default {
     Toast,
     MFooter,
     Slider,
-    NoResult,
     MHeader,
-    CheckIn,
     Scroll,
     CategoryScroll,
     Search

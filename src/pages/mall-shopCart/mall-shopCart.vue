@@ -35,8 +35,8 @@
       </div>
     </div>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
-    <toast ref="toast" :text="textMsg">
-    </toast>
+    <toast ref="toast" :text="textMsg"></toast>
+    <m-footer-sjd-mall></m-footer-sjd-mall>
   </div>
 </template>
 <script>
@@ -46,12 +46,13 @@ import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
 import ShopSingMsg from './shopSingMsg';
+import MFooterSjdMall from 'components/m-footer-sjd-mall/m-footer-sjd-mall';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { myShopCart, shopRemoveFn } from 'api/store';
 export default {
   data() {
     return {
-      loading: true,
+      loading: false,
       hasMore: false,
       textMsg: '',
       loadingText: '正在加载中...',
@@ -66,10 +67,18 @@ export default {
       setCodeList: []
     };
   },
-  created() {
+  mounted() {
     setTitle('购物车');
     this.pullUpLoad = null;
-    this.getCartData();
+    if(getUserId()) {
+      this.getCartData();
+    } else {
+      this.textMsg = '您未登录';
+      this.$refs.toast.show();
+      setTimeout(() => {
+        this.$router.push('/login');
+      }, 1000);
+    }
   },
   methods: {
     formatAmount(amount) {
@@ -90,6 +99,7 @@ export default {
       };
     },
     getCartData() {
+      this.loading = true;
       myShopCart(getUserId()).then(data => {
         this.loading = false;
         this.tatil = 0;
@@ -131,7 +141,7 @@ export default {
     // },
     removeShop() {
       if(this.setCodeList.length > 0) {
-        shopRemoveFn(this.setCodeList).then(data => {
+        shopRemoveFn(this.setCodeList).then(() => {
           this.textMsg = '删除成功';
           this.$refs.toast.show();
           this.getCartData();
@@ -214,7 +224,8 @@ export default {
     Toast,
     ShopSingMsg,
     Scroll,
-    NoResult
+    NoResult,
+    MFooterSjdMall
   }
 };
 </script>
@@ -253,7 +264,7 @@ export default {
   }
   .foo-cart{
     position: fixed;
-    bottom: 0;
+    bottom: 0.98rem;
     width: 100%;
     height: 0.98rem;
     z-index: 9999;

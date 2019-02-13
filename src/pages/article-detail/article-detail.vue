@@ -84,21 +84,6 @@
       this.loading = true;
       if(getUserId()) {
         this.readArticle();
-      }
-      getArticleDetail({
-        code: this.code
-      }).then((res) => {
-        this.detail = res;
-        this.pointCount = +res.pointCount;
-        this.collectCount = +res.collectCount;
-        this.detail.photolist = this.detail.photo.split('||');
-        this.contextList = this.detail.content.split(/\n/);
-        if(!this.isWxConfiging && !this.wxData && getUserId()) {
-          this.getInitWXSDKConfig();
-        }
-        this.loading = false;
-      }).catch(() => { this.loading = false; });
-      if(getUserId()) {
         isArticleSc(this.isConfig).then(data => {
           // 是否收藏
           if(data.isPointCollect !== '0') {
@@ -113,6 +98,19 @@
           }
         });
       }
+      getArticleDetail({
+        code: this.code
+      }).then((res) => {
+        this.detail = res;
+        this.pointCount = +res.pointCount;
+        this.collectCount = +res.collectCount;
+        this.detail.photolist = this.detail.photo.split('||');
+        this.contextList = this.detail.content.split(/\n/);
+        if(!this.isWxConfiging && !this.wxData && getUserId()) {
+          this.getInitWXSDKConfig();
+        }
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
     },
     methods: {
       formatImg(img) {

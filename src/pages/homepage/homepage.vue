@@ -16,7 +16,7 @@
                     <span class="info-friend">好友：{{userInfo.friendCount}}</span>
                     <span class="info-friend-button" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '已是好友' : '申请好友'}}</span>
                   </p>
-                  <p class="autograph"><span>简介：{{userInfo.introduce || '此人很懒，没什么留言'}}</span></p>
+                  <p class="autograph"><span>简介：{{cut(userInfo.introduce, 20) || '此人很懒，没什么留言'}}</span></p>
                   <!--<span class="lv">LV{{userInfo.level}}</span>-->
                   <!--<span class="follow" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '取消关注' : '加关注'}}</span>-->
                 </div>
@@ -182,7 +182,7 @@
   import MFooter from 'components/m-footer/m-footer';
   import { getUser, getHasRelationship, addRelationship, cancelRelationship } from 'api/user';
   import { getListUserTree, getProductType, getComparison, getPageJournal } from 'api/biz';
-  import {formatAmount, formatDate, formatImg, setTitle, getUserId} from 'common/js/util';
+  import {formatAmount, formatDate, formatImg, setTitle, getUserId, cut} from 'common/js/util';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
   import male from './male@2x.png';
   import female from './female@2x.png';
@@ -250,6 +250,9 @@
       this.getInitData();
     },
     methods: {
+      cut(str, num) {
+        return cut(str, num);
+      },
       formatImg(img) {
         // return formatImg(img);
         return img ? formatImg(img) : defaltAvatarImg;

@@ -52,21 +52,21 @@
                   <div class="hot-big">
                     <div class="left" @click="toShopDet(hotShopList[0].code, hotShopList[0].shopCode)">
                       <div class="title">{{hotShopList[0].name}}</div>
-                      <div class="text">辅助文字</div>
+                      <div class="text"><span class="price">¥{{formatAmount(hotShopList[0].minPrice)}}</span>起</div>
                       <div class="sing-img" :style="getImgSyl(hotShopList[0].listPic ? hotShopList[0].listPic : '')"></div>
                     </div>
                     <div class="right">
                       <div class="right-top" @click="toShopDet(hotShopList[1].code, hotShopList[1].shopCode)">
                         <div class="right-left">
                           <div class="title">{{hotShopList[1].name}}</div>
-                          <div class="text">辅助文字</div>
+                          <div class="text"><span class="price">¥{{formatAmount(hotShopList[0].minPrice)}}</span>起</div>
                         </div>
                         <div class="sing-img" :style="getImgSyl(hotShopList[1].listPic ? hotShopList[1].listPic : '')"></div>
                       </div>
                       <div class="right-bottom" @click="toShopDet(hotShopList[2].code, hotShopList[2].shopCode)">
                         <div class="right-left">
                           <div class="title">{{hotShopList[2].name}}</div>
-                          <div class="text">辅助文字</div>
+                          <div class="text"><span class="price">¥{{formatAmount(hotShopList[0].minPrice)}}</span>起</div>
                         </div>
                         <div class="sing-img" :style="getImgSyl(hotShopList[2].listPic ? hotShopList[2].listPic : '')"></div>
                       </div>
@@ -97,7 +97,7 @@ import Slider from 'base/slider/slider';
 import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import Toast from 'base/toast/toast';
-import { getAllShopData, addShopCart, getShopType, myShopCart } from 'api/store';
+import { getAllShopData, addShopCart, getShopType } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getBanner, getConfigPage } from 'api/general';
 export default {
@@ -140,7 +140,6 @@ export default {
       },
       shopTypeData: [],    // {key: 0, value: '全部', pic: '', code: ''}
       shopName: '',
-      iscart: false,
       shopCode: '',
       banners: [],
       activityPic: ''
@@ -173,13 +172,6 @@ export default {
     getConfigPage({type: 'SYS_TXT', ckey: 'ACTIVITY_PIC'}).then((res) => {
       this.activityPic = res.list[0].cvalue;
     });
-    if(getUserId()) {
-      myShopCart(getUserId()).then(data => {
-        if(data.length > 0) {
-          this.iscart = true;
-        }
-      });
-    }
   },
   methods: {
     formatAmount(amount) {
@@ -431,6 +423,9 @@ export default {
                 font-size: 0.24rem;
                 color: #666;
                 margin-bottom: 0.16rem;
+                .price {
+                  color: $mall-color;
+                }
               }
               .sing-img {
                 width: 3.16rem;
@@ -464,6 +459,9 @@ export default {
                 .text {
                   font-size: 0.24rem;
                   color: #666;
+                  .price {
+                    color: $mall-color;
+                  }
                 }
               }
               .sing-img {

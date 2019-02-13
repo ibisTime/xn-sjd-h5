@@ -29,6 +29,7 @@
           </div>
         </scroll>
       </div>
+      <m-footer-sjd-mall></m-footer-sjd-mall>
     </div>
   </transition>
 </template>
@@ -36,6 +37,7 @@
   import Scroll from 'base/scroll/scroll';
   import Loading from 'base/loading/loading';
   import MHeader from 'components/m-header/m-header';
+  import MFooterSjdMall from 'components/m-footer-sjd-mall/m-footer-sjd-mall';
   import { getProductType } from 'api/biz';
   import { formatImg } from 'common/js/util';
   // import {mapMutations, mapGetters} from 'vuex';
@@ -170,7 +172,8 @@
     components: {
       MHeader,
       Scroll,
-      Loading
+      Loading,
+      MFooterSjdMall
     }
   };
 </script>

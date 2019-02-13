@@ -290,7 +290,7 @@
           }
           .today {
             font-size: 0.22rem;
-            transform: scale(0.8);
+            /*transform: scale(0.8);*/
             white-space: nowrap;
           }
         }
