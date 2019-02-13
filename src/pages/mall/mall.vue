@@ -1,9 +1,7 @@
 <template>
   <div class="mall-wrapper" @click.stop>
     <Scroll
-      :data="hotShopList"
-      :hasMore="hasMore"
-      @pullingUp="getHotShop">
+      :pullUpLoad="pullUpLoad">
       <div class="content" v-show="!isAll">
         <div class="mall-header">
           <slider v-if="banners.length" :loop="banners.length > 1" :showDots="banners.length > 1">
@@ -121,7 +119,7 @@ export default {
         orderDir: 'asc'
       },
       start: 1,
-      pullUpLoad: '',
+      pullUpLoad: null,
       shopPrice: [],
       addCartConfig: {            // 加入购物车参数
         userId: getUserId(),
@@ -158,7 +156,6 @@ export default {
     if(this.shopCode) {
       this.isAll = true;
     }
-    this.pullUpLoad = null;
     getBanner({type: 6}).then(data => {
       this.banners = data;
     });
@@ -477,48 +474,6 @@ export default {
               }
             }
           }
-          /*.con-sing{*/
-            /*width: 48%;*/
-            /*box-sizing: border-box;*/
-            /*font-size: 0.32rem;*/
-            /*border: 1px solid #E6E6E6;*/
-            /*border-radius: 4px;*/
-            /*padding-bottom: 0.3rem;*/
-            /*margin-bottom: 0.3rem;*/
-          /*}*/
-          /*.sing-img{*/
-            /*width: 100%;*/
-            /*height: 2.3rem;*/
-            /*margin-bottom: 0.2rem;*/
-            /*background-size: 100% 100%;*/
-            /*background-image: url('./shop.png');*/
-          /*}*/
-          /*.con-txt{*/
-            /*padding: 0 0.35rem 0 0.2rem;*/
-          /*}*/
-          /*h5{*/
-            /*font-family: PingFangSC-Medium;*/
-            /*color: #333;*/
-            /*font-size: 0.32rem;*/
-            /*font-weight: 600;*/
-            /*letter-spacing: 0.01rem;*/
-          /*}*/
-          /*.con-foo{*/
-            /*margin-top: 0.16rem;*/
-            /*font-family: DIN-Bold;*/
-            /*color: #23AD8C;*/
-            /*letter-spacing: 0.01rem;*/
-            /*line-height: 0.3rem;*/
-            /*font-size: 0.3rem;*/
-            /*font-weight: bold;*/
-            /*.icon{*/
-              /*display: inline-block;*/
-              /*width: 0.28rem;*/
-              /*height: 0.23rem;*/
-              /*background-size: 100% 100%;*/
-              /*background-image: url('./shopCart.png')*/
-            /*}*/
-          /*}*/
         }
       }
     }

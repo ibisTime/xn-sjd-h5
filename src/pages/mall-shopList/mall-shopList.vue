@@ -5,7 +5,7 @@
         <div class="inner">
           <div class="search">
             <div class="search-icon"></div>
-            <input type="text" ref="searchInput" placeholder="请输入商品名称" v-model="query" @click="focus"/>
+            <input type="text" ref="searchInput" placeholder="请输入商品名称" v-model="query" @click="focus" @keyup.enter="submit"/>
             <i v-show="query" class="close-icon" @click="clearInput"></i>
           </div>
         </div>
@@ -205,31 +205,37 @@ export default {
         });
       });
     },
-    selectCategory(index) {
-      this.currentIndex = index;
-      this.currentIndexSub = 0;
-      this.config.parentCategoryCode = this.shopTypeData[index].code;
-      this.categorysSub = [{key: '0', value: '全部', code: ''}];
-      this.shopTypeConfig.parentCode = this.shopTypeData[index].code;
-      delete this.config.categoryCode;
+    // selectCategory(index) {
+    //   this.currentIndex = index;
+    //   this.currentIndexSub = 0;
+    //   this.config.parentCategoryCode = this.shopTypeData[index].code;
+    //   this.categorysSub = [{key: '0', value: '全部', code: ''}];
+    //   this.shopTypeConfig.parentCode = this.shopTypeData[index].code;
+    //   delete this.config.categoryCode;
+    //   this.start = 1;
+    //   this.hotShopList = [];
+    //   this.getHotShop();
+    //   if(!this.shopTypeConfig.parentCode) {
+    //     this.categorysSub = [{key: '0', value: '全部', code: ''}];
+    //   }else {
+    //     this.getTypeDataFn(this.categorysSub, '2');
+    //   }
+    // },
+    // selectCategorySub(index) {
+    //   if(index === 0) {
+    //     this.config.parentCategoryCode = this.shopTypeData[this.currentIndex].code;
+    //   }else {
+    //     delete this.shopTypeConfig.parentCode;
+    //   }
+    //   this.currentIndexSub = index;
+    //   this.config.categoryCode = this.categorysSub[index].code;
+    //   this.start = 1;
+    //   this.hotShopList = [];
+    //   this.getHotShop();
+    // },
+    submit() {
       this.start = 1;
-      this.hotShopList = [];
-      this.getHotShop();
-      if(!this.shopTypeConfig.parentCode) {
-        this.categorysSub = [{key: '0', value: '全部', code: ''}];
-      }else {
-        this.getTypeDataFn(this.categorysSub, '2');
-      }
-    },
-    selectCategorySub(index) {
-      if(index === 0) {
-        this.config.parentCategoryCode = this.shopTypeData[this.currentIndex].code;
-      }else {
-        delete this.shopTypeConfig.parentCode;
-      }
-      this.currentIndexSub = index;
-      this.config.categoryCode = this.categorysSub[index].code;
-      this.start = 1;
+      this.limit = 10;
       this.hotShopList = [];
       this.getHotShop();
     },
@@ -268,7 +274,7 @@ export default {
           this.addCartConfig.commodityName = name;
           this.addCartConfig.specsId = specsId;
           this.addCartConfig.specsName = specsName;
-          addShopCart(this.addCartConfig).then(data => {
+          addShopCart(this.addCartConfig).then(() => {
             this.loading = false;
             this.textMsg = '加入购物车成功';
             this.$refs.toast.show();
@@ -304,7 +310,6 @@ export default {
       this.start = 1;
       this.hotShopList = [];
       this.getHotShop();
-      console.log(params);
     }
   },
   components: {

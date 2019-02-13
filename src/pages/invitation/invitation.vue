@@ -256,7 +256,6 @@
         font-weight: 500;
       }
       .all,.real {
-        padding: 0.3rem 0.6rem;
         overflow: auto;
         .title {
           color: $primary-color;
@@ -356,17 +355,22 @@
         bottom: 0;
         left: 0;
         right: 0;
+        padding: 0.3rem 0.6rem;
         .content {
           margin-bottom: 1rem;
         }
+      }
+      .real {
+        margin: 0.3rem 0.6rem;
+        padding: 0.3rem 0;
       }
 
     }
     .con-img{
       position: absolute;
       width: 90%;
-      height: 70%;
-      top: 5%;
+      top: 0;
+      bottom: 0;
       left: 5%;
       z-index: 9;
       display: none;

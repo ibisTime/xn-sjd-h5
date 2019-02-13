@@ -122,7 +122,7 @@
             this.loading = false;
           }).catch((msg) => {
             console.log(msg);
-            this.text = msg;
+            this.text = msg.toString();
             this.$refs.toast.show();
             setTimeout(() => {
               this.$router.back();

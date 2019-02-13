@@ -1,6 +1,6 @@
 <template>
   <div class="login-content">
-    <m-header class="cate-header"></m-header>
+    <!--<m-header class="cate-header"></m-header>-->
     <div class="scroll-section">
       <Scroll :pullUpLoad="pullUpLoad">
         <div class="header"><img src="./back.png" @click="back"></div>

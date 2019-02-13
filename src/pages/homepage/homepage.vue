@@ -255,15 +255,18 @@
         return img ? formatImg(img) : defaltAvatarImg;
       },
       getDaysCount(item) {
-        let sDate1 = formatDate(item.startDatetime, 'yyyy.MM.dd');
-        let sDate2 = formatDate(new Date(), 'yyyy.MM.dd');
-        var dateSpan,
-          iDays;
+        // 开发过程中ios出现时间显示为NAN,
+        // 原因，时间格式问题，标准时间格式为 ‘/’ 连接，
+        // 调用时间的时候尽量使用标准的连接符，或者使用时间戳。
+        // 不管是在调用new Date()方法还是传参时，都会有这种问题。
+        let sDate1 = formatDate(item.startDatetime, 'yyyy/MM/dd');
+        let sDate2 = formatDate(new Date(), 'yyyy/MM/dd');
+        let dateSpan, iDays;
         sDate1 = Date.parse(sDate1);
         sDate2 = Date.parse(sDate2);
         dateSpan = sDate2 - sDate1;
         dateSpan = Math.abs(dateSpan);
-        iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
+        iDays = Math.floor(dateSpan / (24 * 3600 * 1000)).toString();
         return iDays;
       },
       getName(item) {

@@ -282,7 +282,6 @@
       ]).then(([res1, res2]) => {
         this.token = res1.uploadToken;
         this.user = res2;
-        console.log(this.user);
       }).catch(() => {});
     },
     computed: {

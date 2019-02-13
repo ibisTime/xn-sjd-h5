@@ -4,7 +4,8 @@
     <div class="content">
       <Scroll ref="scroll"
               :data="dynamicsList"
-              :hasMore="dynamics.hasMore"
+              :hasMore="dynamics.hasMore && tab === 0"
+              :pullUpLoad="tab !== 0 ? null : pullUpLoad"
               @pullingUp="getDynamicsList">
         <div class="tree-panel">
           <div class="cover" v-show="cover"></div>
@@ -177,11 +178,11 @@
               <div class="item">
                 <span>养护负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.charger || treeDetail.tree.maintainer.company.chargeMobile : '暂无养护人'}}</span>
               </div>
-              <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
+              <div class="item" @click="go('/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
                 <span>养护记录</span>
                 <img src="./more@2x.png" class="fr more">
               </div>
-              <div class="item" @click="go('/my-tree/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
+              <div class="item" @click="go('/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
                 <span>历史认养人</span>
                 <img src="./more@2x.png" class="fr more">
               </div>
@@ -280,11 +281,11 @@
             <div class="item">
               <span>养护负责人</span><span>{{treeDetail.tree.maintainer ? treeDetail.tree.maintainer.company.charger || treeDetail.tree.maintainer.company.chargeMobile : '暂无养护人'}}</span>
             </div>
-            <div class="item" @click="go('/my-tree/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
+            <div class="item" @click="go('/maintain-records?treeNumber=' + treeDetail.treeNumber + '&aTCode=' + adoptTreeCode)">
               <span>养护记录</span>
               <img src="./more@2x.png" class="fr more">
             </div>
-            <div class="item" @click="go('/my-tree/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
+            <div class="item" @click="go('/adopt-list?history=1&code=' + treeDetail.productCode + '&aTCode=' + adoptTreeCode)">
               <span>历史认养人</span>
               <img src="./more@2x.png" class="fr more">
             </div>
@@ -392,7 +393,13 @@ export default {
       toastText: '',
       hasMore: false,
       text: '',
-      pullUpLoad: null,
+      pullUpLoad: {
+        threshold: 40,
+        txt: {
+          more: '加载中...',
+          noMore: '已经全部加载完毕'
+        }
+      },
       flag: false,
       propFlag: false,
       danmuFlag: false,

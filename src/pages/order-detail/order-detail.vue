@@ -26,7 +26,7 @@
               <div class="duration">
                 <div class="duration-item"><span class="name">下单时间</span><span>{{formatDate(detail.applyDatetime)}}</span></div>
                 <div class="duration-item"><span class="name">订单类型</span><span>{{sellTypeObj[detail.product.sellType]}}</span></div>
-                <div class="duration-item"><span class="name">支付方式</span><span>{{payTypeObj[detail.payType]}}</span></div>
+                <div class="duration-item" v-if="detail.payType"><span class="name">支付方式</span><span>{{payTypeObj[detail.payType]}}</span></div>
                 <div class="duration-item" v-show="detail.identifyCode"><span class="name">下单识别码：</span><span>{{detail.identifyCode}} <button class="copy"
                                                                                                              v-clipboard:copy="detail.identifyCode"
                                                                                                              v-clipboard:success="onCopy"

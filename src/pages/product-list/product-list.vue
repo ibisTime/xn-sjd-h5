@@ -1,7 +1,7 @@
 <template>
   <div class="home-wrapper">
     <div class="search-wrapper">
-      <search :left="searchLeft"></search>
+      <search :left="searchLeft" :query="query" @search="searchEvent"></search>
     </div>
     <div class="header clearfix category-wrapper">
       <!--<category-scroll :currentIndex="currentIndex"-->
@@ -73,6 +73,7 @@ export default {
       loading: true,
       toastText: '',
       currentList: [],
+      query: '',
       text: '',
       start: 1,
       limit: 10,
@@ -241,6 +242,13 @@ export default {
         this.getPageOrders();
         this.loading = false;
       }).catch(() => { this.loading = false; });
+    },
+    searchEvent(query) {
+      this.start = 1;
+      this.limit = 10;
+      this.proList = [];
+      this.query = query;
+      this.getPageOrders();
     },
     getPageOrders() {
       // if(this.categorys[this.index].key === 'all') {

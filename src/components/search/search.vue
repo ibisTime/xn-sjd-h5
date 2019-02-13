@@ -6,7 +6,7 @@
           <img src="./back@2x.png" v-if="left.back" class="back" @click="back">
           <div class="search">
             <div class="search-icon"></div>
-            <input type="text" ref="searchInput" placeholder="请输入树木名称" v-model="query" @click="focus"/>
+            <input type="text" ref="searchInput" placeholder="请输入树木名称" v-model="query" @click="focus" @keyup.enter="submit"/>
             <i v-show="query" class="close-icon" @click="clearInput"></i>
           </div>
           <div class="cancel" @click="back" v-if="right.cancel">取消</div>
@@ -49,6 +49,10 @@
   export default {
     mixins: [directiveMixin],
     props: {
+      query: {
+        type: String,
+        default: ''
+      },
       right: {
         type: Object,
         default: () => {
@@ -69,7 +73,6 @@
     },
     data() {
       return {
-        query: '',
         list: [],
         text: ''
       };
@@ -100,6 +103,9 @@
         // }).then((data) => {
         //   this.list = data.list;
         // });
+      },
+      submit() {
+        this.$emit('search', this.query);
       },
       addQuery(query) {
         this.query = query;
@@ -217,7 +223,7 @@
           height: 100%;
           font-size: 0;
           img {
-            margin: 0 0.3rem;
+            margin: 0 0.3rem 0 0;
             height: 0.52rem;
           }
         }

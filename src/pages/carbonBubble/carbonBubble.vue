@@ -31,20 +31,23 @@
         </div>
       </div>
     </div>
+    <full-loading v-show="loading"></full-loading>
   </div>
 </template>
 <script>
   import Scroll from 'base/scroll/scroll';
+  import NoResult from 'base/no-result/no-result';
+  import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
   import {getAccountList} from 'api/account';
   import { getAccount } from 'api/biz';
   import { formatAmount, formatDate } from 'common/js/util';
   import { getCookie } from 'common/js/cookie';
-  import NoResult from 'base/no-result/no-result';
 
   export default {
     data() {
       return {
+        loading: false,
         amount: 0,
         start: 1,
         limit: 10,
@@ -60,6 +63,7 @@
       if(this.accountNumber) {
         this.getCarbonBubble();
       } else {
+        this.loading = true;
         getAccount({
           userId: this.userId
         }).then((res) => {
@@ -69,8 +73,9 @@
               this.accountNumber = item.accountNumber;
             }
           });
+          this.loading = false;
           this.getCarbonBubble();
-        });
+        }).catch(() => { this.loading = false; });
       }
     },
     methods: {
@@ -91,6 +96,7 @@
       },
       getCarbonBubble() {
         if(this.hasMore) {
+          this.loading = true;
           getAccountList({
             accountNumber: this.accountNumber,
             start: this.start,
@@ -101,7 +107,8 @@
             }
             this.carbonList = [...this.carbonList, ...res.list];
             this.start ++;
-          });
+            this.loading = false;
+          }).catch(() => { this.loading = false; });
         }
       },
       getIcon(item) {
@@ -111,7 +118,8 @@
     components: {
       Scroll,
       MHeader,
-      NoResult
+      NoResult,
+      FullLoading
     }
   };
 </script>
@@ -135,18 +143,12 @@
         text-align: center;
       }
       .content {
-        margin: 0.88rem 0.3rem;
+        padding: 0.96rem 0.3rem;
         margin-bottom: 0.98rem;
         .in-content {
           border-top-left-radius: 0.12rem;
           border-top-right-radius: 0.12rem;
           background: #fff;
-          position: fixed;
-          top: 0.88rem;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          padding: 0 0.3rem;
           .card {
             height: 2.8rem;
             border-radius: 0.12rem;
@@ -170,11 +172,11 @@
           .money-list {
             background: $color-highlight-background;
             position: absolute;
-            top: 3.05rem;
+            top: 4rem;
+            left: 0;
             bottom: 0;
-            left: 0.3rem;
-            right: 0.3rem;
-            overflow: auto;
+            width: 100%;
+            padding: 0 0.3rem;
             .money-item {
               display: flex;
               align-items: center;

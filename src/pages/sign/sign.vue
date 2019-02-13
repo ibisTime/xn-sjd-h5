@@ -1,6 +1,6 @@
 <template>
   <div class="sign-wrapper">
-    <back-only class="cate-header" title="签到"></back-only>
+    <back-only title="签到"></back-only>
     <scroll ref="scroll" :pullUpLoad="pullUpLoad">
       <div class="jf-wrapper">
         <div class="top">

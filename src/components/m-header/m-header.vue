@@ -59,6 +59,8 @@
     height: 0.88rem;
     background-color: $primary-color;
     color: $color-background;
+    /*<!--background-color: transparent;-->*/
+    /*<!--color: $color-text;-->*/
 
     .inner {
 
@@ -68,10 +70,11 @@
         top: 0;
         width: 1rem;
         height: 0.88rem;
-        background-size: 0.22rem;
+        /*background-size: 0.22rem;*/    // 原版返回按钮背景大小为0。22rem
+        background-size: 0.44rem;
         background-position: 0.3rem 50%;
         background-repeat: no-repeat;
-        @include bg-image('back');
+        @include bg-image('back1');      // 原版返回按钮背景图片为back
       }
       .icon-img {
         position: absolute;

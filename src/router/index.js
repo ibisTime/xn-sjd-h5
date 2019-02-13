@@ -429,16 +429,16 @@ export default new Router({
         {
           path: 'adopt-list',
           component: AdoptList
-        },
+        }
+      ]
+    },
+    {
+      path: '/maintain-records',
+      component: MaintainRecords,
+      children: [
         {
-          path: 'maintain-records',
-          component: MaintainRecords,
-          children: [
-            {
-              path: 'maintain-detail',
-              component: MaintainDetail
-            }
-          ]
+          path: 'maintain-detail',
+          component: MaintainDetail
         }
       ]
     },

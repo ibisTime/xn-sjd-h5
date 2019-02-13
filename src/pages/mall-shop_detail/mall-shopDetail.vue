@@ -19,7 +19,7 @@
                 <a :href="'javascript:void(0)'" :style="getImgSyl(item ? item : '')"></a>
               </div>
             </slider>
-            <back-only top="0.8rem"></back-only>
+            <back-only></back-only>
           </div>
           <div class="shop-det">
             <p class="shop-price"><span>￥{{formatAmount(shopDetData.minPrice)}}</span> - <span>￥{{formatAmount(shopDetData.maxPrice)}}</span></p>
@@ -69,7 +69,7 @@
           </div>
           <p></p>
         </div>
-        <div class="com-list" v-show="!commentList.length && !hasMore">
+        <div class="com-list" v-show="tab === 2 && !commentList.length && !hasMore">
           <div class="mall-content">
             <no-result class="no-result-wrapper" title="暂无评论"></no-result>
           </div>
@@ -695,7 +695,7 @@ export default {
     position: absolute;
     bottom: 0rem;
     width: 100%;
-    min-height: 60%;
+    min-height: 30%;
     padding: 0.3rem 0.3rem 0.1rem;
     background-color: #fff;
     .tos-head{

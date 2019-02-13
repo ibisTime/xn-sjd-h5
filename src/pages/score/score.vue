@@ -171,7 +171,7 @@
             background: $color-highlight-background;
             position: absolute;
             top: 4rem;
-            bottom: 0.5rem;
+            bottom: 0;
             width: 90%;
             .money-item {
               display: flex;
