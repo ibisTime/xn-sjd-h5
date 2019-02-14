@@ -86,7 +86,6 @@
     methods: {
       // 注册
       register() {
-        // debugger;
         this.$validator.validateAll().then((result) => {
           if (result && this.pwd === this.rePwd && this.isChecked) {
             this.loading = true;

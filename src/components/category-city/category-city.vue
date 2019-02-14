@@ -119,7 +119,6 @@
         if (!this.provList.length) {
           this._creatList(cityData, this.provList);
         }
-        // debugger;
         if (this.outProvIndex) {
           this.areaList = [];
           this.cityList = [];

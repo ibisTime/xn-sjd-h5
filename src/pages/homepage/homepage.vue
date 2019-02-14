@@ -274,11 +274,7 @@
       },
       getName(item) {
         if(item.userInfo.userId === this.currentHolder) {
-          if(this.other === '1') {
-            return 'TA';
-          } else {
-            return '我';
-          }
+          return this.other === '1' ? 'TA' : '我';
         } else {
           if(item.userInfo.userId === getUserId()) {
             return '我';
@@ -297,11 +293,7 @@
       },
       get2Name(item) {
         if(item.adoptUserInfo.userId === this.currentHolder) {
-          if(this.other === '1') {
-            return 'TA';
-          } else {
-            return '我';
-          }
+          return this.other === '1' ? 'TA' : '我';
         } else {
           if(item.adoptUserInfo.userId === getUserId()) {
             return '我';

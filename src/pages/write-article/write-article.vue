@@ -148,7 +148,6 @@
       },
       // 发布文章
       fabu() {
-        // debugger;
         this.setting = true;
         let photoArr = [];
         this.photos.map((item) => {

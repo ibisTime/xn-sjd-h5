@@ -108,7 +108,7 @@
     </div>
     <div class="footer">
       <button @click="go('/me')" class="footer-me">我的</button>
-      <button class="footer-share">分享</button>
+      <button class="footer-share" @click="shareBrowser">分享</button>
       <button @click="showPopUp" v-show="canAdopt()" class="footer-adopt">申请认养</button>
       <button class="footer-adopt" v-show="!canAdopt()" @click="goLogin()">{{noAdoptReason}}</button>
     </div>
@@ -356,7 +356,7 @@ export default {
         }
         if(this.detail.sellType !== '4') {
           let type = this.detail.sellType;
-          this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&type=' + type);
+          this.go(`/protocol?sign=1&proCode=${proCode}&specsCode=${specsCode}&quantity=${quantity}&type=${type}&price=${formatAmount(this.detail.productSpecsList[this.choosedIndex].price) * this.number}&start=${this.detail.productSpecsList[this.choosedIndex].startDatetime}&end=${this.detail.productSpecsList[this.choosedIndex].endDatetime}`);
         } else {
           // 集体认养
           let type = this.detail.sellType;
@@ -371,7 +371,7 @@ export default {
             this.text = '识别码错误';
             this.$refs.toast.show();
           } else {
-            this.go('/protocol?sign=1&proCode=' + proCode + '&specsCode=' + specsCode + '&quantity=' + quantity + '&identifyCode=' + identifyCode + '&type=' + type);
+            this.go(`/protocol?sign=1&proCode${proCode}&specsCode=${specsCode}&quantity=${quantity}&identifyCode=${identifyCode}&type=${type}&price=${formatAmount(this.detail.productSpecsList[this.choosedIndex].price) * this.number}&start=${this.detail.productSpecsList[this.choosedIndex].startDatetime}&end=${this.detail.productSpecsList[this.choosedIndex].endDatetime}`);
           }
         }
       } else {
@@ -469,7 +469,8 @@ export default {
         this.wxData = null;
         this.loading = false;
       });
-    }
+    },
+    shareBrowser() {}
   },
   mounted() {
     setTitle('产品详情');

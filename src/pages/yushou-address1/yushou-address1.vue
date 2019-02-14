@@ -195,7 +195,6 @@
         this.$router.push(url);
       },
       getAddress() {
-        // debugger;
         if (!this.addressList.length) {
           this.addressList.push(JSON.parse(sessionStorage.getItem('tihuo-address')));
           this.amountChange();

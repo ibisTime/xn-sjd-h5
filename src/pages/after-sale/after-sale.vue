@@ -170,7 +170,6 @@ export default {
       };
     },
     setSaleFn(index) {
-      // debugger;
       this.refundReason = '';
       this.message = '';
       // if (index === this.setIndex) {

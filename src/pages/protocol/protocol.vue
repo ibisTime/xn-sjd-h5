@@ -18,9 +18,11 @@
   import FullLoading from 'base/full-loading/full-loading';
   import MHeader from 'components/m-header/m-header';
   import { getCookie } from 'common/js/cookie';
-  import { placeOrder, recognizeOrder, recognizeOrderFirst, getProductDetail, getBookingProDetail, getCompany, placePreOrder, getDeriveZichanDetail } from 'api/biz';
+  import { placeOrder, recognizeOrder, recognizeOrderFirst, getProductDetail, getBookingProDetail,
+    getCompany, placePreOrder, getDeriveZichanDetail, getCachet } from 'api/biz';
   import { getSystemConfigCkey } from 'api/general';
-  import { setTitle } from 'common/js/util';
+  import { getUser } from 'api/user';
+  import { setTitle, formatDate, formatImg } from 'common/js/util';
 
   export default {
     data() {
@@ -43,6 +45,9 @@
       this.proCode = this.$route.query.proCode || '';
       this.specsCode = this.$route.query.specsCode || '';
       this.quantity = this.$route.query.quantity || '';
+      this.price = this.$route.query.price || '';
+      this.start = this.$route.query.start || '';
+      this.end = this.$route.query.end || '';
       this.type = this.$route.query.type || '';
       this.identifyCode = this.$route.query.identifyCode || '';
       this.register = this.$route.query.register || '';
@@ -74,14 +79,54 @@
             })
           ]).catch(() => { this.loading = false; });
         } else {
+          // Promise.all([
+          //   getProductDetail({code: this.proCode}).then((res) => {
+          //     getCompany({userId: res.ownerId}).then((data) => {
+          //       this.loading = false;
+          //       data.contractTemplate = data.contractTemplate.replace('甲方名称', 'aaa');
+          //       data.contractTemplate = data.contractTemplate.replace('乙方名称', 'bbb');
+          //       data.contractTemplate = data.contractTemplate.replace('丙方名称', 'ccc');
+          //       console.log(data.contractTemplate);
+          //       this.xyText = data.contractTemplate;
+          //     });
+          //   })
+          // ]).catch(() => { this.loading = false; });
           Promise.all([
-            getProductDetail({code: this.proCode}).then((res) => {
-              getCompany({userId: res.ownerId}).then((data) => {
-                this.loading = false;
-                this.xyText = data.contractTemplate;
-              });
-            })
-          ]).catch(() => { this.loading = false; });
+            getProductDetail({code: this.proCode}),
+            getUser()
+          ]).then(([res1, res2]) => {
+            // res1:产品详情，res2:用户详情
+            Promise.all([
+              getCompany({userId: res1.ownerId}),
+              getCachet({
+                province: res1.province,
+                city: res1.city,
+                area: res1.area
+              })
+            ]).then(([data1, data2]) => {
+              // data1:产权信息，data2:公章信息
+              this.loading = false;
+              let str = data1.contractTemplate;
+              str = str.replace(/##甲方名称##/g, data1.name);
+              str = str.replace(/##乙方名称##/g, res2.realName);
+              str = str.replace(/##丙方名称##/g, data2[0].department);
+              str = str.replace('adoptCode', '下单成功后产生');
+              str = str.replace('##quantity##', this.quantity);
+              str = str.replace('##price##', this.price);
+              str = str.replace('##y1##', formatDate(this.start, 'yyyy'))
+                .replace('##m1##', formatDate(this.start, 'MM'))
+                .replace('##d1##', formatDate(this.start, 'dd'));
+              str = str.replace('##y2##', formatDate(this.end, 'yyyy'))
+                .replace('##m2##', formatDate(this.end, 'MM'))
+                .replace('##d2##', formatDate(this.end, 'dd'));
+              str = str.replace('##date1##', formatDate(new Date(), 'yyyy.MM.dd'))
+                .replace('##date2##', formatDate(new Date(), 'yyyy.MM.dd'))
+                .replace('##date3##', formatDate(new Date(), 'yyyy.MM.dd'));
+              str = str.replace('##cachet1##', `<img src=${formatImg(data2[0].pic)}>`)
+                .replace('##cachet3##', `<img src=${formatImg(data1.commonSeal)}>`);
+              this.xyText = str;
+            });
+          });
         }
       }
     },

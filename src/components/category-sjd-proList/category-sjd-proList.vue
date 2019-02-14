@@ -110,13 +110,13 @@
         priceIndex: -1,
         isFree: false,
         isNew: false,
-        bigCode: this.$route.query.code || 'ALL',
+        bigCode: this.$route.query.bigCode || 'ALL',
         smallCode: '',
         varietyList: []
       };
     },
     mounted() {
-      console.log(this.provinceList);
+      // console.log(this.provinceList);
       this.orderText = this.orderList[0].value;
       this.getPinzhongList();
     },

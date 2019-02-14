@@ -377,7 +377,7 @@ import MHeader from 'components/m-header/m-header';
 import MFooter from 'components/m-footer/m-footer';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
         getListProps, buyProps, getPropsOrder, getAccount, getPropsUsedRecordList, getDanmuList,
-        sendDanmu, useProps } from 'api/biz';
+        sendDanmu, useProps, visit } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import { getUserDetail } from 'api/user';
 import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
@@ -452,6 +452,7 @@ export default {
       this.title = 'TA的树';
       this.borderTitle = 'TA的动态';
       setTitle('TA的树');
+      visit(this.adoptTreeCode);
     }
     this.getInitData();
   },

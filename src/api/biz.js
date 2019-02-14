@@ -819,3 +819,18 @@ export function getOriginDeliverList(placeType) {
     placeType
   });
 }
+
+// 列表查公章
+export function getCachet(config) {
+  return fetch(629677, {
+    ...config
+  });
+}
+
+// 列表查公章
+export function visit(code) {
+  return fetch(629202, {
+    code,
+    visitorId: getUserId()
+  });
+}

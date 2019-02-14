@@ -211,7 +211,6 @@
           arr.push(param);
           sessionStorage.setItem('tihuo-address', JSON.stringify(arr));
         } else {
-          // debugger;
           let arr = JSON.parse(sessionStorage.getItem('tihuo-address'));
           arr.push(param);
           sessionStorage.setItem('tihuo-address', JSON.stringify(arr));

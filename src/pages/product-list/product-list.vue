@@ -344,105 +344,116 @@ export default {
       this.limit = 10;
       this.proList = [];
       this.getPageOrders();
+    },
+    shouldGetData() {
+      if (this.$route.path === '/product-list') {
+        return true;
+      }
+      return false;
     }
   },
-  mounted() {
+  // created() {
+  //   console.log(this.$router);
+  // },
+  created() {
     this.pullUpLoad = null;
     this.loading = true;
     this.userId = getCookie('userId');
     this.categoryCode = this.$route.query.typeCode || '';
     this.query = this.$route.query.query || '';
     setTitle('认养列表');
-    Promise.all([
-      getDictList('sell_type'),
-      getProductType({
-        orderDir: 'asc',
-        orderColumn: 'order_no',
-        status: 1,
-        typeList: ['0', '1']
-      }),
-      getDictList('product_status'),
-      getProductAreaList()
-    ]).then(([res1, res2, res3, res4]) => {
-      res1.map((item) => {
-        this.sellTypeObj[item.dkey] = item.dvalue;
-      });
-      res2.map((item) => {
-        if(!item.parentCode) {
-          if(item.name !== '果树预售') {
-            this.categorys.push({
-              value: item.name,
-              key: item.code
-            });
+    if(this.shouldGetData()) {
+      Promise.all([
+        getDictList('sell_type'),
+        getProductType({
+          orderDir: 'asc',
+          orderColumn: 'order_no',
+          status: 1,
+          typeList: ['0', '1']
+        }),
+        getDictList('product_status'),
+        getProductAreaList()
+      ]).then(([res1, res2, res3, res4]) => {
+        res1.map((item) => {
+          this.sellTypeObj[item.dkey] = item.dvalue;
+        });
+        res2.map((item) => {
+          if(!item.parentCode) {
+            if(item.name !== '果树预售') {
+              this.categorys.push({
+                value: item.name,
+                key: item.code
+              });
+            }
           }
+        });
+        res3.map((item) => {
+          this.projectStatusObj[item.dkey] = item.dvalue;
+        });
+        this.categorys.map((item, index) => {
+          if(item.key === this.categoryCode) {
+            this.index = index;
+            this.currentIndex = index;
+          }
+        });
+        // let provinceList = [];
+        // res4.map((item) => {
+        //   if(provinceList.length) {
+        //     this.hasProvince = false;
+        //     provinceList.map((province) => {
+        //       if(province.name === item.province) {
+        //         // 有省
+        //         let cityList = province.sub;
+        //         cityList.map((city) => {
+        //           if(city.name === item.city) {
+        //             // 有市
+        //             city.sub.push({
+        //               name: item.area
+        //             });
+        //           } else {
+        //             province.push({
+        //               name: item.city,
+        //               sub: [{
+        //                 name: item.area
+        //               }]
+        //             });
+        //           }
+        //         });
+        //         this.hasProvince = true;
+        //       }
+        //     });
+        //     if(!this.hasProvince) {
+        //       provinceList.push({
+        //         name: item.province,
+        //         sub: [{
+        //           name: item.city,
+        //           sub: [{
+        //             name: item.area
+        //           }]
+        //         }]
+        //       });
+        //     }
+        //   } else {
+        //     provinceList.push({
+        //       name: item.province,
+        //       sub: [{
+        //         name: item.city,
+        //         sub: [{
+        //           name: item.area
+        //         }]
+        //       }]
+        //     });
+        //   }
+        // });
+        // this.provinceList = provinceList;
+        this.loading = false;
+        // this.getSubType();
+        this.getPageOrders();
+        if(this.userId) {
+          this.getUserDetail();
         }
-      });
-      res3.map((item) => {
-        this.projectStatusObj[item.dkey] = item.dvalue;
-      });
-      this.categorys.map((item, index) => {
-        if(item.key === this.categoryCode) {
-          this.index = index;
-          this.currentIndex = index;
-        }
-      });
-      // let provinceList = [];
-      // res4.map((item) => {
-      //   if(provinceList.length) {
-      //     this.hasProvince = false;
-      //     provinceList.map((province) => {
-      //       if(province.name === item.province) {
-      //         // 有省
-      //         let cityList = province.sub;
-      //         cityList.map((city) => {
-      //           if(city.name === item.city) {
-      //             // 有市
-      //             city.sub.push({
-      //               name: item.area
-      //             });
-      //           } else {
-      //             province.push({
-      //               name: item.city,
-      //               sub: [{
-      //                 name: item.area
-      //               }]
-      //             });
-      //           }
-      //         });
-      //         this.hasProvince = true;
-      //       }
-      //     });
-      //     if(!this.hasProvince) {
-      //       provinceList.push({
-      //         name: item.province,
-      //         sub: [{
-      //           name: item.city,
-      //           sub: [{
-      //             name: item.area
-      //           }]
-      //         }]
-      //       });
-      //     }
-      //   } else {
-      //     provinceList.push({
-      //       name: item.province,
-      //       sub: [{
-      //         name: item.city,
-      //         sub: [{
-      //           name: item.area
-      //         }]
-      //       }]
-      //     });
-      //   }
-      // });
-      // this.provinceList = provinceList;
-      this.loading = false;
-      // this.getSubType();
-      this.getPageOrders();
-      if(this.userId) {
-        this.getUserDetail();
-      }
-    }).catch(() => { this.loading = false; });
+      }).catch(() => { this.loading = false; });
+    }
   },
   components: {
     CategorySjdProList,
