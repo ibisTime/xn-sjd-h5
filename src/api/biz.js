@@ -827,7 +827,7 @@ export function getCachet(config) {
   });
 }
 
-// 列表查公章
+// 来访人落地
 export function visit(code) {
   return fetch(629202, {
     code,

@@ -1,12 +1,11 @@
 <template>
   <div class="category">
-    <!--<div class="check-in-wrapper"></div>-->
     <div class="consignment-category">
       <div class="type">
-        <span @click="areaClick">所在地区<img src="./down-unchoosed@2x.png"/></span>
-        <span @click="smallClick">树级<img src="./down-unchoosed@2x.png"/></span>
-        <span @click="ageClick">树龄排序<img src="./down-unchoosed@2x.png"/></span>
-        <span @click="filterClick">筛选<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="areaClick" :style="{color: cityFilter ? '#ec554e' : ''}">所在地区<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="smallClick" :style="{color: smallFilter ? '#ec554e' : ''}">树级<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="ageClick" :style="{color: ageFilter ? '#ec554e' : ''}">树龄排序<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="filterClick" :style="{color: filterFilter ? '#ec554e' : ''}">筛选<img src="./down-unchoosed@2x.png"/></span>
       </div>
     </div>
     <category-city ref="cityPicker"
@@ -33,7 +32,7 @@
                     :outSmallCode="smallCode"
                     :outBigCode="bigCode"></category-small>
     <category-age ref="ageCategory"
-                     @confirm="handleAge"
+                     @ageConfirm="handleAge"
                      orderColunm="age"
     ></category-age>
   </div>
@@ -112,7 +111,11 @@
         isNew: false,
         bigCode: this.$route.query.bigCode || 'ALL',
         smallCode: '',
-        varietyList: []
+        varietyList: [],
+        filterFilter: false,
+        smallFilter: false,
+        ageFilter: false,
+        cityFilter: false
       };
     },
     mounted() {
@@ -133,18 +136,29 @@
         this.smallActive = false;
       },
       handleConfirm(bigCode, smallCode, smallName) {
+        this.bigCode = bigCode;
+        if(bigCode !== 'ALL') {
+          this.smallFilter = true;
+        } else {
+          this.smallFilter = false;
+        }
         this.$emit('smallConfirm', bigCode);
       },
       firstUpdateBigName(name) {
         this.smallName = name;
       },
       cityChose(prov, city, area, provIdx, cityIdx, areaIdx) {
+        if(!prov && !city && !area) {
+          this.cityFilter = false;
+        } else {
+          this.cityFilter = true;
+        }
         this.province = prov;
-        // this.provIndex = provIdx;
+        this.provIndex = provIdx;
         this.city = city;
-        // this.cityIndex = cityIdx;
+        this.cityIndex = cityIdx;
         this.area = area;
-        // this.areaIndex = areaIdx;
+        this.areaIndex = areaIdx;
         this.$emit('cityConfirm', prov, city, area);
       },
 
@@ -156,6 +170,11 @@
       },
 
       handleFilter(can, variety) {
+        if(can !== '2' || variety) {
+          this.filterFilter = true;
+        } else {
+          this.filterFilter = false;
+        }
         this.$emit('filterConfirm', can, variety);
       },
 
@@ -184,10 +203,6 @@
           this.$refs.smallCategory.hide();
         }
       },
-      resetQuery() {
-        this.start = 1;
-        this.$emit('getPageOrder');
-      },
       ageClick() {
         this.$refs.filterCategory.hide();
         this.$refs.cityPicker.hide();
@@ -195,6 +210,7 @@
         this.$refs.ageCategory.show();
       },
       handleAge(params) {
+        this.ageFilter = true;
         this.$emit('ageConfirm', params);
       }
     },

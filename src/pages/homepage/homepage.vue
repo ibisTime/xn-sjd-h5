@@ -50,7 +50,8 @@
                 <!--<p class="tree-name"><span>{{item.tree.productName}}({{item.treeNumber}})</span><span>2018.12.24-2019.12.24</span></p>-->
                 <p class="tree-about">
                   <span>{{item.tree.city}} {{item.tree.area}}</span>
-                  <span>还剩余<span class="surplus-days">{{getDaysCount(item)}}</span>天认养到期</span>
+                  <span v-if="getDaysCount(item) !== -1">还剩余<span class="surplus-days">{{getDaysCount(item)}}</span>天认养到期</span>
+                  <span v-if="getDaysCount(item) === -1">已到期</span>
                 </p>
               </div>
               <img src="./more@2x.png">
@@ -262,12 +263,15 @@
         // 原因，时间格式问题，标准时间格式为 ‘/’ 连接，
         // 调用时间的时候尽量使用标准的连接符，或者使用时间戳。
         // 不管是在调用new Date()方法还是传参时，都会有这种问题。
-        let sDate1 = formatDate(item.startDatetime, 'yyyy/MM/dd');
+        let sDate1 = formatDate(item.endDatetime, 'yyyy/MM/dd');
         let sDate2 = formatDate(new Date(), 'yyyy/MM/dd');
         let dateSpan, iDays;
         sDate1 = Date.parse(sDate1);
         sDate2 = Date.parse(sDate2);
-        dateSpan = sDate2 - sDate1;
+        if(sDate1 < sDate2) {
+          return -1;
+        }
+        dateSpan = sDate1 - sDate2;
         dateSpan = Math.abs(dateSpan);
         iDays = Math.floor(dateSpan / (24 * 3600 * 1000)).toString();
         return iDays;

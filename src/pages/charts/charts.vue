@@ -1,7 +1,7 @@
 <template>
   <div class="adopt-list-wrapper">
     <m-header class="cate-header" title="好友排行榜" actText="好友审核" @action="action"></m-header>
-    <div class="me">
+    <div class="me" v-if="userDetail && userDetail.toUserInfo">
       <div class="item" @click="goUserHome(userDetail)">
         <div class="order">
           <img v-if="userDetail.rowNo === 1" src="./no1@2x.png">
@@ -73,7 +73,7 @@
         start: 1,
         limit: 30,
         hasMore: true,
-        userDetail: {toUserInfo: {photo: '', mobile: ''}}
+        userDetail: {}
       };
     },
     mounted() {

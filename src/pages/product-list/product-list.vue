@@ -69,8 +69,8 @@ import CategorySjdProList from 'components/category-sjd-proList/category-sjd-pro
 export default {
   data() {
     return {
-      title: '正在加载...',
-      loading: true,
+      title: '...',
+      loading: false,
       toastText: '',
       currentList: [],
       query: '',
@@ -100,7 +100,11 @@ export default {
       provinceList: [],
       province: '',   // 筛选的省
       city: '',   // 筛选的市
-      area: ''   // 筛选的区
+      area: '',   // 筛选的区
+      smallFilter: false,
+      cityFilter: false,
+      ageFilter: false,
+      filterFilter: false
     };
   },
   methods: {
@@ -310,7 +314,9 @@ export default {
         this.userDetail = res;
       });
     },
+    // 筛选的筛选
     filterConfirm(can, variety) {
+      this.filterFilter = true;
       this.start = 1;
       this.limit = 10;
       this.proList = [];
@@ -318,14 +324,18 @@ export default {
       this.variety = variety;
       this.getPageOrders();
     },
+    // 树龄筛选
     ageConfirm(params) {
+      this.ageFilter = true;
       this.start = 1;
       this.limit = 10;
       this.proList = [];
       this.ageParams = params;
       this.getPageOrders();
     },
+    // 区域筛选
     cityConfirm(prov, city, area) {
+      this.cityFilter = true;
       this.province = prov;
       this.city = city;
       this.area = area;
@@ -334,7 +344,9 @@ export default {
       this.proList = [];
       this.getPageOrders();
     },
+    // 树级筛选
     smallConfirm(bigCode) {
+      this.smallFilter = true;
       if(bigCode !== 'ALL') {
         this.treeLevel = bigCode;
       } else {
@@ -350,19 +362,10 @@ export default {
         return true;
       }
       return false;
-    }
-  },
-  // created() {
-  //   console.log(this.$router);
-  // },
-  created() {
-    this.pullUpLoad = null;
-    this.loading = true;
-    this.userId = getCookie('userId');
-    this.categoryCode = this.$route.query.typeCode || '';
-    this.query = this.$route.query.query || '';
-    setTitle('认养列表');
-    if(this.shouldGetData()) {
+    },
+    initData() {
+      // debugger;
+      this.loading = true;
       Promise.all([
         getDictList('sell_type'),
         getProductType({
@@ -447,7 +450,6 @@ export default {
         // });
         // this.provinceList = provinceList;
         this.loading = false;
-        // this.getSubType();
         this.getPageOrders();
         if(this.userId) {
           this.getUserDetail();
@@ -455,6 +457,21 @@ export default {
       }).catch(() => { this.loading = false; });
     }
   },
+  mounted() {
+    this.pullUpLoad = null;
+    // this.loading = true;
+    this.userId = getCookie('userId');
+    this.categoryCode = this.$route.query.typeCode || '';
+    this.query = this.$route.query.query || '';
+    setTitle('认养列表');
+    this.initData();
+    // if(this.shouldGetData()) {
+    //   this.initData();
+    // }
+  },
+  // mounted() {
+  //   this.initData();
+  // },
   components: {
     CategorySjdProList,
     FullLoading,

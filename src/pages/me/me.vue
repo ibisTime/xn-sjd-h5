@@ -4,7 +4,7 @@
       <div class="top">
         <div class="info">
           <div class="avatar">
-            <img :src="src" class="head" @click.stop="go(`/userAvatar`)">
+            <img :src="src" class="head" @click.stop="go(`/userInfo`)">
             <div class="auth" @click="toAuth" v-show="isLogin">
               <img src="./auth@2x.png">
               <span>{{rzText}}</span>

@@ -3,20 +3,12 @@
     <!--<div class="check-in-wrapper"></div>-->
     <div class="consignment-category">
       <div class="type">
-        <span @click="all">全部</span>
-        <span @click="priceClick">价格<img src="./down-unchoosed@2x.png"/></span>
-        <span @click="sellCountClick">销量<img src="./down-unchoosed@2x.png"/></span>
-        <span @click="filterClick">筛选<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="all" :style="{color: allFilter ? '#f68646' : ''}">全部</span>
+        <span @click="priceClick" :style="{color: priceFilter ? '#f68646' : ''}">价格<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="sellCountClick" :style="{color: sellCountFilter ? '#f68646' : ''}">销量<img src="./down-unchoosed@2x.png"/></span>
+        <span @click="filterClick" :style="{color: filterFilter ? '#f68646' : ''}">筛选<img src="./down-unchoosed@2x.png"/></span>
       </div>
     </div>
-    <!--<category-city ref="cityPicker"-->
-                    <!--@hide="handleHide"-->
-                    <!--:outProvIndex="provIndex"-->
-                    <!--:outCityIndex="cityIndex"-->
-                    <!--:outAreaIndex="areaIndex"-->
-                    <!--@cityChose="cityChose"-->
-                    <!--top="1.6rem"-->
-                    <!--:cityData1="provinceList"></category-city>-->
     <category-filter-mall ref="filterCategoryMall"
                      @confirm="handleFilter"
                      :outMinPrice="minPrice"
@@ -27,24 +19,12 @@
                      :originList="origin"
                      :deliverList="deliver"
     ></category-filter-mall>
-    <category-age ref="ageCategory"
+    <category-age ref="priceCategory"
                   :orderColumn="orderColumn"
-                  @ageConfirm="ageConfirm"></category-age>
-    <!--<category-small ref="smallCategory"-->
-                    <!--@hide="handleSmallHide"-->
-                    <!--@confirm="handleConfirm"-->
-                    <!--@firstUpdateBigName="firstUpdateBigName"-->
-                    <!--:outSmallCode="smallCode"-->
-                    <!--:outBigCode="bigCode"></category-small>-->
-    <!--<category-age ref="ageCategory"-->
-                     <!--@confirm="handleAge"-->
-                     <!--:outMinPrice="minPrice"-->
-                     <!--:outMaxPrice="maxPrice"-->
-                     <!--:outPriceIndex="priceIndex"-->
-                     <!--:outIsFree="isFree"-->
-                     <!--:outIsNew="isNew"-->
-                     <!--:varietyList="varietyList"-->
-    <!--&gt;</category-age>-->
+                  @ageConfirm="priceConfirm"></category-age>
+    <category-age ref="sellCountCategory"
+                  :orderColumn="orderColumn"
+                  @ageConfirm="sellCountConfirm"></category-age>
   </div>
 </template>
 
@@ -110,7 +90,11 @@
         smallCode: '',
         origin: [],
         deliver: [],
-        orderColumn: ''
+        orderColumn: '',
+        filterFilter: false,
+        priceFilter: false,
+        sellCountFilter: false,
+        allFilter: false
       };
     },
     mounted() {
@@ -156,40 +140,40 @@
       },
 
       filterClick() {
-        // this.$refs.cityPicker.hide();
-        this.$refs.ageCategory.hide();
+        this.$refs.priceCategory.hide();
+        this.$refs.sellCountCategory.hide();
         this.$refs.filterCategoryMall.show();
-        // this.$refs.smallCategory.hide();
       },
 
       handleFilter(params) {
+        if(JSON.stringify(params) !== '{}') {
+          this.allFilter = false;
+          this.filterFilter = true;
+        } else {
+          this.filterFilter = false;
+        }
         this.$emit('filterConfirm', params);
       },
       all () {
-        this.$refs.ageCategory.hide();
+        this.allFilter = true;
+        this.$refs.priceCategory.hide();
+        this.$refs.sellCountCategory.hide();
         this.$refs.filterCategoryMall.hide();
+        this.priceFilter = false;
+        this.sellCountFilter = false;
+        this.filterFilter = false;
         this.$emit('all');
       },
-      // areaClick() {
-      //   this.areaActive = !this.areaActive;
-      //   // this.$refs.smallCategory.hide();
-      //   if (this.areaActive) {
-      //     this.$refs.cityPicker.show();
-      //     this.$refs.cityPicker.initScroll();
-      //   } else {
-      //     this.$refs.cityPicker.hide();
-      //   }
-      // },
 
       priceClick() {
         this.orderColumn = 'min_price';
         this.$refs.filterCategoryMall.hide();
-        this.$refs.ageCategory.show();
+        this.$refs.priceCategory.show();
       },
       sellCountClick() {
         this.orderColumn = 'month_sell_count';
         this.$refs.filterCategoryMall.hide();
-        this.$refs.ageCategory.show();
+        this.$refs.sellCountCategory.show();
       },
       resetQuery() {
         this.start = 1;
@@ -198,11 +182,14 @@
       // ageClick() {
       //   this.$refs.ageCategory.show();
       // },
-      handleAge(order) {
-        this.$emit('ageConfirm', order);
+      priceConfirm(params) {
+        this.allFilter = false;
+        this.priceFilter = true;
+        this.$emit('ageConfirm', params);
       },
-      ageConfirm(params) {
-        console.log(params);
+      sellCountConfirm(params) {
+        this.allFilter = false;
+        this.sellCountFilter = true;
         this.$emit('ageConfirm', params);
       }
     },

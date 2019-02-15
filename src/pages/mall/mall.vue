@@ -146,7 +146,7 @@ export default {
     };
   },
   created() {
-    setTitle('商场');
+    setTitle('商城');
     this.shopCode = this.$route.query.code;
     let href = location.href;
     if(href.indexOf('mall-shopList') !== -1) {

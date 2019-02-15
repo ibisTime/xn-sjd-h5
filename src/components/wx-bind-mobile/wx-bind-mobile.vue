@@ -12,7 +12,7 @@
         <div class="form-item">
           <div class="item-label">手机验证码</div>
           <div class="item-input-wrapper">
-            <input type="tel" class="item-input" v-model="captcha" v-validate="'required'" name="captcha"  placeholder="请输入验证码">
+            <input type="tel" class="item-input" v-model="captcha" v-validate="'required'" name="captcha" placeholder="请输入验证码">
             <span v-show="errors.has('captcha')" class="error-tip">{{errors.first('captcha')}}</span>
           </div>
           <div class="item-btn">
@@ -38,10 +38,10 @@
 
   export default {
     props: {
-      mobile: {
-        type: String,
-        default: ''
-      }
+      // mobile: {
+      //   type: String,
+      //   default: ''
+      // }
     },
     data() {
       return {
@@ -57,8 +57,7 @@
       };
     },
     created() {
-      // alert('wx-bind-mobile');
-      this.mobile = this.props.mobile || '';
+      // this.mobile = this.props.mobile || '';
     },
     methods: {
       show() {
@@ -69,8 +68,11 @@
         this.showFlag = false;
       },
       sendCaptcha() {
+        // alert(1);
         this.$validator.validate('mobile').then((res) => {
-          if(res) {
+          // alert(this.mobile);
+          // alert(/^1[3|4|5|7|8]\d{9}$/.test(this.mobile));
+          if(/^1[3|4|5|7|8]\d{9}$/.test(this.mobile)) {
             this.sending = true;
             this.loading = true;
             sendCaptcha({
@@ -91,27 +93,6 @@
           if(result) {
             setWxMobAndCapt(this.mobile, this.captcha);
             this.loading = true;
-            // bindMobile({
-            //   isSendSms: '1',
-            //   mobile: this.mobile,
-            //   smsCaptcha: this.captcha
-            // }).then((res) => {
-            //   this.loading = false;
-            //   // alert('res' + JSON.stringify(res));
-            //   if(res.isSuccess) {
-            //     this.text = '绑定成功';
-            //     this.$refs.toast.show();
-            //     getAppId().then((data) => {
-            //       let appId = data.cvalue;
-            //       let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);
-            //       let url = 'https://open.weixin.qq.com/connect/oauth2/authorize';
-            //       let suffix = '&response_type=code&scope=snsapi_userinfo#wechat_redirect';
-            //       setTimeout(() => {
-            //         location.replace(`${url}?appid=${appId}&redirect_uri=${redirectUri}${suffix}`);
-            //       }, 100);
-            //     });
-            //   }
-            // }).catch(() => { this.loading = false; });
             getAppId().then((data) => {
               let appId = data.cvalue;
               let redirectUri = encodeURIComponent(`${location.origin}?${location.hash}`);

@@ -91,10 +91,6 @@
         this.variety = '';
         this.can = '2';
       },
-      confirm() {
-        this.hide();
-        this.$emit('confirm', this.can, this.variety);
-      },
       hide() {
         this.showFlag = false;
       },
@@ -211,13 +207,6 @@
           text-align: center;
           color: $color-text-l;
           background: #f2f3f7;
-        }
-
-        .confirm {
-          flex: 1;
-          text-align: center;
-          color: #fff;
-          background: $second-color;
         }
       }
     }

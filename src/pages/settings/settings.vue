@@ -24,6 +24,10 @@
             <span>修改登录密码</span>
             <img src="./more@2x.png" class="fr more">
           </div>
+          <div class="item" @click="go('/userAvatar')">
+            <span>修改头像</span>
+            <img src="./more@2x.png" class="fr more">
+          </div>
           <div class="item" @click="go('/userInfo')">
             <span>个人资料</span>
             <img src="./more@2x.png" class="fr more">

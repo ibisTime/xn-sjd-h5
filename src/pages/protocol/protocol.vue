@@ -79,18 +79,6 @@
             })
           ]).catch(() => { this.loading = false; });
         } else {
-          // Promise.all([
-          //   getProductDetail({code: this.proCode}).then((res) => {
-          //     getCompany({userId: res.ownerId}).then((data) => {
-          //       this.loading = false;
-          //       data.contractTemplate = data.contractTemplate.replace('甲方名称', 'aaa');
-          //       data.contractTemplate = data.contractTemplate.replace('乙方名称', 'bbb');
-          //       data.contractTemplate = data.contractTemplate.replace('丙方名称', 'ccc');
-          //       console.log(data.contractTemplate);
-          //       this.xyText = data.contractTemplate;
-          //     });
-          //   })
-          // ]).catch(() => { this.loading = false; });
           Promise.all([
             getProductDetail({code: this.proCode}),
             getUser()
@@ -109,8 +97,8 @@
               let str = data1.contractTemplate;
               str = str.replace(/##甲方名称##/g, data1.name);
               str = str.replace(/##乙方名称##/g, res2.realName);
-              str = str.replace(/##丙方名称##/g, data2[0].department);
-              str = str.replace('adoptCode', '下单成功后产生');
+              str = str.replace(/##丙方名称##/g, data2.length ? data2[0].department : '');
+              str = str.replace(/##认养编号##/, '(付款成功后生成)');
               str = str.replace('##quantity##', this.quantity);
               str = str.replace('##price##', this.price);
               str = str.replace('##y1##', formatDate(this.start, 'yyyy'))
@@ -121,9 +109,9 @@
                 .replace('##d2##', formatDate(this.end, 'dd'));
               str = str.replace('##date1##', formatDate(new Date(), 'yyyy.MM.dd'))
                 .replace('##date2##', formatDate(new Date(), 'yyyy.MM.dd'))
-                .replace('##date3##', formatDate(new Date(), 'yyyy.MM.dd'));
-              str = str.replace('##cachet1##', `<img src=${formatImg(data2[0].pic)}>`)
-                .replace('##cachet3##', `<img src=${formatImg(data1.commonSeal)}>`);
+                .replace('##date3##', data2.length ? formatDate(new Date(), 'yyyy.MM.dd') : '');
+              str = str.replace('##cachet1##', data1.commonSeal ? `<img src=${formatImg(data1.commonSeal)}>` : ``)
+                .replace('##cachet3##', data2.length ? `<img src=${formatImg(data2[0].pic)}>` : ``);
               this.xyText = str;
             });
           });
