@@ -19,7 +19,7 @@
           </ul>
         </scroll>
       </div>
-      <div class="history-wrapper">
+      <div class="history-wrapper" v-if="getUserId()">
         <div class="title">
           <h1>搜索历史</h1>
           <!--<i class="del-icon" @click="showConfirm"></i>-->
@@ -41,6 +41,7 @@
   import Confirm from 'base/confirm/confirm';
   import FullLoading from 'base/full-loading/full-loading';
   import {directiveMixin} from 'common/js/mixin';
+  import { getUserId } from 'common/js/util';
   import {getSearchHistoryList, addSearchHistory} from 'api/biz';
 
   export default {
@@ -75,19 +76,28 @@
     },
     created() {
       this.pullUpLoad = null;
-      this.loading = true;
-      getSearchHistoryList('2').then((res) => {
-        this.searchHistory = res.slice(0, 11);
-        this.loading = false;
-      }).catch(() => {
+      if(getUserId()) {
         this.loading = true;
-      });
+        getSearchHistoryList('2').then((res) => {
+          this.searchHistory = res.slice(0, 11);
+          this.loading = false;
+        }).catch(() => {
+          this.loading = true;
+        });
+      }
     },
     methods: {
+      getUserId() {
+        return getUserId();
+      },
       search() {
-        addSearchHistory({type: 2, content: this.query}).then((res) => {
+        if(getUserId()) {
+          addSearchHistory({type: 2, content: this.query}).then(() => {
+            this.go(`/mall-shopList?query=${this.query}`);
+          });
+        } else {
           this.go(`/mall-shopList?query=${this.query}`);
-        });
+        }
       },
       addQuery(query) {
         this.query = query.content;

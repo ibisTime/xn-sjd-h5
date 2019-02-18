@@ -22,12 +22,13 @@
             <back-only></back-only>
           </div>
           <div class="shop-det">
-            <p class="shop-price"><span>￥{{formatAmount(shopDetData.minPrice)}}</span> - <span>￥{{formatAmount(shopDetData.maxPrice)}}</span></p>
+            <p class="shop-price" v-if="shopDetData.minPrice === shopDetData.maxPrice"><span>￥{{formatAmount(shopDetData.minPrice)}}</span></p>
+            <p class="shop-price" v-else><span>￥{{formatAmount(shopDetData.minPrice)}}</span> - <span>￥{{formatAmount(shopDetData.maxPrice)}}</span></p>
             <p class="shop-msg">{{shopDetData.name}}</p>
             <div class="or-msg">
               <p>快递：{{logistics[shopDetData.logistics]}}</p>
-              <p>月销{{shopDetData.monthSellCount}}笔</p>
-              <p>{{shopDetData.deliverPlace}}</p>
+              <p>总销量：{{shopDetData.monthSellCount}}笔</p>
+              <p>产地：{{shopDetData.originalPlace}}</p>
             </div>
           </div>
           <div class="shop-gg">
@@ -314,32 +315,45 @@ export default {
       }
     },
     toShopCart() { // 内加入购物车
+      if(!getUserId()) {
+        this.textMsg = '您未登录';
+        this.$refs.toast.show();
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
+        return;
+      }
       this.istoast = false;
       this.addShopCart();
     },
     toShopOrder() { // 内立即购买
-      if(this.inventory > 0) {
-        this.loading = true;
-        let shopMsg = {
-          ...this.addCartConfig,
-          shopName: this.shopName,
-          bannerPic: this.bannerPic,
-          logistics: this.shopDetData.logistics,
-          setPrice: parseFloat(this.setPrice) * 1000
-        };
-        let shopMsgList = [shopMsg];
-        sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
-        this.go('/affirm-order?code=' + this.code);
-      }else {
-        this.textMsg = '库存规格不足';
-        this.$refs.toast.show();
+      if(this.isLogin()) {
+        if(this.inventory > 0) {
+          this.loading = true;
+          let shopMsg = {
+            ...this.addCartConfig,
+            shopName: this.shopName,
+            bannerPic: this.bannerPic,
+            logistics: this.shopDetData.logistics,
+            setPrice: parseFloat(this.setPrice) * 1000
+          };
+          let shopMsgList = [shopMsg];
+          sessionStorage.setItem('shopMsgList', JSON.stringify(shopMsgList));
+          this.go('/affirm-order?code=' + this.code);
+        }else {
+          this.textMsg = '库存规格不足';
+          this.$refs.toast.show();
+        }
       }
     },
     isLogin() {
       if(!getUserId()) {
-        this.textMsg = '请先登录';
+        this.textMsg = '您未登录';
         this.$refs.toast.show();
         this.istoast = false;
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 1000);
         return false;
       }else {
         return true;

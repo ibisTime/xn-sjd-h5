@@ -75,7 +75,7 @@
             <!--<div class="item" v-show="detail.sellType === '3'">-->
               <!--<span>募集时间</span><span>{{formatDate(detail.raiseStartDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.raiseEndDatetime, 'yyyy-MM-dd')}}</span>-->
             <!--</div>-->
-            <div class="item" v-show="detail.sellType === '3'">
+            <div class="item">
               <span>【认养时间】</span><span>{{formatDate(detail.productSpecsList[0].startDatetime, 'yyyy-MM-dd')}}至{{formatDate(detail.productSpecsList[0].endDatetime, 'yyyy-MM-dd')}}</span>
             </div>
             <div class="item" @click="goTreeList()">
@@ -510,6 +510,9 @@ export default {
           res4.map((item) => {
             this.sellTypeObj[item.dkey] = item.dvalue;
           });
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
         }).catch(() => { this.loading = false; });
       } else {
         Promise.all([
@@ -529,10 +532,10 @@ export default {
           if(this.banners.length >= 2) {
             this.loop = true;
           }
+          if(!this.isWxConfiging && !this.wxData) {
+            this.getInitWXSDKConfig();
+          }
         }).catch(() => { this.loading = false; });
-      }
-      if(!this.isWxConfiging && !this.wxData) {
-        this.getInitWXSDKConfig();
       }
     }
   },

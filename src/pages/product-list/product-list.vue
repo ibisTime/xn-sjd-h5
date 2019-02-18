@@ -326,6 +326,7 @@ export default {
     },
     // 树龄筛选
     ageConfirm(params) {
+      console.log(params);
       this.ageFilter = true;
       this.start = 1;
       this.limit = 10;
@@ -364,7 +365,6 @@ export default {
       return false;
     },
     initData() {
-      // debugger;
       this.loading = true;
       Promise.all([
         getDictList('sell_type'),

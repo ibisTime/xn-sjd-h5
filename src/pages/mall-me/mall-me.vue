@@ -24,13 +24,13 @@
         <div class="wing"></div>
         <div class="item" @click="go('/store-order')">
           <img src="./order@2x.png" class="me-list-icon">
-          <span>我的商场订单</span>
+          <span>我的商城订单</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="wing"></div>
         <div class="item" @click="go('/store-message')">
           <img src="./message@2x.png" class="me-list-icon">
-          <span>我的商场消息</span>
+          <span>我的商城消息</span>
           <img src="./more@2x.png" class="fr more">
         </div>
         <div class="item" @click="go('/address')">

@@ -57,6 +57,7 @@
         this.isFree = !this.isFree;
       },
       choseCan(index) {
+        console.log(this.orderColumn);
         if(index === 0) {
           if(this.can === '0') {
             this.can = '2';

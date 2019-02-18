@@ -33,8 +33,7 @@
                     :outBigCode="bigCode"></category-small>
     <category-age ref="ageCategory"
                      @ageConfirm="handleAge"
-                     orderColunm="age"
-    ></category-age>
+                  :orderColumn="age"></category-age>
   </div>
 </template>
 
@@ -115,7 +114,8 @@
         filterFilter: false,
         smallFilter: false,
         ageFilter: false,
-        cityFilter: false
+        cityFilter: false,
+        age: 'age'
       };
     },
     mounted() {

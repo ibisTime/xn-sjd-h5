@@ -200,7 +200,7 @@ export default {
           this.loading = false;
         });
       }else {
-        this.textMsg = '请先登录';
+        this.textMsg = '您未登录';
         this.$refs.toast.show();
       }
     },
@@ -231,7 +231,7 @@ export default {
       if(getUserId()) {
         this.go('/mall-shopCart');
       }else {
-        this.textMsg = '请先登录';
+        this.textMsg = '您未登录';
         this.$refs.toast.show();
       }
     }

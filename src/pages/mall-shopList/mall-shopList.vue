@@ -40,7 +40,7 @@
                       <span class="label">销量 {{item.monthSellCount}}</span>
                       <span class="place">{{item.originalPlace}}</span>
                     </div>
-                    <p>￥{{formatAmount(item.minPrice)}} 起
+                    <p>￥{{formatAmount(item.minPrice)}} <span v-if="item.minPrice !== item.maxPrice">起</span>
                       <span class="fr icon" @click.stop="addListCart(item.code, item.name, item.specsList[0].id, item.specsList[0].name)"></span>
                     </p>
                   </div>
@@ -286,8 +286,11 @@ export default {
           });
           this.setIndex ++;
         }else {
-          this.textMsg = '请先登录';
+          this.textMsg = '您未登录';
           this.$refs.toast.show();
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
         }
       }
     },

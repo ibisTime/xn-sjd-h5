@@ -11,7 +11,7 @@
             <!--<p class="date">{{cut(item.content, 14)}}</p>-->
           </div>
         </div>
-        <no-result v-show="!list.length" title="暂无公告" class="no-result-wrapper"></no-result>
+        <no-result v-show="!list.length" title="暂无通知" class="no-result-wrapper"></no-result>
       </Scroll>
     </div>
     <full-loading v-show="loading"></full-loading>

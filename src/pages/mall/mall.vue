@@ -29,7 +29,7 @@
           <div class="activity">
             <img :src="formatImg(activityPic)" >
           </div>
-          <div class="con-head" v-if="hotShopList.length > 3">
+          <div class="con-head" v-if="hotShopList.length >= 3">
             <h5>热门推荐 <router-link to="/mall-shopList?location=1" class="fr">查看更多</router-link></h5>
             <div class="shop-list">
                 <div class="con-list">
@@ -213,7 +213,7 @@ export default {
     },
     addCart(code, name, specsId, specsName) {
       if(!getUserId()) {
-        this.textMsg = '请先登录';
+        this.textMsg = '您未登录';
         this.$refs.toast.show();
         return;
       }
@@ -241,7 +241,7 @@ export default {
     },
     toHomeFn() {
       // if(!getUserId()) {
-      //   this.textMsg = '请先登录';
+      //   this.textMsg = '您未登录';
       //   this.$refs.toast.show();
       //   return;
       // }
@@ -282,7 +282,7 @@ export default {
       this.loading = true;
       if(newVal === '/mall') {
         this.isAll = false;
-        setTitle('商场');
+        setTitle('商城');
       }
       setTimeout(() => {
         this.loading = false;

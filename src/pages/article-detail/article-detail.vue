@@ -155,7 +155,7 @@
       collect() {
         // 调接口收藏
         if(!getUserId()) {
-          this.text = '请先登录';
+          this.text = '您未登录';
           this.$refs.toast.show();
           return;
         }
@@ -176,7 +176,7 @@
       laud() {
         // 调接口点赞
         if(!getUserId()) {
-          this.text = '请先登录';
+          this.text = '您未登录';
           this.$refs.toast.show();
           return;
         }

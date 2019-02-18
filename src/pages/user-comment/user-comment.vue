@@ -170,7 +170,7 @@ export default {
     },
     isLogin() {
       if(!getUserId()) {
-        this.textMsg = '请先登录';
+        this.textMsg = '您未登录';
         this.$refs.toast.show();
         setTimeout(() => {
           this.go('login');

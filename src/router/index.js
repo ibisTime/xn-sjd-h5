@@ -147,11 +147,11 @@ const storeOrder = () => import('@/pages/store-order/store-order');
 const userPj = () => import('@/pages/user-pj/user-pj');
 // 订单详情
 const storeOrderDetail = () => import('@/pages/store-order_detail/store-detail');
-// 商场消息
+// 商城消息
 const storeMessage = () => import('@/pages/storeMessage/storeMessage');
-// 商场消息详情
+// 商城消息详情
 const storeMsgDet = () => import('@/pages/store-msg-det/storeMsgDet');
-// 商场会话
+// 商城会话
 const storeService = () => import('@/pages/service/service');
 // 公告
 const Notices = () => import('@/pages/notices/notices');
@@ -219,7 +219,7 @@ const Test = () => import('@/pages/test/test');
 // 我的通知
 const Message = () => import('@/pages/message/message');
 const MessageDetail = () => import('@/pages/message-detail/message-detail');
-// 商场-我的
+// 商城-我的
 const MallMe = () => import('@/pages/mall-me/mall-me');
 const PublishCategories = () => import('@/pages/publish-categories/publish-categories');
 export default new Router({

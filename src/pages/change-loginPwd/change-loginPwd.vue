@@ -1,7 +1,7 @@
 <template>
   <transition name="slide">
     <div class="change-mobile-wrapper">
-      <m-header class="cate-header" title="设置登陆密码"></m-header>
+      <m-header class="cate-header" title="设置登录密码"></m-header>
       <div class="form-wrapper">
         <div class="form-item border-bottom-1px">
           <div class="item-input-wrapper">
