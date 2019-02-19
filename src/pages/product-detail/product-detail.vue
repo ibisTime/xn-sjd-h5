@@ -120,7 +120,8 @@
         </div>
         <div class="title-right">
           <p>{{detail.scientificName}}</p>
-          <i @click="genghuan">X</i>
+          <!--<i @click="genghuan">X</i>-->
+          <img src="./close@2x.png" @click="genghuan" class="close">
           <p class="position"><img src="./position@2x.png">{{detail.originPlace}}</p>
         </div>
       </div>
@@ -877,14 +878,8 @@ export default {
           font-size: $font-size-medium;
           color: #999;
         }
-        i {
+        .close {
           width: 0.34rem;
-          line-height: 0.34rem;
-          font-size: $font-size-medium;
-          text-align: center;
-          color: #333;
-          border: 1px solid #333;
-          border-radius: 50%;
           position: absolute;
           top: 0.2rem;
           right: 0;

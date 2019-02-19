@@ -4,8 +4,8 @@
     <div class="full-loading">
       <img src="./check-in-success@2x.png" alt="">
       <p class="success">签到成功</p>
-      <!--<p class="info">获得<span>10</span>积分，已连续签到<span>2</span>天</p>-->
       <p class="info">获得<span>{{signTpp}}</span>碳泡泡，已连续签到<span>{{signDays}}</span>天</p>
+      <p class="info" v-if="remainDays !== 0">再连续签到<span>{{remainDays}}</span>天有惊喜哦</p>
       <button @click="close">知道了</button>
     </div>
   </div>
@@ -20,6 +20,16 @@
       signDays: {
         type: Number,
         default: 0
+      },
+      remainDays: {
+        type: Number,
+        default: 0
+      },
+      giftList: {
+        type: Array,
+        default: () => {
+          return [];
+        }
       }
     },
     methods: {
@@ -68,10 +78,13 @@
     .info {
       font-size: $font-size-large-s;
       line-height: 0.5rem;
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.2rem;
       span {
         color: $primary-color;
       }
+    }
+    .info:last-child {
+      margin-bottom: 0.4rem;
     }
     button {
       width: 5.7rem;

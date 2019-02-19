@@ -248,6 +248,11 @@
 
       ul {
         font-size: 0;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        display:-webkit-box;
+        -webkit-box-orient:vertical;
+        -webkit-line-clamp:4;
 
         li {
           display: inline-block;

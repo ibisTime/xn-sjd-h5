@@ -8,7 +8,7 @@
         <div class="item" @click="go('/message-detail?code=' + item.code)" v-for="item in list" v-show="list.length">
           <div class="info">
             <p class="top"><span class="name">{{cut(item.title,6)}}</span><span class="status">{{formatDate(item.createDatetime)}}</span></p>
-            <!--<p class="date">{{cut(item.content, 14)}}</p>-->
+            <p class="date">{{cut(item.content, 14)}}</p>
           </div>
         </div>
         <no-result v-show="!list.length" title="暂无通知" class="no-result-wrapper"></no-result>

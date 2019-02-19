@@ -43,11 +43,11 @@
                       <div class="con-txt">
                         <h5>{{shopItem.name}}</h5>
                         <div class="con-type">
-                          <span class="label">销量 28</span>
-                          <span class="place">杭州市</span>
+                          <span class="label">销量 {{shopItem.monthSellCount}}</span>
+                          <span class="place">{{shopItem.originalPlace}}</span>
                         </div>
                         <div class="con-foo">
-                          <p>￥{{formatAmount(shopItem.minPrice)}}起<span class="icon fr" @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"></span></p>
+                          <p>￥{{formatAmount(shopItem.minPrice)}}<span v-if="shopItem.minPrice !== shopItem.maxPrice">起</span><span class="icon fr" @click.stop="addCart(shopItem.code, shopItem.name, shopItem.specsList[0].id, shopItem.specsList[0].name)"></span></p>
                         </div>
                       </div>
                     </div>

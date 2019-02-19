@@ -148,9 +148,11 @@
 </template>
 <script>
 import { formatAmount, setTitle, formatImg, formatDate, getUserId } from 'common/js/util';
+import { initShare } from 'common/js/weixin';
 import { getDictList } from 'api/general';
 import { getUser } from 'api/user';
 import { getShopDetail, getCommemtData, addShopCart } from 'api/store';
+import { share } from 'api/biz';
 import FullLoading from 'base/full-loading/full-loading';
 import Toast from 'base/toast/toast';
 import Scroll from 'base/scroll/scroll';
@@ -210,6 +212,8 @@ export default {
     };
   },
   created() {
+    this.isWxConfiging = false;
+    this.wxData = null;
     setTitle('产品详情');
     sessionStorage.removeItem('setRess');
     this.pullUpLoad = null;
@@ -218,39 +222,84 @@ export default {
     this.config.commodityCode = this.code;
     this.addCartConfig.commodityCode = this.code;
     this.getCommemtDataFn();
-    Promise.all([
-      getDictList('logistics'),  // 获取邮寄方式
-      getShopDetail(this.code),       // 获取商品详情
-      getCommemtData(this.config)     // 获取评论
-    ]).then(([res1, res2, res3]) => {
-      this.commentList = res3.list;
-      this.loading = false;
-      res1.forEach(item => {
-        this.logistics[item.dkey] = item.dvalue;
-      });
-      this.shopDetData = res2;
-      this.bannerPic = res2.bannerPic.split('||');
-      if(this.bannerPic.length > 1) {
-        this.loop = true;
-      }
-      this.shopName = res2.shopName;
-      this.specsList = res2.specsList;
-      this.setPrice = formatAmount(this.specsList[0].price);
-      this.inventory = this.specsList[0].inventory;
-      sessionStorage.setItem('inventory', this.inventory);
-      this.setSpecsName = this.specsList[0].name;
-      this.detailDescription = res2.description;
-      this.addCartConfig.commodityName = res2.name;
-      this.addCartConfig.specsId = this.specsList[0].id;
-      this.addCartConfig.specsName = this.specsList[0].name;
-      if(res3.list[0].userId) {
-        getUser(res3.list[0].userId).then(res => {
-          this.commentData = res3.list[0];
-          this.commentData.photo = res.photo;
+    let userId = getUserId();
+    if(userId) {
+      Promise.all([
+        getDictList('logistics'),  // 获取邮寄方式
+        getShopDetail(this.code),       // 获取商品详情
+        getCommemtData(this.config),     // 获取评论
+        getUser(userId)
+      ]).then(([res1, res2, res3, res4]) => {
+        this.commentList = res3.list;
+        this.loading = false;
+        res1.forEach(item => {
+          this.logistics[item.dkey] = item.dvalue;
         });
-        this.commentDatetime = res3.list[0].commentDatetime;
-      }
-    }).catch(() => { this.loading = false; });
+        this.shopDetData = res2;
+        this.bannerPic = res2.bannerPic.split('||');
+        if(this.bannerPic.length > 1) {
+          this.loop = true;
+        }
+        this.shopName = res2.shopName;
+        this.specsList = res2.specsList;
+        this.setPrice = formatAmount(this.specsList[0].price);
+        this.inventory = this.specsList[0].inventory;
+        sessionStorage.setItem('inventory', this.inventory);
+        this.setSpecsName = this.specsList[0].name;
+        this.detailDescription = res2.description;
+        this.addCartConfig.commodityName = res2.name;
+        this.addCartConfig.specsId = this.specsList[0].id;
+        this.addCartConfig.specsName = this.specsList[0].name;
+        if(res3.list[0].userId) {
+          getUser(res3.list[0].userId).then(res => {
+            this.commentData = res3.list[0];
+            this.commentData.photo = res.photo;
+          });
+          this.commentDatetime = res3.list[0].commentDatetime;
+        }
+        this.userDetail = res4;
+        if(!this.isWxConfiging && !this.wxData) {
+          this.getInitWXSDKConfig();
+        }
+      }).catch(() => { this.loading = false; });
+    } else {
+      Promise.all([
+        getDictList('logistics'),  // 获取邮寄方式
+        getShopDetail(this.code),       // 获取商品详情
+        getCommemtData(this.config)     // 获取评论
+      ]).then(([res1, res2, res3]) => {
+        this.commentList = res3.list;
+        this.loading = false;
+        res1.forEach(item => {
+          this.logistics[item.dkey] = item.dvalue;
+        });
+        this.shopDetData = res2;
+        this.bannerPic = res2.bannerPic.split('||');
+        if(this.bannerPic.length > 1) {
+          this.loop = true;
+        }
+        this.shopName = res2.shopName;
+        this.specsList = res2.specsList;
+        this.setPrice = formatAmount(this.specsList[0].price);
+        this.inventory = this.specsList[0].inventory;
+        sessionStorage.setItem('inventory', this.inventory);
+        this.setSpecsName = this.specsList[0].name;
+        this.detailDescription = res2.description;
+        this.addCartConfig.commodityName = res2.name;
+        this.addCartConfig.specsId = this.specsList[0].id;
+        this.addCartConfig.specsName = this.specsList[0].name;
+        if(res3.list[0].userId) {
+          getUser(res3.list[0].userId).then(res => {
+            this.commentData = res3.list[0];
+            this.commentData.photo = res.photo;
+          });
+          this.commentDatetime = res3.list[0].commentDatetime;
+        }
+        if(!this.isWxConfiging && !this.wxData) {
+          this.getInitWXSDKConfig();
+        }
+      }).catch(() => { this.loading = false; });
+    }
   },
   methods: {
     formatAmount(amount) {
@@ -428,35 +477,46 @@ export default {
       }, () => {
         this.loading = false;
       });
+    },
+    getInitWXSDKConfig() {
+      this.loading = true;
+      console.log(this.shopDetData.name);
+      console.log(location.href.split('#')[0] + '/#/mall-shop_detail?code=' + this.code + '&shopCode=' + this.shopCode + '&userReferee=' + this.userDetail.mobile + '&type=U');
+      console.log(formatImg(this.shopDetData.listPic));
+      initShare({
+        title: '氧林商城',
+        desc: this.shopDetData.name,
+        link: location.href.split('#')[0] + '/#/mall-shop_detail?code=' + this.code + '&shopCode=' + this.shopCode + '&userReferee=' + this.userDetail.mobile + '&type=U',
+        imgUrl: formatImg(this.shopDetData.listPic),
+        success: (res) => {
+          this.channel = '';
+          if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+            this.channel = 0;
+          } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+            this.channel = 1;
+          } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+            this.channel = 2;
+          } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+            this.channel = 3;
+          }
+          share(this.channel, '商城商品').then((res) => {
+            if(res.code) {
+              this.text = '分享成功';
+              this.$refs.toast.show();
+            }
+          }).then(() => {});
+        }
+      }, (data) => {
+        this.isWxConfiging = false;
+        this.wxData = data;
+        this.loading = false;
+      }, (msg) => {
+        alert(msg);
+        this.isWxConfiging = false;
+        this.wxData = null;
+        this.loading = false;
+      });
     }
-    // 富文本滚动
-    // _refreshScroll() {
-    //   setTimeout(() => {
-    //     this.$refs.scroll.refresh();
-    //     let imgs = this.$refs.description.getElementsByTagName('img');
-    //     for (let i = 0; i < imgs.length; i++) {
-    //       let _img = imgs[i];
-    //       if (_img.complete) {
-    //         setTimeout(() => {
-    //           this.$refs.scroll.refresh();
-    //         }, 20);
-    //         continue;
-    //       }
-    //       _img.onload = () => {
-    //         setTimeout(() => {
-    //           this.$refs.scroll.refresh();
-    //         }, 20);
-    //       };
-    //     }
-    //   }, 20);
-    // },
-    // watch: {
-    //   detailDescription() {
-    //     this._refreshScroll();
-    //   }
-    // }
-  },
-  mounted() {
   },
   components: {
     BackOnly,

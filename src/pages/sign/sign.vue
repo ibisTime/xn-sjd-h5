@@ -40,7 +40,7 @@
     <router-view></router-view>
     <sign-mask ref="mask" :text="text" :isHtml="isHtml"></sign-mask>
     <full-loading v-show="loadingFlag"></full-loading>
-    <check-in v-show="showCheckIn" @close="close" :signTpp="signTpp" :signDays="signDays"></check-in>
+    <check-in v-show="showCheckIn" @close="close" :signTpp="signTpp" :signDays="signDays" :remainDays="remainDays" :giftList="giftList"></check-in>
   </div>
 </template>
 <script>
@@ -109,6 +109,7 @@
         showCheckIn: false,
         signTpp: '0',
         signDays: 0,
+        remainDays: 0,
         isHtml: false
       };
     },
@@ -207,7 +208,18 @@
           }).then((res) => {
             this.signTpp = formatAmount(res.tppAmount);
             this.signDays = res.signDays;
-            this.showCheckIn = true;
+            // this.getRemainDays();
+            let startTime = formatDate(this.getMonth().firstDay);
+            let endTime = formatDate(this.getMonth().lastDay);
+            monthSignCount({
+              createStartDatetime: startTime,
+              createEndDatetime: endTime
+            }).then((res) => {
+              this.monthSignCount = res.monthSignCount;
+              this.continueSignCount = res.continueSignCount;
+              this.getRemainDays(this.continueSignCount);
+            });
+            // this.showCheckIn = true;
             this.loading = false;
           }).catch(() => {
             this.loading = false;
@@ -219,6 +231,30 @@
             this.$router.push('/login');
           }, 1000);
         }
+      },
+      getRemainDays(count) {
+        let _this = this;
+        let daysList = [];
+        _this.giftList.map((item) => {
+          daysList.push(item.day);
+        });
+        daysList.map((z, index) => {
+          if(daysList[index] === count) {
+            // 正好在某一节点
+            _this.remainDays = 0;
+          } else if(daysList[index] < count && daysList[index + 1] > count) {
+            // 在两节点之间
+            _this.remainDays = daysList[index + 1] - count;
+          } else {
+            if(count < daysList[0]) {
+              _this.remainDays = daysList[0] - count;
+            } else if(_this.count > daysList[daysList.length - 1]) {
+              _this.remainDays = 0;
+            }
+          }
+        });
+        console.log(_this.remainDays);
+        this.showCheckIn = true;
       },
       getWidth() {
         // this.continueSignCount;  // 连续签到天数

@@ -21,8 +21,8 @@
               <div class="imgWrap" :style="getImgSyl(orderDetail.product.listPic)"></div>
               <div class="text">
                 <p class="title"><span class="title-title">{{orderDetail.product.name}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
-                <p class="position"><span>{{orderDetail.product.city}} {{orderDetail.product.city}}</span><span class="price">¥{{formatAmount(orderDetail.price)}}</span></p>
-                <div class="props"><span class="duration">规格：{{orderDetail.productSpecsName}}</span><span class="price">¥{{formatAmount(orderDetail.amount)}}</span></div>
+                <p class="position"><span>规格：{{orderDetail.productSpecsName}}</span><span class="price">¥{{formatAmount(orderDetail.price)}}</span></p>
+                <div class="props"><span class="duration">年限：{{orderDetail.adoptYear}}年</span><span class="price">¥{{formatAmount(orderDetail.amount)}}</span></div>
               </div>
             </div>
             <div class="info" v-if="storeCode && (storeType === 'one' || type === 'one')" v-for="item in orderDetail.detailList">
