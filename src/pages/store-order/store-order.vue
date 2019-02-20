@@ -172,8 +172,8 @@ export default {
             this.shopStatusList.push(orderItem.status);
           });
           this.start ++;
-          return;
         });
+        return;
       }else {
         this.orderConfig.status = index - 1;
       }

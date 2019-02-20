@@ -95,6 +95,8 @@
           addSearchHistory({type: 1, content: this.query}).then((res) => {
             this.go(`/product-list?query=${this.query}`);
           });
+        } else {
+          this.go(`/product-list?query=${this.query}`);
         }
       },
       addQuery(query) {

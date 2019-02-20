@@ -11,7 +11,7 @@
             <div class="title">产地</div>
             <div class="item" v-for="item in originList" @click="choseOrigin(item)" :class="originClass(item)">{{item}}</div>
           </div>
-          <div class="items">
+          <div class="items price">
             <div class="title">价格区间</div>
             <div class="input">
               <input type="text" v-model="minPrice" name="minPrice"> - <input type="text" v-model="maxPrice" name="maxPrice">
@@ -167,7 +167,9 @@
       left: 0;
       height: 100%;
       padding-top: 0.3rem;
-
+      .scroll-content {
+        padding-top: 0.3rem;
+      }
       .title {
         padding-left: 0.2rem;
         margin-bottom: 0.2rem;
@@ -193,7 +195,11 @@
         }
         .input {
           padding: 0 0.3rem;
+          /*display: flex;*/
+          /*align-items: center;*/
+          width: 100%;
           input {
+            width: 40%;
             height: 0.6rem;
             border: 1px solid $color-border;
             border-radius: 0.2rem;

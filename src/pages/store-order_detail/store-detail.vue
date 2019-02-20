@@ -283,7 +283,7 @@ export default {
         if(data.status === '1' || data.status === '2' || data.status === '3' || data.status === '4') {
           this.ispj = true;
           data.detailList.forEach((item, index) => {
-            if(item.afterSaleStatus && item.status === '0') {
+            if(item.afterSaleStatus !== '9' && item.status === '0') {
               switch(item.afterSaleStatus) {
                 case '2':
                   this.orderStuTxt = '售后中';
@@ -346,6 +346,7 @@ export default {
     cancelAfterSale() {
       this.loading = true;
       cancelAfterSale(this.currentItem.code).then((res) => {
+        location.reload();
         this.loading = false;
       }).catch(() => { this.loading = false; });
     }

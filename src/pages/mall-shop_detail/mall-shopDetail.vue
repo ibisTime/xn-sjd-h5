@@ -28,7 +28,7 @@
             <div class="or-msg">
               <p>快递：{{logistics[shopDetData.logistics]}}</p>
               <p>总销量：{{shopDetData.monthSellCount}}笔</p>
-              <p>产地：{{shopDetData.originalPlace}}</p>
+              <p v-if="shopDetData.originalPlace">产地：{{shopDetData.originalPlace}}</p>
             </div>
           </div>
           <div class="shop-gg">

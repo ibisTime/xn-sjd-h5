@@ -6,7 +6,7 @@
           <p v-if="isHtml" class="text" :class="textCls" v-html='text'></p>
           <div v-else class="text" :class="textCls">
             <p class="title">{{title}}</p>
-            <p class="content" v-for="item in content">{{item}}</p>
+            <p class="content">{{content}}</p>
           </div>
           <div class="operate">
             <div v-if="!isAlert" @click="cancel" class="operate-btn left">{{cancelBtnText}}</div>
@@ -26,10 +26,8 @@
         default: ''
       },
       content: {
-        type: Array,
-        default: () => {
-          return [];
-        }
+        type: String,
+        default: ''
       },
       confirmBtnText: {
         type: String,
@@ -104,7 +102,7 @@
       z-index: 999;
       .confirm-content {
         width: 6.4rem;
-        height: 6rem;
+        min-height: 6rem;
         border-radius: 0.16rem;
         background: $color-highlight-background;
 

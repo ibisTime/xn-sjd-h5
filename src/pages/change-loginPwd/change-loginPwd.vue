@@ -76,13 +76,13 @@
               }
             }).catch(() => { this.setting = false; });
           } else {
-            if(!this.captcha) {
-              this.text = '请填写验证码';
+            if(!this.oldLoginPwd) {
+              this.text = '请填写原密码';
               this.$refs.toast.show();
               return;
             }
-            if(!this.moneyPaw) {
-              this.text = '请填写支付密码';
+            if(!this.newLoginPwd) {
+              this.text = '请填写新密码';
               this.$refs.toast.show();
               return;
             }

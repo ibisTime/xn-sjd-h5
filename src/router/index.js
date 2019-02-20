@@ -222,6 +222,8 @@ const MessageDetail = () => import('@/pages/message-detail/message-detail');
 // 商城-我的
 const MallMe = () => import('@/pages/mall-me/mall-me');
 const PublishCategories = () => import('@/pages/publish-categories/publish-categories');
+// 商城活动页
+const Activity = () => import('@/pages/activity/activity');
 export default new Router({
   routes: [
     {
@@ -725,6 +727,10 @@ export default new Router({
     {
       path: '/mall-type',
       component: PublishCategories
+    },
+    {
+      path: '/activity',
+      component: Activity
     }
   ],
   mode: 'hash'

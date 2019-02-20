@@ -3,7 +3,7 @@
     <Scroll
       :data="hotShopList"
       :hasMore="hasMore"
-      @pullingUp="getHotShop">
+      :pullUpLoad="pullUpLoad">
       <div class="content" v-show="!isAll">
         <div class="mall-header">
           <!--<div class="head-search">-->
@@ -18,7 +18,7 @@
             </slider>
           </div>
           <div class="mall-info">
-            <img src="./mall-logo@2x.png">
+            <img :src="formatImg(shopAvatar)">
             <p class="name">{{name}}</p>
             <p class="description">{{description}}</p>
           </div>
@@ -61,10 +61,6 @@
         </div>
       </div>
     </Scroll>
-    <!--<MallShopList v-show="isAll" />-->
-    <!--<div class="go-cart" @click.stop="goCart">-->
-      <!--<p v-if="iscart"></p>-->
-    <!--</div>-->
     <full-loading v-show="loading" :title="loadingText"></full-loading>
     <toast ref="toast" :text="textMsg"></toast>
   </div>
@@ -80,10 +76,12 @@ import MallShopList from '../mall-shopList/mall-shopList';
 import { getAllShopData, addShopCart, storeMsg, getShopType, myShopCart } from 'api/store';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getBanner } from 'api/general';
+import defaltAvatarImg from './../../common/image/avatar@2x.png';
 export default {
   // name: "home",
   data() {
     return {
+      pullUpLoad: null,
       loading: true,
       currentIndex: 0,
       textMsg: '',
@@ -110,9 +108,10 @@ export default {
       },
       description: '',
       name: '',
+      shopAvatar: '',
       shopTypeConfig: {          // 商品类别参数
         start: 1,
-        limit: 10,
+        limit: 6,
         level: 1,
         status: 1,
         type: 2,
@@ -145,6 +144,7 @@ export default {
       this.loading = false;
       this.description = data.description;
       this.name = data.name;
+      this.shopAvatar = data.shopAvatar || defaltAvatarImg;
       setTitle(this.name);
     }, () => {
       this.loading = false;
@@ -177,11 +177,6 @@ export default {
         backgroundImage: `url(${pic})`
       };
     },
-    getTypeData(code) {
-      this.start = 1;
-      this.hotShopList = [];
-      this.getHotShop();
-    },
     addCart(code, name, specsId, specsName) {
       if(getUserId()) {
         this.loading = true;
@@ -189,13 +184,10 @@ export default {
         this.addCartConfig.commodityName = name;
         this.addCartConfig.specsId = specsId;
         this.addCartConfig.specsName = specsName;
-        addShopCart(this.addCartConfig).then(data => {
+        addShopCart(this.addCartConfig).then(() => {
           this.loading = false;
           this.textMsg = '加入购物车成功';
           this.$refs.toast.show();
-          // setTimeout(() => {
-          //   this.go('/mall-shopCart');
-          // }, 1500);
         }, () => {
           this.loading = false;
         });

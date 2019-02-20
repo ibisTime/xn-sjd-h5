@@ -5,18 +5,6 @@
       <div class="content">
         <Scroll :pullUpLoad="pullUpLoad" ref="scroll">
           <div class="detail">
-            <!--<img :src="formatImg(orderDetail.product.listPic)">-->
-            <!--<div class="detail-text">-->
-              <!--<div class="detail-text-top">-->
-                <!--<span class="name">{{orderDetail.product.name}}</span>-->
-                <!--<span class="number">x{{orderDetail.quantity}}</span>-->
-              <!--</div>-->
-              <!--<div class="detail-text-middle">{{orderDetail.product.city}} {{orderDetail.product.city}}</div>-->
-              <!--<div class="detail-text-bottom">-->
-                <!--<span class="specs">规格:{{orderDetail.productSpecsName}}</span>-->
-                <!--<span class="price">¥{{formatAmount(orderDetail.price)}}</span>-->
-              <!--</div>-->
-            <!--</div>-->
             <div class="info" v-if="!storeCode">
               <div class="imgWrap" :style="getImgSyl(orderDetail.product.listPic)"></div>
               <div class="text">
@@ -29,7 +17,6 @@
               <div class="imgWrap" :style="getImgSyl(item.listPic)"></div>
               <div class="text">
                 <p class="title"><span class="title-title">{{item.commodityName}}</span><span class="title-number">x{{orderDetail.quantity}}</span></p>
-                <!--<p class="position"><span class="price">¥{{formatAmount(item.price)}}</span></p>-->
                 <div class="props"><span class="duration">规格：{{item.specsName}}</span><span class="price">¥{{formatAmount(item.price)}}</span></div>
               </div>
             </div>
@@ -43,7 +30,6 @@
                   <div class="r-con">
                     <div class="rr-head">{{coItem.commodity.name}} <span class="fr num">x{{coItem.quantity}}</span></div>
                     <div class="rr-con"><span>规格分类：{{coItem.specsName}}</span><span>¥{{formatAmount(coItem.price)}}</span></div>
-                    <!--<div class="rr-price"></div>-->
                   </div>
                 </div>
               </div>
@@ -114,6 +100,8 @@
     <confirm-input ref="confirmInput" :inpType="'password'" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast ref="toast" :text="text"></toast>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
+    <confirm-sjd-auth ref="confirm" :title="authTitle" :content="authContent" :confirmBtnText='confirmBtnText' :cancelBtnText="cancelBtnText" @confirm="
+    " @cancel="authCancel"></confirm-sjd-auth>
   </div>
 </template>
 <script>
@@ -122,15 +110,15 @@
   import SwitchOption from 'base/switch-option/switch-option';
   import Toast from 'base/toast/toast';
   import ConfirmInput from 'base/confirm-input/confirm-input';
+  import ConfirmSjdAuth from 'base/confirm-sjd-auth/confirm-sjd-auth';
   import FullLoading from 'base/full-loading/full-loading'; // loading
   import { getCookie } from 'common/js/cookie';
   import { formatAmount, setTitle, getUserId, formatImg } from 'common/js/util';
-  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getDeductibleAmount, getOrganizeOrderScore,
-            getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder, preOrderScore} from 'api/biz';
+  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getOrganizeOrderScore,
+            getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder, preOrderScore, share} from 'api/biz';
   import { getUserDetail } from 'api/user';
-  import { getConfigPage } from 'api/general';
-  import { payOneOrder, payMoreOrder, getStoreDeductible, getMoreDeductible, moreStoreOrder, getMallOrderDetailByGroupCode } from 'api/store';         // 商城
-  import { initPay } from 'common/js/weixin';
+  import { payOneOrder, payMoreOrder, getMoreDeductible, moreStoreOrder, getMallOrderDetailByGroupCode } from 'api/store';         // 商城
+  import { initPay, initShare } from 'common/js/weixin';
   import defaultImg from './tree@3x.png';
 
   export default {
@@ -178,7 +166,11 @@
             listPic: ''
           }
         },
-        pullUpLoad: null
+        pullUpLoad: null,
+        authTitle: '感谢您认养这棵古树，成为它的守护人',
+        authContent: '分享我的古树，邀请好友围观',
+        confirmBtnText: '分享',
+        cancelBtnText: '下次再说'
       };
     },
     mounted() {
@@ -228,9 +220,6 @@
           }).catch(() => {});
         }else {
           // 直接购买下单
-          getStoreDeductible(this.storeCode).then(data => {
-            this.rate = data;
-          }, () => {});
           moreStoreOrder(this.storeCode).then((res) => {
             this.orderDetail = res;
           }).catch(() => {});
@@ -269,6 +258,8 @@
       },
       getInitData() {
         this.loading = true;
+        this.isWxConfiging = false;
+        this.wxData = null;
         if(this.orderCode[0] === 'G') {
           // 集体订单
           Promise.all([
@@ -299,6 +290,9 @@
               this.showWeixin = false;
             }
             this.getConfig();
+            if(!this.isWxConfiging && !this.wxData) {
+              this.getInitWXSDKConfig();
+            }
             this.loading = false;
           }).catch(() => { this.loading = false; });
         } else {
@@ -310,12 +304,10 @@
             getAccount({
               userId: this.userId
             }),
-            getDeductibleAmount(this.orderCode),
             getUserDetail({userId: this.userId})
-          ]).then(([res1, res2, res3, res4]) => {
+          ]).then(([res1, res2, res4]) => {
             this.orderDetail = res1;
             this.amount = res1.amount;
-            this.rate = res3;
             res2.list.map((item) => {
               if(item.currency === 'CNY') {
                 this.cny = item.amount;
@@ -328,6 +320,9 @@
             if(!this.isWeixin || !this.userDetail.h5OpenId) {
               this.selectPayType(2);
               this.showWeixin = false;
+            }
+            if(!this.isWxConfiging && !this.wxData) {
+              this.getInitWXSDKConfig();
             }
             this.getConfig();
             this.loading = false;
@@ -633,9 +628,10 @@
             this.$router.push(`/me`);
           }, 1000);
         } else {
-          setTimeout(() => {
-            this.$router.push(`/my-order?type=${this.type}`);
-          }, 1000);
+          this.$refs.confirm.show();
+          // setTimeout(() => {
+          //   this.$router.push(`/my-order?type=${this.type}`);
+          // }, 1000);
         }
       },
       // 输入支付密码后点击确定执行的方法
@@ -713,23 +709,49 @@
             this.ckey = 'ADOPT_DK_RATE';
           }
         }
-        getConfigPage({
-          start: 1,
-          limit: 100,
-          type: 'JF_RULE',
-          ckey: this.ckey
-        }).then(data => {
-          // this.sysConfig = data.list;
-          this.sysConfig.push({
-            remark: `使用${data.list[0].cvalue}积分抵扣1元`,
-            cvalue: ''
-          });
-          if(this.orderCode) {
-            this.sysConfig.push({
-              remark: '该产品最大积分抵扣上限',
-              cvalue: `${this.orderDetail.product.maxJfdkRate}%`
-            });
+      },
+      authConfirm() {
+        this.$refs.confirm.hide();
+        this.text = '请点击右上角分享';
+        this.$refs.toast.show();
+      },
+      authCancel() {
+        this.$router.push(`/my-order`);
+      },
+      getInitWXSDKConfig() {
+        this.loading = true;
+        initShare({
+          title: this.orderDetail.product.name,
+          desc: '认养一棵树，寻一段树缘，寄一份情感',
+          link: location.href.split('#')[0] + '/#/product-detail?code=' + this.orderDetail.product.code + '&userReferee=' + this.userDetail.mobile + '&type=U',
+          imgUrl: formatImg(this.orderDetail.product.listPic),
+          success: (res) => {
+            this.channel = '';
+            if(res.errMsg.indexOf('sendAppMessage') !== -1) {
+              this.channel = 0;
+            } else if(res.errMsg.indexOf('shareTimeline') !== -1) {
+              this.channel = 1;
+            } else if(res.errMsg.indexOf('shareQQ') !== -1) {
+              this.channel = 2;
+            } else if(res.errMsg.indexOf('shareQZone') !== -1) {
+              this.channel = 3;
+            }
+            share(this.channel, '认养产品').then((res) => {
+              if(res.code) {
+                this.text = '分享成功';
+                this.$refs.toast.show();
+              }
+            }).then(() => {});
           }
+        }, (data) => {
+          this.isWxConfiging = false;
+          this.wxData = data;
+          this.loading = false;
+        }, (msg) => {
+          alert(msg);
+          this.isWxConfiging = false;
+          this.wxData = null;
+          this.loading = false;
         });
       }
     },
@@ -739,7 +761,20 @@
       SwitchOption,
       Toast,
       ConfirmInput,
-      FullLoading
+      FullLoading,
+      ConfirmSjdAuth
+    },
+
+    beforeRouteLeave (to, from, next) {
+      if(to.path === '/protocol') {
+        next();
+        this.$router.push(`/my-order/order-detail?code=${this.orderCode}&type=${this.type}`);
+      } if(this.storeCode && to.path !== '/store-order') {
+        next();
+        this.$router.push(`/store-order_detail?code=${this.storeCode}`);
+      } else {
+        next();
+      }
     }
   };
 </script>

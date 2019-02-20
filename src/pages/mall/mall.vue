@@ -26,7 +26,7 @@
         </div>
         <p class="hr"></p>
         <div class="mall-content">
-          <div class="activity">
+          <div class="activity" @click="go('/activity')">
             <img :src="formatImg(activityPic)" >
           </div>
           <div class="con-head" v-if="hotShopList.length >= 3">
@@ -52,21 +52,21 @@
                   <div class="hot-big">
                     <div class="left" @click="toShopDet(hotShopList[0].code, hotShopList[0].shopCode)">
                       <div class="title">{{hotShopList[0].name}}</div>
-                      <div class="text"><span class="price">¥{{formatAmount(hotShopList[0].minPrice)}}</span>起</div>
+                      <div class="text"><span class="price">¥{{formatAmount(hotShopList[0].minPrice)}}</span><span v-if="hotShopList[0].minPrice !== hotShopList[0].maxPrice">起</span></div>
                       <div class="sing-img" :style="getImgSyl(hotShopList[0].listPic ? hotShopList[0].listPic : '')"></div>
                     </div>
                     <div class="right">
                       <div class="right-top" @click="toShopDet(hotShopList[1].code, hotShopList[1].shopCode)">
                         <div class="right-left">
                           <div class="title">{{hotShopList[1].name}}</div>
-                          <div class="text"><span class="price">¥{{formatAmount(hotShopList[0].minPrice)}}</span>起</div>
+                          <div class="text"><span class="price">¥{{formatAmount(hotShopList[1].minPrice)}}</span><span v-if="hotShopList[1].minPrice !== hotShopList[1].maxPrice">起</span></div>
                         </div>
                         <div class="sing-img" :style="getImgSyl(hotShopList[1].listPic ? hotShopList[1].listPic : '')"></div>
                       </div>
                       <div class="right-bottom" @click="toShopDet(hotShopList[2].code, hotShopList[2].shopCode)">
                         <div class="right-left">
                           <div class="title">{{hotShopList[2].name}}</div>
-                          <div class="text"><span class="price">¥{{formatAmount(hotShopList[0].minPrice)}}</span>起</div>
+                          <div class="text"><span class="price">¥{{formatAmount(hotShopList[2].minPrice)}}</span><span v-if="hotShopList[2].minPrice !== hotShopList[2].maxPrice">起</span></div>
                         </div>
                         <div class="sing-img" :style="getImgSyl(hotShopList[2].listPic ? hotShopList[2].listPic : '')"></div>
                       </div>
@@ -222,13 +222,10 @@ export default {
       this.addCartConfig.commodityName = name;
       this.addCartConfig.specsId = specsId;
       this.addCartConfig.specsName = specsName;
-      addShopCart(this.addCartConfig).then(data => {
+      addShopCart(this.addCartConfig).then(() => {
         this.loading = false;
         this.textMsg = '加入购物车成功';
         this.$refs.toast.show();
-        // setTimeout(() => {
-        //   this.go('/mall-shopCart');
-        // }, 1500);
       }, () => {
         this.loading = false;
       });
@@ -240,11 +237,6 @@ export default {
       this.isAll = true;
     },
     toHomeFn() {
-      // if(!getUserId()) {
-      //   this.textMsg = '您未登录';
-      //   this.$refs.toast.show();
-      //   return;
-      // }
       this.go('/home');
     },
     // 获取热门商品

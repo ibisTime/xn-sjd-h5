@@ -177,7 +177,7 @@ import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getProductDetail, share, getAdoptList } from 'api/biz';
 import { getUserDetail } from 'api/user';
-import { getDictList } from 'api/general';
+import { getDictList, getConfig } from 'api/general';
 export default {
   data() {
     return {
@@ -210,7 +210,7 @@ export default {
       tab: 1,
       adoptList: [],
       authTitle: '完成操作，需进行实名认证',
-      authContent: ['由于认养古树需要签署政府相关认养协议，认养后还有挂牌等服务来展示您的爱心，所以需要您完成实名认证（个人中心头像右侧)', '请前往选择任意一种方式进行认证。（平台只会公开您的昵称）'],
+      authContent: '',
       sellTypeObj: {}
     };
   },
@@ -471,11 +471,19 @@ export default {
         this.loading = false;
       });
     },
-    shareBrowser() {}
+    shareBrowser() {},
+    goBack() {
+      this.$router.replace({path: '/home'});
+    }
   },
   mounted() {
     setTitle('产品详情');
     this.userReferee = this.$route.query.userReferee;
+    if (window.history && window.history.pushState) {
+      console.log(1);
+      history.pushState(null, null, document.URL);
+      window.addEventListener('popstate', this.goBack, false);
+    }
     if(this.userReferee && !getUserId()) {
       this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
     } else {
@@ -497,8 +505,9 @@ export default {
             productCode: this.code,
             statusList: [2, 3, 4]
           }),
-          getDictList('sell_type')
-        ]).then(([res1, res2, res3, res4]) => {
+          getDictList('sell_type'),
+          getConfig('REALNAME_NOTIFI')
+        ]).then(([res1, res2, res3, res4, res5]) => {
           this.loading = false;
           this.detail = res1;
           this.detailDescription = res1.description;
@@ -514,6 +523,7 @@ export default {
           if(!this.isWxConfiging && !this.wxData) {
             this.getInitWXSDKConfig();
           }
+          this.authContent = res5.cvalue;
         }).catch(() => { this.loading = false; });
       } else {
         Promise.all([
@@ -539,6 +549,9 @@ export default {
         }).catch(() => { this.loading = false; });
       }
     }
+  },
+  destroyed() {
+    window.removeEventListener('popstate', this.goBack, false);
   },
   watch: {
     detailDescription() {
