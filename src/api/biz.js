@@ -162,11 +162,11 @@ export function getOrganizeOrderDetail (data) {
  * 获取当前集体订单积分抵扣金额
  * @param {string} code 订单编号
  * */
-export function getOrganizeOrderScore(code) {
-  return fetch(629058, {
-    code
-  });
-}
+// export function getOrganizeOrderScore(code) {
+//   return fetch(629058, {
+//     code
+//   });
+// }
 /**
  * 列表查询认养权/列表查询用户的树
  * @params {string} status 状态(1待认养2认养中3已到期)
@@ -233,11 +233,11 @@ export function cancelGroupOrder(code, remark) {
  * 获取当前订单积分抵扣金额
  * @param {string} code 订单编号
  * */
-export function getDeductibleAmount(code) {
-  return fetch(629048, {
-    code
-  });
-}
+// export function getDeductibleAmount(code) {
+//   return fetch(629048, {
+//     code
+//   });
+// }
 
 /**
  * 本周能量比拼
@@ -728,11 +728,11 @@ export function confirmShouhuo(data) {
 }
 
 // 预售订单积分抵扣金额
-export function preOrderScore(data) {
-  return fetch(629429, {
-    ...data
-  });
-}
+// export function preOrderScore(data) {
+//   return fetch(629429, {
+//     ...data
+//   });
+// }
 
 // 列表查弹幕
 export function getDanmuList(data) {

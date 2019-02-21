@@ -36,7 +36,7 @@
           <!-- 礼物 -->
           <div class="me" @click="go('/gift?code=' + adoptTreeCode)" v-show="!other">
             <img :src="getAvatar()">
-            <span>礼物</span>
+            <span>礼物</span><span class="dot" v-if="hasGift"></span>
           </div>
           <div class="me" @click="go(`/homepage?other=1&currentHolder=${currentHolder}`)" v-show="other">
             <span>进入主页</span>
@@ -377,7 +377,7 @@ import MHeader from 'components/m-header/m-header';
 import MFooter from 'components/m-footer/m-footer';
 import { getComparison, getPageTpp, collectionTpp, GiveTpp, getPageJournal, getUserTreeDetail,
         getListProps, buyProps, getPropsOrder, getAccount, getPropsUsedRecordList, getDanmuList,
-        sendDanmu, useProps, visit } from 'api/biz';
+        sendDanmu, useProps, visit, getGiftPage } from 'api/biz';
 import { getSystemConfigCkey } from 'api/general';
 import { getUserDetail } from 'api/user';
 import {formatAmount, formatDate, formatImg, getUserId, setTitle} from 'common/js/util';
@@ -439,7 +439,8 @@ export default {
       jf: 0,  // 我有多少积分
       userDetail: {},
       certificationArr: [],  // 证书列表,
-      auth: {}
+      auth: {},
+      hasGift: false
     };
   },
   mounted() {
@@ -520,7 +521,8 @@ export default {
         this.getJF(),
         this.getUserDetail(),
         this.getListUserTree(),
-        this.getAuth()
+        this.getAuth(),
+        this.getGift()
       ]).then(() => {}).catch(() => {});
       // 不是当前用户
       if (this.other === '1') {
@@ -529,6 +531,21 @@ export default {
           this.getDanmu()
         ]).then(() => {}).catch(() => {});
       }
+    },
+    // 查询是否有待领取的礼物
+    getGift() {
+      getGiftPage({
+        adoptTreeCode: this.code,
+        start: 1,
+        limit: 10,
+        status: 0,
+        toUser: getUserId()
+      }).then((res) => {
+        if(res.list.length) {
+          this.hasGift = true;
+        }
+        console.log(this.hasGift);
+      }).catch(() => {});
     },
     // 查询道具列表
     getPropList() {
@@ -1107,6 +1124,15 @@ export default {
           line-height: 0.78rem;
           position: absolute;
           right: 0.1rem;
+        }
+        .dot {
+          width: 0.1rem;
+          height: 0.1rem;
+          color: red;
+          display: inline-block;
+          border-radius: 50%;
+          background: red;
+          top: 0.1rem;
         }
       }
       .icons {

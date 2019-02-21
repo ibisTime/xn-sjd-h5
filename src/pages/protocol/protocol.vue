@@ -96,7 +96,7 @@
               this.loading = false;
               let str = data1.contractTemplate;
               str = str.replace(/##甲方名称##/g, data1.name);
-              str = str.replace(/##乙方名称##/g, res2.realName);
+              str = str.replace(/##乙方名称##/g, res2.realName || res2.userExt.companyName);
               str = str.replace(/##丙方名称##/g, data2.length ? data2[0].department : '');
               str = str.replace(/##认养编号##/, '(付款成功后生成)');
               str = str.replace('##quantity##', this.quantity);

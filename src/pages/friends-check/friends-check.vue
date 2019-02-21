@@ -117,7 +117,7 @@
         if(item.mySelf === '1') {
           this.go(`/homepage`);
         } else {
-          this.go(`/homepage?other=1&currentHolder=${item.toUser}`);
+          this.go(`/homepage?other=1&currentHolder=${item.fromUserInfo.userId}`);
         }
       },
       // 加密

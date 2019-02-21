@@ -45,11 +45,11 @@
                 alert('您的账号已被锁定，请联系管理员');
               }
             } else {
+              // alert(1);
               this.$router.push('/wx-bind-mobile');
             }
           }).catch(() => {
             this.loading = false;
-            this.relogin = true;
           });
         }
       }

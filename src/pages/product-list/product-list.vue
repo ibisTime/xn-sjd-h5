@@ -44,7 +44,7 @@
         </Scroll>
       </div>
       <div class="mall-content">
-        <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无商品"></no-result>
+        <no-result v-show="!proList.length && !hasMore" class="no-result-wrapper" title="抱歉，暂无古树"></no-result>
       </div>
     </div>
     <full-loading v-show="loading" :title="title"></full-loading>
@@ -60,7 +60,7 @@ import NoResult from 'base/no-result/no-result';
 import Scroll from 'base/scroll/scroll';
 import Search from 'components/search/search';
 import CategoryScroll from 'base/category-scroll/category-scroll';
-import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
+import { formatAmount, formatDate, formatImg, setTitle, getUserId } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getDictList } from 'api/general';
 import { getProductPage, getProductType, getProductAreaList } from 'api/biz';
@@ -275,11 +275,14 @@ export default {
         statusList: [4, 5, 6],
         name: this.query
       };
-      if(this.can !== '2') {
-        config.adoptStatus = this.can;
-      }
-      if(this.variety !== '') {
-        config.variety = this.variety;
+      if(this.filterFilter) {
+        if(this.can !== '2') {
+          config.adoptStatus = this.can;
+        }
+        if(this.variety !== '') {
+          config.variety = this.variety;
+        }
+        config.queryUserId = getUserId();
       }
       if(this.treeLevel !== '') {
         config.treeLevel = this.treeLevel;

@@ -250,7 +250,7 @@ export default {
         this.addCartConfig.commodityName = res2.name;
         this.addCartConfig.specsId = this.specsList[0].id;
         this.addCartConfig.specsName = this.specsList[0].name;
-        if(res3.list[0].userId) {
+        if(res3.list.length) {
           getUser(res3.list[0].userId).then(res => {
             this.commentData = res3.list[0];
             this.commentData.photo = res.photo;
@@ -288,7 +288,7 @@ export default {
         this.addCartConfig.commodityName = res2.name;
         this.addCartConfig.specsId = this.specsList[0].id;
         this.addCartConfig.specsName = this.specsList[0].name;
-        if(res3.list[0].userId) {
+        if(res3.list.length) {
           getUser(res3.list[0].userId).then(res => {
             this.commentData = res3.list[0];
             this.commentData.photo = res.photo;
@@ -480,9 +480,9 @@ export default {
     },
     getInitWXSDKConfig() {
       this.loading = true;
-      console.log(this.shopDetData.name);
-      console.log(location.href.split('#')[0] + '/#/mall-shop_detail?code=' + this.code + '&shopCode=' + this.shopCode + '&userReferee=' + this.userDetail.mobile + '&type=U');
-      console.log(formatImg(this.shopDetData.listPic));
+      // console.log(this.shopDetData.name);
+      // console.log(location.href.split('#')[0] + '/#/mall-shop_detail?code=' + this.code + '&shopCode=' + this.shopCode + '&userReferee=' + this.userDetail.mobile + '&type=U');
+      // console.log(formatImg(this.shopDetData.listPic));
       initShare({
         title: '氧林商城',
         desc: this.shopDetData.name,
@@ -501,7 +501,7 @@ export default {
           }
           share(this.channel, '商城商品').then((res) => {
             if(res.code) {
-              this.text = '分享成功';
+              this.textMsg = '分享成功';
               this.$refs.toast.show();
             }
           }).then(() => {});

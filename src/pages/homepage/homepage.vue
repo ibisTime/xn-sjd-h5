@@ -10,7 +10,7 @@
               <div class="me-info">
                 <div class="userPhoto" :style="getImgSyl(userInfo.photo)"></div>
                 <div class="text">
-                  <p class="userName"><span>{{userInfo.nickname}}</span><img v-if="userInfo.gender" :src="genderIcon"></p>
+                  <p class="userName"><span>{{userInfo.nickname || jiami(userInfo.mobile)}}</span><img v-if="userInfo.gender" :src="genderIcon"></p>
                   <p class="info">
                     <span class="info-level">LV{{userInfo.level}} 初探翠林</span>
                     <span class="info-friend">好友：{{userInfo.friendCount}}</span>
@@ -228,7 +228,8 @@
         variety: '', // 筛选的树种,
         province: '', // 筛选的省,
         city: '', // 筛选的市,
-        area: '' // 筛选的区
+        area: '', // 筛选的区,
+        hasGift: false
       };
     },
     computed: {

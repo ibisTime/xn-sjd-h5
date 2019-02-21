@@ -67,7 +67,6 @@
     },
     created() {
       setTitle('登录');
-      // alert('login');
       this.me = this.$route.query.me || '';
       this.setting = this.$route.query.setting || '';
       this.register = this.$route.query.register || 0;
@@ -76,9 +75,6 @@
       if (!isWeixin) {
         this.showWeixin = false;
       }
-      // if(this.register) {
-      //   window.location.href = ''
-      // }
       if (!isLogin()) {
         if (/code=([^&]+)&state=/.exec(location.href)) {
           this.code = RegExp.$1;
@@ -87,9 +83,6 @@
           }
           this.wxLogin(this.code, this.userReferee);
         }
-        // else {
-        //   this.AppId();
-        // }
       } else {
         this.$router.push('/home');
       }
@@ -127,11 +120,6 @@
           } else {
             setUser(data);
             this.$router.push('/home');
-            // if (this.$route.path === '/home/recommend') {
-            //   location.replace(`${location.origin}/?#/home`);
-            // } else {
-            //   location.replace(`${location.origin}/?#${this.$route.fullPath}`);
-            // }
           }
         }).catch(() => {
           this.loading = false;

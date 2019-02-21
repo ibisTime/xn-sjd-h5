@@ -100,8 +100,13 @@
     <confirm-input ref="confirmInput" :inpType="'password'" :text="inputText" @confirm="handleInputConfirm"></confirm-input>
     <toast ref="toast" :text="text"></toast>
     <full-loading v-show="loading" :title="loadingText"></full-loading>
-    <confirm-sjd-auth ref="confirm" :title="authTitle" :content="authContent" :confirmBtnText='confirmBtnText' :cancelBtnText="cancelBtnText" @confirm="
-    " @cancel="authCancel"></confirm-sjd-auth>
+    <confirm-sjd-auth ref="confirm"
+                      :title="authTitle"
+                      :content="authContent"
+                      :confirmBtnText="confirmBtnText"
+                      :cancelBtnText="cancelBtnText"
+                      @confirm="authConfirm"
+                      @cancel="authCancel"></confirm-sjd-auth>
   </div>
 </template>
 <script>
@@ -114,8 +119,8 @@
   import FullLoading from 'base/full-loading/full-loading'; // loading
   import { getCookie } from 'common/js/cookie';
   import { formatAmount, setTitle, getUserId, formatImg } from 'common/js/util';
-  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail, getOrganizeOrderScore,
-            getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder, preOrderScore, share} from 'api/biz';
+  import { getOrderDetail, getAccount, payOrder, payOrganizeOrder, getOrganizeOrderDetail,
+            getPreOrderDetail, payPreOrder, getJishouOrderDetail, payJishouOrder, share} from 'api/biz';
   import { getUserDetail } from 'api/user';
   import { payOneOrder, payMoreOrder, getMoreDeductible, moreStoreOrder, getMallOrderDetailByGroupCode } from 'api/store';         // 商城
   import { initPay, initShare } from 'common/js/weixin';
@@ -269,13 +274,11 @@
             getAccount({
               userId: this.userId
             }),
-            getOrganizeOrderScore(this.orderCode),
             getUserDetail({userId: this.userId})
-          ]).then(([res1, res2, res3, res4]) => {
+          ]).then(([res1, res2, res4]) => {
             this.orderDetail = res1;
             this.identifyCode = res1.identifyCode;
             this.amount = res1.amount;
-            this.rate = res3;
             res2.list.map((item) => {
               if(item.currency === 'CNY') {
                 this.cny = item.amount;
@@ -338,9 +341,8 @@
           getAccount({
             userId: this.userId
           }),
-          getUserDetail({userId: this.userId}),
-          preOrderScore({ code: this.orderCode })
-        ]).then(([res1, res2, res3, res4]) => {
+          getUserDetail({userId: this.userId})
+        ]).then(([res1, res2, res3]) => {
           this.orderDetail = res1;
           this.amount = res1.amount;
           res2.list.map((item) => {
@@ -356,7 +358,6 @@
             this.selectPayType(2);
             this.showWeixin = false;
           }
-          this.rate = res4;
           this.getConfig();
           this.loading = false;
         }).catch(() => { this.loading = false; });
@@ -766,10 +767,10 @@
     },
 
     beforeRouteLeave (to, from, next) {
-      if(to.path === '/protocol') {
+      if(!this.storeCode && to.path === '/protocol') {
         next();
         this.$router.push(`/my-order/order-detail?code=${this.orderCode}&type=${this.type}`);
-      } if(this.storeCode && to.path !== '/store-order') {
+      } if(this.storeCode && to.path !== '/set-money' && to.path !== '/store-order') {
         next();
         this.$router.push(`/store-order_detail?code=${this.storeCode}`);
       } else {
