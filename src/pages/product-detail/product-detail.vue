@@ -172,7 +172,7 @@ import Slider from 'base/slider/slider';
 import NoResult from 'base/no-result/no-result';
 import BackOnly from 'components/back-only/back-only';
 import ConfirmSjdAuth from 'base/confirm-sjd-auth/confirm-sjd-auth';
-import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
+import { formatAmount, formatImg, formatDate, setTitle, getUserId, jiami } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import {initShare} from 'common/js/weixin';
 import { getProductDetail, share, getAdoptList } from 'api/biz';
@@ -215,6 +215,9 @@ export default {
     };
   },
   methods: {
+    jiami(mobile) {
+      return jiami(mobile);
+    },
     formatAmount(amount) {
       return formatAmount(amount);
     },
@@ -269,10 +272,21 @@ export default {
         this.noAdoptReason = '您未登录';
         return false;
       }
-      if(this.detail.sellType === '1' && this.detail.raiseCount === this.detail.nowCount) {
+      if(this.detail.sellType === '1') {
         // 销售类型为专属且未到认养量
-        this.noAdoptReason = '已被认养';
-        return false;
+        if(this.detail.raiseCount === this.detail.nowCount) {
+          this.noAdoptReason = '已被认养';
+          return false;
+        }
+        let curTime = new Date();
+        // 2把字符串格式转换为日期类
+        let startTime = new Date(Date.parse(this.detail.raiseStartDatetime));
+        let endTime = new Date(Date.parse(this.detail.raiseEndDatetime));
+        // 3进行比较
+        if(curTime <= startTime || curTime >= endTime) {
+          this.noAdoptReason = '不可认养';
+          return false;
+        }
       }
       if(this.detail.sellType === '3') {
         let curTime = new Date();
@@ -471,19 +485,11 @@ export default {
         this.loading = false;
       });
     },
-    shareBrowser() {},
-    goBack() {
-      this.$router.replace({path: '/home'});
-    }
+    shareBrowser() {}
   },
   mounted() {
     setTitle('产品详情');
     this.userReferee = this.$route.query.userReferee;
-    if (window.history && window.history.pushState) {
-      console.log(1);
-      history.pushState(null, null, document.URL);
-      window.addEventListener('popstate', this.goBack, false);
-    }
     if(this.userReferee && !getUserId()) {
       this.$router.push(`/register?code=${this.code}&userReferee=${this.userReferee}&type=U&back=1`);
     } else {
@@ -549,9 +555,6 @@ export default {
         }).catch(() => { this.loading = false; });
       }
     }
-  },
-  destroyed() {
-    window.removeEventListener('popstate', this.goBack, false);
   },
   watch: {
     detailDescription() {

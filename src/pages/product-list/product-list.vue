@@ -137,9 +137,19 @@ export default {
         if(item.raiseCount === item.nowCount) {
           item.canAdoptFlag = false;
           item.noAdoptReason = '已被认养';
-        } else {
-          item.noAdoptReason = '可认养';
+          return item;
         }
+        let curTime = new Date();
+        // 2把字符串格式转换为日期类
+        let startTime = new Date(Date.parse(item.raiseStartDatetime));
+        let endTime = new Date(Date.parse(item.raiseEndDatetime));
+        // 3进行比较
+        if(curTime <= startTime || curTime >= endTime) {
+          item.canAdoptFlag = false;
+          item.noAdoptReason = '不可认养';
+          return item;
+        }
+        item.noAdoptReason = '可认养';
         return item;
       }
       // 定向产品

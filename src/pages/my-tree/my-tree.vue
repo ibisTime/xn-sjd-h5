@@ -535,7 +535,7 @@ export default {
     // 查询是否有待领取的礼物
     getGift() {
       getGiftPage({
-        adoptTreeCode: this.code,
+        adoptTreeCode: this.adoptTreeCode,
         start: 1,
         limit: 10,
         status: 0,

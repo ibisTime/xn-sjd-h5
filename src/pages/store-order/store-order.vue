@@ -40,7 +40,7 @@
                                 <p>合计{{shopItem.quantity}}件商品 <span class="fr sp-b">¥{{formatAmount(shopItem.amount)}}</span></p>
                             </div>
                         </div>
-                        <p class="order-all">合计：￥{{formatAmount(orderItem.payAmount)}}({{formatAmount(orderItem.amount)}}{{orderItem.cnyDeductAmount ? `-积分(${formatAmount(orderItem.cnyDeductAmount)})` : ''}}{{orderItem.postalFee > 0 ? `+邮费(${formatAmount(orderItem.postalFee)})` : ''}})</p>
+                        <p class="order-all">合计：￥{{formatAmount(orderItem.payAmount || orderItem.amount)}}({{formatAmount(orderItem.amount)}}{{orderItem.cnyDeductAmount ? `-积分(${formatAmount(orderItem.cnyDeductAmount)})` : ''}}{{orderItem.postalFee > 0 ? `+邮费(${formatAmount(orderItem.postalFee)})` : ''}})</p>
                         <div class="sing-foo" v-if="operHtmlList[orderIndex]" v-html="operHtmlList[orderIndex]" @click="orderOperClick(orderIndex)">
                         </div>
                     </div>

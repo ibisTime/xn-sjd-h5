@@ -34,7 +34,8 @@
           </div>
         <div class="mall-content">
           <div class="con-head">
-            <h5>热销商品<span class="fr" @click="tomore">更多</span></h5>
+            <!--<h5>热销商品<span class="fr" @click="tomore">更多</span></h5>-->
+            <h5>热门推荐</h5>
             <div class="ml-list">
                 <div class="con-list">
                   <div class="con-sing" @click="toShopDet(shopItem.code, shopItem.shopCode)" v-for="(shopItem, shopIndex) in hotShopList" :key="shopIndex">
@@ -74,6 +75,7 @@ import CategoryScroll from 'base/category-scroll/category-scroll';
 import NoResult from 'base/no-result/no-result';
 import MallShopList from '../mall-shopList/mall-shopList';
 import { getAllShopData, addShopCart, storeMsg, getShopType, myShopCart } from 'api/store';
+import { getSysUserDetail } from 'api/user';
 import { formatAmount, formatImg, formatDate, setTitle, getUserId } from 'common/js/util';
 import { getBanner } from 'api/general';
 import defaltAvatarImg from './../../common/image/avatar@2x.png';
@@ -144,7 +146,9 @@ export default {
       this.loading = false;
       this.description = data.description;
       this.name = data.name;
-      this.shopAvatar = data.shopAvatar || defaltAvatarImg;
+      getSysUserDetail(data.userId).then((res) => {
+        this.shopAvatar = res.photo || defaltAvatarImg;
+      });
       setTitle(this.name);
     }, () => {
       this.loading = false;
@@ -294,6 +298,7 @@ export default {
           height: 1.6rem;
           position: relative;
           top: -0.8rem;
+          border-radius: 50%;
         }
         .name {
           font-size: 0.32rem;

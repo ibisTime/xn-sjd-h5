@@ -479,3 +479,10 @@ export function changeLoginPwd(config) {
     ...config
   });
 }
+
+// 详情查系统用户
+export function getSysUserDetail(userId) {
+  return fetch(630067, {
+    userId
+  });
+}

@@ -12,7 +12,7 @@
                 <div class="text">
                   <p class="userName"><span>{{userInfo.nickname || jiami(userInfo.mobile)}}</span><img v-if="userInfo.gender" :src="genderIcon"></p>
                   <p class="info">
-                    <span class="info-level">LV{{userInfo.level}} 初探翠林</span>
+                    <span class="info-level">LV{{userInfo.level}} {{levelData[userInfo.level].dvalue}}</span>
                     <span class="info-friend">好友：{{userInfo.friendCount}}</span>
                     <span class="info-friend-button" v-show="other === '1'" @click="setFollow()" >{{isFriend ? '已是好友' : '申请好友'}}</span>
                   </p>
@@ -183,6 +183,7 @@
   import MFooter from 'components/m-footer/m-footer';
   import { getUser, getHasRelationship, addRelationship, cancelRelationship } from 'api/user';
   import { getListUserTree, getProductType, getComparison, getPageJournal } from 'api/biz';
+  import { getDictList } from 'api/general';
   import {formatAmount, formatDate, formatImg, setTitle, getUserId, cut} from 'common/js/util';
   import defaltAvatarImg from './../../common/image/avatar@2x.png';
   import male from './male@2x.png';
@@ -229,7 +230,8 @@
         province: '', // 筛选的省,
         city: '', // 筛选的市,
         area: '', // 筛选的区,
-        hasGift: false
+        hasGift: false,
+        levelData: []
       };
     },
     computed: {
@@ -350,8 +352,9 @@
             level: '2',
             type: '1'
           }),
-          getListUserTree(this.params)
-        ]).then(([userInfo, productType, res3, userTree]) => {
+          getListUserTree(this.params),
+          getDictList('user_level')
+        ]).then(([userInfo, productType, res3, userTree, levelData]) => {
           this.loading = false;
           this.userInfo = userInfo;
           productType.map(item => {
@@ -371,6 +374,8 @@
           this.getSubType();
           // this.getUserTree();
           this.getDynamicsList();
+          this.levelData = levelData;
+          console.log(levelData);
         }).catch(() => { this.loading = false; });
         // 不是当前用户
         if (this.other === '1') {
