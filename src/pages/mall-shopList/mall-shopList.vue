@@ -1,5 +1,5 @@
 <template>
-  <div class="mall-wrapper" @click.stop>
+  <div class="mall-wrapper">
     <div class="content">
       <header>
         <div class="inner">
@@ -26,7 +26,7 @@
         @filterConfirm="filterConfirm"
         @all="all"
         @ageConfirm="ageConfirm"></category-sjd-mall-list>
-        <div class="con-list">
+        <div class="con-list" v-show="proList.length">
           <Scroll
             :data="hotShopList"
             :hasMore="hasMore"
@@ -205,34 +205,6 @@ export default {
         });
       });
     },
-    // selectCategory(index) {
-    //   this.currentIndex = index;
-    //   this.currentIndexSub = 0;
-    //   this.config.parentCategoryCode = this.shopTypeData[index].code;
-    //   this.categorysSub = [{key: '0', value: '全部', code: ''}];
-    //   this.shopTypeConfig.parentCode = this.shopTypeData[index].code;
-    //   delete this.config.categoryCode;
-    //   this.start = 1;
-    //   this.hotShopList = [];
-    //   this.getHotShop();
-    //   if(!this.shopTypeConfig.parentCode) {
-    //     this.categorysSub = [{key: '0', value: '全部', code: ''}];
-    //   }else {
-    //     this.getTypeDataFn(this.categorysSub, '2');
-    //   }
-    // },
-    // selectCategorySub(index) {
-    //   if(index === 0) {
-    //     this.config.parentCategoryCode = this.shopTypeData[this.currentIndex].code;
-    //   }else {
-    //     delete this.shopTypeConfig.parentCode;
-    //   }
-    //   this.currentIndexSub = index;
-    //   this.config.categoryCode = this.categorysSub[index].code;
-    //   this.start = 1;
-    //   this.hotShopList = [];
-    //   this.getHotShop();
-    // },
     submit() {
       this.start = 1;
       this.limit = 10;

@@ -375,7 +375,6 @@
           // this.getUserTree();
           this.getDynamicsList();
           this.levelData = levelData;
-          console.log(levelData);
         }).catch(() => { this.loading = false; });
         // 不是当前用户
         if (this.other === '1') {

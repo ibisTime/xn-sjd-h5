@@ -386,7 +386,7 @@ export default {
             this.text = '识别码错误';
             this.$refs.toast.show();
           } else {
-            this.go(`/protocol?sign=1&proCode${proCode}&specsCode=${specsCode}&quantity=${quantity}&identifyCode=${identifyCode}&type=${type}&price=${formatAmount(this.detail.productSpecsList[this.choosedIndex].price) * this.number}&start=${this.detail.productSpecsList[this.choosedIndex].startDatetime}&end=${this.detail.productSpecsList[this.choosedIndex].endDatetime}`);
+            this.go(`/protocol?sign=1&proCode=${proCode}&specsCode=${specsCode}&quantity=${quantity}&identifyCode=${identifyCode}&type=${type}&price=${formatAmount(this.detail.productSpecsList[this.choosedIndex].price) * this.number}&start=${this.detail.productSpecsList[this.choosedIndex].startDatetime}&end=${this.detail.productSpecsList[this.choosedIndex].endDatetime}`);
           }
         }
       } else {
@@ -784,7 +784,7 @@ export default {
           display: flex;
           align-items: center;
           .userPhoto {
-            width: 0.6rem;
+            width: 0.5rem;
             height: 0.5rem;
             margin-right: 0.1rem;
           }

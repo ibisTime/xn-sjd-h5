@@ -343,7 +343,7 @@
       </div>
       <div class="content">
         <Scroll
-          :pullUpLoad="pullUpLoad"
+          :pullUpLoad="pullUpLoad1"
         >
           <div class="prop-item" @click="showDanmu(item)" v-for="item in emojiArr">
             <span>{{item.content}}</span>
@@ -400,6 +400,7 @@ export default {
           noMore: '已经全部加载完毕'
         }
       },
+      pullUpLoad1: null,
       flag: false,
       propFlag: false,
       danmuFlag: false,
@@ -544,7 +545,6 @@ export default {
         if(res.list.length) {
           this.hasGift = true;
         }
-        console.log(this.hasGift);
       }).catch(() => {});
     },
     // 查询道具列表
@@ -894,7 +894,6 @@ export default {
         if(res.length) {
           res.map((item) => {
             if(item.toolCode === code) {
-              console.log(this.propsData);
               useProps({
                 toolOrderCode: item.code,
                 adoptTreeCode: this.adoptTreeCode

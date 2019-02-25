@@ -345,7 +345,7 @@ export default {
     },
     cancelAfterSale() {
       this.loading = true;
-      cancelAfterSale(this.currentItem.code).then((res) => {
+      cancelAfterSale(this.currentItem.code).then(() => {
         location.reload();
         this.loading = false;
       }).catch(() => { this.loading = false; });

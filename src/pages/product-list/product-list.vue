@@ -60,7 +60,7 @@ import NoResult from 'base/no-result/no-result';
 import Scroll from 'base/scroll/scroll';
 import Search from 'components/search/search';
 import CategoryScroll from 'base/category-scroll/category-scroll';
-import { formatAmount, formatDate, formatImg, setTitle, getUserId } from 'common/js/util';
+import { formatAmount, formatDate, formatImg, setTitle } from 'common/js/util';
 import { getCookie } from 'common/js/cookie';
 import { getDictList } from 'api/general';
 import { getProductPage, getProductType, getProductAreaList } from 'api/biz';
@@ -292,7 +292,6 @@ export default {
         if(this.variety !== '') {
           config.variety = this.variety;
         }
-        config.queryUserId = getUserId();
       }
       if(this.treeLevel !== '') {
         config.treeLevel = this.treeLevel;

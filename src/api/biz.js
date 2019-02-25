@@ -6,6 +6,7 @@ export function getProductPage (data) {
   return fetch(629025, {
     start: 1,
     limit: 4,
+    queryUserId: getUserId(),
     ...data
   });
 }
