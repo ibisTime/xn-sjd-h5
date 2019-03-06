@@ -26,7 +26,7 @@
         @filterConfirm="filterConfirm"
         @all="all"
         @ageConfirm="ageConfirm"></category-sjd-mall-list>
-        <div class="con-list" v-show="proList.length">
+        <div class="con-list" v-show="hotShopList.length">
           <Scroll
             :data="hotShopList"
             :hasMore="hasMore"

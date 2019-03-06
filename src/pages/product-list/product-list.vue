@@ -204,7 +204,7 @@ export default {
         }
         return item;
       }
-      // 专属产品
+      // 集体产品
       if(item.sellType === '4') {
         // 销售类型为专属且未到认养量
         if(item.raiseCount === item.nowCount) {
@@ -265,23 +265,10 @@ export default {
       this.getPageOrders();
     },
     getPageOrders() {
-      // if(this.categorys[this.index].key === 'all') {
-      //   this.parentCategoryCode = '';
-      //   this.selectdType = '';
-      // } else if(this.categorysSub[this.indexSub].key === 'all') {
-      //   this.parentCategoryCode = this.categorys[this.index].key;
-      //   this.selectdType = '';
-      // } else {
-      //   this.parentCategoryCode = '';
-      //   this.selectdType = this.categorysSub[this.indexSub].key;
-      // }
       this.loading = true;
       let config = {
         start: this.start,
         limit: this.limit,
-        // sellType: sellType,
-        // parentCategoryCode: this.parentCategoryCode,
-        // categoryCode: this.selectdType,
         statusList: [4, 5, 6],
         name: this.query
       };
